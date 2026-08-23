@@ -81,7 +81,7 @@
       b.addEventListener('click', function () { generate(true); });
     });
     shell.querySelectorAll('[data-copy-btn]').forEach(function (b) {
-      b.innerHTML = COPY + '<span class="sr-only">Copy</span>';
+      if (!b.textContent.trim()) b.innerHTML = COPY + '<span class="sr-only">Copy</span>';
       b.addEventListener('click', function () {
         if (out.textContent) window.ompCopy(out.textContent, 'Password copied — paste it immediately, then clear your clipboard if possible');
       });

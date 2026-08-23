@@ -88,6 +88,7 @@
       var prefixes = res[1];
       var prefix = hash.slice(0, 5);
       if (hashEl) {
+        hashEl.hidden = false;
         hashEl.innerHTML = '';
         var label = document.createElement('div');
         label.className = 'tiny muted';
