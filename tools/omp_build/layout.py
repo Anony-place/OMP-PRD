@@ -71,6 +71,7 @@ NAV_LINKS = [
     ("Generator", "/generator.html"),
     ("Tools", "/tools.html"),
     ("Guides", "/guides.html"),
+    ("Articles", "/blog.html"),
     ("Breach Check", "/breach-check.html"),
     ("About", "/about.html"),
 ]
@@ -116,7 +117,7 @@ def head(*, title, desc, path, og_type="website", jsonld=None, extra=""):
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
-  <script>try{{var t=localStorage.getItem('omp-theme');if(t==='light'||(!t&&matchMedia('(prefers-color-scheme: light)').matches)){{document.documentElement.dataset.theme='light';document.querySelector('meta[name=theme-color]').content='#F6F8FC'}}}}catch(e){{}}</script>{jsonld_html}
+  <script src="/assets/js/theme-init.js"></script>{jsonld_html}
   {extra}
 </head>"""
 
@@ -178,6 +179,7 @@ def footer():
         ]),
         ("Resources", [
             ("Guides", "/guides.html"),
+            ("Articles", "/blog.html"),
             ("Security Checklist", "/security-checklist.html"),
             ("FAQ", "/faq.html"),
             ("Glossary", "/glossary.html"),

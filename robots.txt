@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /tools/
+Disallow: /admin/
 
 Sitemap: https://oopsmypassword.com/sitemap.xml

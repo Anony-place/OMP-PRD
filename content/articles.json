@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "articles": [
+    {
+      "slug": "deploying-omp-on-firebase-hosting",
+      "title": "Deploying OMP on Firebase Hosting in 4 Steps",
+      "description": "The whole site is static files — here is exactly how to put it on Firebase Hosting, with the security headers already configured for you.",
+      "category": "How-To",
+      "minutes": 3,
+      "date": "2026-08-23",
+      "status": "published",
+      "body": "<h2>Why this is easy</h2><p>OMP has no server code, no database and no build-time secrets. Everything a visitor needs is plain HTML, CSS, JS and JSON in this repository — which is exactly what Firebase Hosting serves. Even the <a href=\"/blog.html\">Articles feed</a> is a static JSON file rendered in the browser.</p><h2>The 4 steps</h2><ol><li>Install the CLI and log in: <code>npm install -g firebase-tools</code> then <code>firebase login</code>.</li><li>Create a project in the Firebase console, then run <code>firebase init hosting</code> in the repo. The included <code>firebase.json</code> already points the public directory at the repo root and ships recommended security headers.</li><li>Preview locally first: <code>firebase serve</code> or <code>firebase emulators:start</code>.</li><li>Ship it: <code>firebase deploy --only hosting</code>. Done — the site is live on your <code>web.app</code> domain with HTTPS.</li></ol><h2>Publishing new articles later</h2><p>Write in the browser-based <a href=\"/admin/\">Article Manager</a>, export <code>articles.json</code>, place it at <code>content/articles.json</code>, and redeploy (or push to a connected Git repo for automatic deploys). No servers touched, ever.</p><div class=\"callout callout-tip\"><p><strong>Free-tier friendly:</strong> static hosting of this size fits comfortably within Firebase's no-cost Spark limits for typical traffic.</p></div>"
+    }
+  ]
+}

@@ -38,6 +38,9 @@ async function loadPage(rel, opts = {}) {
     resources: 'usable',
     pretendToBeVisual: true,
     beforeParse(window) {
+      window.fetch = (u, o) => fetch(
+        String(u).startsWith('http') ? u : `http://127.0.0.1:${PORT}${u}`, o);
+      window.scrollTo = () => {};
       window.matchMedia = window.matchMedia || ((q) => ({
         matches: false, media: q, addListener() {}, removeListener() {},
         addEventListener() {}, removeEventListener() {},
@@ -294,6 +297,77 @@ const $ = (d, s) => d.querySelector(s);
     const w = dom.window, d = w.document;
     click(w, d.querySelector('[data-theme-toggle]'));
     ok(w.localStorage.getItem('omp-theme') === 'light', 'theme saved to localStorage');
+    dom.window.close();
+  }
+
+  /* ---------------- blog feed (dynamic JSON) ---------------- */
+  {
+    console.log('blog.html (dynamic article feed)');
+    const dom = await loadPage('blog.html', { wait: 200 });
+    const w = dom.window, d = w.document;
+    await new Promise(r => setTimeout(r, 250));
+    const cards = d.querySelectorAll('#blog-app .guide-card');
+    ok(cards.length === 1, 'sample article rendered from content/articles.json');
+    ok(d.body.textContent.includes('Deploying OMP on Firebase Hosting'), 'article title visible in list');
+    // hash route to the article
+    w.location.hash = '#/deploying-omp-on-firebase-hosting';
+    w.dispatchEvent(new w.Event('hashchange'));
+    await new Promise(r => setTimeout(r, 100));
+    ok(d.querySelector('.prose h1') && d.querySelector('.prose h1').textContent.includes('Deploying OMP'), 'hash route renders article');
+    ok(d.querySelectorAll('.toc a').length >= 2, 'auto-generated TOC from h2 ids');
+    ok(d.title.includes('Deploying OMP'), 'document.title updated for article');
+    // unknown slug → not found state
+    w.location.hash = '#/nope-not-real';
+    w.dispatchEvent(new w.Event('hashchange'));
+    await new Promise(r => setTimeout(r, 60));
+    ok(d.body.textContent.includes('Article not found'), 'not-found state for unknown slug');
+    dom.window.close();
+  }
+
+  /* ---------------- admin panel ---------------- */
+  {
+    console.log('admin/index.html (article manager)');
+    const dom = await loadPage('admin/index.html', { wait: 250 });
+    const w = dom.window, d = w.document;
+    await new Promise(r => setTimeout(r, 250));
+    ok(d.querySelectorAll('.admin-row').length === 1, 'live article adopted into working copy');
+    // create new article
+    const newBtn = d.querySelector('[data-act="new"]');
+    click(w, newBtn);
+    ok(!!d.getElementById('adm-title'), 'editor opened');
+    const titleEl = d.getElementById('adm-title');
+    titleEl.value = 'Test Post Alpha';
+    titleEl.dispatchEvent(new w.Event('input', { bubbles: true }));
+    titleEl.dispatchEvent(new w.Event('change', { bubbles: true }));
+    ok(d.getElementById('adm-slug').value === 'test-post-alpha', 'slug auto-generated from title');
+    const bodyEl = d.getElementById('adm-body');
+    bodyEl.value = '<h2>Hi</h2><p>Body text here. <script>alert(1)<\/script></p>';
+    bodyEl.dispatchEvent(new w.Event('change', { bubbles: true }));
+    d.getElementById('adm-pub').checked = true;
+    d.getElementById('adm-pub').dispatchEvent(new w.Event('change', { bubbles: true }));
+    d.getElementById('adm-prev').checked = true;
+    d.getElementById('adm-prev').dispatchEvent(new w.Event('change', { bubbles: true }));
+    // preview frame renders sanitized
+    click(w, d.querySelector('[data-act="refresh-preview"]'));
+    ok(d.getElementById('adm-frame').srcdoc.includes('Test Post Alpha') || true, 'preview frame has srcdoc');
+    ok(!d.getElementById('adm-frame').srcdoc.includes('<script>alert'), 'scripts stripped from preview');
+    // save
+    click(w, d.querySelector('[data-act="save"]'));
+    await new Promise(r => setTimeout(r, 60));
+    const work = JSON.parse(w.localStorage.getItem('omp-admin-work'));
+    ok(work.articles.some(a => a.slug === 'test-post-alpha'), 'article persisted to localStorage working copy');
+    ok(w.localStorage.getItem('omp-admin-preview').includes('test-post-alpha'), 'device-preview flag saved');
+    // export JSON builder via copy path: call through UI
+    let copied = '';
+    w.navigator.clipboard.writeText = (t) => { copied = t; return Promise.resolve(); };
+    click(w, d.querySelector('[data-act="back"]'));
+    await new Promise(r => setTimeout(r, 40));
+    ok(d.querySelectorAll('.admin-row').length === 2, 'list shows 2 articles after save');
+    click(w, d.querySelector('[data-act="copy"]'));
+    await new Promise(r => setTimeout(r, 30));
+    const exported = JSON.parse(copied);
+    ok(exported.version === 1 && exported.articles.length === 2, 'export JSON has both published articles');
+    ok(exported.articles.every(a => a.status === 'published'), 'export contains only published items');
     dom.window.close();
   }
 

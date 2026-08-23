@@ -873,3 +873,30 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   .site-nav, .site-footer, .toc, .cta-band { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+
+/* ---------- Dynamic articles (blog) + admin badges ---------- */
+.adm-badge {
+  font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.adm-pub { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+.adm-draft { background: rgba(250,204,21,.1); color: var(--yellow); border: 1px solid rgba(250,204,21,.28); }
+.adm-preview { background: rgba(34,211,238,.1); color: var(--cyan); border: 1px solid rgba(34,211,238,.3); }
+.adm-override { background: rgba(139,92,246,.12); color: var(--purple); border: 1px solid rgba(139,92,246,.32); }
+
+/* blog dynamic rendering */
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 1060px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr; } }
+.blog-tag {
+  font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--purple);
+}
+.empty-state {
+  text-align: center; padding: 72px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+.article-back { display: inline-flex; align-items: center; gap: 8px; color: var(--purple); font-weight: 600; font-size: .9rem; margin-bottom: 20px; }
+.article-back:hover { text-decoration: underline; text-underline-offset: 3px; }

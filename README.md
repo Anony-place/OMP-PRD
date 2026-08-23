@@ -17,6 +17,25 @@
 
 Plus: 10 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps.
 
+## No-backend articles (dynamic feed + admin panel)
+
+Publishing content without running a backend:
+
+- **`/blog.html`** — the Articles feed, rendered client-side from `content/articles.json` (a plain static file). Updating articles = replacing one JSON file; no rebuild or server logic needed.
+- **`/admin/`** — the browser-local **Article Manager**. Write/edit articles with a live preview toolbar editor; the working copy lives in your browser's localStorage. Mark a published article "Preview on this device" to see it in the real feed before shipping. When ready: **Export articles.json** → place it at `content/articles.json` (GitHub web upload, git push, or `firebase deploy`) → instantly public. Drafts stay out of exports.
+- Article HTML is sanitized with a whitelist renderer (scripts/iframes/handlers stripped) before display.
+- SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guides via `tools/build.py`.
+- The panel needs no login because it can change nothing outside the owner's browser.
+
+## Firebase Hosting
+
+`firebase.json` is included and ready: public dir at repo root, `tools/**` ignored, CSP + security headers, immutable caching for `/assets`, `no-cache` for HTML and `/content`.
+
+```bash
+firebase init hosting   # select this repo (config already provided)
+firebase deploy --only hosting
+```
+
 ## Privacy architecture
 
 - **All analysis is client-side JavaScript.** Passwords never leave the tab: no network, no storage, no logs, nothing in URLs, nothing in analytics.
@@ -27,7 +46,9 @@ Plus: 10 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps.
 ## Structure
 
 ```
-/                      → generated static pages (index.html, checker.html, guides/…)
+/                      → generated static pages (index.html, checker.html, guides/…, blog.html, admin/)
+/content/articles.json → dynamic feed source (edit via /admin/ → Export)
+/firebase.json         → hosting config with security headers (deploy-ready)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)
 /assets/js/*.js        → page behaviors

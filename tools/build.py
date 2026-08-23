@@ -26,6 +26,7 @@ from omp_build.pages_core import (  # noqa: E402
     generator_body, health_body, home_body, passphrase_body,
     random_string_body, tools_body,
 )
+from omp_build.pages_blog import admin_body, blog_body  # noqa: E402
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
     security_body, sitemap_body, terms_body,
@@ -141,7 +142,7 @@ def main():
         desc="Privacy-first password tools that run entirely in your browser: real-time strength checker, CSPRNG generator, passphrase generator, entropy calculator and practical security guides. No account required.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
-        scripts_=["security.js", "wordlist.js", "checker.js", "generator.js"],
+        scripts_=["security.js", "wordlist.js", "checker.js", "generator.js", "blog.js"],
     ))
     write("checker.html", page(
         path="/checker.html", active="/checker.html",
@@ -215,6 +216,22 @@ def main():
         scripts_=["checklist.js"],
     ))
     write("guides.html", guides_index())
+    write("blog.html", page(
+        path="/blog.html", active="/blog.html",
+        title="Articles — OopsMyPassword",
+        desc="News, deep dives and how-tos from the OMP team — loaded from a static JSON feed in your browser. No backend, no tracking.",
+        body=blog_body(),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/blog.html")]),
+        scripts_=["blog.js"],
+    ))
+    write("admin/index.html", page(
+        path="/admin/", active="",
+        title="Article Manager — OopsMyPassword Admin",
+        desc="Browser-local article manager for the OMP static JSON feed. No backend, no login server.",
+        body=admin_body(),
+        scripts_=["blog.js", "admin.js"],
+        head_extra='<meta name="robots" content="noindex,nofollow">\n  <link rel="stylesheet" href="/assets/css/admin.css">',
+    ))
     for g in GUIDES:
         write(f"guides/{g['slug']}.html", guide_page(g))
     write("about.html", page(
@@ -279,7 +296,7 @@ def main():
     urls = ["/"] + [
         "/checker.html", "/generator.html", "/tools.html", "/breach-check.html",
         "/password-health.html", "/entropy.html", "/passphrase.html",
-        "/random-string.html", "/security-checklist.html", "/guides.html",
+        "/random-string.html", "/security-checklist.html", "/guides.html", "/blog.html",
     ] + [f"/guides/{g['slug']}.html" for g in GUIDES] + [
         "/about.html", "/privacy.html", "/terms.html", "/contact.html",
         "/faq.html", "/glossary.html", "/security.html", "/sitemap.html",
@@ -297,6 +314,7 @@ def main():
     write("robots.txt", f"""User-agent: *
 Allow: /
 Disallow: /tools/
+Disallow: /admin/
 
 Sitemap: {SITE}/sitemap.xml
 """)
