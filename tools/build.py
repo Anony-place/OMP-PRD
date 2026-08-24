@@ -21,6 +21,7 @@ from omp_build.layout import (  # noqa: E402
 )
 from omp_build.guides1 import GUIDES_1  # noqa: E402
 from omp_build.guides2 import GUIDES_2  # noqa: E402
+from omp_build.guides3 import GUIDES_3  # noqa: E402
 from omp_build.pages_core import (  # noqa: E402
     FAQ_ITEMS, breach_body, checker_body, checklist_body, entropy_body,
     generator_body, health_body, home_body, passphrase_body,
@@ -33,7 +34,7 @@ from omp_build.pages_info import (  # noqa: E402
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDES = GUIDES_1 + GUIDES_2
+GUIDES = GUIDES_1 + GUIDES_2 + GUIDES_3
 
 
 def write(path, content):
@@ -72,7 +73,7 @@ def guide_page(g):
         <ul>{toc_links}</ul>
       </aside>
       <article class="prose" itemscope itemtype="https://schema.org/Article">
-        {g["body"]}
+        {g["body"].replace('<span class="chev"></span>', '<span class="chev">' + icon("chevron", "icon-18") + '</span>')}
         <hr class="hr-fade" style="margin-top:48px">
         <div class="callout callout-info">{icon("shield","icon-20")}<p><strong>Put it into practice:</strong> run your next password through the <a href="/checker.html">local checker</a> — it never leaves your browser.</p></div>
       </article>
@@ -93,6 +94,8 @@ def guide_page(g):
             (g["title"], f"/guides/{g['slug']}.html"),
         ]),
     ]
+    if g.get("faq"):
+        jsonld.append(jsonld_faq(g["faq"]))
     return page(
         path=f"/guides/{g['slug']}.html", active="/guides.html",
         title=f"{g['title']} — OopsMyPassword Guides", desc=g["desc"],
@@ -118,7 +121,7 @@ def guides_index():
   <div class="container">
     <span class="eyebrow">Learn</span>
     <h1 class="h-1">Password Security Guides</h1>
-    <p class="lead">Ten practical guides covering everything from entropy math to breach response — each written in plain language, each actionable in one sitting.</p>
+    <p class="lead">Fifteen practical guides covering everything from password length and cracking time to passkeys and breach response — each written in plain language, each actionable in one sitting.</p>
   </div>
 </section>
 <section class="section-tight">
@@ -128,7 +131,7 @@ def guides_index():
     return page(
         path="/guides.html", active="/guides.html",
         title="Password Security Guides — OopsMyPassword",
-        desc="Ten practical, plain-language guides: strong passwords, password managers, 2FA, passkeys, phishing, breach response and entropy.",
+        desc="Fifteen practical, plain-language guides: password length and cracking time, strong passwords, managers, 2FA, passkeys, phishing, breach response and entropy.",
         body=body,
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Guides", "/guides.html")]),
     )

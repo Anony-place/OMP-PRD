@@ -101,7 +101,7 @@ G7 = {
 <h2 id="prevent">7. Reduce the next breach's impact</h2>
 <div class="callout callout-tip"><p>You cannot stop companies from being breached. You can make each breach boring: unique passwords everywhere, minimal data shared, passkeys where possible, and a manager keeping track. A breach of a site where you are unique-and-random is an inconvenience, not a crisis.</p></div>
 """,
-    "related": ["phishing-attacks", "password-best-practices", "two-factor-authentication"],
+    "related": ["check-if-password-was-leaked", "phishing-attacks", "two-factor-authentication"],
 }
 
 G8 = {
@@ -284,7 +284,7 @@ N = size of the character pool each position is drawn from</code></pre>
   <li>You do not choose between memorable and random — passphrases give both.</li>
 </ul>
 """,
-    "related": ["create-strong-password", "password-best-practices", "passkeys-explained"],
+    "related": ["password-cracking-time-table", "create-strong-password", "how-long-should-a-password-be"],
 }
 
 GUIDES_2 = [G6, G7, G8, G9, G10]

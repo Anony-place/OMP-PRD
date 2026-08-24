@@ -63,7 +63,7 @@ Summer2026!   P@ssw0rd   qwerty123</code></pre>
   <li>Two-factor authentication enabled on top</li>
 </ul>
 """,
-    "related": ["password-manager-benefits", "password-entropy", "common-password-mistakes"],
+    "related": ["how-long-should-a-password-be", "password-manager-benefits", "common-password-mistakes"],
 }
 
 G2 = {
@@ -232,7 +232,7 @@ G4 = {
 </ul>
 <div class="callout callout-tip"><p><strong>Bottom line:</strong> one strong passphrase to memorize, and let software carry the rest. That is the entire trick.</p></div>
 """,
-    "related": ["two-factor-authentication", "create-strong-password", "passkeys-explained"],
+    "related": ["are-password-managers-safe", "two-factor-authentication", "create-strong-password"],
 }
 
 G5 = {

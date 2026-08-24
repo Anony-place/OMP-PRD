@@ -150,7 +150,7 @@ def home_body(guides):
       <p class="lead">Short, practical reads written for humans — no fear-mongering, no jargon walls.</p>
     </div>
     <div class="grid grid-3">{guide_cards}</div>
-    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/guides.html">Browse all 10 guides {icon("arrow","icon-16")}</a></div>
+    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/guides.html">Browse all 15 guides {icon("arrow","icon-16")}</a></div>
   </div>
 </section>
 

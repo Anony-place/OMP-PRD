@@ -750,6 +750,9 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .grade-ring .ring-label .t { font-size: .68rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
 
 /* crack time table */
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
+.table-scroll .crack-table { min-width: 560px; }
+.table-scroll .crack-table th, .table-scroll .crack-table td { white-space: nowrap; }
 .crack-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
 .crack-table th, .crack-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 .crack-table th { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-2); }
