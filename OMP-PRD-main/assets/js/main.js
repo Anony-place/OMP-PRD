@@ -153,4 +153,12 @@
     }
     requestAnimationFrame(frame);
   };
+
+  /* ---------- Global search (loaded on every page with site chrome) ---------- */
+  if (document.querySelector('.site-nav')) {
+    var searchScript = document.createElement('script');
+    searchScript.src = '/assets/js/search.js';
+    searchScript.defer = true;
+    document.head.appendChild(searchScript);
+  }
 })();
