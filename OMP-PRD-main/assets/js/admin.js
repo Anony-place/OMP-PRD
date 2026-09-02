@@ -8,7 +8,7 @@ const root = document.querySelector('#admin-root');
 const esc = (value = '') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
 
-function shell(content) { root.innerHTML = `<div style="max-width:980px;margin:0 auto">${content}</div>`; }
+function shell(content) { if (typeof window.__adminBootOk === 'function') window.__adminBootOk(); root.innerHTML = `<div style="max-width:980px;margin:0 auto">${content}</div>`; }
 
 function loginView(message = '') {
   shell(`<div class="card card-pad" style="max-width:460px;margin:8vh auto 0">
@@ -36,7 +36,12 @@ async function requireAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
   const { data: profile, error } = await supabase.from('profiles').select('id,email,is_admin').eq('id', user.id).maybeSingle();
-  if (error || !profile?.is_admin) { await supabase.auth.signOut(); loginView('This account is not authorized for the admin panel.'); return false; }
+  if (error) {
+    await supabase.auth.signOut();
+    loginView(`Could not verify admin permissions — database error: ${error.message}. If the message is "permission denied for table profiles", fix it in the Supabase SQL Editor: GRANT SELECT ON public.profiles TO anon, authenticated; (plus a row-level-security SELECT policy).`);
+    return false;
+  }
+  if (!profile?.is_admin) { await supabase.auth.signOut(); loginView('This account is not authorized for the admin panel.'); return false; }
   return true;
 }
 
@@ -92,6 +97,15 @@ function toolForm(host, categories, tool) {
   document.querySelector('#tool-form').addEventListener('submit', async e => { e.preventDefault(); const f=new FormData(e.currentTarget); let metadata={}; try{metadata=JSON.parse(f.get('metadata')||'{}')}catch{return alert('Metadata must be valid JSON.')} const payload={name:f.get('name').trim(),slug:slugify(f.get('slug')),description:f.get('description'),category_id:f.get('category_id')||null,route:f.get('route'),icon:f.get('icon'),sort_order:Number(f.get('sort_order'))||0,is_active:f.get('is_active')==='on',metadata}; const result=tool?await supabase.from('tools').update(payload).eq('id',tool.id):await supabase.from('tools').insert(payload); if(result.error)return alert(result.error.message); loadTab('tools'); });
 }
 
-supabase.auth.onAuthStateChange(async () => { if (await requireAdmin()) await dashboard(); });
+function bootError(e) {
+  shell(`<div class="card card-pad" style="max-width:560px;margin:8vh auto 0"><div class="notice-band"><p>Admin panel failed to start: ${esc(e?.message || String(e))}. Check your connection and that the Supabase project is active.</p></div></div>`);
+}
 
-(async () => { if (await requireAdmin()) await dashboard(); else { const { data: { user } } = await supabase.auth.getUser(); if (!user) loginView(); } })();
+supabase.auth.onAuthStateChange(async () => { try { if (await requireAdmin()) await dashboard(); } catch (e) { bootError(e); } });
+
+(async () => {
+  try {
+    if (await requireAdmin()) await dashboard();
+    else { const { data: { user } } = await supabase.auth.getUser(); if (!user) loginView(); }
+  } catch (e) { bootError(e); }
+})();
