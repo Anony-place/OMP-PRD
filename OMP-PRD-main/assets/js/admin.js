@@ -51,7 +51,7 @@ async function dashboard() {
   authUi = 'dashboard';
   shell(`<div class="card card-pad">
     <div class="flex justify-between items-center wrap gap-12"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Supabase-backed content management.</p></div><button id="logout" class="btn btn-ghost">Sign out</button></div>
-    <div class="admin-actions" style="margin-top:28px"><button class="btn btn-primary" data-tab="articles">Articles</button><button class="btn btn-secondary" data-tab="tools">Tools</button></div>
+    <div class="admin-actions" style="margin-top:28px"><button class="btn btn-primary" data-tab="articles">Articles</button><button class="btn btn-secondary" data-tab="tools">Tools</button><button class="btn btn-secondary" data-tab="messages">Messages</button></div>
     <section id="panel" style="margin-top:24px"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
@@ -72,7 +72,7 @@ async function loadTab(tab) {
     document.querySelector('#new-article').onclick = () => articleForm(editor, categories || [], null);
     document.querySelectorAll('[data-edit-article]').forEach(btn => btn.onclick = async () => { const { data } = await supabase.from('articles').select('*').eq('id',btn.dataset.editArticle).single(); articleForm(editor, categories || [], data); });
     document.querySelectorAll('[data-delete-article]').forEach(btn => btn.onclick = async () => { if (!confirm('Delete this article permanently?')) return; await supabase.from('articles').delete().eq('id',btn.dataset.deleteArticle); loadTab('articles'); });
-  } else {
+  } else if (tab === 'tools') {
     const [{ data: tools, error }, { data: categories }] = await Promise.all([
       supabase.from('tools').select('id,name,slug,route,is_active,sort_order,category_id').order('sort_order').order('name'),
       supabase.from('tool_categories').select('id,name,slug').order('sort_order').order('name')
@@ -83,6 +83,14 @@ async function loadTab(tab) {
     document.querySelector('#new-tool').onclick = () => toolForm(editor, categories || [], null);
     document.querySelectorAll('[data-edit-tool]').forEach(btn => btn.onclick = async () => { const { data } = await supabase.from('tools').select('*').eq('id',btn.dataset.editTool).single(); toolForm(editor, categories || [], data); });
     document.querySelectorAll('[data-delete-tool]').forEach(btn => btn.onclick = async () => { if (!confirm('Delete this tool registry entry?')) return; await supabase.from('tools').delete().eq('id',btn.dataset.deleteTool); loadTab('tools'); });
+  } else {
+    const { data: msgs, error } = await supabase.from('contact_messages').select('id,name,email,message,status,created_at').order('created_at',{ascending:false}).limit(200);
+    if (error) return panel.innerHTML = `<div class="notice-band"><p>${esc(error.message)}</p></div>`;
+    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Contact messages</h2><button id="refresh-messages" class="btn btn-secondary btn-sm">Refresh</button></div><div class="admin-list" style="margin-top:18px">${(msgs||[]).map(m => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(m.name)} <span class="tiny muted">&lt;${esc(m.email)}&gt;</span></div><div class="meta">${new Date(m.created_at).toLocaleString()} · ${esc(m.status)}${m.status==='new' ? ' · NEW' : ''}</div><p style="margin-top:8px;white-space:pre-wrap">${esc(m.message)}</p></div><div class="row-btns">${m.status==='new' ? `<button class="btn btn-secondary btn-sm" data-msg-read="${m.id}">Mark read</button>` : ''}${m.status!=='archived' ? `<button class="btn btn-ghost btn-sm" data-msg-archive="${m.id}">Archive</button>` : ''}<button class="btn btn-ghost btn-sm" data-msg-delete="${m.id}" style="color:var(--red)">Delete</button></div></div>`).join('') || '<div class="admin-empty"><p class="muted">No messages yet.</p></div>'}</div>`;
+    document.querySelector('#refresh-messages').onclick = () => loadTab('messages');
+    document.querySelectorAll('[data-msg-read]').forEach(btn => btn.onclick = async () => { await supabase.from('contact_messages').update({ status:'read' }).eq('id',btn.dataset.msgRead); loadTab('messages'); });
+    document.querySelectorAll('[data-msg-archive]').forEach(btn => btn.onclick = async () => { await supabase.from('contact_messages').update({ status:'archived' }).eq('id',btn.dataset.msgArchive); loadTab('messages'); });
+    document.querySelectorAll('[data-msg-delete]').forEach(btn => btn.onclick = async () => { if (!confirm('Delete this message permanently?')) return; await supabase.from('contact_messages').delete().eq('id',btn.dataset.msgDelete); loadTab('messages'); });
   }
 }
 

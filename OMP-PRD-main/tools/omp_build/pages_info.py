@@ -150,14 +150,15 @@ def contact_body():
   <div class="container">
     <span class="eyebrow">Contact</span>
     <h1 class="h-1">Talk to us</h1>
-    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. One honest caveat first, below.</p>
+    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team; no newsletters, no tracking.</p>
   </div>
 </section>
 <section class="section-tight">
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad">
-      <div class="form-note">{icon("alert","icon-20")}<div><strong>Contact form backend not configured yet.</strong><br>Submitting below will not send anything to a server — this is intentional, because we don't fake submissions. Your draft stays in this page. Use the email link in the response panel (opens your mail app) or write to us directly.</div></div>
+      <div class="form-note">{icon("alert","icon-20")}<div><strong>Messages go straight to the team.</strong><br>Submissions are delivered to our admin inbox and a human reads every one. We never ask for passwords and never share your email — please don't include real passwords or live secrets in your message.</div></div>
       <form class="form-grid mt-24" data-contact-form novalidate>
+        <input type="text" name="company_website" data-contact-hp value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;opacity:0">
         <div class="form-field">
           <label for="contact-name">Name</label>
           <input id="contact-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Ada Lovelace">
@@ -171,11 +172,11 @@ def contact_body():
           <textarea id="contact-message" name="message" required maxlength="5000" placeholder="What's on your mind?"></textarea>
         </div>
         <div>
-          <button class="btn btn-primary" type="submit">{icon("mail","icon-18")} Prepare email</button>
+          <button class="btn btn-primary" type="submit">{icon("mail","icon-18")} Send message</button>
         </div>
         <div class="form-success" data-contact-note role="status">
           {icon("check-circle","icon-20")}
-          <div><strong>Ready when you are.</strong> As promised, nothing was transmitted. <a href="mailto:hello@oopsmypassword.com">Open your email app with this message pre-filled</a>, or copy your text and send it to <span class="mono">hello@oopsmypassword.com</span>.</div>
+          <div><strong>Message sent.</strong> Thanks — a human reads every submission and we'll reply to you soon. Didn't reach us? <a data-mailto href="mailto:hello@oopsmypassword.com">Email us directly</a>.</div>
         </div>
       </form>
     </div>

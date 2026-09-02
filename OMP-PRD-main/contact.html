@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — OopsMyPassword</title>
-  <meta name="description" content="Questions, corrections and guide requests. The form backend is intentionally not configured yet — we never fake submissions; email links are provided instead.">
+  <meta name="description" content="Questions, corrections and guide requests. Send a message straight from the page — submissions land in the team's inbox. No password fields, no tracking.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <link rel="canonical" href="https://oopsmypassword.com/contact.html">
   <meta name="theme-color" content="#050811">
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OopsMyPassword">
   <meta property="og:title" content="Contact — OopsMyPassword">
-  <meta property="og:description" content="Questions, corrections and guide requests. The form backend is intentionally not configured yet — we never fake submissions; email links are provided instead.">
+  <meta property="og:description" content="Questions, corrections and guide requests. Send a message straight from the page — submissions land in the team's inbox. No password fields, no tracking.">
   <meta property="og:url" content="https://oopsmypassword.com/contact.html">
   <meta property="og:image" content="https://oopsmypassword.com/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -62,14 +62,15 @@
   <div class="container">
     <span class="eyebrow">Contact</span>
     <h1 class="h-1">Talk to us</h1>
-    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. One honest caveat first, below.</p>
+    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team; no newsletters, no tracking.</p>
   </div>
 </section>
 <section class="section-tight">
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad">
-      <div class="form-note"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><div><strong>Contact form backend not configured yet.</strong><br>Submitting below will not send anything to a server — this is intentional, because we don't fake submissions. Your draft stays in this page. Use the email link in the response panel (opens your mail app) or write to us directly.</div></div>
+      <div class="form-note"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><div><strong>Messages go straight to the team.</strong><br>Submissions are delivered to our admin inbox and a human reads every one. We never ask for passwords and never share your email — please don't include real passwords or live secrets in your message.</div></div>
       <form class="form-grid mt-24" data-contact-form novalidate>
+        <input type="text" name="company_website" data-contact-hp value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;opacity:0">
         <div class="form-field">
           <label for="contact-name">Name</label>
           <input id="contact-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Ada Lovelace">
@@ -83,11 +84,11 @@
           <textarea id="contact-message" name="message" required maxlength="5000" placeholder="What's on your mind?"></textarea>
         </div>
         <div>
-          <button class="btn btn-primary" type="submit"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 6 9 7 9-7"/></svg> Prepare email</button>
+          <button class="btn btn-primary" type="submit"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 6 9 7 9-7"/></svg> Send message</button>
         </div>
         <div class="form-success" data-contact-note role="status">
           <svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5.5"/></svg>
-          <div><strong>Ready when you are.</strong> As promised, nothing was transmitted. <a href="mailto:hello@oopsmypassword.com">Open your email app with this message pre-filled</a>, or copy your text and send it to <span class="mono">hello@oopsmypassword.com</span>.</div>
+          <div><strong>Message sent.</strong> Thanks — a human reads every submission and we'll reply to you soon. Didn't reach us? <a data-mailto href="mailto:hello@oopsmypassword.com">Email us directly</a>.</div>
         </div>
       </form>
     </div>
