@@ -2,8 +2,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'omp-admin-auth' }
+});
 const root = document.querySelector('#admin-root');
+let authUi = 'boot'; // 'boot' | 'login' | 'dashboard'
 
 const esc = (value = '') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
@@ -11,6 +14,7 @@ const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z
 function shell(content) { if (typeof window.__adminBootOk === 'function') window.__adminBootOk(); root.innerHTML = `<div style="max-width:980px;margin:0 auto">${content}</div>`; }
 
 function loginView(message = '') {
+  authUi = 'login';
   shell(`<div class="card card-pad" style="max-width:460px;margin:8vh auto 0">
     <div class="badge badge-demo">Private administration</div>
     <h1 class="h-2 mt-16">OopsMyPassword Admin</h1>
@@ -29,23 +33,22 @@ function loginView(message = '') {
     button.disabled = true; button.textContent = 'Signing in…';
     const { error } = await supabase.auth.signInWithPassword({ email: document.querySelector('#email').value.trim(), password: document.querySelector('#password').value });
     if (error) loginView('Invalid credentials or unavailable account.');
+    else scheduleRoute();
   });
 }
 
-async function requireAdmin() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
+async function checkAdmin() {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) return { state: 'db-error', message: userError.message };
+  if (!user) return { state: 'anon' };
   const { data: profile, error } = await supabase.from('profiles').select('id,email,is_admin').eq('id', user.id).maybeSingle();
-  if (error) {
-    await supabase.auth.signOut();
-    loginView(`Could not verify admin permissions — database error: ${error.message}. If the message is "permission denied for table profiles", fix it in the Supabase SQL Editor: GRANT SELECT ON public.profiles TO anon, authenticated; (plus a row-level-security SELECT policy).`);
-    return false;
-  }
-  if (!profile?.is_admin) { await supabase.auth.signOut(); loginView('This account is not authorized for the admin panel.'); return false; }
-  return true;
+  if (error) return { state: 'db-error', message: error.message };
+  if (!profile?.is_admin) return { state: 'forbidden' };
+  return { state: 'admin', user };
 }
 
 async function dashboard() {
+  authUi = 'dashboard';
   shell(`<div class="card card-pad">
     <div class="flex justify-between items-center wrap gap-12"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Supabase-backed content management.</p></div><button id="logout" class="btn btn-ghost">Sign out</button></div>
     <div class="admin-actions" style="margin-top:28px"><button class="btn btn-primary" data-tab="articles">Articles</button><button class="btn btn-secondary" data-tab="tools">Tools</button></div>
@@ -126,11 +129,47 @@ function bootError(e) {
   shell(`<div class="card card-pad" style="max-width:560px;margin:8vh auto 0"><div class="notice-band"><p>Admin panel failed to start: ${esc(e?.message || String(e))}. Check your connection and that the Supabase project is active.</p></div></div>`);
 }
 
-supabase.auth.onAuthStateChange(async () => { try { if (await requireAdmin()) await dashboard(); } catch (e) { bootError(e); } });
+async function route() {
+  const check = await checkAdmin();
+  if (check.state === 'admin') {
+    // Only render when we are not already on the dashboard — re-rendering on
+    // every auth event used to wipe any open form whenever a token refreshed.
+    if (authUi !== 'dashboard') await dashboard();
+    return;
+  }
+  if (check.state === 'db-error') {
+    // Never sign out or destroy a working dashboard on a (possibly transient)
+    // database error — only surface it when we have no dashboard yet.
+    if (authUi !== 'dashboard') {
+      loginView(`Could not verify admin permissions — database error: ${check.message}. If the message is "permission denied for table profiles", fix it in the Supabase SQL Editor: GRANT SELECT ON public.profiles TO anon, authenticated; (plus a row-level-security SELECT policy).`);
+    }
+    return;
+  }
+  if (check.state === 'forbidden') {
+    await supabase.auth.signOut();
+    loginView('This account is not authorized for the admin panel.');
+    return;
+  }
+  const expired = authUi === 'dashboard';
+  loginView(expired ? 'Your session ended. Please sign in again.' : '');
+}
 
-(async () => {
-  try {
-    if (await requireAdmin()) await dashboard();
-    else { const { data: { user } } = await supabase.auth.getUser(); if (!user) loginView(); }
-  } catch (e) { bootError(e); }
-})();
+// Serialize routing so concurrent triggers (login submit + SIGNED_IN event)
+// cannot double-render and cannot race each other.
+let routeChain = Promise.resolve();
+function scheduleRoute() {
+  routeChain = routeChain.then(route).catch(e => bootError(e));
+  return routeChain;
+}
+
+supabase.auth.onAuthStateChange(event => {
+  // Routine token lifecycle events must NOT re-render: TOKEN_REFRESHED fires
+  // whenever the tab regains focus (i.e. after switching tabs) and used to
+  // wipe any open form. INITIAL_SESSION is handled by the boot route below.
+  if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') return;
+  // Defer out of the callback: awaiting auth methods inside onAuthStateChange
+  // can deadlock supabase-js (it holds an internal lock while this runs).
+  setTimeout(scheduleRoute, 0);
+});
+
+scheduleRoute();
