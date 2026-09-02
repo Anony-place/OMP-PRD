@@ -60,11 +60,11 @@ async function loadTab(tab) {
   const panel = document.querySelector('#panel');
   if (tab === 'articles') {
     const [{ data: articles, error }, { data: categories }] = await Promise.all([
-      supabase.from('articles').select('id,title,slug,status,published_at,updated_at,category_id').order('updated_at',{ascending:false}),
+      supabase.from('articles').select('id,title,slug,status,published_at,updated_at,category_id,document_url').order('updated_at',{ascending:false}),
       supabase.from('article_categories').select('id,name,slug').order('name')
     ]);
     if (error) return panel.innerHTML = `<div class="notice-band"><p>${esc(error.message)}</p></div>`;
-    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Articles</h2><button id="new-article" class="btn btn-primary btn-sm">+ New article</button></div><div id="article-editor"></div><div class="admin-list" style="margin-top:18px">${(articles||[]).map(a => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · ${esc(a.status)}</div></div><div class="row-btns"><button class="btn btn-secondary btn-sm" data-edit-article="${a.id}">Edit</button><button class="btn btn-ghost btn-sm" data-delete-article="${a.id}" style="color:var(--red)">Delete</button></div></div>`).join('') || '<div class="admin-empty"><p class="muted">No articles yet.</p></div>'}</div>`;
+    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Articles</h2><button id="new-article" class="btn btn-primary btn-sm">+ New article</button></div><div id="article-editor"></div><div class="admin-list" style="margin-top:18px">${(articles||[]).map(a => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · ${esc(a.status)}${a.document_url ? ' · 📄 doc' : ''}</div></div><div class="row-btns"><button class="btn btn-secondary btn-sm" data-edit-article="${a.id}">Edit</button><button class="btn btn-ghost btn-sm" data-delete-article="${a.id}" style="color:var(--red)">Delete</button></div></div>`).join('') || '<div class="admin-empty"><p class="muted">No articles yet.</p></div>'}</div>`;
     const editor = document.querySelector('#article-editor');
     document.querySelector('#new-article').onclick = () => articleForm(editor, categories || [], null);
     document.querySelectorAll('[data-edit-article]').forEach(btn => btn.onclick = async () => { const { data } = await supabase.from('articles').select('*').eq('id',btn.dataset.editArticle).single(); articleForm(editor, categories || [], data); });
@@ -84,10 +84,35 @@ async function loadTab(tab) {
 }
 
 function articleForm(host, categories, article) {
-  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,featured_image:''};
-  host.innerHTML = `<form id="article-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${article ? 'Edit article' : 'New article'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label>Title</label><input name="title" required value="${esc(a.title)}"></div><div class="form-field"><label>Slug</label><input name="slug" required value="${esc(a.slug)}"></div></div><div class="form-field"><label>Summary</label><textarea name="summary" rows="3">${esc(a.summary)}</textarea></div><div class="editor-row-3"><div class="form-field"><label>Category</label><select name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${c.id}" ${c.id===a.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label>Status</label><select name="status"><option value="draft" ${a.status==='draft'?'selected':''}>Draft</option><option value="published" ${a.status==='published'?'selected':''}>Published</option><option value="archived" ${a.status==='archived'?'selected':''}>Archived</option></select></div><div class="form-field"><label>Featured image URL</label><input name="featured_image" value="${esc(a.featured_image || '')}"></div></div><div class="form-field"><label>Content (HTML)</label><textarea name="content" rows="18" required>${esc(a.content)}</textarea></div><div class="flex gap-8"><button class="btn btn-primary" type="submit">Save article</button><button class="btn btn-ghost" type="button" id="cancel-editor">Cancel</button></div></form>`;
+  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,featured_image:'',document_url:''};
+  host.innerHTML = `<form id="article-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${article ? 'Edit article' : 'New article'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label>Title</label><input name="title" required value="${esc(a.title)}"></div><div class="form-field"><label>Slug</label><input name="slug" required value="${esc(a.slug)}"></div></div><div class="form-field"><label>Summary</label><textarea name="summary" rows="3">${esc(a.summary)}</textarea></div><div class="editor-row-3"><div class="form-field"><label>Category</label><select name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${c.id}" ${c.id===a.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label>Status</label><select name="status"><option value="draft" ${a.status==='draft'?'selected':''}>Draft</option><option value="published" ${a.status==='published'?'selected':''}>Published</option><option value="archived" ${a.status==='archived'?'selected':''}>Archived</option></select></div><div class="form-field"><label>Featured image URL</label><input name="featured_image" value="${esc(a.featured_image || '')}"></div></div><div class="form-field"><label>Attach document (PDF / DOC / DOCX / MD / TXT — max 25 MB)</label><input name="document" type="file" accept=".pdf,.doc,.docx,.md,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" style="padding:10px">${a.document_url ? `<p class="tiny" style="margin-top:6px">Attached: <a href="${esc(a.document_url)}" target="_blank" rel="noopener">view current document</a> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label></p>` : '<p class="tiny muted" style="margin-top:6px">Optional — readers get a “Download document” button on the article page.</p>'}</div><div class="form-field"><label>Content (HTML)</label><textarea name="content" rows="18" required>${esc(a.content)}</textarea></div><div class="flex gap-8"><button class="btn btn-primary" type="submit">Save article</button><button class="btn btn-ghost" type="button" id="cancel-editor">Cancel</button></div></form>`;
   document.querySelector('#cancel-editor').onclick = () => host.innerHTML = '';
-  document.querySelector('#article-form').addEventListener('submit', async e => { e.preventDefault(); const f=new FormData(e.currentTarget); const status=f.get('status'); const payload={title:f.get('title').trim(),slug:slugify(f.get('slug')),summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:f.get('featured_image')||null,published_at:status==='published'?(a.published_at||new Date().toISOString()):null}; const result=article?await supabase.from('articles').update(payload).eq('id',article.id):await supabase.from('articles').insert(payload); if(result.error)return alert(result.error.message); loadTab('articles'); });
+  document.querySelector('#article-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const status = f.get('status');
+    const file = f.get('document');
+    let document_url = a.document_url || null;
+    if (f.get('remove_document') === 'on') document_url = null;
+    if (file && file.size) {
+      const okTypes = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/markdown','text/plain'];
+      const ext = (String(file.name).split('.').pop() || '').toLowerCase();
+      if (!okTypes.includes(file.type) && !['pdf','doc','docx','md','txt'].includes(ext)) return alert(`Unsupported file type: ${file.type || file.name}. Allowed: PDF, DOC, DOCX, MD, TXT.`);
+      if (file.size > 25 * 1024 * 1024) return alert('File is larger than the 25 MB limit.');
+      const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${Date.now()}-${safeName}`;
+      const { data: up, error: upErr } = await supabase.storage.from('articles').upload(path, file, { cacheControl: '3600', upsert: false });
+      if (upErr) return alert(`Upload failed: ${upErr.message}`);
+      const { data: pub } = supabase.storage.from('articles').getPublicUrl(path);
+      document_url = pub.publicUrl;
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('media').insert({ file_path: `articles/${path}`, public_url: document_url, mime_type: file.type || null, size_bytes: file.size, uploaded_by: user?.id || null });
+    }
+    const payload = {title:f.get('title').trim(),slug:slugify(f.get('slug')),summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:f.get('featured_image')||null,document_url,published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+    const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
+    if (result.error) return alert(result.error.message);
+    loadTab('articles');
+  });
 }
 
 function toolForm(host, categories, tool) {

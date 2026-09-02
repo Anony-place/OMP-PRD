@@ -39,7 +39,7 @@
       var cat = a.article_categories && a.article_categories.name ? a.article_categories.name : 'Article';
       return '<article class="admin-row" style="align-items:flex-start">' +
         '<div class="grow"><div class="ttl"><a href="/blog.html#/' + encodeURIComponent(a.slug) + '">' + esc(a.title) + '</a></div>' +
-        '<div class="meta">' + esc(cat) + ' · ' + esc(fmtDate(a.published_at || a.created_at)) + ' · ' + minutes(a.content) + ' min read</div>' +
+        '<div class="meta">' + esc(cat) + ' · ' + esc(fmtDate(a.published_at || a.created_at)) + ' · ' + minutes(a.content) + ' min read' + (a.document_url ? ' · 📄' : '') + '</div>' +
         (a.summary ? '<p class="muted" style="margin-top:8px">' + esc(a.summary) + '</p>' : '') +
         '</div></article>';
     }).join('') + '</div>';
@@ -53,14 +53,16 @@
       '<h1 class="h-1 mt-16">' + esc(a.title) + '</h1>' +
       '<div class="meta" style="margin-top:10px">' + esc(fmtDate(a.published_at || a.created_at)) + ' · ' + minutes(a.content) + ' min read</div>' +
       (a.summary ? '<p class="lead" style="margin-top:18px">' + esc(a.summary) + '</p>' : '') +
-      '<div class="prose" style="margin-top:28px">' + sanitize(a.content) + '</div></div></article>';
+      '<div class="prose" style="margin-top:28px">' + sanitize(a.content) + '</div>' +
+      (a.document_url ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + esc(a.document_url) + '" download rel="noopener">📄 Download document</a></p>' : '') +
+      '</div></article>';
   }
 
   async function load() {
     try {
       var mod = await import('https://esm.sh/@supabase/supabase-js@2');
       var client = mod.createClient(SUPABASE_URL, SUPABASE_KEY);
-      var result = await client.from('articles').select('id,slug,title,summary,content,featured_image,status,published_at,created_at,article_categories(name,slug)').eq('status','published').order('published_at',{ascending:false});
+      var result = await client.from('articles').select('id,slug,title,summary,content,featured_image,document_url,status,published_at,created_at,article_categories(name,slug)').eq('status','published').order('published_at',{ascending:false});
       if (result.error) throw result.error;
       var articles = result.data || [];
       var hash = decodeURIComponent(location.hash.replace(/^#\//,''));
