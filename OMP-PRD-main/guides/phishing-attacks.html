@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Phishing Attacks Steal Passwords — OopsMyPassword Guides</title>
+  <meta name="description" content="The anatomy of modern phishing — lookalike domains, urgency scripts, OAuth consent tricks and MFA-relay proxies — and the defenses that actually work.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <link rel="canonical" href="https://oopsmypassword.com/guides/phishing-attacks.html">
+  <meta name="theme-color" content="#050811">
+  <meta name="color-scheme" content="dark light">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="How Phishing Attacks Steal Passwords — OopsMyPassword Guides">
+  <meta property="og:description" content="The anatomy of modern phishing — lookalike domains, urgency scripts, OAuth consent tricks and MFA-relay proxies — and the defenses that actually work.">
+  <meta property="og:url" content="https://oopsmypassword.com/guides/phishing-attacks.html">
+  <meta property="og:image" content="https://oopsmypassword.com/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How Phishing Attacks Steal Passwords — OopsMyPassword Guides">
+  <meta name="twitter:description" content="The anatomy of modern phishing — lookalike domains, urgency scripts, OAuth consent tricks and MFA-relay proxies — and the defenses that actually work.">
+  <meta name="twitter:image" content="https://oopsmypassword.com/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How Phishing Attacks Steal Passwords","description":"The anatomy of modern phishing — lookalike domains, urgency scripts, OAuth consent tricks and MFA-relay proxies — and the defenses that actually work.","datePublished":"2026-08-23","dateModified":"2026-08-23","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.com/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.com/"},"mainEntityOfPage":"https://oopsmypassword.com/guides/phishing-attacks.html","image":"https://oopsmypassword.com/assets/images/og-image.jpg","inLanguage":"en"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://oopsmypassword.com/guides.html"},{"@type":"ListItem","position":3,"name":"How Phishing Attacks Steal Passwords","item":"https://oopsmypassword.com/guides/phishing-attacks.html"}]}</script>
+  <meta property="article:published_time" content="2026-08-23">
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-nav">
+  <div class="container nav-inner">
+    <a class="brand" href="/" aria-label="OopsMyPassword — home">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg>
+      <span>Oops<span class="grad-text">MyPassword</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker.html">Checker</a><a href="/generator.html">Generator</a><a href="/tools.html">Tools</a><a href="/guides.html" aria-current="page">Guides</a><a href="/blog.html">Articles</a><a href="/breach-check.html">Breach Check</a><a href="/about.html">About</a></nav>
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme">
+        <span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+        <span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></span>
+      </button>
+      <a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span>
+        <span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+      </button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
+  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker.html">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator.html">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools.html">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/guides.html">Guides<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/blog.html">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check.html">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about.html">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health.html">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist.html">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq.html">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy.html">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact.html">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+  <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
+</nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="small muted"><a href="/guides.html" style="color:var(--purple)">Guides</a> <span class="divider-dot">/</span> Threats</nav>
+    <h1 class="h-1 mt-16">How Phishing Attacks Steal Passwords</h1>
+    <p class="lead mt-8">The anatomy of modern phishing — lookalike domains, urgency scripts, OAuth consent tricks and MFA-relay proxies — and the defenses that actually work.</p>
+    <div class="article-meta">
+      <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Threats</span>
+      <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 7 min read</span>
+      <span class="chip">Updated 2026-08-23</span>
+    </div>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container">
+    <div class="article-layout">
+      <aside class="toc" aria-label="Table of contents">
+        <div class="subhead-sm">On this page</div>
+        <ul><li><a href="#anatomy">The anatomy of a phish</a></li>
+<li><a href="#tactics">Tactics you will actually see</a></li>
+<li><a href="#aitm">When phishers beat 2FA</a></li>
+<li><a href="#spot">How to spot them</a></li>
+<li><a href="#defenses">Defenses that work</a></li>
+<li><a href="#if-clicked">If you already clicked</a></li></ul>
+      </aside>
+      <article class="prose" itemscope itemtype="https://schema.org/Article">
+        
+<p>Phishing works because it attacks people, not systems. It is also the number-one way passwords are stolen — far ahead of brute force. Understanding the playbook makes you dramatically harder to catch.</p>
+
+<h2 id="anatomy">The anatomy of a phish</h2>
+<ol>
+  <li><strong>Bait:</strong> an email/SMS/DM that looks like a service you use — a login alert, a delivery, an invoice, a shared document.</li>
+  <li><strong>Hook:</strong> a link to a pixel-perfect replica login page on an attacker's domain.</li>
+  <li><strong>Harvest:</strong> whatever you type is captured and used within minutes, often by bots.</li>
+</ol>
+
+<h2 id="tactics">Tactics you will actually see</h2>
+<ul>
+  <li><strong>Lookalike domains:</strong> <code>paypa1.com</code>, <code>micros0ft-support.net</code>, or a trusted domain as a subdomain: <code>github.com.verify-account.io</code>.</li>
+  <li><strong>Urgency and fear:</strong> "your account will be suspended", "unusual sign-in detected".</li>
+  <li><strong>OAuth consent phishing:</strong> instead of a fake password page, a real login page for a malicious app asking for mailbox/drive permissions.</li>
+  <li><strong>QR-code phishing ("quishing")</strong> that moves you from a work machine to your less-protected phone.</li>
+  <li><strong>Search ads and malvertising</strong> putting fake login pages above the real result.</li>
+</ul>
+
+<h2 id="aitm">When phishers beat 2FA</h2>
+<p>Attacker-in-the-middle proxies relay the real login page live: you enter your password and TOTP code, the proxy forwards them instantly, and the attacker rides the authenticated session. Only <strong>origin-bound credentials</strong> — hardware keys and <a href="/guides/passkeys-explained.html">passkeys</a> — break this, because the signature simply will not validate for the wrong domain.</p>
+
+<h2 id="spot">How to spot them</h2>
+<ul>
+  <li>Check the <em>actual</em> domain — the last two labels before the path, character by character.</li>
+  <li>Be suspicious of any message that wants action <em>right now</em>.</li>
+  <li>Did autofill offer your password? A password manager that goes quiet on a "familiar" login page is sounding an alarm.</li>
+  <li>Unexpected OAuth prompts: read the permissions; a "documents" add-on does not need to read all your mail.</li>
+</ul>
+
+<h2 id="defenses">Defenses that work</h2>
+<ol>
+  <li><strong>Navigate manually</strong> (bookmark or type the domain) for anything involving credentials.</li>
+  <li><strong>Password manager autofill</strong> as a tripwire — no fill, no typing.</li>
+  <li><strong>Passkeys / hardware keys</strong> — structural immunity to credential phishing.</li>
+  <li><strong>Slow down on urgency</strong> — real providers do not mind you taking five minutes to verify.</li>
+</ol>
+
+<h2 id="if-clicked">If you already clicked</h2>
+<p>Change the password immediately (from the real site), sign out all sessions, check forwarding rules and recovery settings the attacker may have altered, and watch the account for days. If you reused that password anywhere, change those too — then fix reuse permanently with a manager.</p>
+
+        <hr class="hr-fade" style="margin-top:48px">
+        <div class="callout callout-info"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 5.8v6.1c0 5.2-3.4 8.7-8 10.1-4.6-1.4-8-4.9-8-10.1V5.8Z"/><path d="m8.8 11.8 2.3 2.3 4.1-4.6"/></svg><p><strong>Put it into practice:</strong> run your next password through the <a href="/checker.html">local checker</a> — it never leaves your browser.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+<section class="section" style="background: var(--bg-soft); border-block: 1px solid var(--border)">
+  <div class="container">
+    <div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related guides</h2></div>
+    <div class="grid grid-3"><a href="/guides/two-factor-authentication.html" class="card card-link guide-card">
+  <div class="meta"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg><span>Account Security</span><span class="divider-dot">·</span><span>7 min read</span></div>
+  <h3>Two-Factor Authentication (2FA): What to Use and Why</h3>
+  <p class="muted">SMS codes, authenticator apps, push approvals and hardware keys — how each factor type stacks up, and how to set 2FA up without locking yourself out.</p>
+  <span class="read-more">Read guide <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+</a>
+<a href="/guides/passkeys-explained.html" class="card card-link guide-card">
+  <div class="meta"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg><span>The Future</span><span class="divider-dot">·</span><span>8 min read</span></div>
+  <h3>Passkeys Explained: Passwords Without the Password</h3>
+  <p class="muted">What passkeys actually are, how the public-key cryptography behind them defeats phishing, and how to start using them today.</p>
+  <span class="read-more">Read guide <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+</a>
+<a href="/guides/after-a-data-breach.html" class="card card-link guide-card">
+  <div class="meta"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg><span>Incident Response</span><span class="divider-dot">·</span><span>7 min read</span></div>
+  <h3>What to Do After a Data Breach</h3>
+  <p class="muted">A calm, ordered playbook for the hours and days after a service you use loses your data — including password resets, sessions and scam watch.</p>
+  <span class="read-more">Read guide <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+</a></div>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first password tools. Every check runs locally in your browser — no account, no servers, no storage, no tracking of what you type.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Tools</h4><ul><li><a href="/checker.html">Password Checker</a></li><li><a href="/generator.html">Password Generator</a></li><li><a href="/breach-check.html">Breach Check</a></li><li><a href="/password-health.html">Password Health</a></li><li><a href="/tools.html">All Tools</a></li></ul></div><div class="footer-col"><h4>Resources</h4><ul><li><a href="/guides.html">Guides</a></li><li><a href="/blog.html">Articles</a></li><li><a href="/security-checklist.html">Security Checklist</a></li><li><a href="/faq.html">FAQ</a></li><li><a href="/glossary.html">Glossary</a></li></ul></div><div class="footer-col"><h4>Company</h4><ul><li><a href="/about.html">About</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/terms.html">Terms</a></li><li><a href="/contact.html">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security.html">Security</a>
+        <a href="/sitemap.html">Sitemap</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>

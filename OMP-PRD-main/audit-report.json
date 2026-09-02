@@ -1,0 +1,801 @@
+{
+  "timestamp": "2026-08-28T08:47:24.585Z",
+  "total": 55,
+  "bySeverity": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 19,
+    "P3": 36
+  },
+  "issues": [
+    {
+      "id": "BUG-001",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/index.html",
+      "element": "text",
+      "problem": "Potential low contrast (3 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /index.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-002",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/checker.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /checker.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-003",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/checker.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /checker.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-004",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/generator.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /generator.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-005",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/generator.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /generator.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-006",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/tools.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /tools.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-007",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/tools.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /tools.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-008",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/breach-check.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /breach-check.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-009",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/breach-check.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /breach-check.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-010",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/password-health.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /password-health.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-011",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/password-health.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /password-health.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-012",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/entropy.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /entropy.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-013",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/entropy.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /entropy.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-014",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/passphrase.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /passphrase.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-015",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/passphrase.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /passphrase.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-016",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/random-string.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /random-string.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-017",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/random-string.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /random-string.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-018",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/security-checklist.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /security-checklist.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-019",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/security-checklist.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /security-checklist.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-020",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/guides.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /guides.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-021",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-022",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/blog.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /blog.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-023",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/blog.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /blog.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-024",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/about.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /about.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-025",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/about.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /about.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-026",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/contact.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /contact.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-027",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/contact.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /contact.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-028",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/faq.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /faq.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-029",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/faq.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /faq.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-030",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/glossary.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /glossary.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-031",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/glossary.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /glossary.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-032",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/privacy.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /privacy.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-033",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/privacy.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /privacy.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-034",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/security.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /security.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-035",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/security.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /security.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-036",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/sitemap.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /sitemap.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-037",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/sitemap.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /sitemap.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-038",
+      "severity": "P2",
+      "category": "CSS",
+      "page": "/terms.html",
+      "element": "body",
+      "problem": "Horizontal overflow detected",
+      "expected": "No horizontal scroll",
+      "actual": "scrollWidth > clientWidth",
+      "steps": [
+        "Navigate to /terms.html",
+        "Resize viewport"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-039",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/terms.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /terms.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-040",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/404.html",
+      "element": "text",
+      "problem": "Potential low contrast (3 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /404.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-041",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/create-strong-password.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/create-strong-password.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-042",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-best-practices.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-best-practices.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-043",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/common-password-mistakes.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/common-password-mistakes.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-044",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/how-long-should-a-password-be.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/how-long-should-a-password-be.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-045",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-vs-passphrase.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-vs-passphrase.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-046",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-manager-benefits.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-manager-benefits.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-047",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/are-password-managers-safe.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/are-password-managers-safe.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-048",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/two-factor-authentication.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/two-factor-authentication.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-049",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/passkeys-explained.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/passkeys-explained.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-050",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-vs-passkey.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-vs-passkey.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-051",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/after-a-data-breach.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/after-a-data-breach.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-052",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/phishing-attacks.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/phishing-attacks.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-053",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/check-if-password-was-leaked.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/check-if-password-was-leaked.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-054",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-entropy.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-entropy.html"
+      ],
+      "status": "Open"
+    },
+    {
+      "id": "BUG-055",
+      "severity": "P3",
+      "category": "Accessibility",
+      "page": "/guides/password-cracking-time-table.html",
+      "element": "text",
+      "problem": "Potential low contrast (2 elements)",
+      "expected": "Adequate contrast",
+      "actual": "Possible contrast issues",
+      "steps": [
+        "Navigate to /guides/password-cracking-time-table.html"
+      ],
+      "status": "Open"
+    }
+  ]
+}
