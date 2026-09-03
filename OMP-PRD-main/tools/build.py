@@ -222,7 +222,7 @@ def main():
     write("blog.html", page(
         path="/blog.html", active="/blog.html",
         title="Articles — OopsMyPassword",
-        desc="News, deep dives and how-tos from the OMP team — loaded from our articles database in your browser. Read-only, no sign-in, no tracking.",
+        desc="Password security news, breach analysis and practical how-tos from the OopsMyPassword team.",
         body=blog_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/blog.html")]),
         scripts_=["sanitize.js", "blog.js"],
@@ -256,7 +256,7 @@ def main():
     write("contact.html", page(
         path="/contact.html", active="/about.html",
         title="Contact — OopsMyPassword",
-        desc="Questions, corrections and guide requests. The form backend is intentionally not configured yet — we never fake submissions; email links are provided instead.",
+        desc="Questions, corrections and guide requests. Send a message straight from the page — submissions land in the team's inbox. No password fields, no tracking.",
         body=contact_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Contact", "/contact.html")]),
         scripts_=["contact.js"],
