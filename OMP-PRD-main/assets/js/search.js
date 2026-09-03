@@ -278,9 +278,18 @@
     btn.setAttribute('aria-label', 'Search articles, tools and guides (Ctrl+K)');
     btn.innerHTML = TRIGGER_SVG + '<span class="omp-st-label">Search</span><kbd>Ctrl K</kbd>';
     btn.addEventListener('click', openSearch);
-    var anchor = nav.querySelector('.btn-get-started');
-    if (anchor && anchor.parentNode === nav) nav.insertBefore(btn, anchor);
-    else nav.appendChild(btn);
+    /* Home is the first slot inside .nav-actions: that puts search left of
+       the theme toggle and the "Get Started" CTA on desktop, and left of the
+       hamburger on mobile, while inheriting the container's gap. Appending to
+       .nav-inner instead would drop the button past the CTA — .btn-get-started
+       is a child of .nav-actions, not of .nav-inner. */
+    var actions = nav.querySelector('.nav-actions');
+    if (actions) actions.insertBefore(btn, actions.firstChild);
+    else {
+      var anchor = nav.querySelector('.btn-get-started');
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(btn, anchor);
+      else nav.appendChild(btn);
+    }
     return true;
   }
 

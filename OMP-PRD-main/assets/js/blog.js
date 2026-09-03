@@ -19,15 +19,38 @@
     catch (e) { return value; }
   }
 
+  /* Word count via DOMParser: the raw HTML is parsed in an inert
+     document, so no scripts run and no images load, even when the
+     content is untrusted (innerHTML on a detached div would fire
+     <img onerror> handlers during parsing). */
   function minutes(html) {
-    var d = document.createElement('div');
-    d.innerHTML = html || '';
-    var words = (d.textContent || '').trim().split(/\s+/).filter(Boolean).length;
+    var text = '';
+    try {
+      var parsed = new DOMParser().parseFromString(html || '', 'text/html');
+      text = parsed.body.textContent || '';
+    } catch (e) {
+      text = String(html || '').replace(/<[^>]*>/g, ' ');
+    }
+    var words = text.trim().split(/\s+/).filter(Boolean).length;
     return Math.max(1, Math.round(words / 200));
   }
 
+  /* Fail closed: if the sanitizer is unavailable, render nothing
+     rather than injecting untrusted HTML. */
   function sanitize(html) {
-    return window.OMPSanitize ? window.OMPSanitize(html || '') : html || '';
+    return window.OMPSanitize ? window.OMPSanitize(html || '') : '';
+  }
+
+  /* Only http(s), site-relative and # URLs are allowed. */
+  function safeUrl(value) {
+    var v = String(value == null ? '' : value).trim();
+    if (!v || /["'<>\\]/.test(v)) return '';
+    return /^(https?:\/\/|\/|#)/i.test(v) ? v : '';
+  }
+
+  /* Attribute-context escaping (esc() alone does not escape quotes). */
+  function attr(s) {
+    return esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   function listView(articles) {
@@ -54,7 +77,7 @@
       '<div class="meta" style="margin-top:10px">' + esc(fmtDate(a.published_at || a.created_at)) + ' · ' + minutes(a.content) + ' min read</div>' +
       (a.summary ? '<p class="lead" style="margin-top:18px">' + esc(a.summary) + '</p>' : '') +
       '<div class="prose" style="margin-top:28px">' + sanitize(a.content) + '</div>' +
-      (a.document_url ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + esc(a.document_url) + '" download rel="noopener">📄 Download document</a></p>' : '') +
+      (safeUrl(a.document_url) ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + attr(safeUrl(a.document_url)) + '" download rel="noopener">📄 Download document</a></p>' : '') +
       '</div></article>';
   }
 

@@ -27,7 +27,7 @@ from omp_build.pages_core import (  # noqa: E402
     generator_body, health_body, home_body, passphrase_body,
     random_string_body, tools_body,
 )
-from omp_build.pages_blog import admin_body, blog_body  # noqa: E402
+from omp_build.pages_blog import blog_body  # noqa: E402
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
     security_body, sitemap_body, terms_body,
@@ -222,19 +222,14 @@ def main():
     write("blog.html", page(
         path="/blog.html", active="/blog.html",
         title="Articles — OopsMyPassword",
-        desc="News, deep dives and how-tos from the OMP team — loaded from a static JSON feed in your browser. No backend, no tracking.",
+        desc="News, deep dives and how-tos from the OMP team — loaded from our articles database in your browser. Read-only, no sign-in, no tracking.",
         body=blog_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/blog.html")]),
-        scripts_=["blog.js"],
+        scripts_=["sanitize.js", "blog.js"],
     ))
-    write("admin/index.html", page(
-        path="/admin/", active="",
-        title="Article Manager — OopsMyPassword Admin",
-        desc="Browser-local article manager for the OMP static JSON feed. No backend, no login server.",
-        body=admin_body(),
-        scripts_=["blog.js", "admin.js"],
-        head_extra='<meta name="robots" content="noindex,nofollow">\n  <link rel="stylesheet" href="/assets/css/admin.css">',
-    ))
+    # NOTE: admin/index.html is intentionally NOT generated here.
+    # The admin panel is hand-maintained (Supabase Auth) — regenerating it
+    # from this script would clobber the live page. See omp_build/pages_blog.py.
     for g in GUIDES:
         write(f"guides/{g['slug']}.html", guide_page(g))
     write("about.html", page(

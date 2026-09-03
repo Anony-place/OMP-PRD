@@ -21,15 +21,17 @@ Plus: 10 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps.
 
 Publishing content without running a backend:
 
-- **`/blog.html`** — the Articles feed, rendered client-side from `content/articles.json` (a plain static file). Updating articles = replacing one JSON file; no rebuild or server logic needed.
-- **`/admin/`** — the browser-local **Article Manager**. Write/edit articles with a live preview toolbar editor; the working copy lives in your browser's localStorage. Mark a published article "Preview on this device" to see it in the real feed before shipping. When ready: **Export articles.json** → place it at `content/articles.json` (GitHub web upload, git push, or `firebase deploy`) → instantly public. Drafts stay out of exports.
-- Article HTML is sanitized with a whitelist renderer (scripts/iframes/handlers stripped) before display.
+- **`/blog.html`** — the Articles feed, rendered client-side from the **articles table** in Supabase (public read-only access via a publishable key). Publishing happens from the admin panel.
+- **`/admin/`** — the **Article Manager**, protected by **Supabase Auth** (email + password). Sign in, write/edit articles with a live preview editor, and publish straight to the live feed. Drafts stay hidden until you publish them.
+- Article HTML is sanitized with a whitelist renderer (`assets/js/sanitize.js` — scripts/iframes/handlers/`javascript:` URLs stripped) before display.
 - SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guides via `tools/build.py`.
 - The panel needs no login because it can change nothing outside the owner's browser.
 
 ## Firebase Hosting
 
-`firebase.json` is included and ready: public dir at repo root, `tools/**` ignored, CSP + security headers, immutable caching for `/assets`, `no-cache` for HTML and `/content`.
+`firebase.json` is included and ready: public dir at repo root, `tools/**`, markdown files and Node test scripts excluded from deploys, CSP + security headers, long-term caching for `/assets`, `no-cache` for HTML.
+
+> Note: the Python build tooling (`tools/`) and test scripts are **excluded from hosting deploys** — only the static site itself is published.
 
 ```bash
 firebase init hosting   # select this repo (config already provided)
@@ -39,15 +41,16 @@ firebase deploy --only hosting
 ## Privacy architecture
 
 - **All analysis is client-side JavaScript.** Passwords never leave the tab: no network, no storage, no logs, nothing in URLs, nothing in analytics.
+- Privacy-first by design: all password tools run 100% client-side; nothing you type is ever sent anywhere.
 - Dynamic UI writes with `textContent` only; no `eval()`, no unsafe `innerHTML`.
 - No third-party scripts, fonts, or trackers.
-- No auth anywhere by design — no Firebase, no Supabase Auth, no login/signup.
+- Auth exists only in the private admin panel (`/admin/`, Supabase Auth). The public site has no login, no signup, and no analytics.
 
 ## Structure
 
 ```
 /                      → generated static pages (index.html, checker.html, guides/…, blog.html, admin/)
-/content/articles.json → dynamic feed source (edit via /admin/ → Export)
+/assets/js/sanitize.js → whitelist HTML sanitizer for CMS-provided article HTML
 /firebase.json         → hosting config with security headers (deploy-ready)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)

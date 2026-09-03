@@ -5,7 +5,12 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "tools/**",
+      "**/*.md",
+      "find-overflow*.js",
+      "test-*.js",
+      "audit-report.json"
     ],
     "trailingSlash": false,
     "headers": [
@@ -18,7 +23,7 @@
           { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+            "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
           }
         ]
       },
