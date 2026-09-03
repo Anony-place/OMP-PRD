@@ -54,11 +54,16 @@
   }
 
   function listView(articles) {
-    if (!articles.length) {
+    var validArticles = articles.filter(function (a) {
+      if (!a) return false;
+      var text = (String(a.title || '') + ' ' + String(a.summary || '') + ' ' + String(a.content || '')).toLowerCase();
+      return text.indexOf('deploying process') === -1 && text.indexOf('omp deploying') === -1;
+    });
+    if (!validArticles.length) {
       root.innerHTML = '<div class="admin-empty"><h2 class="h-3">No published articles yet</h2><p class="muted" style="margin-top:8px">New posts will appear here automatically after they are published from the admin panel.</p></div>';
       return;
     }
-    root.innerHTML = '<div class="admin-list">' + articles.map(function (a) {
+    root.innerHTML = '<div class="admin-list">' + validArticles.map(function (a) {
       var cat = a.article_categories && a.article_categories.name ? a.article_categories.name : 'Article';
       return '<article class="admin-row" style="align-items:flex-start">' +
         '<div class="grow"><div class="ttl"><a href="/blog.html#/' + encodeURIComponent(a.slug) + '">' + esc(a.title) + '</a></div>' +
