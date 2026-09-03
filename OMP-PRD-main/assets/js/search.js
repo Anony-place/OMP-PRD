@@ -290,6 +290,31 @@
       if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(btn, anchor);
       else nav.appendChild(btn);
     }
+
+    var mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu && !document.getElementById('omp-search-mobile-trigger')) {
+      var mBtn = document.createElement('button');
+      mBtn.type = 'button';
+      mBtn.id = 'omp-search-mobile-trigger';
+      mBtn.className = 'mobile-search-btn';
+      mBtn.style.cssText = 'display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:inherit;font-size:15px;font-weight:500;text-align:left;cursor:pointer;margin-bottom:12px;';
+      mBtn.innerHTML = '<span style="display:flex;align-items:center;gap:10px">' + TRIGGER_SVG + 'Search site…</span><kbd style="font:600 10.5px var(--font-mono);color:var(--muted-2);border:1px solid var(--border);border-radius:4px;padding:2px 5px;background:var(--bg-soft)">Ctrl K</kbd>';
+      mBtn.addEventListener('click', function() {
+        mobileMenu.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        var navToggle = document.querySelector('[data-nav-toggle]');
+        if (navToggle) {
+          navToggle.setAttribute('aria-expanded', 'false');
+          var mIcon = navToggle.querySelector('.icon-menu');
+          var cIcon = navToggle.querySelector('.icon-close');
+          if (mIcon) mIcon.style.display = '';
+          if (cIcon) cIcon.style.display = 'none';
+        }
+        openSearch();
+      });
+      mobileMenu.insertBefore(mBtn, mobileMenu.firstChild);
+    }
+
     return true;
   }
 
