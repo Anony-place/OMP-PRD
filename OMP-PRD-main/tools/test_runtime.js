@@ -643,6 +643,27 @@ const $ = (d, s) => d.querySelector(s);
     dom.window.close();
   }
 
+  /* ================= search.js — FAQ/glossary coverage + live region ==== */
+  {
+    console.log('search.js (FAQ/glossary in the index + a11y live region)');
+    const dom = await loadPage('index.html', { wait: 300 });
+    const w = dom.window, d = w.document;
+    await new Promise(r => setTimeout(r, 300));
+    d.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 120));
+    const input = d.getElementById('omp-search-input');
+    input.value = 'passkey';
+    input.dispatchEvent(new w.Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 250));
+    const txt = d.getElementById('omp-search-overlay').textContent;
+    ok(/What are passkeys\?/.test(txt), 'FAQ question surfaced for \"passkey\"');
+    ok(/Passkey/.test(txt), 'glossary term surfaced for \"passkey\"');
+    ok(!/javascript:/i.test(d.getElementById('omp-search-overlay').innerHTML), 'new static entries never introduce unsafe hrefs');
+    const live = d.querySelector('[data-search-live]');
+    ok(!!live && live.getAttribute('role') === 'status', 'search dialog exposes a polite live region');
+    ok(/result/.test(live.textContent), 'live region announces the result count');
+    dom.window.close();
+  }
   /* ================= admin panel ================= */
   {
     console.log('admin/index.html (shared render pipeline + live preview editor)');
@@ -778,6 +799,107 @@ const $ = (d, s) => d.querySelector(s);
     ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/blog.js'),
        'generated index.html no longer references blog.js (build output committed)');
   }
+
+
+  /* ================= centralized URL validation (OMPUrl) ================= */
+  {
+    console.log('url.js (canonical URL validator)');
+    const OMPUrl = require(path.join(ROOT, 'assets/js/url.js'));
+    const safe = (v, o) => OMPUrl.safeUrl(v, o);
+
+    ok(safe('javascript:alert(1)', { attrSafe: true }) === null, 'javascript: URL rejected');
+    ok(safe('vbscript:msgbox(1)', { attrSafe: true }) === null, 'vbscript: URL rejected');
+    ok(safe('data:text/html,<script>alert(1)</script>', { attrSafe: true }) === null, 'data:text/html URL rejected');
+    ok(safe('https://site.example/a', { attrSafe: true }) === 'https://site.example/a', 'https URL allowed');
+    ok(safe('mailto:a@b.com', { attrSafe: true }) === null, 'mailto: rejected by default');
+    ok(safe('mailto:a@b.com', { allowMailto: true, attrSafe: true }) === 'mailto:a@b.com', 'mailto: allowed when enabled');
+    ok(safe('/checker.html', { attrSafe: true }) === '/checker.html', 'site-relative path allowed');
+    ok(safe('#main', { attrSafe: true }) === '#main', 'in-page anchor allowed');
+    ok(safe('../secrets', { attrSafe: true }) === '../secrets', 'parent-relative allowed by default');
+    ok(safe('../secrets', { noUpLevel: true, attrSafe: true }) === null, 'parent-relative rejected with noUpLevel');
+    ok(safe('//evil.example/x', { noProtocolRelative: true, attrSafe: true }) === null, 'protocol-relative //host rejected');
+    ok(safe('https://evil.example/x', { sameOriginOnly: true, attrSafe: true }) === null, 'off-site https rejected with sameOriginOnly');
+    ok(safe('https://x.com",onerror=1', { attrSafe: true }) === null, 'attribute break-out rejected');
+
+    /* The four decorated helpers still hand off to OMPUrl. */
+    const sanitize = fs.readFileSync(path.join(ROOT, 'assets/js/sanitize.js'), 'utf8');
+    const markdown = fs.readFileSync(path.join(ROOT, 'assets/js/markdown.js'), 'utf8');
+    const blog = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    const search = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    ok(/OMPUrl\.safeUrl/.test(sanitize) && /OMPUrl\.safeUrl/.test(markdown), 'sanitize.js + markdown.js delegate to OMPUrl');
+    ok(/OMPUrl\.safeUrl/.test(blog), 'blog.js safeUrl delegates to OMPUrl');
+    ok(/OMPUrl\.safeUrl/.test(search), 'search.js safeResultUrl delegates to OMPUrl');
+
+    /* url.js is loaded before the modules that depend on it. */
+    const blogHtml = fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8');
+    const idxUrl = blogHtml.indexOf('/assets/js/url.js');
+    const idxSan = blogHtml.indexOf('/assets/js/sanitize.js');
+    const idxMk = blogHtml.indexOf('/assets/js/markdown.js');
+    const idxBlog = blogHtml.indexOf('/assets/js/blog.js');
+    ok(idxUrl !== -1 && idxUrl < idxSan && idxSan < idxMk && idxMk < idxBlog,
+       'blog.html loads url.js before sanitize.js/markdown.js/blog.js');
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf8');
+    ok(adminHtml.indexOf('/assets/js/url.js') < adminHtml.indexOf('/assets/js/sanitize.js') &&
+       adminHtml.indexOf('/assets/js/filevalidate.js') < adminHtml.indexOf('/assets/js/admin-boot-watchdog.js'),
+       'admin loads url.js + filevalidate.js before the modules that use them');
+    const idxHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    ok(idxHtml.includes('/assets/js/url.js'), 'homepage loads url.js');
+  }
+
+  /* ================= client-side document / PDF validation ================= */
+  {
+    console.log('filevalidate.js (magic-byte + Content-Type gating)');
+    const F = require(path.join(ROOT, 'assets/js/filevalidate.js'));
+    const u8 = (a) => new Uint8Array(a);
+    const chars = (s) => Array.from(s).map(c => c.charCodeAt(0));
+    const pdf = chars('%PDF-1.7 ');
+    const zip = [...chars('PK\x03\x04'), ...chars('word/')];
+    const oledoc = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1, 0, 0, 0, 0];
+
+    ok(F.describeBytes(u8(pdf), 'a.pdf').ok === true, 'real PDF accepted');
+    ok(F.describeBytes(u8(pdf), 'a.pdf').contentType === 'application/pdf', 'PDF forced to application/pdf');
+    ok(F.describeBytes(u8(chars('<html><script>x</script></html>')), 'a.pdf').ok === false,
+       'HTML smuggled as .pdf rejected (signature mismatch)');
+    ok(F.describeBytes(u8([0x4D, 0x5A, 0, 0, 0, 0, 0, 0]), 'a.txt').ok === false,
+       'binary exe renamed .txt rejected');
+    ok(F.describeBytes(u8(zip), 'a.docx').ok === true, 'ZIP (.docx) accepted');
+    ok(F.describeBytes(u8(oledoc), 'a.doc').ok === true, 'OLE2 (.doc) accepted');
+    ok(F.describeBytes(u8(chars('# Title\nhello')), 'a.md').ok === true, 'markdown text accepted');
+    ok(F.describeBytes(u8(pdf), 'a.exe').ok === false, 'disallowed extension rejected');
+    ok(F.describeBytes(u8(chars('<svg><script>x</script></svg>')), 'a.txt').ok === false,
+       'SVG-with-script renamed .txt rejected as dangerous');
+
+    await F.validateFile({ name: 'ok.pdf', size: 10, arrayBuffer: () => Promise.resolve(u8(pdf).buffer) })
+      .then(r => ok(r.ok === true && r.contentType === 'application/pdf', 'validateFile() yields contentType for upload'));
+    await F.validateFile({ name: 'big.pdf', size: F.MAX_BYTES + 1, arrayBuffer: () => Promise.resolve(u8(pdf).buffer) })
+      .then(r => ok(r.ok === false && /25 MB/.test(r.error), 'oversized file rejected'));
+  }
+
+  /* ================= contact form hardening ================= */
+  {
+    console.log('contact.js (cooldown + validation)');
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/contact.js'), 'utf8');
+    ok(/LAST_SUBMIT_KEY/.test(src) && /COOLDOWN_MS/.test(src), 'contact form has a client-side submission cooldown');
+    ok(/sessionStorage\.setItem\(LAST_SUBMIT_KEY/.test(src), 'cooldown timestamp recorded on success');
+    ok(/Please wait a few seconds/.test(src), 'cooldown surfaced to the user');
+    ok(/msg\.length > 5000/.test(src) && /name\.length > 100/.test(src) && /email\.length > 200/.test(src),
+       'contact form enforces field length limits client-side');
+  }
+
+  /* ================= admin: featured_image + file pipeline ================= */
+  {
+    console.log('admin.js (featured_image gating + document validation)');
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+    ok(/OMPFileValidate/.test(src) && /validateFile/.test(src), 'admin uses the magic-byte file validator');
+    ok(/contentType: v\.contentType/.test(src), 'admin forces the validated Content-Type on upload');
+    ok(/Featured image URL must be/.test(src) && /OMPUrl\.safeUrl/.test(src),
+       'admin rejects a javascript: featured_image at the point of entry');
+    ok(/supabase\/00_schema_migrations\.sql/.test(src), 'admin comment points at the RLS/Storage migration');
+    const blogSrc = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    ok(/target=\"_blank\" rel=\"noopener noreferrer\"/.test(blogSrc), 'public document download opens in a safe context (noopener/noreferrer)');
+    ok(/safeUrl\(a\.document_url\)/.test(blogSrc), 'document download URL is scheme-checked before rendering');
+  }
+
 
   console.log(`\n${checks - failures}/${checks} checks passed, ${failures} failures`);
   process.exit(failures ? 1 : 0);

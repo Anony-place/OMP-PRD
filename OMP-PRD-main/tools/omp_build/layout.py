@@ -223,7 +223,10 @@ def footer():
 
 
 def scripts(*names):
-    out = '<script src="/assets/js/main.js" defer></script>'
+    # url.js is the canonical URL safety validator used by sanitize.js /
+    # markdown.js / blog.js / search.js, so it must load first.
+    out = '<script src="/assets/js/url.js" defer></script>'
+    out += '<script src="/assets/js/main.js" defer></script>'
     for n in names:
         out += f'\n<script src="/assets/js/{n}" defer></script>'
     return out

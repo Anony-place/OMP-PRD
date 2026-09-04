@@ -56,7 +56,43 @@
     { type: 'Guide', title: 'Password vs Passkey: An Honest Comparison', desc: 'Where passkeys win, where passwords still linger.', url: '/guides/password-vs-passkey.html', kw: 'passkey comparison versus future authentication' },
     { type: 'Guide', title: 'Password vs Passphrase: Which Should You Actually Use?', desc: 'Length versus complexity — the practical answer.', url: '/guides/password-vs-passphrase.html', kw: 'passphrase which use comparison versus words' },
     { type: 'Guide', title: 'How Phishing Attacks Steal Passwords', desc: 'The anatomy of phishing and how to spot it.', url: '/guides/phishing-attacks.html', kw: 'phishing scam social engineering steal fake login' },
-    { type: 'Guide', title: 'Two-Factor Authentication (2FA): What to Use and Why', desc: 'TOTP apps, hardware keys and SMS — ranked.', url: '/guides/two-factor-authentication.html', kw: '2fa otp authenticator totp sms hardware key mfa' }
+    { type: 'Guide', title: 'Two-Factor Authentication (2FA): What to Use and Why', desc: 'TOTP apps, hardware keys and SMS — ranked.', url: '/guides/two-factor-authentication.html', kw: '2fa otp authenticator totp sms hardware key mfa' },
+
+    /* FAQ — individual questions resolve to /faq.html (kept in sync with
+       tools/omp_build/pages_core.py FAQ_ITEMS). */
+    { type: 'FAQ', title: 'Is OMP free?', desc: 'Yes — every tool is free, needs no account, and runs entirely in your browser.', url: '/faq.html', kw: 'free cost price pricing account' },
+    { type: 'FAQ', title: 'Does OMP store my password?', desc: 'No. Passwords are analyzed in memory, in your tab only — never transmitted, stored, logged or placed in URLs.', url: '/faq.html', kw: 'store password history log saved privacy' },
+    { type: 'FAQ', title: 'Does OMP require an account?', desc: 'No. There is deliberately no sign-up, login or user profile.', url: '/faq.html', kw: 'account login signup sign up register' },
+    { type: 'FAQ', title: 'How is password strength calculated?', desc: 'A heuristic score of length, variety and pattern penalties, plus an adjusted entropy estimate and indicative crack time.', url: '/faq.html', kw: 'score calculated strength meter heuristic how' },
+    { type: 'FAQ', title: 'Is the strength score guaranteed?', desc: 'No — no meter can prove a password is safe; treat scores as educational guidance.', url: '/faq.html', kw: 'guaranteed accurate reliable trust score' },
+    { type: 'FAQ', title: 'What is entropy?', desc: 'Unpredictability in bits: H = L × log2(N). Each bit doubles the guesses an attacker needs.', url: '/faq.html', kw: 'entropy bits randomness math what is' },
+    { type: 'FAQ', title: 'What is a password manager?', desc: 'An app that generates, encrypts and fills unique passwords per account, unlocked by one master passphrase.', url: '/faq.html', kw: 'manager vault app store passwords' },
+    { type: 'FAQ', title: 'What are passkeys?', desc: 'A phishing-resistant password replacement based on public-key cryptography (FIDO2/WebAuthn).', url: '/faq.html', kw: 'passkey webauthn fido fingerprint face future' },
+    { type: 'FAQ', title: 'Should I reuse passwords?', desc: 'Never — reuse is how one breach becomes the takeover of your other accounts (credential stuffing).', url: '/faq.html', kw: 'reuse same password accounts credential stuffing' },
+    { type: 'FAQ', title: 'What should I do after a data breach?', desc: 'Change the breached password and every reuse, sign out sessions, enable 2FA, stay alert for phishing.', url: '/faq.html', kw: 'breach after compromised steps response' },
+
+    /* Glossary — individual terms resolve to /glossary.html (kept in sync
+       with tools/omp_build/pages_info.py GLOSSARY). */
+    { type: 'Glossary', title: '2FA / MFA', desc: 'Requiring two or more proofs (something you know, have, or are) to sign in.', url: '/glossary.html', kw: 'two factor multi factor mfa authentication' },
+    { type: 'Glossary', title: 'Brute-force attack', desc: 'Systematically guessing credentials until one works, industrialized by GPUs against leaked hash databases.', url: '/glossary.html', kw: 'brute force attack guessing compute' },
+    { type: 'Glossary', title: 'Credential stuffing', desc: 'Replaying leaked email/password pairs across services, betting on reuse.', url: '/glossary.html', kw: 'credential stuffing replay reused leaked' },
+    { type: 'Glossary', title: 'CSPRNG', desc: 'A cryptographically secure pseudo-random number generator — in browsers, crypto.getRandomValues().', url: '/glossary.html', kw: 'csprng random cryptographically secure generator' },
+    { type: 'Glossary', title: 'Diceware', desc: 'Building passphrases by randomly picking words from a published list; entropy = words × log2(list size).', url: '/glossary.html', kw: 'diceware word list passphrase entropy' },
+    { type: 'Glossary', title: 'Entropy (bits)', desc: 'A measure of unpredictability: log2 of the search space.', url: '/glossary.html', kw: 'entropy bits unpredictability measure' },
+    { type: 'Glossary', title: 'Hash (password)', desc: 'A one-way fingerprint; slow salted hashes (Argon2, bcrypt) resist cracking, fast unsalted ones (MD5) do not.', url: '/glossary.html', kw: 'hash password fingerprint salted bcrypt argon2 md5' },
+    { type: 'Glossary', title: 'k-anonymity', desc: 'A privacy model mixing a lookup into a set of at least k possibilities so the server cannot tell what you searched.', url: '/glossary.html', kw: 'k-anonymity privacy model lookup anonymity' },
+    { type: 'Glossary', title: 'Key stretching', desc: 'Deliberately slowing password verification with many hash rounds to make each guess expensive.', url: '/glossary.html', kw: 'key stretching slow hash rounds cost' },
+    { type: 'Glossary', title: 'Master password', desc: 'The single strong passphrase that unlocks a password manager.', url: '/glossary.html', kw: 'master password manager unlock vault' },
+    { type: 'Glossary', title: 'Passkey', desc: 'A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site public key.', url: '/glossary.html', kw: 'passkey webauthn fido phishing resistant' },
+    { type: 'Glossary', title: 'Passphrase', desc: 'A password made of several random words — long, memorable, and measurably strong.', url: '/glossary.html', kw: 'passphrase words memorable diceware' },
+    { type: 'Glossary', title: 'Password manager', desc: 'Software that generates, encrypts and fills unique passwords per account, unlocked by one master password.', url: '/glossary.html', kw: 'password manager software vault unique' },
+    { type: 'Glossary', title: 'Phishing', desc: 'Impersonating a trusted service to trick you into revealing credentials.', url: '/glossary.html', kw: 'phishing scam credential impersonation login fake' },
+    { type: 'Glossary', title: 'Rainbow table', desc: 'A precomputed hash→password lookup; defeated by salting.', url: '/glossary.html', kw: 'rainbow table precomputed hash lookup salt' },
+    { type: 'Glossary', title: 'Rate limiting', desc: 'Server-side throttling of login attempts; the main defense against online guessing.', url: '/glossary.html', kw: 'rate limit throttle login guessing' },
+    { type: 'Glossary', title: 'Salt', desc: 'A per-password random value mixed into hashing so identical passwords hash differently.', url: '/glossary.html', kw: 'salt random per-password hash identical' },
+    { type: 'Glossary', title: 'SIM swapping', desc: 'Convincing a carrier to move your phone number to an attacker SIM, hijacking SMS codes.', url: '/glossary.html', kw: 'sim swap carrier phone number sms hijack' },
+    { type: 'Glossary', title: 'TOTP', desc: 'Time-based one-time codes from authenticator apps, rotating every 30 seconds.', url: '/glossary.html', kw: 'totp otp authenticator time based app' },
+    { type: 'Glossary', title: 'WebAuthn', desc: 'The web standard behind passkeys and hardware security keys, binding credentials to a site origin.', url: '/glossary.html', kw: 'webauthn standard passkey hardware key origin' }
   ];
 
   /* ---------- Live index: Supabase articles + tools registry ---------- */
@@ -68,6 +104,11 @@
   function safeResultUrl(value) {
     var v = String(value == null ? '' : value).trim();
     if (!v || /["'<>\\\u0000-\u0020]/.test(v)) return '';
+    if (window.OMPUrl && window.OMPUrl.safeUrl) {
+      var u = window.OMPUrl.safeUrl(v,
+        { attrSafe: false, noProtocolRelative: true, noUpLevel: true, allowMailto: false, sameOriginOnly: true });
+      return u === null ? '' : u;
+    }
     if (/^(\/|#)/.test(v) && !/^\/\//.test(v)) return v;
     if (/^https?:\/\//i.test(v)) {
       try { if (new URL(v).origin === location.origin) return new URL(v).pathname + new URL(v).search + new URL(v).hash; }
@@ -191,6 +232,8 @@
     + '.omp-sr-badge.b-tool{color:#A5B4FC;background:rgba(99,102,241,.14)}'
     + '.omp-sr-badge.b-guide{color:#C4B5FD;background:rgba(139,92,246,.14)}'
     + '.omp-sr-badge.b-page{color:var(--muted);background:rgba(148,163,184,.12)}'
+    + '.omp-sr-badge.b-faq{color:#FDE68A;background:rgba(234,179,8,.14)}'
+    + '.omp-sr-badge.b-glossary{color:#A7F3D0;background:rgba(16,185,129,.14)}'
     + '.omp-sr-main{min-width:0}'
     + '.omp-sr-title{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.omp-sr-title mark{background:rgba(34,211,238,.22);color:inherit;border-radius:3px;padding:0 1px}'
@@ -266,12 +309,15 @@
     /* The visual highlight and the AT announcement must stay in sync. */
     input.setAttribute('aria-activedescendant', activeIdx >= 0 ? 'omp-sr-opt-' + activeIdx : '');
     input.setAttribute('aria-expanded', overlay.hidden ? 'false' : 'true');
+    var live = overlay.querySelector('[data-search-live]');
     if (!results.length) {
       listEl.innerHTML = '<li class="omp-sr-empty">No matches for "' + escapeHtml(q) +
         '". Try "passphrase", "2fa" or "breach".</li>';
+      if (live) live.textContent = 'No results';
       return;
     }
     listEl.innerHTML = results.map(function (it, i) { return rowHtml(it, i, q); }).join('');
+    if (live) live.textContent = results.length + ' result' + (results.length === 1 ? '' : 's');
   }
 
   function setActive(idx) {
@@ -448,6 +494,7 @@
           '<span class="omp-search-esc">esc</span>' +
         '</div>' +
         '<ul class="omp-search-results" id="omp-search-results" role="listbox" aria-label="Search results"></ul>' +
+        '<p class="sr-only" role="status" aria-live="polite" data-search-live></p>' +
         '<div class="omp-sr-foot">' +
           '<span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>' +
           '<span><kbd>↵</kbd> open</span>' +

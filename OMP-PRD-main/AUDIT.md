@@ -259,3 +259,94 @@ been reverted on the next build).
 - **`.blog-grid` was deleted rather than used.** Its presence alongside `blog.js` on
   `index.html` suggests a homepage "Latest articles" strip was once planned. Adding one is
   a feature decision (it puts a Supabase fetch on the homepage); flagging it here instead.
+
+---
+
+## 2026-09-04 follow-up — feature-gap audit + fixes
+
+Re-audited after the report above. The four "visible on the live site" P0s are
+confirmed fixed. Additional defects found and fixed in this pass:
+
+### 1. "Deploying OMP on Firebase Hosting in 4 Steps" — verified NOT live
+
+Queried the production Supabase REST endpoint directly:
+`/rest/v1/articles?select=id,slug,title,status`. The project contains **one**
+article, published: `langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys`.
+There is **no** "Deploying OMP…" row, in any status. It is also absent from every
+generated page, the baked search index, and a repo-wide text search. The reported
+article came from a **previous** database/deploy state, not current content.
+
+The article architecture is now **deterministic**: the source of truth is the
+`articles` table (status = `published`), fetched by `blog.js` at runtime. There is
+no baked static feed and no keyword blacklist — the old `omp deploying` / `deploying
+process` filter is gone (see the original audit), and the renderer only filters
+rows structurally (slug + title). A failed fetch shows an explicit "temporarily
+unavailable" state instead of silently substituting stale content; a deep link to
+an unpublished slug shows "Article not found".
+
+### 2. URL validation duplicated across 4 modules → centralized
+
+Four subtly different `safeUrl`/`safeResultUrl` helpers existed. Added
+`assets/js/url.js` (`window.OMPUrl`) as the single scheme/control-character
+allowlist, and made `sanitize.js`, `markdown.js`, `blog.js` and `search.js`
+delegate to it (each still chooses its own policy via options: `attrSafe`,
+`allowMailto`, `allowDataImage`, `noUpLevel`, `sameOriginOnly`). This tightens the
+attribute-context handling (rejects `" ' < > \ ` and strips control/whitespace
+chars that previously could smuggle a scheme) without changing each module's
+external contract.
+
+### 3. Client-side document/PDF validation (Phase 5 pipeline)
+
+The admin upload trusted only `file.type` + extension. Added
+`assets/js/filevalidate.js` (`window.OMPFileValidate`): magic-byte signature
+sniffing proves a `.pdf` is really `%PDF-`, a `.docx` is really a ZIP, a `.doc` is
+OLE2, and that `.md`/`.txt` are text (rejecting binaries and embedded
+SVG/HTML/scripts renamed to a text extension). `admin.js` now uses it and forces the
+exact `Content-Type` on the Storage upload so an object can never be served as
+`text/html`. `featured_image` is also scheme-checked at the point of entry.
+
+The **authoritative** gate is RLS/Storage policies (see `supabase/`), which cannot
+be set from the client; this only stops the obvious cases before they leave the
+browser.
+
+### 4. Supabase security model was undocumented → documented as migrations
+
+Set out the intended tables, `public.is_admin()` helper, RLS policies and the
+`articles` Storage bucket policies in `supabase/00_schema_migrations.sql` +
+`README.md`. This makes the admin authorization model **verifiable** (the
+front-end `is_admin` check is explicitly NOT authorization — that is RLS). The
+`contact_messages` anon INSERT is restricted to `name/email/message` with length
+predicates; anon has no read/update/delete. `firebase.json` now ignores
+`supabase/**` so the SQL is never published.
+
+### 5. Contact form hardening
+
+Added a 12s client-side cooldown (sessionStorage) and field length checks
+(name ≤ 100, email ≤ 200, message ≤ 5000) to reduce accidental double-submits.
+This is cosmetic; real abuse protection must be server-side (see the §6 comment in
+the migration file for the Postgres-trigger / Edge-Function options).
+
+### 6. Search: FAQ + glossary + screen-reader announcement
+
+Enriched the baked index with individual FAQ questions and glossary terms
+(resolving to `/faq.html` / `/glossary.html`), added badge styling for them, and
+added a polite `aria-live` region that announces the result count so the palette is
+usable by screen readers.
+
+### 7. Public document download opens safely
+
+The "Download document" link now uses `target="_blank" rel="noopener noreferrer"`
+so the article page isn't lost and tab-nabbing is prevented.
+
+### Notes / deliberate non-changes
+
+- **CSP relies on `style-src 'unsafe-inline'`.** The generated pages and the admin
+  panel use inline `style=` attributes throughout; removing `'unsafe-inline'`
+  would break the whole site without first moving thousands of inline styles to
+  classes. `script-src 'self' https://esm.sh` (no unsafe-inline for scripts) is
+  preserved, along with `object-src 'none'`, `base-uri 'self'`,
+  `form-action 'self'`, `frame-ancestors 'self'`.
+- **Search is not hash-routable.** `#/slug` is the article route; a `#q=` search
+  hash would collide. Opening the palette with Ctrl+K / `/` is the intended UX.
+- **Storage object cleanup** on article delete / document replacement is not wired
+  (orphaned files remain). Documented as a follow-up in `supabase/README.md`.

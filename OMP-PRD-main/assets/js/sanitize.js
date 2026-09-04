@@ -37,7 +37,13 @@
   function safeUrl(value) {
     var v = String(value || '').trim();
     if (!v) return null;
-    /* Block every exotic scheme (javascript:, vbscript:, data: except images…). */
+    /* Delegate to the canonical validator (window.OMPUrl) so the
+       scheme allowlist lives in one place. attrSafe guards attribute
+       break-out; mailto and parent-relative paths remain allowed. */
+    if (window.OMPUrl && window.OMPUrl.safeUrl) {
+      return window.OMPUrl.safeUrl(v, { attrSafe: true, allowMailto: true });
+    }
+    /* Fallback (OMPUrl not yet loaded) — reproduce the same allowlist. */
     if (/^(https?:|mailto:|\/|#|\.\.?\/)/i.test(v)) return v;
     return null;
   }

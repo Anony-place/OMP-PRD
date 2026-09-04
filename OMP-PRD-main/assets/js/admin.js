@@ -328,24 +328,43 @@ function articleForm(host, categories, article) {
     submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
     try {
       if (file && file.size) {
-        const okTypes = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/markdown','text/plain'];
-        const ext = (String(file.name).split('.').pop() || '').toLowerCase();
-        if (!okTypes.includes(file.type) && !['pdf','doc','docx','md','txt'].includes(ext)) throw new Error(`Unsupported file type: ${file.type || file.name}. Allowed: PDF, DOC, DOCX, MD, TXT.`);
-        if (file.size > 25 * 1024 * 1024) throw new Error('File is larger than the 25 MB limit.');
+        /* Preflight the file before anything leaves the device: magic-byte
+           signature must match the declared extension, and the exact
+           Content-Type is forced on upload so the object can never be
+           sniffed as text/html. (Server-side storage policies remain the
+           real gate — see supabase/00_schema_migrations.sql.) */
+        const v = window.OMPFileValidate
+          ? await window.OMPFileValidate.validateFile(file)
+          : (() => {
+              const okTypes = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/markdown','text/plain'];
+              const ext = (String(file.name).split('.').pop() || '').toLowerCase();
+              if (!okTypes.includes(file.type) && !['pdf','doc','docx','md','txt'].includes(ext)) throw new Error(`Unsupported file type: ${file.type || file.name}. Allowed: PDF, DOC, DOCX, MD, TXT.`);
+              if (file.size > 25 * 1024 * 1024) throw new Error('File is larger than the 25 MB limit.');
+              return { ok: true, contentType: null };
+            })();
+        if (!v || !v.ok) throw new Error((v && v.error) || 'File validation failed.');
         const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
         const path = `${Date.now()}-${safeName}`;
-        const { data: up, error: upErr } = await supabase.storage.from('articles').upload(path, file, { cacheControl: '3600', upsert: false });
+        const { error: upErr } = await supabase.storage.from('articles').upload(path, file, { cacheControl: '3600', upsert: false, contentType: v.contentType || undefined });
         if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
         const { data: pub } = supabase.storage.from('articles').getPublicUrl(path);
         document_url = pub.publicUrl;
         /* Best-effort bookkeeping: a failed media row must not block publishing. */
         const { data: { user } } = await supabase.auth.getUser();
-        const { error: mediaErr } = await supabase.from('media').insert({ file_path: `articles/${path}`, public_url: document_url, mime_type: file.type || null, size_bytes: file.size, uploaded_by: user?.id || null });
+        const { error: mediaErr } = await supabase.from('media').insert({ file_path: `articles/${path}`, public_url: document_url, mime_type: (v.contentType || file.type || null), size_bytes: file.size, uploaded_by: user?.id || null });
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
       }
       const slug = slugify(f.get('slug')) || slugify(f.get('title'));
       if (!slug) throw new Error('A slug is required — add a title or type one in.');
-      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:f.get('featured_image')||null,document_url,published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+      /* featured_image lands in an <img src=…> on /blog.html, so reject a
+         javascript: / data:text/html value at the point of entry rather than
+         relying only on the renderer's scheme gate. */
+      const featuredRaw = String(f.get('featured_image') || '').trim();
+      const featured = featuredRaw
+        ? (window.OMPUrl ? window.OMPUrl.safeUrl(featuredRaw, { allowDataImage: true }) : (() => { const m = featuredRaw.match(/^(https?:|\/|#|data:image\/[a-z]+;base64,)/i); return m ? featuredRaw : null; })())
+        : null;
+      if (featured === null && featuredRaw) throw new Error('Featured image URL must be an http(s), site-relative or raster data: image.');
+      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:featured,document_url,published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
       if (result.error) throw result.error;
       dirty = false;
