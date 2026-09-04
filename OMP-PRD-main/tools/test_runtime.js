@@ -27,14 +27,18 @@ function ok(cond, name) {
 
 const http = require('http');
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain' };
+const createRouter = require('./hosting_router.js');
+const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
+/* The harness serves the site the way Firebase Hosting does (redirects,
+   cleanUrls, rewrites, 404 page) so tests exercise real public URLs. */
 const server = http.createServer((req, res) => {
-  let p = decodeURIComponent(req.url.split('?')[0]);
-  if (p === '/') p = '/index.html';
-  const file = path.join(ROOT, p);
-  if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
-    res.writeHead(404); res.end('nf'); return;
-  }
-  res.writeHead(200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
+  let p = req.url.split('?')[0];
+  try { p = decodeURIComponent(p); } catch (e) { /* keep raw */ }
+  const r = router.resolve(p, 0);
+  if (r.type === 'redirect') { res.writeHead(r.status, { Location: r.location }); res.end('moved'); return; }
+  const file = path.join(ROOT, r.file || '/404.html');
+  if (!file.startsWith(ROOT) || !fs.existsSync(file)) { res.writeHead(404); res.end('nf'); return; }
+  res.writeHead(r.type === 'notfound' ? 404 : 200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
   res.end(fs.readFileSync(file));
 });
 let PORT = 0;
@@ -103,7 +107,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- index: checker ---------------- */
   {
     console.log('index.html (home checker + quick generator)');
-    const dom = await loadPage('index.html');
+    const dom = await loadPage('');
     const w = dom.window, d = w.document;
     const pwInput = d.querySelector('#pw-home');
     type(w, pwInput, 'password');
@@ -147,7 +151,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- generator page ---------------- */
   {
     console.log('generator.html');
-    const dom = await loadPage('generator.html');
+    const dom = await loadPage('generator');
     const w = dom.window, d = w.document;
     const shell = d.querySelector('[data-generator]');
     const out = shell.querySelector('[data-gen-output]');
@@ -181,7 +185,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- passphrase page ---------------- */
   {
     console.log('passphrase.html');
-    const dom = await loadPage('passphrase.html');
+    const dom = await loadPage('passphrase');
     const w = dom.window, d = w.document;
     const out = d.querySelector('[data-pp-output]');
     const parts = out.textContent.split('-');
@@ -202,7 +206,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- entropy page ---------------- */
   {
     console.log('entropy.html');
-    const dom = await loadPage('entropy.html');
+    const dom = await loadPage('entropy');
     const w = dom.window, d = w.document;
     ok(/~131 bits/.test(d.querySelector('[data-ec-entropy]').textContent), '20 × all pools ≈ 131 bits: ' + d.querySelector('[data-ec-entropy]').textContent);
     ok(d.querySelectorAll('[data-ec-table] tr').length === 3, '3 attacker rows');
@@ -222,7 +226,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- health page ---------------- */
   {
     console.log('password-health.html');
-    const dom = await loadPage('password-health.html');
+    const dom = await loadPage('password-health');
     const w = dom.window, d = w.document;
     const input = d.querySelector('[data-health-input]');
     type(w, input, 'password');
@@ -239,7 +243,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- breach page ---------------- */
   {
     console.log('breach-check.html');
-    const dom = await loadPage('breach-check.html', { wait: 120 });
+    const dom = await loadPage('breach-check', { wait: 120 });
     const w = dom.window, d = w.document;
     const input = d.querySelector('[data-breach-input]');
     const btn = d.querySelector('[data-breach-btn]');
@@ -259,7 +263,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- random string page ---------------- */
   {
     console.log('random-string.html');
-    const dom = await loadPage('random-string.html');
+    const dom = await loadPage('random-string');
     const w = dom.window, d = w.document;
     ok(d.querySelectorAll('[data-rand-list] .gen-output').length === 5, '5 rows by default');
     d.querySelector('[data-rand-charset]').value = 'hex';
@@ -275,7 +279,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- checklist page ---------------- */
   {
     console.log('security-checklist.html');
-    const dom = await loadPage('security-checklist.html');
+    const dom = await loadPage('security-checklist');
     const w = dom.window, d = w.document;
     ok(/0 of 16 complete/.test(d.querySelector('[data-checklist-count]').textContent), 'starts at 0 of 16');
     const box = d.querySelector('input[data-item="manager"]');
@@ -291,7 +295,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- contact page ---------------- */
   {
     console.log('contact.html (Supabase submission + mailto fallback)');
-    const dom = await loadPage('contact.html');
+    const dom = await loadPage('contact');
     const w = dom.window, d = w.document;
     // Simulate an unreachable backend so the suite never POSTs to the live DB.
     w.fetch = () => Promise.reject(new Error('offline'));
@@ -323,7 +327,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- theme persistence ---------------- */
   {
     console.log('theme persistence');
-    const dom = await loadPage('about.html');
+    const dom = await loadPage('about');
     const w = dom.window, d = w.document;
     click(w, d.querySelector('[data-theme-toggle]'));
     ok(w.localStorage.getItem('omp-theme') === 'light', 'theme saved to localStorage');
@@ -332,19 +336,19 @@ const $ = (d, s) => d.querySelector(s);
 
   /* ---------------- blog page + whitelist sanitizer (XSS suite) ---------------- */
   {
-    console.log('blog.html (Supabase feed scaffold + sanitizer)');
-    const dom = await loadPage('blog.html', { wait: 250 });
+    console.log('articles (Supabase feed scaffold + sanitizer)');
+    const dom = await loadPage('articles', { wait: 250 });
     const w = dom.window, d = w.document;
     await new Promise(r => setTimeout(r, 250));
-    ok(d.querySelectorAll('script[src="/assets/js/sanitize.js"]').length === 1, 'blog.html loads sanitize.js');
-    ok(d.querySelectorAll('script[src="/assets/js/blog.js"]').length === 1, 'blog.html loads blog.js');
-    ok(typeof w.OMPSanitize === 'function', 'OMPSanitize is available (loads before blog.js)');
-    ok(!!d.querySelector('[data-blog]'), 'feed mount point present');
+    ok(d.querySelectorAll('script[src="/assets/js/sanitize.js"]').length === 1, 'articles page loads sanitize.js');
+    ok(d.querySelectorAll('script[src="/assets/js/articles.js"]').length === 1, 'articles page loads articles.js');
+    ok(typeof w.OMPSanitize === 'function', 'OMPSanitize is available (loads before articles.js)');
+    ok(!!d.querySelector('[data-articles]'), 'feed mount point present');
     ok(!d.body.textContent.includes('no backend'), 'stale "no backend" copy removed');
     // In jsdom the esm.sh dynamic import cannot execute; the feed must fail
     // closed with the honest error notice, not hang on "Loading articles…" forever.
     await new Promise(r => setTimeout(r, 400));
-    const feedState = d.querySelector('[data-blog]').textContent;
+    const feedState = d.querySelector('[data-articles]').textContent;
     ok(feedState.includes('temporarily unavailable') || feedState.includes('Loading articles'),
        'feed fails gracefully without network (got: ' + feedState.trim().slice(0, 40) + '…)');
 
@@ -408,7 +412,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ---------------- global search (auto-injected on every page) ---------------- */
   {
     console.log('index.html (global search injection + Ctrl+K)');
-    const dom = await loadPage('index.html', { wait: 300 });
+    const dom = await loadPage('', { wait: 300 });
     const w = dom.window, d = w.document;
     await new Promise(r => setTimeout(r, 300));
     const trigger = d.getElementById('omp-search-trigger');
@@ -451,13 +455,13 @@ const $ = (d, s) => d.querySelector(s);
   /* ================= Markdown rendering pipeline (articles) ================= */
   {
     console.log('markdown.js (safe Markdown -> HTML for article bodies)');
-    const dom = await loadPage('blog.html', { wait: 200 });
+    const dom = await loadPage('articles', { wait: 200 });
     const w = dom.window;
     await new Promise(r => setTimeout(r, 200));
     ok(typeof w.OMPMarkdown === 'object' && typeof w.OMPMarkdown.toHtml === 'function',
-       'blog.html exposes window.OMPMarkdown');
-    ok(d_scriptsInOrder(dom.window.document, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/blog.js']),
-       'blog.html loads sanitize.js -> markdown.js -> blog.js in that order');
+       'articles page exposes window.OMPMarkdown');
+    ok(d_scriptsInOrder(dom.window.document, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/articles.js']),
+       'articles page loads sanitize.js -> markdown.js -> articles.js in that order');
     const M = w.OMPMarkdown;
 
     /* The live article is authored in Markdown; the feed used to hand it to an
@@ -489,10 +493,10 @@ const $ = (d, s) => d.querySelector(s);
        'HTML inside code fences does not flip detection');
 
     /* Unsafe destinations are dropped, label text kept, no stray punctuation. */
-    const xss = M.renderSafe('[click](javascript:alert(1)) ![i](javascript:alert(2)) [ok](/guides.html)');
+    const xss = M.renderSafe('[click](javascript:alert(1)) ![i](javascript:alert(2)) [ok](/articles)');
     ok(!/javascript:/i.test(xss), 'javascript: URLs rejected in Markdown links/images');
     ok(!/click\)/.test(xss), 'rejected link leaves no stray ")" behind');
-    ok(/<a href="\/guides\.html">ok<\/a>/.test(xss), 'site-relative Markdown links kept');
+    ok(/<a href="\/articles">ok<\/a>/.test(xss), 'site-relative Markdown links kept');
     const ext = M.renderSafe('[n](https://example.test/x?a=1&b=2)');
     ok(/rel="noopener noreferrer nofollow"/.test(ext) && /target="_blank"/.test(ext),
        'external Markdown links hardened with noopener/noreferrer/nofollow');
@@ -529,10 +533,10 @@ const $ = (d, s) => d.querySelector(s);
     dom.window.close();
   }
 
-  /* ================= blog.js — feed behavior regressions ================= */
+  /* ================= articles.js — feed behavior regressions ================= */
   {
-    console.log('blog.js (article feed: no keyword blacklist, #/-only routing)');
-    const src = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    console.log('articles.js (article feed: no keyword blacklist, routing)');
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
     ok(!/deploying process|omp deploying/i.test(src),
        'the hard-coded "omp deploying" keyword blacklist is gone');
     ok(/isRenderable/.test(src) && /a\.slug/.test(src),
@@ -541,38 +545,283 @@ const $ = (d, s) => d.querySelector(s);
        'only "#/slug" hashes are treated as article routes');
     ok(/OMPMarkdown/.test(src) && /renderSafe/.test(src),
        'article bodies render through the Markdown-aware pipeline');
-    ok(/encodeURIComponent\(a\.slug\)/.test(src), 'article links URL-encode the slug');
+    ok(/articlePath/.test(src) && /safeSlug/.test(src), 'article links are built from charset-validated slugs');
     ok(/excerpt/.test(src), 'articles without a summary get a generated excerpt');
     ok(/featured_image/.test(src) && /safeUrl\(a\.featured_image\)/.test(src),
        'featured_image is rendered (and scheme-checked) instead of fetched-and-ignored');
     ok(/limit\(PAGE_LIMIT\)|\.limit\(/.test(src), 'feed query is bounded by a limit');
     ok(/lastArticles/.test(src), 'hashchange re-renders from cache instead of refetching');
-    ok(/demoteHeadings/.test(src), 'blog.js demotes body headings so the page keeps a single <h1>');
+    ok(/demoteHeadings/.test(src), 'articles.js demotes body headings so the page keeps a single <h1>');
     ok(/demoteHeadings/.test(fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8')),
        'admin preview demotes headings too, so it matches the published page');
 
     const idx = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-    ok(!/assets\/js\/blog\.js/.test(idx), 'index.html no longer loads blog.js (homepage has no [data-blog] mount)');
-    ok(/assets\/js\/markdown\.js/.test(fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8')),
-       'blog.html loads markdown.js');
+    ok(!/assets\/js\/articles\.js/.test(idx), 'index.html does not load articles.js (homepage has no feed mount)');
+    ok(/assets\/js\/markdown\.js/.test(fs.readFileSync(path.join(ROOT, 'articles.html'), 'utf8')),
+       'articles.html loads markdown.js');
+  }
+
+  /* ================= one content hub: Articles ================= */
+  {
+    console.log('content architecture (Guides consolidated into Articles)');
+    const rootHtml = fs.readdirSync(ROOT).filter(f => f.endsWith('.html')).map(f => ({ f, s: fs.readFileSync(path.join(ROOT, f), 'utf8') }));
+    const guidePages = fs.readdirSync(path.join(ROOT, 'guides')).filter(f => f.endsWith('.html')).map(f => fs.readFileSync(path.join(ROOT, 'guides', f), 'utf8'));
+
+    for (const { f, s } of rootHtml) {
+      if (f === 'guides.html') continue; /* redirect stub — checked separately */
+      ok(!s.includes('href="/guides.html"'), `${f}: no link to the removed /guides.html page`);
+      ok(!/nav-links[^>]*>.*>Guides</.test(s), `${f}: primary nav has no Guides item`);
+    }
+    for (let i = 0; i < guidePages.length; i++) {
+      ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
+    }
+
+    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Breach Check, About
+       (+ the JS-injected Search trigger in nav-actions). */
+    const blog = rootHtml.find(x => x.f === 'articles.html').s;
+    const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'Breach Check', 'About']),
+       `desktop navbar is exactly the 8 target items — got [${navLabels.join(', ')}]`);
+    const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
+    ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
+    ok(mobile.includes('/articles">Articles<'), 'mobile menu links Articles to the hub');
+    ok(mobile.includes('/products">Products<'), 'mobile menu links Products to its own hub');
+
+    /* The legacy hub is a redirect, not a destination. */
+    const stub = fs.readFileSync(path.join(ROOT, 'guides.html'), 'utf8');
+    ok(/http-equiv="refresh"[^>]*url=\/articles/.test(stub), 'guides.html meta-refreshes to /articles');
+    ok(/rel="canonical"[^>]*\/articles/.test(stub), 'guides.html canonical points at /articles');
+    ok(/noindex/.test(stub), 'guides.html is noindex');
+    const fb = fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8');
+    ok(fb.includes('"source": "/guides.html"') && fb.includes('"destination": "/articles"') && fb.includes('"type": 301'),
+       'firebase.json 301-redirects /guides.html to /articles');
+
+    /* Guides are classified inside the hub, not deleted. */
+    const bjs = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
+    ok((bjs.match(/slug: '[a-z0-9-]+', title:/g) || []).length === 15, 'articles.js bakes in all 15 static guides');
+    ok(/categorySlug: 'guides'/.test(bjs), 'static guides are classified under the "guides" category');
+    for (const slug of ['news', 'security', 'deep-dives', 'how-to', 'guides'])
+      ok(bjs.includes(`{ name: '${slug === 'deep-dives' ? 'Deep Dives' : slug === 'how-to' ? 'How-To' : slug[0].toUpperCase() + slug.slice(1)}', slug: '${slug}' }`), `canonical category "${slug}" exists in the hub filter`);
+    ok(/FETCH_TIMEOUT_MS/.test(bjs) && /isTimeout/.test(bjs), 'feed fetch has a hard timeout (no indefinite loading)');
+    ok(/renderSkeleton/.test(bjs) && /skel/.test(bjs), 'feed has a skeleton loading state');
+    ok(/data-retry/.test(bjs), 'feed error state offers a Retry action');
+    ok(/Nothing here yet/.test(bjs) && /Can.t load this category/.test(bjs), 'empty state is distinct from fetch failure');
+    ok(/supabase/.test(fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8').toLowerCase()) &&
+       fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8').includes("('Guides',     'guides',     5)"),
+       'schema seeds the Guides category (plus News/Security/Deep Dives/How-To)');
+
+    /* Search index: one content destination, guides still findable. */
+    const sjs = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    ok(!sjs.includes("/guides.html") && !sjs.includes("url: '/blog.html'"), 'search index lists no legacy hub pages');
+    ok((sjs.match(/url: '\/articles\/[a-z0-9-]+'/g) || []).length === 15, 'search index finds all 15 guide articles at /articles/<slug>');
+    ok(/url: '\/articles', kw: 'blog articles[^']*guides/.test(sjs), 'Articles hub entry covers "guides" queries');
+
+    /* Sitemaps: hub listed, legacy hub gone, guide articles kept. */
+    const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
+    ok(!sm.includes('/guides.html</loc>'), 'sitemap.xml drops the removed /guides.html page');
+    ok(sm.includes('https://oopsmypassword.com/articles</loc>'), 'sitemap.xml lists the Articles hub at its pretty URL');
+    ok((sm.match(/\/articles\/[a-z0-9-]+<\/loc>/g) || []).length === 15, 'sitemap.xml lists all 15 guide articles at /articles/<slug>');
+    ok(!/\.html<\/loc>/.test(sm), 'sitemap.xml contains no .html implementation URLs');
+  }
+
+
+  /* ================= URL architecture (pretty public URLs) ================= */
+  {
+    console.log('url architecture (pretty URLs, routing, redirects)');
+    const createRouter = require('./hosting_router.js');
+    const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
+
+    /* --- Firebase-equivalent routing table: direct navigation & refresh.
+           The same resolution answers a browser refresh of the same URL. --- */
+    const table = [
+      ['/',              { type: 'file', file: '/index.html' }],
+      ['/checker',       { type: 'file', file: '/checker.html' }],
+      ['/articles',      { type: 'file', file: '/articles.html' }],
+      ['/products',      { type: 'file', file: '/products.html' }],
+      ['/articles/create-strong-password', { type: 'file', file: '/guides/create-strong-password.html' }],
+      ['/articles/critical-langflow-vulnerability', { type: 'file', file: '/articles.html' }],
+      ['/products/my-cybersecurity-book', { type: 'file', file: '/products.html' }],
+      ['/sitemap.xml',   { type: 'file', file: '/sitemap.xml' }],
+    ];
+    for (const [p, want] of table) {
+      const got = router.resolve(p, 0);
+      ok(got.type === want.type && got.file === want.file,
+         `direct navigation to ${p} serves ${want.file} — got ${got.type} ${got.file || ''}`);
+    }
+
+    /* --- permanent redirects for legacy URLs --- */
+    const redirs = [
+      ['/checker.html', '/checker'],
+      ['/checker/', '/checker'],
+      ['/index.html', '/'],
+      ['/blog.html', '/articles'],
+      ['/blog', '/articles'],
+      ['/guides.html', '/articles'],
+      ['/guides', '/articles'],
+      ['/guides/passkeys-explained.html', '/articles/passkeys-explained'],
+      ['/guides/passkeys-explained', '/articles/passkeys-explained'],
+      ['/articles/', '/articles'],
+      ['/products/', '/products'],
+    ];
+    for (const [from, to] of redirs) {
+      const got = router.resolve(from, 0);
+      ok(got.type === 'redirect' && got.location === to && got.status === 301,
+         `${from} 301-redirects to ${to} — got ${got.type} ${got.location || ''}`);
+    }
+
+    /* --- unknown paths reach the custom 404 page --- */
+    const nf = router.resolve('/definitely-not-a-page', 0);
+    ok(nf.type === 'notfound' && nf.file === '/404.html', 'unknown path serves the custom 404 page');
+
+    /* --- every redirect chain terminates (no loops) --- */
+    const loopTargets = redirs.map(r => r[0])
+      .concat(['/articles/passkeys-explained.html', '/guides/two-factor-authentication.html', '/tools/', '/faq/', '/products/some-product.html']);
+    for (const p of loopTargets) {
+      const f = router.follow(p);
+      ok(f.end.type !== 'loop', `redirect chain for ${p} terminates (no loops)`);
+    }
+
+    /* --- shipped pages expose no .html implementation URLs --- */
+    const rootHtml2 = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
+      .map(f => ({ f, s: fs.readFileSync(path.join(ROOT, f), 'utf8') }));
+    for (const { f, s } of rootHtml2) {
+      if (f === 'guides.html') continue; /* redirect stub, covered above */
+      const bad = s.match(/href="\/[a-z0-9-]+\.html[^"]*"/g) || [];
+      ok(!bad.length, `${f}: no .html hrefs in shipped markup${bad.length ? ' — ' + bad[0] : ''}`);
+    }
+
+    /* --- canonical + og:url are the pretty public URLs --- */
+    for (const { f, s } of rootHtml2) {
+      if (f === 'guides.html' || f === 'products.html') continue; /* stub / noindex until content ships */
+      const canon = (s.match(/rel="canonical" href="([^"]+)"/) || [])[1] || '';
+      const og = (s.match(/property="og:url" content="([^"]+)"/) || [])[1] || '';
+      ok(!/\.html$/.test(canon), `${f}: canonical is a pretty URL (${canon})`);
+      ok(!/\.html$/.test(og), `${f}: og:url is a pretty URL (${og})`);
+    }
+
+    /* --- articles.js: pathname routing, slug safety, canonical meta --- */
+    const ajs = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
+    ok(ajs.includes('location.pathname') && ajs.includes('history.replaceState'),
+       'articles.js routes by pathname and normalizes legacy #/slug URLs');
+    ok(/SLUG_RE/.test(ajs) && /safeSlug/.test(ajs),
+       'slugs are charset-guarded before they form URLs');
+    ok(ajs.includes('link[rel="canonical"]'),
+       'dynamic article views rewrite the canonical URL to /articles/<slug>');
+    ok(ajs.includes('noindex'), 'not-found article views are marked noindex');
+
+    /* --- products app: slug URLs with the same guarantees --- */
+    ok(fs.existsSync(path.join(ROOT, 'products.html')), 'products.html exists (public /products)');
+    const pjs = fs.readFileSync(path.join(ROOT, 'assets/js/products.js'), 'utf8');
+    ok(/\/products\//.test(pjs) && /SLUG_RE/.test(pjs), 'product URLs are slug-based and charset-guarded');
+    ok(pjs.includes('noindex'), 'product not-found views are marked noindex');
+    ok(/products_select_published/.test(fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8')),
+       'products table has published-only public read (RLS)');
+  }
+
+
+  /* ================= products system (public + admin + schema) ================= */
+  {
+    console.log('products system (catalog, types, pricing, security, admin)');
+    const schema = fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8');
+    const pjs = fs.readFileSync(path.join(ROOT, 'assets/js/products.js'), 'utf8');
+    const ajs = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+    const sjs = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    const phtml = fs.readFileSync(path.join(ROOT, 'products.html'), 'utf8');
+
+    /* --- schema: types, pricing, flags, private deliverables --- */
+    ok(schema.includes("check (product_type in ('book','course','tool','template','resource','other'))"),
+       'products.product_type is constrained to the six canonical types');
+    for (const col of ['price numeric(10,2)', 'currency char(3)', 'cta_label', 'featured boolean', 'file_path text'])
+      ok(schema.includes(col), `products table defines ${col.split(' ')[0]}`);
+    ok(schema.includes('products_select_published') && schema.includes("for select to anon using (status = 'published')"),
+       'anon reads published products only (RLS)');
+    ok(schema.includes('products_admin_insert') && schema.includes('products_admin_update') && schema.includes('products_admin_delete'),
+       'product writes are admin-only (RLS)');
+    ok(schema.includes("values ('product-files', 'product-files', false)"),
+       'deliverables live in a PRIVATE bucket (public=false)');
+    ok(!/product-files[\s\S]{0,400}for select to anon/.test(schema),
+       'NO anon read policy exists for the private product-files bucket');
+    ok(schema.includes('createSignedUrl') || schema.includes('signed'),
+       'schema documents the signed-URL download flow for purchased files');
+    ok(schema.includes("values ('products', 'products', true)"),
+       'covers live in a public bucket (marketing assets)');
+
+    /* --- public app: types, guards, sanitization, states --- */
+    const TYPES = ['book', 'course', 'tool', 'template', 'resource', 'other'];
+    for (const t of TYPES) ok(pjs.includes(`type: '${t}'`), `public app knows the "${t}" product type`);
+    ok(pjs.includes('SLUG_RE') && pjs.includes('safeSlug'), 'product slugs are charset-guarded before URLs are built');
+    ok(pjs.includes('OMPUrl') && pjs.includes('safeUrl'), 'products.js safeUrl delegates to the canonical OMPUrl validator');
+    ok(/OMPMarkdown[\\s\\S]*renderSafe|renderSafe/.test(pjs), 'full descriptions render through the sanitized pipeline');
+    ok(pjs.includes('has_file') && !/href=[^+]*file_path/.test(pjs),
+       'private deliverables never become a link (has_file flag only)');
+    ok(pjs.includes('omp-product-ld') && pjs.includes("'@type': 'Product'"), 'product detail pages emit schema.org/Product JSON-LD');
+    ok(pjs.includes('InStock') && pjs.includes('priceCurrency'), 'JSON-LD includes an Offer with price/currency');
+    ok(pjs.includes('Intl.NumberFormat'), 'prices are formatted per currency');
+    ok(/Buy Now|Learn More|Get It/.test(pjs), 'CTA labels use the specified verbs');
+    ok(/target="_blank" rel="noopener noreferrer"/.test(pjs), 'external CTAs open in a safe context');
+    ok(pjs.includes('renderSkeleton') && pjs.includes('FETCH_TIMEOUT_MS') && pjs.includes('data-retry'),
+       'skeleton + hard timeout + Retry all present');
+    ok(/No products yet/.test(pjs) && /Can.t load products right now/.test(pjs) && /No products match/.test(pjs),
+       'empty catalog, fetch failure and filter miss are three distinct states');
+    ok(pjs.includes('noindex') && pjs.includes('Product not found'),
+       'invalid slugs render a not-found view marked noindex');
+    ok(/product-grid/.test(pjs) && /product-card/.test(pjs) && /data-ptype/.test(pjs) && /#product-search/.test(pjs),
+       'responsive grid + type filter chips + search input are wired');
+    ok(pjs.includes('featured') && /Featured/.test(pjs), 'featured products are surfaced');
+    ok(!/from\('articles'\)/.test(pjs) && !/article_categories/.test(pjs),
+       'products app never queries the articles tables (no mixing)');
+
+    /* --- admin: full CRUD + guards --- */
+    ok(ajs.includes('data-tab="products"'), 'admin dashboard has a Products tab');
+    ok(ajs.includes("tab === 'products'"), 'admin loads the products section');
+    ok(/data-publish-product/.test(ajs) && /data-feature-product/.test(ajs) && /data-delete-product/.test(ajs) && /data-edit-product/.test(ajs),
+       'admin list offers publish/unpublish, feature/unfeature, edit, delete');
+    for (const field of ['name="product_type"', 'name="price"', 'name="currency"', 'name="cta_label"', 'name="featured"', 'name="external_url"', 'name="featured_image"', 'name="deliverable"'])
+      ok(ajs.includes(field), `admin product form has ${field.replace('name="', '').replace('"', '')}`);
+    ok(ajs.includes("from('product-files')"), 'deliverable uploads target the PRIVATE product-files bucket');
+    ok(!/getPublicUrl[\s\S]{0,80}product-files/.test(ajs),
+       'admin never derives a public URL for a private deliverable');
+    ok(ajs.includes("from('products').upload(path, file") || /storage\.from\('products'\)\.upload/.test(ajs),
+       'cover uploads go to the public products covers bucket');
+    ok(/OMPFileValidate/.test(ajs), 'deliverable uploads run the magic-byte validator');
+    ok(/Purchase URL must be a (full |absolute )?http/.test(ajs), 'javascript:/data: purchase URLs are rejected at entry');
+    ok(/ISO 4217/.test(ajs), 'currency is validated as 3-letter ISO 4217');
+    ok(/function productForm/.test(ajs) && /slugify\(f\.get\('slug'\)\)/.test(ajs),
+       'product slugs are produced by the shared slugify (safe charset)');
+    ok(!/from\('articles'\)[\s\S]{0,200}product/.test(ajs.replace(/[\s\S]*function productForm/, '')),
+       'product form writes only to the products table');
+
+    /* --- search: products in the live index, guarded --- */
+    ok(sjs.includes('/rest/v1/products?select=slug,name,summary,product_type&status=eq.published'), 'live search queries published products');
+    ok(new RegExp("/\\\\/products\\\\/\\\\?' \\+ encodeURIComponent\\(p\\.slug\\)").test(sjs) || sjs.includes("'/products/' + encodeURIComponent(p.slug)"),
+       'live product results link to /products/<slug> with encoded slugs');
+    ok(sjs.includes('.omp-sr-badge.b-product{'), 'search styles a Product badge');
+    ok(sjs.includes("title: 'Products', desc: 'Books, courses"), 'baked-in index lists the Products hub page');
+
+    /* --- sitemap + page shell --- */
+    ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('https://oopsmypassword.com/products</loc>'),
+       'sitemap.xml lists /products');
+    ok(phtml.includes('data-products') && phtml.includes('/assets/js/products.js'),
+       'products.html mounts the products app');
   }
 
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
   {
     console.log('search.js (poisoned live rows, dedup, mobile button, modal a11y)');
-    const dom = await loadPage('index.html', { wait: 300 });
+    const dom = await loadPage('', { wait: 300 });
     const w = dom.window, d = w.document;
     await new Promise(r => setTimeout(r, 300));
 
     /* Seed the live cache with hostile + duplicate rows. fetchLive() trusts
        sessionStorage first, so this exercises the render-time URL gate. */
-    w.sessionStorage.setItem('omp-search-live-v2', JSON.stringify({ t: Date.now(), items: [
+    w.sessionStorage.setItem('omp-search-live-v3', JSON.stringify({ t: Date.now(), items: [
       { type: 'Tool', title: 'Evil Route', desc: 'should never render', url: 'javascript:alert(1)', kw: 'zzzpoison' },
       { type: 'Tool', title: 'Off Site', desc: 'should never render', url: 'https://evil.example/x', kw: 'zzzpoison' },
-      { type: 'Article', title: 'Dup One', desc: '', url: '/blog.html#/dup', kw: 'zzzpoison' },
-      { type: 'Article', title: 'Dup One', desc: '', url: '/blog.html#/dup', kw: 'zzzpoison' },
+      { type: 'Article', title: 'Dup One', desc: '', url: '/articles/dup', kw: 'zzzpoison' },
+      { type: 'Article', title: 'Dup One', desc: '', url: '/articles/dup', kw: 'zzzpoison' },
       { type: 'Tool', title: 'Password Generator', desc: '', url: '/generator.html', kw: 'zzzpoison' },
-      { type: 'Article', title: 'Good Article', desc: 'a real post', url: '/blog.html#/good-one', kw: 'zzzpoison' }
+      { type: 'Article', title: 'Good Article', desc: 'a real post', url: '/articles/good-one', kw: 'zzzpoison' }
     ] }));
 
     d.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true }));
@@ -646,7 +895,7 @@ const $ = (d, s) => d.querySelector(s);
   /* ================= search.js — FAQ/glossary coverage + live region ==== */
   {
     console.log('search.js (FAQ/glossary in the index + a11y live region)');
-    const dom = await loadPage('index.html', { wait: 300 });
+    const dom = await loadPage('', { wait: 300 });
     const w = dom.window, d = w.document;
     await new Promise(r => setTimeout(r, 300));
     d.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true }));
@@ -712,7 +961,7 @@ const $ = (d, s) => d.querySelector(s);
     }
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
-    ok(heroPages.length === 19, '19 inner pages use .page-hero (all covered by the fix) — got ' + heroPages.length);
+    ok(heroPages.length === 19, '19 inner pages use .page-hero (products.html added, guides.html is now a redirect stub) — got ' + heroPages.length);
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
     const hex2rgb = h => { h = h.trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
@@ -794,10 +1043,10 @@ const $ = (d, s) => d.querySelector(s);
     ok(/markdown\.js/.test(readme), 'README documents the Markdown renderer');
 
     /* Build must stay reproducible: generated pages must not drift from tools/. */
-    ok(fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8').includes('/assets/js/markdown.js'),
-       'generated blog.html contains the markdown.js script tag (build output committed)');
-    ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/blog.js'),
-       'generated index.html no longer references blog.js (build output committed)');
+    ok(fs.readFileSync(path.join(ROOT, 'articles.html'), 'utf8').includes('/assets/js/markdown.js'),
+       'generated articles.html contains the markdown.js script tag (build output committed)');
+    ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/articles.js'),
+       'generated index.html no longer references articles.js (build output committed)');
   }
 
 
@@ -824,20 +1073,20 @@ const $ = (d, s) => d.querySelector(s);
     /* The four decorated helpers still hand off to OMPUrl. */
     const sanitize = fs.readFileSync(path.join(ROOT, 'assets/js/sanitize.js'), 'utf8');
     const markdown = fs.readFileSync(path.join(ROOT, 'assets/js/markdown.js'), 'utf8');
-    const blog = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    const blog = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
     const search = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
     ok(/OMPUrl\.safeUrl/.test(sanitize) && /OMPUrl\.safeUrl/.test(markdown), 'sanitize.js + markdown.js delegate to OMPUrl');
-    ok(/OMPUrl\.safeUrl/.test(blog), 'blog.js safeUrl delegates to OMPUrl');
+    ok(/OMPUrl\.safeUrl/.test(blog), 'articles.js safeUrl delegates to OMPUrl');
     ok(/OMPUrl\.safeUrl/.test(search), 'search.js safeResultUrl delegates to OMPUrl');
 
     /* url.js is loaded before the modules that depend on it. */
-    const blogHtml = fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8');
+    const blogHtml = fs.readFileSync(path.join(ROOT, 'articles.html'), 'utf8');
     const idxUrl = blogHtml.indexOf('/assets/js/url.js');
     const idxSan = blogHtml.indexOf('/assets/js/sanitize.js');
     const idxMk = blogHtml.indexOf('/assets/js/markdown.js');
-    const idxBlog = blogHtml.indexOf('/assets/js/blog.js');
+    const idxBlog = blogHtml.indexOf('/assets/js/articles.js');
     ok(idxUrl !== -1 && idxUrl < idxSan && idxSan < idxMk && idxMk < idxBlog,
-       'blog.html loads url.js before sanitize.js/markdown.js/blog.js');
+       'articles page loads url.js before sanitize.js/markdown.js/articles.js');
     const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf8');
     ok(adminHtml.indexOf('/assets/js/url.js') < adminHtml.indexOf('/assets/js/sanitize.js') &&
        adminHtml.indexOf('/assets/js/filevalidate.js') < adminHtml.indexOf('/assets/js/admin-boot-watchdog.js'),
@@ -895,7 +1144,7 @@ const $ = (d, s) => d.querySelector(s);
     ok(/Featured image URL must be/.test(src) && /OMPUrl\.safeUrl/.test(src),
        'admin rejects a javascript: featured_image at the point of entry');
     ok(/supabase\/00_schema_migrations\.sql/.test(src), 'admin comment points at the RLS/Storage migration');
-    const blogSrc = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    const blogSrc = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
     ok(/target=\"_blank\" rel=\"noopener noreferrer\"/.test(blogSrc), 'public document download opens in a safe context (noopener/noreferrer)');
     ok(/safeUrl\(a\.document_url\)/.test(blogSrc), 'document download URL is scheme-checked before rendering');
   }

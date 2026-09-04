@@ -11,88 +11,88 @@
 
   var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-  var CACHE_KEY = 'omp-search-live-v2';
+  var CACHE_KEY = 'omp-search-live-v3';
   var CACHE_TTL = 10 * 60 * 1000; /* 10 minutes */
   var MAX_RESULTS = 12;
 
   /* ---------- Baked-in index: tools, guides, pages ---------- */
   var STATIC_INDEX = [
     /* Interactive tools */
-    { type: 'Tool', title: 'Password Strength Checker', desc: 'Test how strong any password is — runs 100% in your browser.', url: '/checker.html', kw: 'strength test crack time checker zxcvbn weak' },
-    { type: 'Tool', title: 'Password Generator', desc: 'Generate secure random passwords with a CSPRNG — 20-character default.', url: '/generator.html', kw: 'random secure create new password generator symbols numbers' },
-    { type: 'Tool', title: 'Passphrase Generator', desc: 'Diceware-style passphrases from a 1296-word list.', url: '/passphrase.html', kw: 'diceware words memorable passphrase long easy to remember' },
-    { type: 'Tool', title: 'Random String Generator', desc: 'Hex, Base64URL and alphanumeric strings for keys, tokens and IDs.', url: '/random-string.html', kw: 'hex base64 token api key uuid string random' },
-    { type: 'Tool', title: 'Password Entropy Calculator', desc: 'Calculate entropy in bits, character pools and estimated crack times.', url: '/entropy.html', kw: 'bits pools crack time calculation entropy math' },
-    { type: 'Tool', title: 'Password Health Check', desc: 'A 10-point local audit of your password habits — nothing leaves your device.', url: '/password-health.html', kw: 'audit habits reuse hygiene health checkup score' },
-    { type: 'Tool', title: 'Breach Check (k-Anonymity Demo)', desc: 'See how breach lookups work with k-anonymity — SHA-1 hashed locally.', url: '/breach-check.html', kw: 'breach pwned leaked have i been k-anonymity sha1 hash demo' },
-    { type: 'Tool', title: 'Security Checklist', desc: '16 habits for safer accounts, from 2FA to password manager setup.', url: '/security-checklist.html', kw: 'habits checklist 2fa safer accounts tips list' },
+    { type: 'Tool', title: 'Password Strength Checker', desc: 'Test how strong any password is — runs 100% in your browser.', url: '/checker', kw: 'strength test crack time checker zxcvbn weak' },
+    { type: 'Tool', title: 'Password Generator', desc: 'Generate secure random passwords with a CSPRNG — 20-character default.', url: '/generator', kw: 'random secure create new password generator symbols numbers' },
+    { type: 'Tool', title: 'Passphrase Generator', desc: 'Diceware-style passphrases from a 1296-word list.', url: '/passphrase', kw: 'diceware words memorable passphrase long easy to remember' },
+    { type: 'Tool', title: 'Random String Generator', desc: 'Hex, Base64URL and alphanumeric strings for keys, tokens and IDs.', url: '/random-string', kw: 'hex base64 token api key uuid string random' },
+    { type: 'Tool', title: 'Password Entropy Calculator', desc: 'Calculate entropy in bits, character pools and estimated crack times.', url: '/entropy', kw: 'bits pools crack time calculation entropy math' },
+    { type: 'Tool', title: 'Password Health Check', desc: 'A 10-point local audit of your password habits — nothing leaves your device.', url: '/password-health', kw: 'audit habits reuse hygiene health checkup score' },
+    { type: 'Tool', title: 'Breach Check (k-Anonymity Demo)', desc: 'See how breach lookups work with k-anonymity — SHA-1 hashed locally.', url: '/breach-check', kw: 'breach pwned leaked have i been k-anonymity sha1 hash demo' },
+    { type: 'Tool', title: 'Security Checklist', desc: '16 habits for safer accounts, from 2FA to password manager setup.', url: '/security-checklist', kw: 'habits checklist 2fa safer accounts tips list' },
 
     /* Site pages */
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
-    { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools.html', kw: 'tools overview all list utilities' },
-    { type: 'Page', title: 'Password Security Guides', desc: 'All security guides in one place.', url: '/guides.html', kw: 'guides learn list tutorials help' },
-    { type: 'Page', title: 'Articles / Blog', desc: 'Latest articles and deep dives.', url: '/blog.html', kw: 'blog articles posts news updates' },
-    { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about.html', kw: 'about team mission privacy first who' },
-    { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact.html', kw: 'contact email support feedback report' },
-    { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq.html', kw: 'faq questions answers help common' },
-    { type: 'Page', title: 'Security Glossary', desc: 'Plain-English definitions of security terms.', url: '/glossary.html', kw: 'glossary terms definitions dictionary meaning' },
-    { type: 'Page', title: 'Security & Responsible Disclosure', desc: 'How we protect the site and how to report a vulnerability.', url: '/security.html', kw: 'security disclosure report vulnerability cve responsible' },
-    { type: 'Page', title: 'Privacy Policy', desc: 'What we collect (almost nothing) and why.', url: '/privacy.html', kw: 'privacy policy data collection cookies' },
-    { type: 'Page', title: 'Terms of Use', desc: 'The legal bits of using OopsMyPassword.', url: '/terms.html', kw: 'terms of use legal conditions' },
-    { type: 'Page', title: 'Sitemap', desc: 'Every page on the site, listed.', url: '/sitemap.html', kw: 'sitemap all pages list index' },
+    { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools', kw: 'tools overview all list utilities' },
+    { type: 'Page', title: 'Articles', desc: 'Every read in one hub: security news, deep dives, how-tos and guides.', url: '/articles', kw: 'blog articles posts news updates guides learn tutorials help content hub' },
+    { type: 'Product Page', title: 'Products', desc: 'Books, courses, tools and resources from OopsMyPassword.', url: '/products', kw: 'products shop store buy purchase book books course template resource pricing' },
+    { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about', kw: 'about team mission privacy first who' },
+    { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact', kw: 'contact email support feedback report' },
+    { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq', kw: 'faq questions answers help common' },
+    { type: 'Page', title: 'Security Glossary', desc: 'Plain-English definitions of security terms.', url: '/glossary', kw: 'glossary terms definitions dictionary meaning' },
+    { type: 'Page', title: 'Security & Responsible Disclosure', desc: 'How we protect the site and how to report a vulnerability.', url: '/security', kw: 'security disclosure report vulnerability cve responsible' },
+    { type: 'Page', title: 'Privacy Policy', desc: 'What we collect (almost nothing) and why.', url: '/privacy', kw: 'privacy policy data collection cookies' },
+    { type: 'Page', title: 'Terms of Use', desc: 'The legal bits of using OopsMyPassword.', url: '/terms', kw: 'terms of use legal conditions' },
+    { type: 'Page', title: 'Sitemap', desc: 'Every page on the site, listed.', url: '/sitemap', kw: 'sitemap all pages list index' },
 
     /* Guides (/guides/) */
-    { type: 'Guide', title: 'What to Do After a Data Breach', desc: 'Step-by-step response plan when a service you use gets breached.', url: '/guides/after-a-data-breach.html', kw: 'breach response steps stolen exposed what now' },
-    { type: 'Guide', title: 'Is It Safe to Use a Password Manager?', desc: 'An honest risk breakdown of password manager safety.', url: '/guides/are-password-managers-safe.html', kw: 'risk honest safe vault manager worth it trust' },
-    { type: 'Guide', title: 'How to Check If Your Password Has Been Leaked', desc: 'Check exposure safely without giving your password away.', url: '/guides/check-if-password-was-leaked.html', kw: 'leaked pwned check safely breach exposed' },
-    { type: 'Guide', title: 'Common Password Mistakes (and How to Fix Them)', desc: 'The reuse, predictability and length errors people make most.', url: '/guides/common-password-mistakes.html', kw: 'reuse errors fix weak patterns mistakes' },
-    { type: 'Guide', title: 'How to Create a Strong Password', desc: 'A practical recipe for passwords that resist cracking.', url: '/guides/create-strong-password.html', kw: 'create strong new secure recipe tips make' },
-    { type: 'Guide', title: 'How Long Should a Password Be in 2026?', desc: 'Recommended lengths by account type — email, banking, social.', url: '/guides/how-long-should-a-password-be.html', kw: 'length characters account type email banking minimum' },
-    { type: 'Guide', title: 'Passkeys Explained: Passwords Without the Password', desc: 'How passkeys work and why they beat passwords.', url: '/guides/passkeys-explained.html', kw: 'passkey fingerprint face unlock webauthn future no password' },
-    { type: 'Guide', title: 'Password Security Best Practices', desc: 'The habits that actually move the security needle.', url: '/guides/password-best-practices.html', kw: 'best practices security hygiene habits guide' },
-    { type: 'Guide', title: 'Password Cracking Time: How Long to Crack 8, 12 or 16 Characters?', desc: 'Cracking-time table by length and character set.', url: '/guides/password-cracking-time-table.html', kw: 'crack time 8 12 16 characters brute force table gpu' },
-    { type: 'Guide', title: 'How Password Entropy Works', desc: 'Entropy explained: bits, pools and real-world randomness.', url: '/guides/password-entropy.html', kw: 'entropy bits randomness math pools explained' },
-    { type: 'Guide', title: 'Password Manager Benefits — and How to Choose One', desc: 'What managers give you and how to pick a good one.', url: '/guides/password-manager-benefits.html', kw: 'choose vault benefits compare pick manager' },
-    { type: 'Guide', title: 'Password vs Passkey: An Honest Comparison', desc: 'Where passkeys win, where passwords still linger.', url: '/guides/password-vs-passkey.html', kw: 'passkey comparison versus future authentication' },
-    { type: 'Guide', title: 'Password vs Passphrase: Which Should You Actually Use?', desc: 'Length versus complexity — the practical answer.', url: '/guides/password-vs-passphrase.html', kw: 'passphrase which use comparison versus words' },
-    { type: 'Guide', title: 'How Phishing Attacks Steal Passwords', desc: 'The anatomy of phishing and how to spot it.', url: '/guides/phishing-attacks.html', kw: 'phishing scam social engineering steal fake login' },
-    { type: 'Guide', title: 'Two-Factor Authentication (2FA): What to Use and Why', desc: 'TOTP apps, hardware keys and SMS — ranked.', url: '/guides/two-factor-authentication.html', kw: '2fa otp authenticator totp sms hardware key mfa' },
+    { type: 'Guide', title: 'What to Do After a Data Breach', desc: 'Step-by-step response plan when a service you use gets breached.', url: '/articles/after-a-data-breach', kw: 'breach response steps stolen exposed what now' },
+    { type: 'Guide', title: 'Is It Safe to Use a Password Manager?', desc: 'An honest risk breakdown of password manager safety.', url: '/articles/are-password-managers-safe', kw: 'risk honest safe vault manager worth it trust' },
+    { type: 'Guide', title: 'How to Check If Your Password Has Been Leaked', desc: 'Check exposure safely without giving your password away.', url: '/articles/check-if-password-was-leaked', kw: 'leaked pwned check safely breach exposed' },
+    { type: 'Guide', title: 'Common Password Mistakes (and How to Fix Them)', desc: 'The reuse, predictability and length errors people make most.', url: '/articles/common-password-mistakes', kw: 'reuse errors fix weak patterns mistakes' },
+    { type: 'Guide', title: 'How to Create a Strong Password', desc: 'A practical recipe for passwords that resist cracking.', url: '/articles/create-strong-password', kw: 'create strong new secure recipe tips make' },
+    { type: 'Guide', title: 'How Long Should a Password Be in 2026?', desc: 'Recommended lengths by account type — email, banking, social.', url: '/articles/how-long-should-a-password-be', kw: 'length characters account type email banking minimum' },
+    { type: 'Guide', title: 'Passkeys Explained: Passwords Without the Password', desc: 'How passkeys work and why they beat passwords.', url: '/articles/passkeys-explained', kw: 'passkey fingerprint face unlock webauthn future no password' },
+    { type: 'Guide', title: 'Password Security Best Practices', desc: 'The habits that actually move the security needle.', url: '/articles/password-best-practices', kw: 'best practices security hygiene habits guide' },
+    { type: 'Guide', title: 'Password Cracking Time: How Long to Crack 8, 12 or 16 Characters?', desc: 'Cracking-time table by length and character set.', url: '/articles/password-cracking-time-table', kw: 'crack time 8 12 16 characters brute force table gpu' },
+    { type: 'Guide', title: 'How Password Entropy Works', desc: 'Entropy explained: bits, pools and real-world randomness.', url: '/articles/password-entropy', kw: 'entropy bits randomness math pools explained' },
+    { type: 'Guide', title: 'Password Manager Benefits — and How to Choose One', desc: 'What managers give you and how to pick a good one.', url: '/articles/password-manager-benefits', kw: 'choose vault benefits compare pick manager' },
+    { type: 'Guide', title: 'Password vs Passkey: An Honest Comparison', desc: 'Where passkeys win, where passwords still linger.', url: '/articles/password-vs-passkey', kw: 'passkey comparison versus future authentication' },
+    { type: 'Guide', title: 'Password vs Passphrase: Which Should You Actually Use?', desc: 'Length versus complexity — the practical answer.', url: '/articles/password-vs-passphrase', kw: 'passphrase which use comparison versus words' },
+    { type: 'Guide', title: 'How Phishing Attacks Steal Passwords', desc: 'The anatomy of phishing and how to spot it.', url: '/articles/phishing-attacks', kw: 'phishing scam social engineering steal fake login' },
+    { type: 'Guide', title: 'Two-Factor Authentication (2FA): What to Use and Why', desc: 'TOTP apps, hardware keys and SMS — ranked.', url: '/articles/two-factor-authentication', kw: '2fa otp authenticator totp sms hardware key mfa' },
 
     /* FAQ — individual questions resolve to /faq.html (kept in sync with
        tools/omp_build/pages_core.py FAQ_ITEMS). */
-    { type: 'FAQ', title: 'Is OMP free?', desc: 'Yes — every tool is free, needs no account, and runs entirely in your browser.', url: '/faq.html', kw: 'free cost price pricing account' },
-    { type: 'FAQ', title: 'Does OMP store my password?', desc: 'No. Passwords are analyzed in memory, in your tab only — never transmitted, stored, logged or placed in URLs.', url: '/faq.html', kw: 'store password history log saved privacy' },
-    { type: 'FAQ', title: 'Does OMP require an account?', desc: 'No. There is deliberately no sign-up, login or user profile.', url: '/faq.html', kw: 'account login signup sign up register' },
-    { type: 'FAQ', title: 'How is password strength calculated?', desc: 'A heuristic score of length, variety and pattern penalties, plus an adjusted entropy estimate and indicative crack time.', url: '/faq.html', kw: 'score calculated strength meter heuristic how' },
-    { type: 'FAQ', title: 'Is the strength score guaranteed?', desc: 'No — no meter can prove a password is safe; treat scores as educational guidance.', url: '/faq.html', kw: 'guaranteed accurate reliable trust score' },
-    { type: 'FAQ', title: 'What is entropy?', desc: 'Unpredictability in bits: H = L × log2(N). Each bit doubles the guesses an attacker needs.', url: '/faq.html', kw: 'entropy bits randomness math what is' },
-    { type: 'FAQ', title: 'What is a password manager?', desc: 'An app that generates, encrypts and fills unique passwords per account, unlocked by one master passphrase.', url: '/faq.html', kw: 'manager vault app store passwords' },
-    { type: 'FAQ', title: 'What are passkeys?', desc: 'A phishing-resistant password replacement based on public-key cryptography (FIDO2/WebAuthn).', url: '/faq.html', kw: 'passkey webauthn fido fingerprint face future' },
-    { type: 'FAQ', title: 'Should I reuse passwords?', desc: 'Never — reuse is how one breach becomes the takeover of your other accounts (credential stuffing).', url: '/faq.html', kw: 'reuse same password accounts credential stuffing' },
-    { type: 'FAQ', title: 'What should I do after a data breach?', desc: 'Change the breached password and every reuse, sign out sessions, enable 2FA, stay alert for phishing.', url: '/faq.html', kw: 'breach after compromised steps response' },
+    { type: 'FAQ', title: 'Is OMP free?', desc: 'Yes — every tool is free, needs no account, and runs entirely in your browser.', url: '/faq', kw: 'free cost price pricing account' },
+    { type: 'FAQ', title: 'Does OMP store my password?', desc: 'No. Passwords are analyzed in memory, in your tab only — never transmitted, stored, logged or placed in URLs.', url: '/faq', kw: 'store password history log saved privacy' },
+    { type: 'FAQ', title: 'Does OMP require an account?', desc: 'No. There is deliberately no sign-up, login or user profile.', url: '/faq', kw: 'account login signup sign up register' },
+    { type: 'FAQ', title: 'How is password strength calculated?', desc: 'A heuristic score of length, variety and pattern penalties, plus an adjusted entropy estimate and indicative crack time.', url: '/faq', kw: 'score calculated strength meter heuristic how' },
+    { type: 'FAQ', title: 'Is the strength score guaranteed?', desc: 'No — no meter can prove a password is safe; treat scores as educational guidance.', url: '/faq', kw: 'guaranteed accurate reliable trust score' },
+    { type: 'FAQ', title: 'What is entropy?', desc: 'Unpredictability in bits: H = L × log2(N). Each bit doubles the guesses an attacker needs.', url: '/faq', kw: 'entropy bits randomness math what is' },
+    { type: 'FAQ', title: 'What is a password manager?', desc: 'An app that generates, encrypts and fills unique passwords per account, unlocked by one master passphrase.', url: '/faq', kw: 'manager vault app store passwords' },
+    { type: 'FAQ', title: 'What are passkeys?', desc: 'A phishing-resistant password replacement based on public-key cryptography (FIDO2/WebAuthn).', url: '/faq', kw: 'passkey webauthn fido fingerprint face future' },
+    { type: 'FAQ', title: 'Should I reuse passwords?', desc: 'Never — reuse is how one breach becomes the takeover of your other accounts (credential stuffing).', url: '/faq', kw: 'reuse same password accounts credential stuffing' },
+    { type: 'FAQ', title: 'What should I do after a data breach?', desc: 'Change the breached password and every reuse, sign out sessions, enable 2FA, stay alert for phishing.', url: '/faq', kw: 'breach after compromised steps response' },
 
     /* Glossary — individual terms resolve to /glossary.html (kept in sync
        with tools/omp_build/pages_info.py GLOSSARY). */
-    { type: 'Glossary', title: '2FA / MFA', desc: 'Requiring two or more proofs (something you know, have, or are) to sign in.', url: '/glossary.html', kw: 'two factor multi factor mfa authentication' },
-    { type: 'Glossary', title: 'Brute-force attack', desc: 'Systematically guessing credentials until one works, industrialized by GPUs against leaked hash databases.', url: '/glossary.html', kw: 'brute force attack guessing compute' },
-    { type: 'Glossary', title: 'Credential stuffing', desc: 'Replaying leaked email/password pairs across services, betting on reuse.', url: '/glossary.html', kw: 'credential stuffing replay reused leaked' },
-    { type: 'Glossary', title: 'CSPRNG', desc: 'A cryptographically secure pseudo-random number generator — in browsers, crypto.getRandomValues().', url: '/glossary.html', kw: 'csprng random cryptographically secure generator' },
-    { type: 'Glossary', title: 'Diceware', desc: 'Building passphrases by randomly picking words from a published list; entropy = words × log2(list size).', url: '/glossary.html', kw: 'diceware word list passphrase entropy' },
-    { type: 'Glossary', title: 'Entropy (bits)', desc: 'A measure of unpredictability: log2 of the search space.', url: '/glossary.html', kw: 'entropy bits unpredictability measure' },
-    { type: 'Glossary', title: 'Hash (password)', desc: 'A one-way fingerprint; slow salted hashes (Argon2, bcrypt) resist cracking, fast unsalted ones (MD5) do not.', url: '/glossary.html', kw: 'hash password fingerprint salted bcrypt argon2 md5' },
-    { type: 'Glossary', title: 'k-anonymity', desc: 'A privacy model mixing a lookup into a set of at least k possibilities so the server cannot tell what you searched.', url: '/glossary.html', kw: 'k-anonymity privacy model lookup anonymity' },
-    { type: 'Glossary', title: 'Key stretching', desc: 'Deliberately slowing password verification with many hash rounds to make each guess expensive.', url: '/glossary.html', kw: 'key stretching slow hash rounds cost' },
-    { type: 'Glossary', title: 'Master password', desc: 'The single strong passphrase that unlocks a password manager.', url: '/glossary.html', kw: 'master password manager unlock vault' },
-    { type: 'Glossary', title: 'Passkey', desc: 'A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site public key.', url: '/glossary.html', kw: 'passkey webauthn fido phishing resistant' },
-    { type: 'Glossary', title: 'Passphrase', desc: 'A password made of several random words — long, memorable, and measurably strong.', url: '/glossary.html', kw: 'passphrase words memorable diceware' },
-    { type: 'Glossary', title: 'Password manager', desc: 'Software that generates, encrypts and fills unique passwords per account, unlocked by one master password.', url: '/glossary.html', kw: 'password manager software vault unique' },
-    { type: 'Glossary', title: 'Phishing', desc: 'Impersonating a trusted service to trick you into revealing credentials.', url: '/glossary.html', kw: 'phishing scam credential impersonation login fake' },
-    { type: 'Glossary', title: 'Rainbow table', desc: 'A precomputed hash→password lookup; defeated by salting.', url: '/glossary.html', kw: 'rainbow table precomputed hash lookup salt' },
-    { type: 'Glossary', title: 'Rate limiting', desc: 'Server-side throttling of login attempts; the main defense against online guessing.', url: '/glossary.html', kw: 'rate limit throttle login guessing' },
-    { type: 'Glossary', title: 'Salt', desc: 'A per-password random value mixed into hashing so identical passwords hash differently.', url: '/glossary.html', kw: 'salt random per-password hash identical' },
-    { type: 'Glossary', title: 'SIM swapping', desc: 'Convincing a carrier to move your phone number to an attacker SIM, hijacking SMS codes.', url: '/glossary.html', kw: 'sim swap carrier phone number sms hijack' },
-    { type: 'Glossary', title: 'TOTP', desc: 'Time-based one-time codes from authenticator apps, rotating every 30 seconds.', url: '/glossary.html', kw: 'totp otp authenticator time based app' },
-    { type: 'Glossary', title: 'WebAuthn', desc: 'The web standard behind passkeys and hardware security keys, binding credentials to a site origin.', url: '/glossary.html', kw: 'webauthn standard passkey hardware key origin' }
+    { type: 'Glossary', title: '2FA / MFA', desc: 'Requiring two or more proofs (something you know, have, or are) to sign in.', url: '/glossary', kw: 'two factor multi factor mfa authentication' },
+    { type: 'Glossary', title: 'Brute-force attack', desc: 'Systematically guessing credentials until one works, industrialized by GPUs against leaked hash databases.', url: '/glossary', kw: 'brute force attack guessing compute' },
+    { type: 'Glossary', title: 'Credential stuffing', desc: 'Replaying leaked email/password pairs across services, betting on reuse.', url: '/glossary', kw: 'credential stuffing replay reused leaked' },
+    { type: 'Glossary', title: 'CSPRNG', desc: 'A cryptographically secure pseudo-random number generator — in browsers, crypto.getRandomValues().', url: '/glossary', kw: 'csprng random cryptographically secure generator' },
+    { type: 'Glossary', title: 'Diceware', desc: 'Building passphrases by randomly picking words from a published list; entropy = words × log2(list size).', url: '/glossary', kw: 'diceware word list passphrase entropy' },
+    { type: 'Glossary', title: 'Entropy (bits)', desc: 'A measure of unpredictability: log2 of the search space.', url: '/glossary', kw: 'entropy bits unpredictability measure' },
+    { type: 'Glossary', title: 'Hash (password)', desc: 'A one-way fingerprint; slow salted hashes (Argon2, bcrypt) resist cracking, fast unsalted ones (MD5) do not.', url: '/glossary', kw: 'hash password fingerprint salted bcrypt argon2 md5' },
+    { type: 'Glossary', title: 'k-anonymity', desc: 'A privacy model mixing a lookup into a set of at least k possibilities so the server cannot tell what you searched.', url: '/glossary', kw: 'k-anonymity privacy model lookup anonymity' },
+    { type: 'Glossary', title: 'Key stretching', desc: 'Deliberately slowing password verification with many hash rounds to make each guess expensive.', url: '/glossary', kw: 'key stretching slow hash rounds cost' },
+    { type: 'Glossary', title: 'Master password', desc: 'The single strong passphrase that unlocks a password manager.', url: '/glossary', kw: 'master password manager unlock vault' },
+    { type: 'Glossary', title: 'Passkey', desc: 'A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site public key.', url: '/glossary', kw: 'passkey webauthn fido phishing resistant' },
+    { type: 'Glossary', title: 'Passphrase', desc: 'A password made of several random words — long, memorable, and measurably strong.', url: '/glossary', kw: 'passphrase words memorable diceware' },
+    { type: 'Glossary', title: 'Password manager', desc: 'Software that generates, encrypts and fills unique passwords per account, unlocked by one master password.', url: '/glossary', kw: 'password manager software vault unique' },
+    { type: 'Glossary', title: 'Phishing', desc: 'Impersonating a trusted service to trick you into revealing credentials.', url: '/glossary', kw: 'phishing scam credential impersonation login fake' },
+    { type: 'Glossary', title: 'Rainbow table', desc: 'A precomputed hash→password lookup; defeated by salting.', url: '/glossary', kw: 'rainbow table precomputed hash lookup salt' },
+    { type: 'Glossary', title: 'Rate limiting', desc: 'Server-side throttling of login attempts; the main defense against online guessing.', url: '/glossary', kw: 'rate limit throttle login guessing' },
+    { type: 'Glossary', title: 'Salt', desc: 'A per-password random value mixed into hashing so identical passwords hash differently.', url: '/glossary', kw: 'salt random per-password hash identical' },
+    { type: 'Glossary', title: 'SIM swapping', desc: 'Convincing a carrier to move your phone number to an attacker SIM, hijacking SMS codes.', url: '/glossary', kw: 'sim swap carrier phone number sms hijack' },
+    { type: 'Glossary', title: 'TOTP', desc: 'Time-based one-time codes from authenticator apps, rotating every 30 seconds.', url: '/glossary', kw: 'totp otp authenticator time based app' },
+    { type: 'Glossary', title: 'WebAuthn', desc: 'The web standard behind passkeys and hardware security keys, binding credentials to a site origin.', url: '/glossary', kw: 'webauthn standard passkey hardware key origin' }
   ];
 
   /* ---------- Live index: Supabase articles + tools registry ---------- */
@@ -130,6 +130,7 @@
       var headers = { apikey: SUPABASE_KEY };
       var qA = SUPABASE_URL + '/rest/v1/articles?select=slug,title,summary&status=eq.published&order=published_at.desc.nullslast&limit=200';
       var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
+      var qP = SUPABASE_URL + '/rest/v1/products?select=slug,name,summary,product_type&status=eq.published&order=sort_order.asc&limit=100';
       /* A non-OK response is a FAILURE, not an empty table. Treating it
          as [] used to cache "no articles" for 10 minutes. */
       function safeJson(r) {
@@ -138,7 +139,8 @@
       }
       Promise.all([
         fetch(qA, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
+        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
+        fetch(qP, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
       ]).then(function (res) {
         var seen = {};
         /* URLs already covered by the baked-in index — skip duplicates
@@ -146,17 +148,33 @@
         STATIC_INDEX.forEach(function (it) { seen[normalizeUrl(it.url)] = 1; });
         (res[0] || []).forEach(function (a) {
           if (!a || !a.slug) return;
-          var url = '/blog.html#/' + encodeURIComponent(a.slug);
+          /* Slugs must match the admin slugify charset before they may
+             form a URL — nothing unsanitized reaches an href. */
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(a.slug))) return;
+          var url = '/articles/' + encodeURIComponent(a.slug);
           if (seen[normalizeUrl(url)]) return;
           seen[normalizeUrl(url)] = 1;
           items.push({ type: 'Article', title: a.title || a.slug, desc: a.summary || '', url: url, kw: '' });
         });
         (res[1] || []).forEach(function (t) {
           if (!t || !(t.slug || t.route)) return;
-          var raw = safeResultUrl(t.route) || '/tools.html';
+          /* Tools live at extensionless public URLs; a registry row that
+             still says /x.html is normalized to /x. */
+          var routed = String(t.route || '').replace(/\.html($|#)/, '$1');
+          var raw = safeResultUrl(routed) || '/tools';
           if (seen[normalizeUrl(raw)]) return;
           seen[normalizeUrl(raw)] = 1;
           items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: raw, kw: '' });
+        });
+        /* Commercial catalog — slug-guarded like articles, routed to
+           /products/<slug>. */
+        (res[2] || []).forEach(function (p) {
+          if (!p || !p.slug) return;
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug))) return;
+          var url = '/products/' + encodeURIComponent(p.slug);
+          if (seen[normalizeUrl(url)]) return;
+          seen[normalizeUrl(url)] = 1;
+          items.push({ type: 'Product', title: p.name || p.slug, desc: p.summary || (p.product_type ? String(p.product_type) : ''), url: url, kw: String(p.product_type || '') });
         });
         /* Only cache a successful, non-empty lookup. */
         if (!failed && items.length) {
@@ -231,6 +249,8 @@
     + '.omp-sr-badge.b-article{color:#67E8F9;background:rgba(34,211,238,.12)}'
     + '.omp-sr-badge.b-tool{color:#A5B4FC;background:rgba(99,102,241,.14)}'
     + '.omp-sr-badge.b-guide{color:#C4B5FD;background:rgba(139,92,246,.14)}'
+    + '.omp-sr-badge.b-product{color:#FDE68A;background:rgba(234,179,8,.14)}'
+    + '.omp-sr-badge.b-productpage{color:#FCD34D;background:rgba(245,158,11,.12)}'
     + '.omp-sr-badge.b-page{color:var(--muted);background:rgba(148,163,184,.12)}'
     + '.omp-sr-badge.b-faq{color:#FDE68A;background:rgba(234,179,8,.14)}'
     + '.omp-sr-badge.b-glossary{color:#A7F3D0;background:rgba(16,185,129,.14)}'

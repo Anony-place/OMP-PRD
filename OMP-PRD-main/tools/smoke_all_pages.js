@@ -15,25 +15,30 @@ const ROOT = path.dirname(__dirname);
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain' };
 
 const http = require('http');
+const createRouter = require('./hosting_router.js');
+const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
+/* Serve the site the way Firebase Hosting does: pretty URLs, 301s for
+   legacy .html forms, rewrites for /articles/** and /products/**, and the
+   custom 404 page for unknown paths. */
 const server = http.createServer((req, res) => {
-  let p = decodeURIComponent(req.url.split('?')[0]);
-  if (p === '/') p = '/index.html';
-  const file = path.join(ROOT, p);
-  if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
-    res.writeHead(404); res.end('nf'); return;
-  }
-  res.writeHead(200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
+  let p = req.url.split('?')[0];
+  try { p = decodeURIComponent(p); } catch (e) { /* keep raw */ }
+  const r = router.resolve(p, 0);
+  if (r.type === 'redirect') { res.writeHead(r.status, { Location: r.location }); res.end('moved'); return; }
+  const file = path.join(ROOT, r.file || '/404.html');
+  if (!file.startsWith(ROOT) || !fs.existsSync(file)) { res.writeHead(404); res.end('nf'); return; }
+  res.writeHead(r.type === 'notfound' ? 404 : 200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
   res.end(fs.readFileSync(file));
 });
 const ready = new Promise(r => server.listen(0, '127.0.0.1', () => r(server.address().port)));
 
 function listPages() {
-  const out = [];
-  for (const f of fs.readdirSync(ROOT)) {
-    if (f.endsWith('.html')) out.push(f);
-  }
+  const out = ['', 'checker', 'generator', 'tools', 'breach-check', 'password-health',
+               'entropy', 'passphrase', 'random-string', 'security-checklist',
+               'articles', 'products', 'about', 'contact', 'faq', 'glossary',
+               'privacy', 'security', 'sitemap', '404'];
   for (const f of fs.readdirSync(path.join(ROOT, 'guides'))) {
-    if (f.endsWith('.html')) out.push('guides/' + f);
+    if (f.endsWith('.html')) out.push('articles/' + f.replace(/\.html$/, ''));
   }
   out.push('admin/index.html');
   return out.sort();
@@ -88,7 +93,9 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
       /* footer year must be filled in by main.js */
       const yr = d.querySelector('[data-year]');
       if (yr && !/^\d{4}$/.test(yr.textContent.trim())) checks.push('footer year not populated');
-      if (d.querySelector('meta[name="robots"][content*="noindex"]')) checks.push('public page is noindex');
+      /* products.html is deliberately noindex until the first product ships
+         (empty catalog); every other public page must be indexable. */
+      if (d.querySelector('meta[name="robots"][content*="noindex"]') && rel !== 'products') checks.push('public page is noindex');
     } else {
       if (!d.getElementById('admin-root')) checks.push('missing #admin-root');
       if (!d.querySelector('meta[name="robots"][content*="noindex"]')) checks.push('admin page is not noindex');
@@ -111,9 +118,11 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
       const clean = href.split('#')[0].split('?')[0];
       if (!clean) return;
       if (!clean.startsWith('/')) { badLinks.add('non-root-relative: ' + href); return; }
-      let target = path.join(ROOT, clean);
-      if (clean.endsWith('/')) target = path.join(target, 'index.html');
-      if (!fs.existsSync(target)) badLinks.add('404: ' + href);
+      /* Follow the same resolution Firebase uses (redirects + rewrites);
+         the chain must end at a real file, never a loop. */
+      const end = router.follow(clean).end;
+      if (end.type === 'loop') badLinks.add('redirect loop: ' + href);
+      else if (end.type === 'notfound') badLinks.add('404: ' + href);
     });
     if (badLinks.size) checks.push('broken internal links -> ' + Array.from(badLinks).slice(0, 4).join(', '));
 

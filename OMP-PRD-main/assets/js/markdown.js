@@ -333,7 +333,7 @@
   /* An article page already renders its title as the only <h1>, so a "#"
      heading inside the body would add a second one. Shift body headings down
      one level in place — the author's relative hierarchy is preserved.
-     Shared by /blog.html and the admin preview so both stay identical. */
+     Shared by /articles and the admin preview so both stay identical. */
   function demoteHeadings(container, from) {
     if (!container || !container.querySelectorAll) return container;
     var level = from || 1;

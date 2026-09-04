@@ -15,21 +15,44 @@
 | Breach Check | ✅ Live (demo) | Educational k-anonymity demo — clearly labeled, **not** a live breach database |
 | Security Checklist | ✅ Live | 16 habits; progress stored in `localStorage` on-device only |
 
-Plus: 15 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps, and a global search (Ctrl+K) covering tools, guides, pages and live articles.
+Plus: the **Articles hub** (15 in-depth guides classified under the *Guides* category, plus live posts), FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps, and a global search (Ctrl+K) covering tools, articles, pages and live posts.
 
-## No-backend articles (dynamic feed + admin panel)
+## No-backend articles (one content hub + admin panel)
 
 Publishing content without running a backend:
 
-- **`/blog.html`** — the Articles feed, rendered client-side from the **articles table** in Supabase (public read-only access via a publishable key). Publishing happens from the admin panel.
+- **`/articles`** — **Articles, the single content hub** (public URL; implemented by `articles.html`). It merges two sources into one filterable feed (News / Security / Deep Dives / How-To / Guides):
+  - live posts from the **articles table** in Supabase (public read-only access via a publishable key), and
+  - the fifteen **static guides** (`/guides/*.html`), baked into `blog.js` under the **Guides** category so they work even when Supabase is unreachable.
+- The hub has explicit UX states: skeleton while loading, a hard 10s fetch timeout, an error banner with **Retry** (static guides stay visible below it), and a genuine empty state per category — a fetch failure is never presented as "no articles".
+- There is deliberately **no separate top-level Guides page**: `/guides.html` and `/guides` 301-redirect to `/blog.html` (see `redirects` in `firebase.json`; a meta-refresh stub covers non-Firebase hosting).
 - **`/admin/`** — the **Article Manager**, protected by **Supabase Auth** (email + password) *and* an `is_admin` check against the `profiles` table. Sign in, write/edit articles with a Markdown toolbar and a live preview, and publish straight to the live feed. Drafts stay hidden until you publish them.
 - Article bodies may be written in **Markdown or HTML**. Both go through the same pipeline on the public feed *and* in the admin preview: `assets/js/markdown.js` (escapes first, then applies Markdown) → `assets/js/sanitize.js` (whitelist renderer — scripts/iframes/handlers/`javascript:` URLs stripped). What you preview is byte-for-byte what readers get.
 - Unpublishing is done with the **Status** field (draft / published / archived). The public renderer contains no keyword-based hiding rules — if a post is published, it is listed.
-- SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guides via `tools/build.py`.
+- SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guide pages under `/guides/`, surfaced through the Articles hub via the baked-in index in `blog.js`.
 
 ## Firebase Hosting
 
-`firebase.json` is included and ready: public dir at repo root, `tools/**` and markdown files excluded from deploys, CSP + security headers, and `no-cache` (revalidate) for **both** HTML and `/assets/**`.
+`firebase.json` is included and ready: public dir at repo root, `tools/**` and markdown files excluded from deploys, CSP + security headers, and `no-cache` (revalidate) for HTML pages (by path pattern and `**/*.html`) and `/assets/**`.
+
+### URL architecture (pretty public URLs)
+
+Users never see `.html` implementation URLs. The public URL is fully separated from the files that implement it:
+
+| Public URL | Served by (internal) |
+|---|---|
+| `/` | `index.html` |
+| `/checker`, `/generator`, `/tools`, `/about`, `/privacy`, `/terms`, `/contact`, `/faq`, `/glossary`, … | the matching `*.html` file, via `cleanUrls: true` |
+| `/articles` | `articles.html` |
+| `/articles/<static-guide-slug>` | `guides/<slug>.html`, via an explicit rewrite |
+| `/articles/<live-slug>` | `articles.html` (SPA renders the article from Supabase) |
+| `/products`, `/products/<slug>` | `products.html` (slug-based app, `products` table) |
+
+- `cleanUrls: true` 301-redirects any `.html` request to the extensionless URL; `trailingSlash: false` 301-redirects `/x/` → `/x`. Both are enforced by Firebase itself.
+- Legacy URLs are permanently preserved: `/blog.html`, `/blog`, `/guides.html`, `/guides` → `/articles`, and `/guides/<slug>(.html)` → `/articles/<slug>` (301s with capture groups — no loops; `/articles/<slug>` never redirects back).
+- Canonical tags, `og:url`, `twitter` metadata, the sitemap and all internal links use the pretty URLs; the SPA shells rewrite canonical/OG per article at runtime, so crawlers index `/articles/<slug>`, never the implementation file.
+- Invalid slugs: the apps charset-guard slugs (`^[a-z0-9]+(-[a-z0-9]+)*$`) before any URL is built, render a proper not-found view, and mark it `noindex`; unknown paths get the custom `404.html`.
+- Local verification: `node tools/preview_server.js` serves the site with Firebase-equivalent routing (same rules from `firebase.json` via `tools/hosting_router.js`), so direct navigation, refresh, deep links, back/forward and legacy redirects can all be tested before deploying.
 
 > `/assets/**` is deliberately `no-cache` rather than long-lived/immutable. Asset filenames are not content-hashed, and a 1-year `immutable` header previously left visitors running a stale `admin.js` that could not boot — see the fallback message in `assets/js/admin-boot-watchdog.js`. Revalidation costs one cheap conditional request and removes that whole failure class.
 
@@ -51,13 +74,15 @@ firebase deploy --only hosting
 ## Structure
 
 ```
-/                      → generated static pages (index.html, checker.html, guides/…, blog.html, admin/)
+/                      → generated static pages (index.html, checker.html, guides/…, articles.html, products.html, admin/)
+/assets/js/articles.js → the /articles hub + /articles/<slug> SPA renderer (pathname routing, per-article canonical/OG)
+/assets/js/products.js → the /products catalog app (/products/<slug>, slug-guarded, published-only rows)
 /assets/js/markdown.js → safe Markdown→HTML renderer (window.OMPMarkdown), shared by the feed and the admin preview
 /assets/js/sanitize.js → whitelist HTML sanitizer for CMS-provided article HTML
 /assets/js/url.js      → canonical URL safety validator (window.OMPUrl) — the single scheme allowlist used by sanitize/markdown/blog/search
 /assets/js/filevalidate.js → magic-byte + Content-Type preflight for admin document uploads (window.OMPFileValidate)
-/assets/js/search.js   → global Ctrl+K search (baked-in index incl. tools/guides/FAQ/glossary + live articles/tools)
-/firebase.json         → hosting config with security headers (deploy-ready); supabase/ and tools/ are excluded from deploys
+/assets/js/search.js   → global Ctrl+K search (baked-in index incl. tools/articles/FAQ/glossary + live articles/tools, all pretty URLs)
+/firebase.json         → hosting config: security headers, cleanUrls, legacy 301s, /articles+products rewrites; supabase/ and tools/ excluded from deploys
 /supabase/             → the intended Supabase schema + RLS + Storage policies (applied in the SQL Editor, never published)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)
@@ -69,6 +94,8 @@ firebase deploy --only hosting
 /tools/qa.py           → static QA: links, anchors, tag balance, SEO basics
 /tools/test_runtime.js → jsdom integration tests (requires: npm i jsdom)
 /tools/browser-audit.js→ full browser audit: overflow, contrast, a11y, SEO (requires: npm i playwright)
+/tools/preview_server.js→ local server with Firebase-equivalent routing (node tools/preview_server.js [port])
+/tools/hosting_router.js→ models the firebase.json redirect/rewrite/cleanUrls rules (used by tests + preview)
 ```
 
 Run a local preview:

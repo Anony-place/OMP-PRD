@@ -307,3 +307,154 @@ grant select on public.tool_categories to anon;
 grant insert on public.contact_messages to anon;         -- public form only
 -- NOTE: profiles is NOT granted to anon. Only authenticated (signed-in) users,
 -- and only their own row, per the policy above.
+
+
+-- ---------------------------------------------------------------------------
+-- 9. Seed the canonical article categories
+-- ---------------------------------------------------------------------------
+-- Articles (blog.html) is the single content hub. Every piece of content —
+-- news, analysis, how-tos and the legacy static guides — is classified with
+-- one of these categories. "guides" is the category that classifies the
+-- fifteen static /guides/*.html pages inside the hub; it is NOT a separate
+-- top-level destination anymore. Idempotent: safe to re-run.
+insert into public.article_categories (name, slug, sort_order) values
+  ('News',       'news',       1),
+  ('Security',   'security',   2),
+  ('Deep Dives', 'deep-dives', 3),
+  ('How-To',     'how-to',     4),
+  ('Guides',     'guides',     5)
+on conflict (slug) do update
+  set name      = excluded.name,
+      sort_order = excluded.sort_order;
+
+
+-- ---------------------------------------------------------------------------
+-- 10. products (public catalog served at /products and /products/<slug>)
+-- ---------------------------------------------------------------------------
+-- Products are COMMERCIAL/featured resources (books, courses, templates…).
+-- They are deliberately separate from articles (editorial/free content):
+-- different table, different app, different admin section.
+--
+-- The public products app (assets/js/products.js) reads this table through
+-- the publishable key; only published rows are visible to anon. Product
+-- URLs are slug-based (/products/<slug>) and handled by the Firebase
+-- rewrite "/products{,/**}" -> /products.html.
+create table if not exists public.products (
+  id             uuid primary key default gen_random_uuid(),
+  name           text not null,
+  slug           text not null unique,
+  summary        text,                          -- short description (cards)
+  description    text not null default '',      -- full description (Markdown/HTML, sanitized on render)
+  product_type   text not null default 'other' check (product_type in ('book','course','tool','template','resource','other')),
+  price          numeric(10,2),                 -- NULL = not applicable (e.g. free resource); 0 = free
+  currency       char(3),                       -- ISO 4217 (USD, EUR, INR…) — validated client-side too
+  cta_label      text,                          -- override for the CTA label (Buy Now / Learn More / Get It)
+  featured       boolean not null default false,
+  status         text not null default 'draft' check (status in ('draft','published','archived')),
+  featured_image text,                          -- cover image URL (public; validated scheme before render)
+  external_url   text,                          -- external purchase/landing URL (http(s) only, validated)
+  file_path      text,                          -- PRIVATE deliverable path inside the product-files bucket
+  sort_order     int not null default 0,
+  published_at   timestamptz,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  created_by     uuid references auth.users(id) on delete set null
+);
+
+-- Migrate deployments that already created the earlier minimal products
+-- table (name/slug/summary/description/status/featured_image/external_url).
+alter table public.products add column if not exists product_type text not null default 'other';
+alter table public.products add column if not exists price numeric(10,2);
+alter table public.products add column if not exists currency char(3);
+alter table public.products add column if not exists cta_label text;
+alter table public.products add column if not exists featured boolean not null default false;
+alter table public.products add column if not exists file_path text;
+alter table public.products add column if not exists published_at timestamptz;
+alter table public.products add column if not exists updated_at timestamptz not null default now();
+alter table public.products add column if not exists created_by uuid references auth.users(id) on delete set null;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'products_product_type_check') then
+    alter table public.products add constraint products_product_type_check
+      check (product_type in ('book','course','tool','template','resource','other'));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'products_status_check') then
+    alter table public.products add constraint products_status_check
+      check (status in ('draft','published','archived'));
+  end if;
+end $$;
+
+alter table public.products enable row level security;
+
+-- Public catalog only ever reads PUBLISHED rows (and never needs file_path;
+-- the app simply does not select it, and RLS keeps drafts invisible anyway).
+drop policy if exists "products_select_published" on public.products;
+create policy "products_select_published" on public.products
+  for select to anon using (status = 'published');
+
+drop policy if exists "products_select_all_admin" on public.products;
+create policy "products_select_all_admin" on public.products
+  for select to authenticated using (public.is_admin());
+
+-- Admin-only writes (mirrors the articles pattern).
+drop policy if exists "products_admin_insert" on public.products;
+create policy "products_admin_insert" on public.products
+  for insert to authenticated with check (public.is_admin());
+drop policy if exists "products_admin_update" on public.products;
+create policy "products_admin_update" on public.products
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "products_admin_delete" on public.products;
+create policy "products_admin_delete" on public.products
+  for delete to authenticated using (public.is_admin());
+
+revoke all on public.products from anon;
+grant select on public.products to anon;      -- published only (RLS)
+
+
+-- ---------------------------------------------------------------------------
+-- 10b. Storage for products
+-- ---------------------------------------------------------------------------
+-- COVERS are public marketing assets: a normal public bucket is correct.
+insert into storage.buckets (id, name, public)
+values ('products', 'products', true)
+on conflict (id) do update set public = excluded.public;
+
+drop policy if exists "products_bucket_public_read" on storage.objects;
+create policy "products_bucket_public_read" on storage.objects
+  for select to anon, authenticated
+  using (bucket_id = 'products');
+
+drop policy if exists "products_bucket_admin_write" on storage.objects;
+create policy "products_bucket_admin_insert" on storage.objects
+  for insert to authenticated with check (bucket_id = 'products' and public.is_admin());
+drop policy if exists "products_bucket_admin_update" on storage.objects;
+create policy "products_bucket_admin_update" on storage.objects
+  for update to authenticated using (bucket_id = 'products' and public.is_admin()) with check (bucket_id = 'products' and public.is_admin());
+drop policy if exists "products_bucket_admin_delete" on storage.objects;
+create policy "products_bucket_admin_delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'products' and public.is_admin());
+
+-- DELIVERABLES (e.g. paid PDFs) must NEVER be public. This bucket is private:
+-- there is deliberately NO anon read policy. Purchasers must receive files
+-- through an authorization-controlled download flow — a Supabase Edge
+-- Function that verifies the purchase (payment webhook / order table) and
+-- returns a short-lived SIGNED URL
+-- (supabase.storage.from('product-files').createSignedUrl(path, 60)).
+-- The static site never links these objects; the public product page only
+-- records that a secure download is delivered after purchase.
+insert into storage.buckets (id, name, public)
+values ('product-files', 'product-files', false)
+on conflict (id) do update set public = excluded.public;
+
+-- Admins may upload/replace deliverables; admins may read them (owner
+-- support). NO anon policy exists — that is the point.
+drop policy if exists "product_files_admin_insert" on storage.objects;
+  for insert to authenticated with check (bucket_id = 'product-files' and public.is_admin());
+drop policy if exists "product_files_admin_read" on storage.objects;
+create policy "product_files_admin_read" on storage.objects
+  for select to authenticated using (bucket_id = 'product-files' and public.is_admin());
+drop policy if exists "product_files_admin_update" on storage.objects;
+create policy "product_files_admin_update" on storage.objects
+  for update to authenticated using (bucket_id = 'product-files' and public.is_admin()) with check (bucket_id = 'product-files' and public.is_admin());
+drop policy if exists "product_files_admin_delete" on storage.objects;
+create policy "product_files_admin_delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'product-files' and public.is_admin());

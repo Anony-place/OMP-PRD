@@ -4,8 +4,12 @@
 
    Usage:
      npm i playwright && npx playwright install chromium
-     python3 -m http.server 8765 --bind 127.0.0.1   # from the repo root
+     node tools/preview_server.js 8765              # Firebase-equivalent routing
      node tools/browser-audit.js
+
+   The preview server (not a plain static server) is required: the site
+   now uses pretty public URLs (/checker, /articles/<slug>) served via
+   the redirect/rewrite rules in firebase.json.
 
    Writes tools/audit-report.json (excluded from hosting deploys
    by the tools/** ignore rule in firebase.json).
@@ -15,56 +19,56 @@ const path = require('path');
 
 const BASE_URL = process.env.OMP_AUDIT_URL || 'http://127.0.0.1:8765';
 const PAGES = [
-  '/index.html',
-  '/checker.html',
-  '/generator.html',
-  '/tools.html',
-  '/breach-check.html',
-  '/password-health.html',
-  '/entropy.html',
-  '/passphrase.html',
-  '/random-string.html',
-  '/security-checklist.html',
-  '/guides.html',
-  '/blog.html',
-  '/about.html',
-  '/contact.html',
-  '/faq.html',
-  '/glossary.html',
-  '/privacy.html',
-  '/security.html',
-  '/sitemap.html',
-  '/terms.html',
-  '/404.html',
+  '/',
+  '/checker',
+  '/generator',
+  '/tools',
+  '/breach-check',
+  '/password-health',
+  '/entropy',
+  '/passphrase',
+  '/random-string',
+  '/security-checklist',
+  '/articles',
+  '/products',
+  '/about',
+  '/contact',
+  '/faq',
+  '/glossary',
+  '/privacy',
+  '/security',
+  '/sitemap',
+  '/terms',
+  '/404',
 ];
 
 const TOOLS = [
-  '/checker.html',
-  '/generator.html',
-  '/passphrase.html',
-  '/random-string.html',
-  '/entropy.html',
-  '/password-health.html',
-  '/breach-check.html',
-  '/security-checklist.html',
+  '/checker',
+  '/generator',
+  '/passphrase',
+  '/random-string',
+  '/entropy',
+  '/password-health',
+  '/breach-check',
+  '/security-checklist',
 ];
 
 const GUIDE_PAGES = [
-  '/guides/create-strong-password.html',
-  '/guides/password-best-practices.html',
-  '/guides/common-password-mistakes.html',
-  '/guides/how-long-should-a-password-be.html',
-  '/guides/password-vs-passphrase.html',
-  '/guides/password-manager-benefits.html',
-  '/guides/are-password-managers-safe.html',
-  '/guides/two-factor-authentication.html',
-  '/guides/passkeys-explained.html',
-  '/guides/password-vs-passkey.html',
-  '/guides/after-a-data-breach.html',
-  '/guides/phishing-attacks.html',
-  '/guides/check-if-password-was-leaked.html',
-  '/guides/password-entropy.html',
-  '/guides/password-cracking-time-table.html',
+  '/articles/create-strong-password',
+  '/articles/password-best-practices',
+  '/articles/common-password-mistakes',
+  '/articles/how-long-should-a-password-be',
+  '/articles/password-vs-passphrase',
+  '/articles/password-manager-benefits',
+  '/articles/are-password-managers-safe',
+  '/articles/two-factor-authentication',
+  '/articles/passkeys-explained',
+  '/articles/password-vs-passkey',
+  '/articles/after-a-data-breach',
+  '/articles/phishing-attacks',
+  '/articles/check-if-password-was-leaked',
+  '/articles/password-entropy',
+  '/articles/password-cracking-time-table',
 ];
 
 let totalIssues = [];
@@ -331,7 +335,7 @@ async function testResponsive(page) {
 
   for (const vp of viewports) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await page.goto(BASE_URL + '/index.html', { waitUntil: 'networkidle', timeout: 10000 });
+    await page.goto(BASE_URL + '/', { waitUntil: 'networkidle', timeout: 10000 });
 
     const overflow = await page.evaluate(() => {
       return document.documentElement.scrollWidth > document.documentElement.clientWidth;
@@ -373,7 +377,7 @@ async function runAudit() {
   // Test tools
   console.log('\nPHASE 2: Tool Functionality Tests');
   for (const url of TOOLS) {
-    await testTool(page, url, url.replace('.html', ''));
+    await testTool(page, url, url.replace('/', ''));
   }
 
   // Test responsive
