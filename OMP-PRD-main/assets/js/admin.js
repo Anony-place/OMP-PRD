@@ -94,7 +94,7 @@ async function dashboard() {
   authUi = 'dashboard';
   shell(`<div class="card card-pad">
     <div class="flex justify-between items-center wrap gap-12"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Supabase-backed content management.</p></div><button id="logout" class="btn btn-ghost">Sign out</button></div>
-    <div class="admin-actions" style="margin-top:28px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
+    <div class="admin-actions" style="margin-top:28px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
     <section id="panel" style="margin-top:24px" aria-live="polite"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
@@ -175,6 +175,57 @@ async function loadTab(tab) {
       if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
       loadTab('tools');
     });
+  } else if (tab === 'products') {
+    const { data: products, error } = await supabase.from('products')
+      .select('id,name,slug,product_type,status,featured,price,currency,external_url,file_path,updated_at')
+      .order('updated_at', { ascending: false });
+    if (stale()) return;
+    if (error) return panel.innerHTML = notice(error.message);
+    const rows = products || [];
+    const money = p => (p.price == null || p.price === '') ? '' : (Number(p.price) === 0 ? 'free' : `${Number(p.price)} ${p.currency || ''}`.trim());
+    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Products</h2><button id="new-product" type="button" class="btn btn-primary btn-sm">+ New product</button></div>
+      <p class="tiny muted" style="margin-top:6px">Commercial resources (books, courses, templates…) — kept separate from editorial articles. Paid deliverables upload to a <strong>private</strong> bucket and are never linked publicly; buyers get a signed download after purchase.</p>
+      <div class="form-field" style="margin-top:14px;max-width:380px"><label for="product-filter">Filter</label><input id="product-filter" type="search" placeholder="Search name, slug, type or status…" autocomplete="off"></div>
+      <div id="product-editor"></div>
+      <div class="admin-list" id="product-list" style="margin-top:18px"></div>`;
+    const editor = document.querySelector('#product-editor');
+    const listEl = document.querySelector('#product-list');
+    const paintList = filter => {
+      const q = String(filter || '').trim().toLowerCase();
+      const shown = q ? rows.filter(p => [p.name, p.slug, p.product_type, p.status].some(v => String(v || '').toLowerCase().includes(q))) : rows;
+      listEl.innerHTML = shown.map(p => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(p.name)} ${p.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/products/${esc(p.slug)} · ${esc(p.product_type)} · ${esc(p.status)}${money(p) ? ' · ' + esc(money(p)) : ''}${p.file_path ? ' · 🔒 file' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-product="${esc(p.id)}" data-on="${p.featured ? '1' : ''}">${p.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-product="${esc(p.id)}" data-on="${p.status === 'published' ? '1' : ''}">${p.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-product="${esc(p.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-product="${esc(p.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+        || `<div class="admin-empty"><p class="muted">${rows.length ? 'No products match that filter.' : 'No products yet — create the first one.'}</p></div>`;
+      const patch = async (btn, id, set) => {
+        btn.disabled = true;
+        const { error: e2 } = await supabase.from('products').update(set).eq('id', id);
+        if (e2) { btn.disabled = false; return flash(panel, `Update failed: ${e2.message}`); }
+        loadTab('products');
+      };
+      listEl.querySelectorAll('[data-publish-product]').forEach(btn => btn.onclick = () => {
+        const publish = btn.dataset.on !== '1';
+        patch(btn, btn.dataset.publishProduct, publish ? { status: 'published', published_at: new Date().toISOString() } : { status: 'draft' });
+      });
+      listEl.querySelectorAll('[data-feature-product]').forEach(btn => btn.onclick = () => {
+        patch(btn, btn.dataset.featureProduct, { featured: btn.dataset.on !== '1' });
+      });
+      listEl.querySelectorAll('[data-edit-product]').forEach(btn => btn.onclick = async () => {
+        btn.disabled = true;
+        const { data, error: e2 } = await supabase.from('products').select('*').eq('id', btn.dataset.editProduct).single();
+        if (e2 || !data) { btn.disabled = false; return flash(panel, e2 ? e2.message : 'That product could not be loaded.'); }
+        productForm(editor, data);
+        editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      listEl.querySelectorAll('[data-delete-product]').forEach(btn => btn.onclick = async () => {
+        if (!confirm('Delete this product permanently?')) return;
+        btn.disabled = true;
+        const { error: e2 } = await supabase.from('products').delete().eq('id', btn.dataset.deleteProduct);
+        if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+        loadTab('products');
+      });
+    };
+    paintList('');
+    document.querySelector('#product-filter').addEventListener('input', e => paintList(e.target.value));
+    document.querySelector('#new-product').onclick = () => { productForm(editor, null); editor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   } else {
     const { data: msgs, error } = await supabase.from('contact_messages').select('id,name,email,message,status,created_at').order('created_at',{ascending:false}).limit(200);
     if (stale()) return;
@@ -371,6 +422,202 @@ function articleForm(host, categories, article) {
       loadTab('articles');
     } catch (err) {
       submitBtn.disabled = false; submitBtn.textContent = 'Save article';
+      flash(form, err?.message || String(err));
+    }
+  });
+}
+
+/* Commercial resources — separate from articles by design. Paid
+   deliverables go to the PRIVATE product-files bucket (never linked
+   publicly); covers go to the public products bucket. */
+const PRODUCT_TYPES = [
+  { value: 'book',     label: 'Book' },
+  { value: 'course',   label: 'Course' },
+  { value: 'tool',     label: 'Tool' },
+  { value: 'template', label: 'Template' },
+  { value: 'resource', label: 'Resource' },
+  { value: 'other',    label: 'Other' }
+];
+
+function productForm(host, product) {
+  const p = product || {name:'',slug:'',summary:'',description:'',product_type:'other',price:null,currency:'USD',cta_label:'',featured:false,status:'draft',featured_image:'',external_url:'',file_path:''};
+  const uid = product ? String(product.id).slice(0, 8) : 'new';
+  const id = n => `pf-${uid}-${n}`;
+  host.innerHTML = `<form id="product-form" class="card card-pad" style="margin-top:18px">
+    <div class="preview-head">
+      <h3 class="h-3">${product ? 'Edit product' : 'New product'} <span class="unsaved-dot" data-unsaved title="Unsaved changes" hidden></span></h3>
+      <span class="tiny muted">Full description accepts <strong>Markdown</strong> or HTML</span>
+    </div>
+    <div class="editor-row-2" style="margin-top:16px">
+      <div class="form-field"><label for="${id('name')}">Title</label><input id="${id('name')}" name="name" required value="${esc(p.name)}"></div>
+      <div class="form-field"><label for="${id('slug')}">Slug (public URL: /products/&lt;slug&gt;)</label><input id="${id('slug')}" name="slug" required value="${esc(p.slug)}" placeholder="auto-from-title"></div>
+    </div>
+    <div class="editor-row-3" style="margin-top:4px">
+      <div class="form-field"><label for="${id('type')}">Product type</label><select id="${id('type')}" name="product_type">${PRODUCT_TYPES.map(t=>`<option value="${t.value}" ${p.product_type===t.value?'selected':''}>${t.label}</option>`).join('')}</select></div>
+      <div class="form-field"><label for="${id('status')}">Status</label><select id="${id('status')}" name="status"><option value="draft" ${p.status==='draft'?'selected':''}>Draft</option><option value="published" ${p.status==='published'?'selected':''}>Published</option><option value="archived" ${p.status==='archived'?'selected':''}>Archived</option></select></div>
+      <div class="form-field"><label for="${id('cta')}">CTA label</label><input id="${id('cta')}" name="cta_label" maxlength="40" value="${esc(p.cta_label || '')}" placeholder="Buy Now / Learn More / Get It (defaults by type)"></div>
+    </div>
+    <div class="editor-row-3" style="margin-top:4px">
+      <div class="form-field"><label for="${id('price')}">Price</label><input id="${id('price')}" name="price" type="number" min="0" step="0.01" value="${p.price == null ? '' : esc(p.price)}" placeholder="empty = not shown · 0 = free"></div>
+      <div class="form-field"><label for="${id('currency')}">Currency (ISO 4217)</label><input id="${id('currency')}" name="currency" maxlength="3" value="${esc(p.currency || 'USD')}" placeholder="USD"></div>
+      <div class="form-field"><label for="${id('url')}">Purchase URL</label><input id="${id('url')}" name="external_url" type="url" inputmode="url" value="${esc(p.external_url || '')}" placeholder="https://… (external checkout / landing page)"></div>
+    </div>
+    <div class="opt-row" style="margin-top:12px"><div><div class="opt-name">Featured</div><div class="opt-desc">Pin this product to the Featured row on /products.</div></div><span class="switch"><input name="featured" type="checkbox" aria-label="Featured" ${p.featured?'checked':''}><span class="track"></span></span></div>
+    <div class="form-field" style="margin-top:12px"><label for="${id('summary')}">Short description (cards + search)</label><textarea id="${id('summary')}" name="summary" rows="2" maxlength="300">${esc(p.summary || '')}</textarea></div>
+    <div class="editor-row-2" style="margin-top:4px">
+      <div class="form-field">
+        <label for="${id('cover')}">Cover image URL</label>
+        <input id="${id('cover')}" name="featured_image" value="${esc(p.featured_image || '')}" placeholder="https://… or upload below">
+        <input id="${id('cover-file')}" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="margin-top:8px;padding:8px" aria-label="Upload cover image">
+        <p class="tiny muted" style="margin-top:6px">PNG/JPG/WebP/GIF up to 5 MB — uploaded to the public <code>products</code> covers bucket.</p>
+      </div>
+      <div class="form-field">
+        <label for="${id('file')}">Deliverable file (paid PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
+        <input id="${id('file')}" name="deliverable" type="file" accept=".pdf,.doc,.docx,.md,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" style="padding:10px">
+        ${p.file_path ? `<p class="tiny" style="margin-top:6px">🔒 Stored privately at <code>${esc(p.file_path)}</code> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_file"> remove file</label></p>` : '<p class="tiny muted" style="margin-top:6px">Optional — stored in the <strong>private</strong> <code>product-files</code> bucket. Never publicly linked: buyers receive a short-lived signed download URL from the purchase flow.</p>'}
+      </div>
+    </div>
+    <div class="editor-grid" style="margin-top:8px">
+      <div class="editor-fields">
+        <label for="${id('content')}">Full description</label>
+        <div class="toolbar" role="toolbar" aria-label="Formatting" aria-controls="${id('content')}">${TOOLBAR.map((t,i)=>`<button type="button" data-mk="${i}" title="${esc(t.title)}" aria-label="${esc(t.title)}">${esc(t.label)}</button>`).join('')}</div>
+        <textarea id="${id('content')}" name="description" class="body-editor" rows="14" spellcheck="true">${esc(p.description)}</textarea>
+      </div>
+      <div>
+        <div class="preview-head"><span class="tiny muted"><strong>Live preview</strong> — exactly what /products renders</span><button type="button" class="btn btn-ghost btn-sm" id="refresh-product-preview">Refresh</button></div>
+        <div class="preview-frame" style="padding:20px;overflow:auto"><div class="prose" id="product-preview" style="max-width:none"></div></div>
+      </div>
+    </div>
+    <div class="flex gap-8" style="margin-top:18px"><button class="btn btn-primary" type="submit">${product ? 'Save product' : 'Create product'}</button><button class="btn btn-ghost" type="button" id="cancel-product">Cancel</button></div>
+  </form>`;
+
+  const form = document.querySelector('#product-form');
+  const ta = document.querySelector(`#${id('content')}`);
+  const nameInput = document.querySelector(`#${id('name')}`);
+  const slugInput = document.querySelector(`#${id('slug')}`);
+  const coverInput = document.querySelector(`#${id('cover')}`);
+  const preview = document.querySelector('#product-preview');
+
+  const paintPreview = () => {
+    const name = nameInput.value.trim();
+    preview.innerHTML = (name ? `<h1 class="h-1" style="font-size:1.7rem">${esc(name)}</h1>` : '') + renderBody(ta.value);
+    if (window.OMPMarkdown?.demoteHeadings) window.OMPMarkdown.demoteHeadings(preview, 1);
+    if (!name && !ta.value.trim()) preview.innerHTML = '<p class="muted">Nothing to preview yet.</p>';
+  };
+  paintPreview();
+  let previewTimer = null;
+  const queuePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(paintPreview, 180); };
+  ta.addEventListener('input', queuePreview);
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
+  document.querySelector('#refresh-product-preview').onclick = paintPreview;
+
+  /* Slug follows the title until the author edits it themselves. */
+  let slugTouched = !!(product && product.slug);
+  slugInput.addEventListener('input', () => { slugTouched = true; });
+  nameInput.addEventListener('input', () => {
+    setDirty(form, true);
+    if (!slugTouched) slugInput.value = slugify(nameInput.value);
+    queuePreview();
+  });
+  form.querySelectorAll('[data-mk]').forEach(btn => btn.onclick = () => applyMarkup(ta, TOOLBAR[Number(btn.dataset.mk)]));
+
+  /* Cover upload → public products bucket → fills the URL field. */
+  document.querySelector(`#${id('cover-file')}`).addEventListener('change', async e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) throw new Error('Cover must be a PNG, JPG, WebP or GIF image.');
+      if (file.size > 5 * 1024 * 1024) throw new Error('Cover image is larger than the 5 MB limit.');
+      const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `covers/${Date.now()}-${safeName}`;
+      const { error: upErr } = await supabase.storage.from('products').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+      const { data: pub } = supabase.storage.from('products').getPublicUrl(path);
+      coverInput.value = pub.publicUrl;
+      setDirty(form, true);
+      flash(form, 'Cover uploaded — remember to save.');
+    } catch (err) {
+      flash(form, err?.message || String(err));
+    }
+  });
+
+  document.querySelector('#cancel-product').onclick = () => {
+    if (dirty && !confirm('Discard unsaved changes to this product?')) return;
+    dirty = false;
+    host.innerHTML = '';
+  };
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const f = new FormData(e.currentTarget);
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
+    try {
+      const name = String(f.get('name') || '').trim();
+      if (!name) throw new Error('A title is required.');
+      const slug = slugify(f.get('slug')) || slugify(f.get('name'));
+      if (!slug) throw new Error('A slug is required — add a title or type one in.');
+
+      /* Purchase URL: http(s) only. It becomes an <a href> on the public
+         page, so a javascript:/data: value is rejected at entry. */
+      const rawUrl = String(f.get('external_url') || '').trim();
+      const purchaseUrl = rawUrl ? (window.OMPUrl ? window.OMPUrl.safeUrl(rawUrl, { allowMailto: false }) : (/^https?:\/\//i.test(rawUrl) ? rawUrl : null)) : null;
+      if (purchaseUrl === null && rawUrl) throw new Error('Purchase URL must be a full http(s) URL.');
+      if (purchaseUrl && !/^https?:\/\//i.test(purchaseUrl)) throw new Error('Purchase URL must be an absolute http(s) URL (it opens in a new tab).');
+
+      /* Cover URL: same gate the article featured_image uses. */
+      const rawCover = String(f.get('featured_image') || '').trim();
+      const cover = rawCover ? (window.OMPUrl ? window.OMPUrl.safeUrl(rawCover, { allowDataImage: true }) : (/^(https?:|\/|#|data:image\/[a-z]+;base64,)/i.test(rawCover) ? rawCover : null)) : null;
+      if (cover === null && rawCover) throw new Error('Cover image URL must be an http(s), site-relative or raster data: image.');
+
+      /* Price/currency pair validation. */
+      const rawPrice = String(f.get('price') || '').trim();
+      let price = null;
+      if (rawPrice !== '') {
+        price = Number(rawPrice);
+        if (!isFinite(price) || price < 0) throw new Error('Price must be a zero-or-positive number.');
+        price = Math.round(price * 100) / 100;
+      }
+      const currency = price == null ? null : String(f.get('currency') || '').trim().toUpperCase();
+      if (price != null && !/^[A-Z]{3}$/.test(currency || '')) throw new Error('Currency must be a 3-letter ISO 4217 code (USD, EUR, INR…).');
+
+      /* Private deliverable upload: magic-byte preflight, forced
+         Content-Type, PRIVATE bucket — no public URL is ever derived. */
+      let filePath = p.file_path || null;
+      if (f.get('remove_file') === 'on') filePath = null;
+      const file = f.get('deliverable');
+      if (file && file.size) {
+        const v = window.OMPFileValidate ? await window.OMPFileValidate.validateFile(file) : null;
+        if (!v || !v.ok) throw new Error((v && v.error) || 'File validation failed (allowed: PDF, DOC, DOCX, MD, TXT).');
+        const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `${slug}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage.from('product-files').upload(path, file, { cacheControl: '3600', upsert: false, contentType: v.contentType || undefined });
+        if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+        filePath = `product-files/${path}`;
+      }
+
+      const status = f.get('status');
+      const payload = {
+        name,
+        slug,
+        summary: String(f.get('summary') || '').trim() || null,
+        description: f.get('description'),
+        product_type: PRODUCT_TYPES.some(t => t.value === f.get('product_type')) ? f.get('product_type') : 'other',
+        price, currency,
+        cta_label: String(f.get('cta_label') || '').trim().slice(0, 40) || null,
+        featured: f.get('featured') === 'on',
+        status,
+        featured_image: cover,
+        external_url: purchaseUrl,
+        file_path: filePath,
+        published_at: status === 'published' ? (p.published_at || new Date().toISOString()) : null
+      };
+      const result = product ? await supabase.from('products').update(payload).eq('id', product.id) : await supabase.from('products').insert(payload);
+      if (result.error) throw result.error;
+      dirty = false;
+      loadTab('products');
+    } catch (err) {
+      submitBtn.disabled = false; submitBtn.textContent = product ? 'Save product' : 'Create product';
       flash(form, err?.message || String(err));
     }
   });

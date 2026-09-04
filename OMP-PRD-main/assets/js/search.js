@@ -11,7 +11,7 @@
 
   var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-  var CACHE_KEY = 'omp-search-live-v2';
+  var CACHE_KEY = 'omp-search-live-v3';
   var CACHE_TTL = 10 * 60 * 1000; /* 10 minutes */
   var MAX_RESULTS = 12;
 
@@ -31,6 +31,7 @@
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
     { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools', kw: 'tools overview all list utilities' },
     { type: 'Page', title: 'Articles', desc: 'Every read in one hub: security news, deep dives, how-tos and guides.', url: '/articles', kw: 'blog articles posts news updates guides learn tutorials help content hub' },
+    { type: 'Product Page', title: 'Products', desc: 'Books, courses, tools and resources from OopsMyPassword.', url: '/products', kw: 'products shop store buy purchase book books course template resource pricing' },
     { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about', kw: 'about team mission privacy first who' },
     { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact', kw: 'contact email support feedback report' },
     { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq', kw: 'faq questions answers help common' },
@@ -129,6 +130,7 @@
       var headers = { apikey: SUPABASE_KEY };
       var qA = SUPABASE_URL + '/rest/v1/articles?select=slug,title,summary&status=eq.published&order=published_at.desc.nullslast&limit=200';
       var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
+      var qP = SUPABASE_URL + '/rest/v1/products?select=slug,name,summary,product_type&status=eq.published&order=sort_order.asc&limit=100';
       /* A non-OK response is a FAILURE, not an empty table. Treating it
          as [] used to cache "no articles" for 10 minutes. */
       function safeJson(r) {
@@ -137,7 +139,8 @@
       }
       Promise.all([
         fetch(qA, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
+        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
+        fetch(qP, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
       ]).then(function (res) {
         var seen = {};
         /* URLs already covered by the baked-in index — skip duplicates
@@ -162,6 +165,16 @@
           if (seen[normalizeUrl(raw)]) return;
           seen[normalizeUrl(raw)] = 1;
           items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: raw, kw: '' });
+        });
+        /* Commercial catalog — slug-guarded like articles, routed to
+           /products/<slug>. */
+        (res[2] || []).forEach(function (p) {
+          if (!p || !p.slug) return;
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug))) return;
+          var url = '/products/' + encodeURIComponent(p.slug);
+          if (seen[normalizeUrl(url)]) return;
+          seen[normalizeUrl(url)] = 1;
+          items.push({ type: 'Product', title: p.name || p.slug, desc: p.summary || (p.product_type ? String(p.product_type) : ''), url: url, kw: String(p.product_type || '') });
         });
         /* Only cache a successful, non-empty lookup. */
         if (!failed && items.length) {
@@ -236,6 +249,8 @@
     + '.omp-sr-badge.b-article{color:#67E8F9;background:rgba(34,211,238,.12)}'
     + '.omp-sr-badge.b-tool{color:#A5B4FC;background:rgba(99,102,241,.14)}'
     + '.omp-sr-badge.b-guide{color:#C4B5FD;background:rgba(139,92,246,.14)}'
+    + '.omp-sr-badge.b-product{color:#FDE68A;background:rgba(234,179,8,.14)}'
+    + '.omp-sr-badge.b-productpage{color:#FCD34D;background:rgba(245,158,11,.12)}'
     + '.omp-sr-badge.b-page{color:var(--muted);background:rgba(148,163,184,.12)}'
     + '.omp-sr-badge.b-faq{color:#FDE68A;background:rgba(234,179,8,.14)}'
     + '.omp-sr-badge.b-glossary{color:#A7F3D0;background:rgba(16,185,129,.14)}'
