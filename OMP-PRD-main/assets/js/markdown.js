@@ -47,13 +47,19 @@
       .replace(/&amp;/g, '&');
   }
 
-  /* Only http(s), mailto, site-relative, anchor and raster data
-     images survive. javascript:, vbscript:, data:text/html … die. */
+  /* Only http(s), mailto, site-relative, anchor, parent-relative and
+     raster data images survive. javascript:, vbscript:, data:text/html
+     … die. Delegate to the canonical validator; escape() on output is
+     what keeps a URL from breaking out of an attribute, so attrSafe is
+     deliberately off here. */
   function safeUrl(value) {
     var v = String(value == null ? '' : value).trim();
     if (!v) return null;
     /* Strip control characters and HTML-escaped whitespace tricks. */
     v = v.replace(/[\u0000-\u0020]+/g, '');
+    if (window.OMPUrl && window.OMPUrl.safeUrl) {
+      return window.OMPUrl.safeUrl(v, { attrSafe: false, allowMailto: true, allowDataImage: true });
+    }
     if (/^(https?:|mailto:|\/|#|\.\.?\/)/i.test(v)) return v;
     if (/^data:image\/(png|jpe?g|gif|webp|avif);base64,/i.test(v)) return v;
     return null;

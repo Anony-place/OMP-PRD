@@ -54,8 +54,11 @@ firebase deploy --only hosting
 /                      → generated static pages (index.html, checker.html, guides/…, blog.html, admin/)
 /assets/js/markdown.js → safe Markdown→HTML renderer (window.OMPMarkdown), shared by the feed and the admin preview
 /assets/js/sanitize.js → whitelist HTML sanitizer for CMS-provided article HTML
-/assets/js/search.js   → global Ctrl+K search (baked-in index + live articles/tools)
-/firebase.json         → hosting config with security headers (deploy-ready)
+/assets/js/url.js      → canonical URL safety validator (window.OMPUrl) — the single scheme allowlist used by sanitize/markdown/blog/search
+/assets/js/filevalidate.js → magic-byte + Content-Type preflight for admin document uploads (window.OMPFileValidate)
+/assets/js/search.js   → global Ctrl+K search (baked-in index incl. tools/guides/FAQ/glossary + live articles/tools)
+/firebase.json         → hosting config with security headers (deploy-ready); supabase/ and tools/ are excluded from deploys
+/supabase/             → the intended Supabase schema + RLS + Storage policies (applied in the SQL Editor, never published)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)
 /assets/js/*.js        → page behaviors

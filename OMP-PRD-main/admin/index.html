@@ -20,9 +20,12 @@
     </div>
   </main>
   <!-- Shared render pipeline: the editor preview must produce exactly what
-       /blog.html serves, so both load sanitize.js + markdown.js. -->
+       /blog.html serves, so both load sanitize.js + markdown.js. url.js is
+       the shared URL validator those modules delegate to. -->
+  <script src="/assets/js/url.js"></script>
   <script src="/assets/js/sanitize.js"></script>
   <script src="/assets/js/markdown.js"></script>
+  <script src="/assets/js/filevalidate.js"></script>
   <script src="/assets/js/admin-boot-watchdog.js"></script>
   <script type="module" src="/assets/js/admin.js"></script>
 </body>

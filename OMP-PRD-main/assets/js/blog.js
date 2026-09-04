@@ -60,10 +60,16 @@
     return window.OMPSanitize ? window.OMPSanitize(source || '') : '';
   }
 
-  /* Only http(s), site-relative and # URLs are allowed. */
+  /* Only http(s), site-relative and # URLs are allowed. Delegates to the
+     canonical validator; attrSafe blocks attribute break-out, noUpLevel
+     keeps the href on-site (no ../), and mailto is not allowed here. */
   function safeUrl(value) {
     var v = String(value == null ? '' : value).trim();
     if (!v || /["'<>\\]/.test(v)) return '';
+    if (window.OMPUrl && window.OMPUrl.safeUrl) {
+      var u = window.OMPUrl.safeUrl(v, { attrSafe: true, noUpLevel: true, allowMailto: false });
+      return u === null ? '' : u;
+    }
     return /^(https?:\/\/|\/|#)/i.test(v) ? v : '';
   }
 
@@ -114,7 +120,7 @@
       '<div class="meta" style="margin-top:10px">' + esc(fmtDate(a.published_at || a.created_at)) + ' · ' + minutes(a.content) + ' min read</div>' +
       (a.summary && String(a.summary).trim() ? '<p class="lead" style="margin-top:18px">' + esc(a.summary) + '</p>' : '') +
       '<div class="prose" style="margin-top:28px">' + renderContent(a.content) + '</div>' +
-      (safeUrl(a.document_url) ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + attr(safeUrl(a.document_url)) + '" download rel="noopener">📄 Download document</a></p>' : '') +
+      (safeUrl(a.document_url) ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + attr(safeUrl(a.document_url)) + '" target="_blank" rel="noopener noreferrer">📄 Download document</a></p>' : '') +
       '</div></article>';
     /* The article title above is the page's only <h1>; demote any "#" heading
        the author put in the body so the outline stays valid. */

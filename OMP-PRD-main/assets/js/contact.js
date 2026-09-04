@@ -16,6 +16,16 @@
   var btn = form.querySelector('button[type="submit"]');
   var hp = form.querySelector('[data-contact-hp]');
   var btnHTML = btn ? btn.innerHTML : '';
+  /* Cooldown: a single human can't submit more than once every 12s. The
+     database row-level policy and any server-side rate limit remain the
+     real spam gate; this only stops accidental double-clicks/refreshes. */
+  var LAST_SUBMIT_KEY = 'omp-contact-last';
+  var COOLDOWN_MS = 12000;
+  function cooldownRemaining() {
+    var last = 0;
+    try { last = parseInt(sessionStorage.getItem(LAST_SUBMIT_KEY) || '0', 10) || 0; } catch (e) { /* private mode */ }
+    return Math.max(0, COOLDOWN_MS - (Date.now() - last));
+  }
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -53,9 +63,29 @@
       window.ompToast('Please fill in all fields first');
       return;
     }
+    if (name.length > 100) {
+      window.ompToast('Your name is too long (max 100 characters)');
+      nameEl.focus();
+      return;
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       window.ompToast('That email address does not look right');
       emailEl.focus();
+      return;
+    }
+    if (email.length > 200) {
+      window.ompToast('That email address is too long');
+      emailEl.focus();
+      return;
+    }
+    if (msg.length > 5000) {
+      window.ompToast('Your message is too long (max 5,000 characters)');
+      msgEl.focus();
+      return;
+    }
+    var wait = cooldownRemaining();
+    if (wait > 0) {
+      window.ompToast('Please wait a few seconds before sending again');
       return;
     }
 
@@ -79,6 +109,7 @@
     }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       form.reset();
+      try { sessionStorage.setItem(LAST_SUBMIT_KEY, String(Date.now())); } catch (e) { /* ignore */ }
       showNote('<strong>Message sent.</strong> Thanks — a human reads every submission and we\u2019ll reply to <span class="mono">' + esc(email) + '</span> soon. Didn\u2019t reach us? <a data-mailto href="mailto:' + MAILTO + '">Email us directly</a>.');
       window.ompToast('Message sent — thank you!');
     }).catch(function () {
