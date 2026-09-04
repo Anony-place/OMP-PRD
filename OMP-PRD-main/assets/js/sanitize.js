@@ -107,6 +107,9 @@
       if (!ALLOWED_TAGS[tag]) { walk(node, dstParent); continue; } /* unwrap */
       var dst = document.createElement(tag);
       cleanAttrs(node, dst);
+      /* An <img> whose src was rejected (javascript:, data:text/html,
+         missing) must not survive as an empty broken-image element. */
+      if (tag === 'img' && !dst.getAttribute('src')) continue;
       walk(node, dst);
       dstParent.appendChild(dst);
     }

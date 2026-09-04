@@ -15,21 +15,23 @@
 | Breach Check | ✅ Live (demo) | Educational k-anonymity demo — clearly labeled, **not** a live breach database |
 | Security Checklist | ✅ Live | 16 habits; progress stored in `localStorage` on-device only |
 
-Plus: 10 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps.
+Plus: 15 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps, and a global search (Ctrl+K) covering tools, guides, pages and live articles.
 
 ## No-backend articles (dynamic feed + admin panel)
 
 Publishing content without running a backend:
 
 - **`/blog.html`** — the Articles feed, rendered client-side from the **articles table** in Supabase (public read-only access via a publishable key). Publishing happens from the admin panel.
-- **`/admin/`** — the **Article Manager**, protected by **Supabase Auth** (email + password). Sign in, write/edit articles with a live preview editor, and publish straight to the live feed. Drafts stay hidden until you publish them.
-- Article HTML is sanitized with a whitelist renderer (`assets/js/sanitize.js` — scripts/iframes/handlers/`javascript:` URLs stripped) before display.
+- **`/admin/`** — the **Article Manager**, protected by **Supabase Auth** (email + password) *and* an `is_admin` check against the `profiles` table. Sign in, write/edit articles with a Markdown toolbar and a live preview, and publish straight to the live feed. Drafts stay hidden until you publish them.
+- Article bodies may be written in **Markdown or HTML**. Both go through the same pipeline on the public feed *and* in the admin preview: `assets/js/markdown.js` (escapes first, then applies Markdown) → `assets/js/sanitize.js` (whitelist renderer — scripts/iframes/handlers/`javascript:` URLs stripped). What you preview is byte-for-byte what readers get.
+- Unpublishing is done with the **Status** field (draft / published / archived). The public renderer contains no keyword-based hiding rules — if a post is published, it is listed.
 - SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guides via `tools/build.py`.
-- The panel needs no login because it can change nothing outside the owner's browser.
 
 ## Firebase Hosting
 
-`firebase.json` is included and ready: public dir at repo root, `tools/**`, markdown files and Node test scripts excluded from deploys, CSP + security headers, long-term caching for `/assets`, `no-cache` for HTML.
+`firebase.json` is included and ready: public dir at repo root, `tools/**` and markdown files excluded from deploys, CSP + security headers, and `no-cache` (revalidate) for **both** HTML and `/assets/**`.
+
+> `/assets/**` is deliberately `no-cache` rather than long-lived/immutable. Asset filenames are not content-hashed, and a 1-year `immutable` header previously left visitors running a stale `admin.js` that could not boot — see the fallback message in `assets/js/admin-boot-watchdog.js`. Revalidation costs one cheap conditional request and removes that whole failure class.
 
 > Note: the Python build tooling (`tools/`) and test scripts are **excluded from hosting deploys** — only the static site itself is published.
 
@@ -42,7 +44,7 @@ firebase deploy --only hosting
 
 - **All analysis is client-side JavaScript.** Passwords never leave the tab: no network, no storage, no logs, nothing in URLs, nothing in analytics.
 - Privacy-first by design: all password tools run 100% client-side; nothing you type is ever sent anywhere.
-- Dynamic UI writes with `textContent` only; no `eval()`, no unsafe `innerHTML`.
+- Dynamic UI writes use `textContent` or escaped/whitelisted markup only; no `eval()`, and article HTML is always re-sanitized before it reaches the DOM.
 - No third-party scripts, fonts, or trackers.
 - Auth exists only in the private admin panel (`/admin/`, Supabase Auth). The public site has no login, no signup, and no analytics.
 
@@ -50,7 +52,9 @@ firebase deploy --only hosting
 
 ```
 /                      → generated static pages (index.html, checker.html, guides/…, blog.html, admin/)
+/assets/js/markdown.js → safe Markdown→HTML renderer (window.OMPMarkdown), shared by the feed and the admin preview
 /assets/js/sanitize.js → whitelist HTML sanitizer for CMS-provided article HTML
+/assets/js/search.js   → global Ctrl+K search (baked-in index + live articles/tools)
 /firebase.json         → hosting config with security headers (deploy-ready)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)
@@ -61,6 +65,7 @@ firebase deploy --only hosting
 /tools/omp_build/      → page bodies, guides content
 /tools/qa.py           → static QA: links, anchors, tag balance, SEO basics
 /tools/test_runtime.js → jsdom integration tests (requires: npm i jsdom)
+/tools/browser-audit.js→ full browser audit: overflow, contrast, a11y, SEO (requires: npm i playwright)
 ```
 
 Run a local preview:

@@ -14,16 +14,22 @@
   --border-strong: rgba(255, 255, 255, 0.14);
   --text: #F8FAFC;
   --muted: #94A3B8;
-  --muted-2: #64748B;
-  --purple: #8B5CF6;
-  --blue: #6366F1;
+  /* Contrast tokens: --muted-2/--purple/--blue were 3.5-4.2:1 against the
+     dark surfaces (WCAG AA needs 4.5:1 for normal text). These are the same
+     hues, nudged to >=4.5:1 on --bg, --bg-soft, --surface and --card. */
+  --muted-2: #7C8BA1;
+  --purple: #956AF7;
+  --blue: #7678F3;
   --cyan: #22D3EE;
   --green: #22C55E;
   --yellow: #FACC15;
   --red: #FB7185;
   --orange: #FB923C;
 
-  --brand-grad: linear-gradient(135deg, #8B5CF6 0%, #6366F1 55%, #22D3EE 130%);
+  /* .grad-text is real text (background-clip:text) in the 1.05rem/700 brand
+     wordmark, so every stop needs 4.5:1 on the nav background. Uses the
+     accessible --purple/--blue values above. */
+  --brand-grad: linear-gradient(135deg, #956AF7 0%, #7678F3 55%, #22D3EE 130%);
   --brand-grad-soft: linear-gradient(135deg, rgba(139, 92, 246, .16), rgba(99, 102, 241, .16));
   --meter-grad: linear-gradient(90deg, #FB7185 0%, #FB923C 28%, #FACC15 50%, #A3E635 72%, #22C55E 100%);
 
@@ -55,7 +61,21 @@
   --border-strong: rgba(15, 23, 42, 0.16);
   --text: #0B1220;
   --muted: #475569;
-  --muted-2: #7C8AA0;
+  --muted-2: #606E84;
+  /* The neon accents are tuned for a near-black background: on white they
+     measured 1.4-2.5:1 (WCAG needs 4.5:1 for text, 3:1 for icons). These
+     same-hue 600/700-grade values all clear 4.5:1 on every light surface.
+     Decorative gradients below keep their original literal stops. */
+  --purple: #7C3AED;
+  --blue: #4F46E5;
+  --cyan: #0E7490;
+  --green: #167F3D;
+  --yellow: #836903;
+  --red: #DC0625;
+  --orange: #C2410C;
+  /* .grad-text is real text (background-clip:text), so the wordmark gradient
+     needs accessible stops on a light background too. */
+  --brand-grad: linear-gradient(135deg, #7C3AED 0%, #4F46E5 55%, #0E7490 130%);
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
   --shadow-md: 0 10px 28px -10px rgba(15, 23, 42, .14);
   --shadow-lg: 0 24px 60px -18px rgba(15, 23, 42, .18);
@@ -101,7 +121,8 @@ ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
   position: absolute;
   left: 12px; top: -60px;
   z-index: 200;
-  background: var(--purple);
+  /* Fixed deep violet: white on var(--purple) measured 3.7-4.2:1. */
+  background: #6D28D9;
   color: #fff;
   padding: 10px 16px;
   border-radius: 10px;
@@ -225,7 +246,10 @@ body.nav-open { overflow: hidden; }
 }
 .btn:active { transform: translateY(1px) scale(.99); }
 .btn-primary {
-  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  /* Same violet->indigo brand ramp, one shade deeper: white on the old stops
+     measured 4.23:1 / 4.47:1, just under the 4.5:1 AA threshold. Button
+     labels are .95rem/600, which WCAG counts as normal (not large) text. */
+  background: linear-gradient(135deg, #7C3AED, #4F46E5);
   color: #fff;
   box-shadow: 0 6px 24px -8px rgba(124, 92, 246, .55);
 }
@@ -616,7 +640,45 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   padding: 18px;
   overflow-x: auto;
 }
-.prose pre code { background: none; border: none; padding: 0; font-size: .85rem; line-height: 1.7; }
+.prose pre code { background: none; border: none; padding: 0; font-size: .85rem; line-height: 1.7; white-space: pre; }
+/* Article bodies are authored in Markdown (see assets/js/markdown.js), so the
+   prose block has to style everything that renderer can emit — headings,
+   tables, quotes, rules and images included. */
+.prose h1 { font-size: 1.85rem; margin-top: 34px; letter-spacing: -0.02em; }
+.prose h4 { font-size: 1.02rem; margin-top: 24px; }
+.prose h5, .prose h6 { font-size: .95rem; margin-top: 20px; color: var(--muted); }
+.prose h2, .prose h3, .prose h4 { scroll-margin-top: calc(var(--nav-h) + 20px); }
+.prose img { border-radius: var(--radius); border: 1px solid var(--border); height: auto; }
+.prose hr { border: 0; border-top: 1px solid var(--border); margin: 34px 0; }
+.prose blockquote {
+  border-left: 3px solid var(--purple);
+  background: var(--bg-soft);
+  padding: 14px 18px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--muted);
+}
+.prose blockquote p { color: inherit; }
+.prose del { color: var(--muted); }
+.prose kbd, .prose samp {
+  font-family: var(--font-mono); font-size: .84em;
+  border: 1px solid var(--border-strong); border-bottom-width: 2px;
+  border-radius: 6px; padding: 1px 6px; background: var(--bg-soft);
+}
+/* display:block + overflow-x:auto keeps a wide Markdown table from forcing
+   horizontal page scroll on small screens (the sanitizer strips class, so the
+   table cannot be wrapped in .table-scroll). */
+.prose table {
+  display: block; width: 100%; max-width: 100%;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border-collapse: collapse; font-size: .92rem;
+}
+.prose thead { background: var(--bg-soft); }
+.prose th, .prose td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.prose th {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--muted); font-weight: 700; white-space: nowrap;
+}
+.prose tbody tr:last-child td { border-bottom: none; }
 .callout {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 16px 18px;
@@ -719,7 +781,10 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 }
 
 /* ---------- Page hero (inner pages) ---------- */
-.page-hero { padding: 72px 0 40px; position: relative; }
+/* overflow:hidden is required: the ::before glow bleeds past the box with
+   inset:-30% -20%, which made every one of the 19 inner pages wider than the
+   viewport (scrollWidth > clientWidth). .hero and .cta-band already clip. */
+.page-hero { padding: 72px 0 40px; position: relative; overflow: hidden; }
 .page-hero::before {
   content: "";
   position: absolute; inset: -30% -20% auto; height: 480px;
@@ -877,29 +942,3 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   body { background: #fff; color: #000; }
 }
 
-
-/* ---------- Dynamic articles (blog) + admin badges ---------- */
-.adm-badge {
-  font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
-}
-.adm-pub { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
-.adm-draft { background: rgba(250,204,21,.1); color: var(--yellow); border: 1px solid rgba(250,204,21,.28); }
-.adm-preview { background: rgba(34,211,238,.1); color: var(--cyan); border: 1px solid rgba(34,211,238,.3); }
-.adm-override { background: rgba(139,92,246,.12); color: var(--purple); border: 1px solid rgba(139,92,246,.32); }
-
-/* blog dynamic rendering */
-.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 1060px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr; } }
-.blog-tag {
-  font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--purple);
-}
-.empty-state {
-  text-align: center; padding: 72px 20px;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-lg);
-}
-.article-back { display: inline-flex; align-items: center; gap: 8px; color: var(--purple); font-weight: 600; font-size: .9rem; margin-bottom: 20px; }
-.article-back:hover { text-decoration: underline; text-underline-offset: 3px; }

@@ -11,7 +11,7 @@
 
   var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-  var CACHE_KEY = 'omp-search-live-v1';
+  var CACHE_KEY = 'omp-search-live-v2';
   var CACHE_TTL = 10 * 60 * 1000; /* 10 minutes */
   var MAX_RESULTS = 12;
 
@@ -60,34 +60,79 @@
   ];
 
   /* ---------- Live index: Supabase articles + tools registry ---------- */
+
+  /* Search rows are rendered straight into an href, and tool `route`
+     values come from the database — so they are scheme-checked here.
+     Anything that is not site-relative, an in-page anchor, or a URL on
+     this site's own origin is dropped. */
+  function safeResultUrl(value) {
+    var v = String(value == null ? '' : value).trim();
+    if (!v || /["'<>\\\u0000-\u0020]/.test(v)) return '';
+    if (/^(\/|#)/.test(v) && !/^\/\//.test(v)) return v;
+    if (/^https?:\/\//i.test(v)) {
+      try { if (new URL(v).origin === location.origin) return new URL(v).pathname + new URL(v).search + new URL(v).hash; }
+      catch (e) { return ''; }
+    }
+    return '';
+  }
+
   var livePromise = null;
   function fetchLive() {
     if (livePromise) return livePromise;
     livePromise = new Promise(function (resolve) {
       var items = [];
+      var failed = false;
       try {
         var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-        if (cached && cached.items && Date.now() - cached.t < CACHE_TTL) { resolve(cached.items); return; }
+        if (cached && cached.items && cached.items.length && Date.now() - cached.t < CACHE_TTL) { resolve(cached.items); return; }
       } catch (e) { /* storage unavailable — fall through to network */ }
       var headers = { apikey: SUPABASE_KEY };
       var qA = SUPABASE_URL + '/rest/v1/articles?select=slug,title,summary&status=eq.published&order=published_at.desc.nullslast&limit=200';
       var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
-      function safeJson(r) { return r.ok ? r.json() : Promise.resolve([]); }
+      /* A non-OK response is a FAILURE, not an empty table. Treating it
+         as [] used to cache "no articles" for 10 minutes. */
+      function safeJson(r) {
+        if (!r.ok) { failed = true; return Promise.resolve([]); }
+        return r.json().catch(function () { failed = true; return []; });
+      }
       Promise.all([
-        fetch(qA, { headers: headers }).then(safeJson).catch(function () { return []; }),
-        fetch(qT, { headers: headers }).then(safeJson).catch(function () { return []; })
+        fetch(qA, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
+        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
       ]).then(function (res) {
+        var seen = {};
+        /* URLs already covered by the baked-in index — skip duplicates
+           so a tools-registry row cannot list the same page twice. */
+        STATIC_INDEX.forEach(function (it) { seen[normalizeUrl(it.url)] = 1; });
         (res[0] || []).forEach(function (a) {
-          if (a && a.slug) items.push({ type: 'Article', title: a.title || a.slug, desc: a.summary || '', url: '/blog.html#/' + a.slug, kw: '' });
+          if (!a || !a.slug) return;
+          var url = '/blog.html#/' + encodeURIComponent(a.slug);
+          if (seen[normalizeUrl(url)]) return;
+          seen[normalizeUrl(url)] = 1;
+          items.push({ type: 'Article', title: a.title || a.slug, desc: a.summary || '', url: url, kw: '' });
         });
         (res[1] || []).forEach(function (t) {
-          if (t && (t.slug || t.route)) items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: t.route || '/tools.html', kw: '' });
+          if (!t || !(t.slug || t.route)) return;
+          var raw = safeResultUrl(t.route) || '/tools.html';
+          if (seen[normalizeUrl(raw)]) return;
+          seen[normalizeUrl(raw)] = 1;
+          items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: raw, kw: '' });
         });
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), items: items })); } catch (e) { /* ignore */ }
+        /* Only cache a successful, non-empty lookup. */
+        if (!failed && items.length) {
+          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), items: items })); } catch (e) { /* ignore */ }
+        }
         resolve(items);
-      }).catch(function () { resolve(items); });
+      }).catch(function () { failed = true; resolve(items); });
     });
+    /* Let a later open retry after a transient network failure. */
+    livePromise.then(function (items) {
+      if (!items || !items.length) livePromise = null;
+    }, function () { livePromise = null; });
     return livePromise;
+  }
+
+  function normalizeUrl(u) {
+    return String(u || '').replace(/\/+$/, '').toLowerCase();
   }
 
   /* ---------- Ranking ---------- */
@@ -108,11 +153,16 @@
   function searchAll(q, live) {
     var pool = STATIC_INDEX.concat(live || []);
     var scored = [];
+    var seen = {};
     for (var i = 0; i < pool.length; i++) {
+      var url = safeResultUrl(pool[i].url);
+      if (!url) continue;                       /* never render an unsafe href */
+      var key = normalizeUrl(url) + '|' + String(pool[i].title || '').toLowerCase();
+      if (seen[key]) continue;                  /* static + live duplicates */
       var s = scoreItem(pool[i], q);
-      if (s > 0) scored.push([s, pool[i]]);
+      if (s > 0) { seen[key] = 1; scored.push([s, pool[i]]); }
     }
-    scored.sort(function (a, b) { return b[0] - a[0]; });
+    scored.sort(function (a, b) { return b[0] - a[0] || String(a[1].title).localeCompare(String(b[1].title)); });
     return scored.slice(0, MAX_RESULTS).map(function (p) { return p[1]; });
   }
 
@@ -148,6 +198,15 @@
     + '.omp-sr-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px}'
     + '.omp-sr-foot{display:flex;gap:14px;align-items:center;padding:9px 16px;border-top:1px solid var(--border);color:var(--muted-2);font-size:11.5px;flex-wrap:wrap}'
     + '.omp-sr-foot kbd{font:600 10px/1 var(--font-mono);border:1px solid var(--border);border-radius:4px;padding:2px 4px;background:var(--bg-soft)}'
+    /* The mobile-menu button used to be styled entirely from an inline
+       cssText and its <svg> had no width/height, so it rendered at the
+       replaced-element default (~300x150) and blew the menu row open. */
+    + '.mobile-search-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md,12px);color:var(--text);font:inherit;font-size:15px;font-weight:500;text-align:left;cursor:pointer;margin-bottom:12px}'
+    + '.mobile-search-btn:hover{border-color:var(--border-strong);color:var(--text)}'
+    + '.mobile-search-btn span{display:flex;align-items:center;gap:10px;min-width:0}'
+    + '.mobile-search-btn svg{width:18px;height:18px;flex:none;color:var(--muted)}'
+    + '.mobile-search-btn kbd{flex:none;font:600 10.5px/1 var(--font-mono);color:var(--muted-2);border:1px solid var(--border);border-radius:4px;padding:3px 5px;background:var(--bg-soft)}'
+    + '.omp-search-trigger[aria-expanded="true"]{color:var(--text);border-color:var(--border-strong)}'
     + '@media (prefers-reduced-motion:reduce){.omp-search-dialog{transition:none}}';
   function injectStyles() {
     if (!document.getElementById('omp-search-css')) {
@@ -184,8 +243,8 @@
 
   function rowHtml(item, idx, q) {
     var on = idx === activeIdx;
-    return '<li role="option" aria-selected="' + on + '" data-idx="' + idx + '">' +
-      '<a class="omp-sr-row" data-active="' + (on ? '1' : '0') + '" href="' + escapeHtml(item.url) + '">' +
+    return '<li role="option" id="omp-sr-opt-' + idx + '" aria-selected="' + on + '" data-idx="' + idx + '">' +
+      '<a class="omp-sr-row" data-active="' + (on ? '1' : '0') + '" href="' + escapeHtml(safeResultUrl(item.url) || '#') + '">' +
       '<span class="omp-sr-badge ' + badgeClass(item.type) + '">' + escapeHtml(item.type) + '</span>' +
       '<span class="omp-sr-main"><span class="omp-sr-title">' + hi(item.title, q) + '</span>' +
       (item.desc ? '<span class="omp-sr-desc">' + hi(item.desc, q) + '</span>' : '') +
@@ -204,6 +263,9 @@
     }
     currentResults = results;
     activeIdx = results.length ? 0 : -1;
+    /* The visual highlight and the AT announcement must stay in sync. */
+    input.setAttribute('aria-activedescendant', activeIdx >= 0 ? 'omp-sr-opt-' + activeIdx : '');
+    input.setAttribute('aria-expanded', overlay.hidden ? 'false' : 'true');
     if (!results.length) {
       listEl.innerHTML = '<li class="omp-sr-empty">No matches for "' + escapeHtml(q) +
         '". Try "passphrase", "2fa" or "breach".</li>';
@@ -214,8 +276,9 @@
 
   function setActive(idx) {
     var n = currentResults.length;
-    if (!n) { activeIdx = -1; return; }
+    if (!n) { activeIdx = -1; if (input) input.setAttribute('aria-activedescendant', ''); return; }
     activeIdx = ((idx % n) + n) % n;
+    if (input) input.setAttribute('aria-activedescendant', 'omp-sr-opt-' + activeIdx);
     var rows = listEl.querySelectorAll('a.omp-sr-row');
     for (var i = 0; i < rows.length; i++) {
       var on = i === activeIdx;
@@ -227,12 +290,45 @@
 
   var TRIGGER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>';
 
+  /* While the modal is open the page behind it must not be reachable by
+     screen readers or by Tab. aria-hidden is toggled only on elements
+     that did not already carry it, so nothing is lost on restore. */
+  var hiddenSiblings = [];
+  var savedScrollLock = null;
+  function setPageInert(on) {
+    if (on) {
+      hiddenSiblings = [];
+      var kids = document.body.children;
+      for (var i = 0; i < kids.length; i++) {
+        var el = kids[i];
+        if (el === overlay || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+        if (el.hasAttribute('aria-hidden')) continue;
+        el.setAttribute('aria-hidden', 'true');
+        hiddenSiblings.push(el);
+      }
+    } else {
+      hiddenSiblings.forEach(function (el) { el.removeAttribute('aria-hidden'); });
+      hiddenSiblings = [];
+    }
+  }
+
+  function setTriggerState(open) {
+    ['omp-search-trigger', 'omp-search-mobile-trigger'].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b && b.hasAttribute('aria-expanded')) b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    if (input) input.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
   function openSearch() {
     if (!overlay) return;
     lastFocus = document.activeElement;
     overlay.hidden = false;
     requestAnimationFrame(function () { if (overlay) overlay.classList.add('omp-open'); });
+    savedScrollLock = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    setPageInert(true);
+    setTriggerState(true);
     input.value = '';
     render();
     input.focus();
@@ -246,8 +342,24 @@
     if (!overlay || overlay.hidden) return;
     overlay.classList.remove('omp-open');
     overlay.hidden = true;
-    document.body.style.overflow = '';
+    document.body.style.overflow = savedScrollLock == null ? '' : savedScrollLock;
+    savedScrollLock = null;
+    setPageInert(false);
+    setTriggerState(false);
+    if (input) input.setAttribute('aria-activedescendant', '');
     if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
+  }
+
+  /* Keep Tab inside the dialog while it is open. */
+  function trapFocus(e) {
+    if (e.key !== 'Tab' || !overlay || overlay.hidden) return;
+    var focusable = overlay.querySelectorAll('input, a[href], button:not([disabled])');
+    if (!focusable.length) return;
+    var first = focusable[0], last = focusable[focusable.length - 1];
+    var active = document.activeElement;
+    if (e.shiftKey && (active === first || !overlay.contains(active))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    else if (!overlay.contains(active)) { e.preventDefault(); first.focus(); }
   }
 
   function onGlobalKey(e) {
@@ -258,6 +370,7 @@
       return;
     }
     if (k === 'Escape' && overlay && !overlay.hidden) { e.preventDefault(); closeSearch(); return; }
+    if (overlay && !overlay.hidden) { trapFocus(e); return; }
     if (k === '/' && (!overlay || overlay.hidden)) {
       var t = e.target;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
@@ -275,6 +388,8 @@
     btn.id = 'omp-search-trigger';
     btn.className = 'omp-search-trigger';
     btn.setAttribute('aria-haspopup', 'dialog');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', 'omp-search-overlay');
     btn.setAttribute('aria-label', 'Search articles, tools and guides (Ctrl+K)');
     btn.innerHTML = TRIGGER_SVG + '<span class="omp-st-label">Search</span><kbd>Ctrl K</kbd>';
     btn.addEventListener('click', openSearch);
@@ -297,8 +412,8 @@
       mBtn.type = 'button';
       mBtn.id = 'omp-search-mobile-trigger';
       mBtn.className = 'mobile-search-btn';
-      mBtn.style.cssText = 'display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:inherit;font-size:15px;font-weight:500;text-align:left;cursor:pointer;margin-bottom:12px;';
-      mBtn.innerHTML = '<span style="display:flex;align-items:center;gap:10px">' + TRIGGER_SVG + 'Search site…</span><kbd style="font:600 10.5px var(--font-mono);color:var(--muted-2);border:1px solid var(--border);border-radius:4px;padding:2px 5px;background:var(--bg-soft)">Ctrl K</kbd>';
+      mBtn.setAttribute('aria-label', 'Search articles, tools and guides');
+      mBtn.innerHTML = '<span>' + TRIGGER_SVG + 'Search site…</span><kbd>Ctrl K</kbd>';
       mBtn.addEventListener('click', function() {
         mobileMenu.classList.remove('open');
         document.body.classList.remove('nav-open');
@@ -329,10 +444,10 @@
     overlay.innerHTML =
       '<div class="omp-search-dialog">' +
         '<div class="omp-search-head">' + TRIGGER_SVG +
-          '<input id="omp-search-input" type="text" placeholder="Search articles, tools & guides…" autocomplete="off" spellcheck="false" aria-label="Search">' +
+          '<input id="omp-search-input" type="text" role="combobox" aria-expanded="false" aria-controls="omp-search-results" aria-autocomplete="list" aria-activedescendant="" placeholder="Search articles, tools & guides…" autocomplete="off" spellcheck="false" aria-label="Search">' +
           '<span class="omp-search-esc">esc</span>' +
         '</div>' +
-        '<ul class="omp-search-results" role="listbox" aria-label="Search results"></ul>' +
+        '<ul class="omp-search-results" id="omp-search-results" role="listbox" aria-label="Search results"></ul>' +
         '<div class="omp-sr-foot">' +
           '<span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>' +
           '<span><kbd>↵</kbd> open</span>' +

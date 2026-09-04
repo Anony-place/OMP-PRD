@@ -1,5 +1,4 @@
 /* OMP admin panel styles (loaded only on /admin/) */
-.admin-shell { display: grid; gap: 20px; }
 .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .admin-list { display: grid; gap: 10px; }
 .admin-row {
@@ -61,9 +60,14 @@
   color: var(--muted);
 }
 
-.help-ol { padding-left: 20px; }
-.help-ol li { margin-top: 10px; color: var(--muted); font-size: .92rem; }
-.help-ol li strong { color: var(--text); }
-.help-ol code { font-family: var(--font-mono); font-size: .85em; background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.2); padding: 1px 6px; border-radius: 6px; }
 
-.unsaved-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); display: inline-block; }
+.unsaved-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); display: inline-block; vertical-align: middle; margin-left: 6px; }
+/* display:inline-block above beats the UA [hidden] rule, so re-assert it. */
+.unsaved-dot[hidden] { display: none; }
+
+/* Article-list filter + toolbar live inside a card; keep them tidy. */
+.toolbar { margin-bottom: 8px; }
+.body-editor { overflow-wrap: anywhere; }
+.preview-frame .prose > :first-child { margin-top: 0; }
+.admin-row .grow p { overflow-wrap: anywhere; }
+#article-filter, .admin-actions input[type="search"] { width: 100%; }

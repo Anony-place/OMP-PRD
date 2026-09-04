@@ -1,10 +1,19 @@
 /* ============================================================
    OMP Comprehensive Browser Audit
-   Tests all pages, tools, navigation, accessibility, and SEO.
+   Tests all pages, tools, navigation, accessibility and SEO.
+
+   Usage:
+     npm i playwright && npx playwright install chromium
+     python3 -m http.server 8765 --bind 127.0.0.1   # from the repo root
+     node tools/browser-audit.js
+
+   Writes tools/audit-report.json (excluded from hosting deploys
+   by the tools/** ignore rule in firebase.json).
    ============================================================ */
 const { chromium } = require('playwright');
+const path = require('path');
 
-const BASE_URL = 'http://127.0.0.1:8765';
+const BASE_URL = process.env.OMP_AUDIT_URL || 'http://127.0.0.1:8765';
 const PAGES = [
   '/index.html',
   '/checker.html',
@@ -411,7 +420,8 @@ async function runAudit() {
 
   // Save report
   const fs = require('fs');
-  fs.writeFileSync('audit-report.json', JSON.stringify({
+  const reportPath = path.join(__dirname, 'audit-report.json');
+  fs.writeFileSync(reportPath, JSON.stringify({
     timestamp: new Date().toISOString(),
     total: totalIssues.length,
     bySeverity: {
@@ -423,7 +433,7 @@ async function runAudit() {
     issues: totalIssues
   }, null, 2));
 
-  console.log('\nReport saved to audit-report.json');
+  console.log('\nReport saved to ' + reportPath);
   return totalIssues;
 }
 
