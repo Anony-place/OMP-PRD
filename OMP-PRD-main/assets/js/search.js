@@ -30,8 +30,7 @@
     /* Site pages */
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
     { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools.html', kw: 'tools overview all list utilities' },
-    { type: 'Page', title: 'Password Security Guides', desc: 'All security guides in one place.', url: '/guides.html', kw: 'guides learn list tutorials help' },
-    { type: 'Page', title: 'Articles / Blog', desc: 'Latest articles and deep dives.', url: '/blog.html', kw: 'blog articles posts news updates' },
+    { type: 'Page', title: 'Articles', desc: 'Every read in one hub: security news, deep dives, how-tos and guides.', url: '/blog.html', kw: 'blog articles posts news updates guides learn tutorials help content hub' },
     { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about.html', kw: 'about team mission privacy first who' },
     { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact.html', kw: 'contact email support feedback report' },
     { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq.html', kw: 'faq questions answers help common' },

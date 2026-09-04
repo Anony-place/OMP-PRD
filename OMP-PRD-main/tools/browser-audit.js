@@ -25,7 +25,6 @@ const PAGES = [
   '/passphrase.html',
   '/random-string.html',
   '/security-checklist.html',
-  '/guides.html',
   '/blog.html',
   '/about.html',
   '/contact.html',

@@ -71,7 +71,14 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
 
     /* --- structural sanity shared by every public page --- */
     const isAdmin = rel.startsWith('admin/');
-    if (!isAdmin) {
+    const isRedirect = rel === 'guides.html'; /* legacy Guides hub — now a meta-refresh redirect to /blog.html */
+    if (isRedirect) {
+      /* The stub keeps only what a redirect needs; Firebase 301s it before
+         the file is even served. Assert it points at the hub and nothing else. */
+      if (!d.querySelector('meta[http-equiv="refresh"][content*="/blog.html"]')) checks.push('redirect stub lacks meta refresh to /blog.html');
+      if (!d.querySelector('link[rel="canonical"][href$="/blog.html"]')) checks.push('redirect stub canonical does not point at /blog.html');
+      if (!d.querySelector('meta[name="robots"][content*="noindex"]')) checks.push('redirect stub is not noindex');
+    } else if (!isAdmin) {
       if (!d.querySelector('header.site-nav')) checks.push('missing header.site-nav');
       if (!d.querySelector('footer.site-footer')) checks.push('missing footer.site-footer');
       if (!d.querySelector('main')) checks.push('missing <main>');

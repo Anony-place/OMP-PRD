@@ -307,3 +307,22 @@ grant select on public.tool_categories to anon;
 grant insert on public.contact_messages to anon;         -- public form only
 -- NOTE: profiles is NOT granted to anon. Only authenticated (signed-in) users,
 -- and only their own row, per the policy above.
+
+
+-- ---------------------------------------------------------------------------
+-- 9. Seed the canonical article categories
+-- ---------------------------------------------------------------------------
+-- Articles (blog.html) is the single content hub. Every piece of content —
+-- news, analysis, how-tos and the legacy static guides — is classified with
+-- one of these categories. "guides" is the category that classifies the
+-- fifteen static /guides/*.html pages inside the hub; it is NOT a separate
+-- top-level destination anymore. Idempotent: safe to re-run.
+insert into public.article_categories (name, slug, sort_order) values
+  ('News',       'news',       1),
+  ('Security',   'security',   2),
+  ('Deep Dives', 'deep-dives', 3),
+  ('How-To',     'how-to',     4),
+  ('Guides',     'guides',     5)
+on conflict (slug) do update
+  set name      = excluded.name,
+      sort_order = excluded.sort_order;

@@ -489,10 +489,10 @@ const $ = (d, s) => d.querySelector(s);
        'HTML inside code fences does not flip detection');
 
     /* Unsafe destinations are dropped, label text kept, no stray punctuation. */
-    const xss = M.renderSafe('[click](javascript:alert(1)) ![i](javascript:alert(2)) [ok](/guides.html)');
+    const xss = M.renderSafe('[click](javascript:alert(1)) ![i](javascript:alert(2)) [ok](/blog.html)');
     ok(!/javascript:/i.test(xss), 'javascript: URLs rejected in Markdown links/images');
     ok(!/click\)/.test(xss), 'rejected link leaves no stray ")" behind');
-    ok(/<a href="\/guides\.html">ok<\/a>/.test(xss), 'site-relative Markdown links kept');
+    ok(/<a href="\/blog\.html">ok<\/a>/.test(xss), 'site-relative Markdown links kept');
     const ext = M.renderSafe('[n](https://example.test/x?a=1&b=2)');
     ok(/rel="noopener noreferrer nofollow"/.test(ext) && /target="_blank"/.test(ext),
        'external Markdown links hardened with noopener/noreferrer/nofollow');
@@ -555,6 +555,68 @@ const $ = (d, s) => d.querySelector(s);
     ok(!/assets\/js\/blog\.js/.test(idx), 'index.html no longer loads blog.js (homepage has no [data-blog] mount)');
     ok(/assets\/js\/markdown\.js/.test(fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8')),
        'blog.html loads markdown.js');
+  }
+
+  /* ================= one content hub: Articles ================= */
+  {
+    console.log('content architecture (Guides consolidated into Articles)');
+    const rootHtml = fs.readdirSync(ROOT).filter(f => f.endsWith('.html')).map(f => ({ f, s: fs.readFileSync(path.join(ROOT, f), 'utf8') }));
+    const guidePages = fs.readdirSync(path.join(ROOT, 'guides')).filter(f => f.endsWith('.html')).map(f => fs.readFileSync(path.join(ROOT, 'guides', f), 'utf8'));
+
+    for (const { f, s } of rootHtml) {
+      if (f === 'guides.html') continue; /* redirect stub — checked separately */
+      ok(!s.includes('href="/guides.html"'), `${f}: no link to the removed /guides.html page`);
+      ok(!/nav-links[^>]*>.*>Guides</.test(s), `${f}: primary nav has no Guides item`);
+    }
+    for (let i = 0; i < guidePages.length; i++) {
+      ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
+    }
+
+    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Breach Check, About
+       (+ the JS-injected Search trigger in nav-actions). */
+    const blog = rootHtml.find(x => x.f === 'blog.html').s;
+    const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Breach Check', 'About']),
+       `desktop navbar is exactly the 7 target items — got [${navLabels.join(', ')}]`);
+    const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
+    ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
+    ok(mobile.includes('/blog.html">Articles<'), 'mobile menu links Articles to the hub');
+
+    /* The legacy hub is a redirect, not a destination. */
+    const stub = fs.readFileSync(path.join(ROOT, 'guides.html'), 'utf8');
+    ok(/http-equiv="refresh"[^>]*url=\/blog\.html/.test(stub), 'guides.html meta-refreshes to /blog.html');
+    ok(/rel="canonical"[^>]*\/blog\.html/.test(stub), 'guides.html canonical points at /blog.html');
+    ok(/noindex/.test(stub), 'guides.html is noindex');
+    const fb = fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8');
+    ok(fb.includes('"source": "/guides.html"') && fb.includes('"destination": "/blog.html"') && fb.includes('"type": 301'),
+       'firebase.json 301-redirects /guides.html to /blog.html');
+
+    /* Guides are classified inside the hub, not deleted. */
+    const bjs = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    ok((bjs.match(/slug: '[a-z0-9-]+', title:/g) || []).length === 15, 'blog.js bakes in all 15 static guides');
+    ok(/categorySlug: 'guides'/.test(bjs), 'static guides are classified under the "guides" category');
+    for (const slug of ['news', 'security', 'deep-dives', 'how-to', 'guides'])
+      ok(bjs.includes(`{ name: '${slug === 'deep-dives' ? 'Deep Dives' : slug === 'how-to' ? 'How-To' : slug[0].toUpperCase() + slug.slice(1)}', slug: '${slug}' }`), `canonical category "${slug}" exists in the hub filter`);
+    ok(/FETCH_TIMEOUT_MS/.test(bjs) && /isTimeout/.test(bjs), 'feed fetch has a hard timeout (no indefinite loading)');
+    ok(/renderSkeleton/.test(bjs) && /skel/.test(bjs), 'feed has a skeleton loading state');
+    ok(/data-retry/.test(bjs), 'feed error state offers a Retry action');
+    ok(/Nothing here yet/.test(bjs) && /Can.t load this category/.test(bjs), 'empty state is distinct from fetch failure');
+    ok(/supabase/.test(fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8').toLowerCase()) &&
+       fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8').includes("('Guides',     'guides',     5)"),
+       'schema seeds the Guides category (plus News/Security/Deep Dives/How-To)');
+
+    /* Search index: one content destination, guides still findable. */
+    const sjs = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    ok(!sjs.includes("url: '/guides.html'"), 'search index no longer lists /guides.html as a page');
+    ok((sjs.match(/url: '\/guides\/[a-z0-9-]+\.html'/g) || []).length === 15, 'search index still finds all 15 guide articles');
+    ok(/'\/blog\.html',[^}]*guides/.test(sjs) || /kw: 'blog articles[^']*guides/.test(sjs), 'Articles hub entry covers "guides" queries');
+
+    /* Sitemaps: hub listed, legacy hub gone, guide articles kept. */
+    const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
+    ok(!sm.includes('/guides.html</loc>'), 'sitemap.xml drops the removed /guides.html page');
+    ok(sm.includes('/blog.html</loc>'), 'sitemap.xml keeps the Articles hub');
+    ok((sm.match(/\/guides\/[a-z0-9-]+\.html<\/loc>/g) || []).length === 15, 'sitemap.xml keeps all 15 guide articles');
   }
 
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
@@ -712,7 +774,7 @@ const $ = (d, s) => d.querySelector(s);
     }
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
-    ok(heroPages.length === 19, '19 inner pages use .page-hero (all covered by the fix) — got ' + heroPages.length);
+    ok(heroPages.length === 18, '18 inner pages use .page-hero (all covered by the fix; guides.html is now a redirect stub) — got ' + heroPages.length);
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
     const hex2rgb = h => { h = h.trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };

@@ -936,6 +936,92 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .tab-row button { padding: 8px 16px; border-radius: 8px; font-size: .88rem; font-weight: 600; color: var(--muted); transition: all .15s var(--ease); }
 .tab-row button[aria-selected="true"] { background: var(--brand-grad-soft); color: var(--text); box-shadow: inset 0 0 0 1px rgba(139,92,246,.3); }
 
+/* ============================================================
+   Articles hub — feed, category chips, skeleton, error/empty
+   ============================================================ */
+.icon-28 { width: 28px; height: 28px; }
+
+/* Category filter bar */
+.cat-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: .8rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; text-decoration: none;
+  transition: color .15s var(--ease), border-color .15s var(--ease), background .15s var(--ease);
+}
+.cat-chip:hover { color: var(--text); border-color: var(--border-strong); }
+.cat-chip.is-active {
+  color: var(--purple);
+  border-color: rgba(139, 92, 246, .35);
+  background: rgba(139, 92, 246, .1);
+}
+.cat-count {
+  font-size: .68rem; font-weight: 700; color: var(--muted-2);
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 999px; padding: 2px 7px; line-height: 1;
+}
+
+/* Feed rows */
+.feed-list { display: grid; gap: 12px; }
+.feed-row {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--card); padding: 18px 20px;
+  transition: border-color .15s var(--ease), transform .15s var(--ease);
+}
+.feed-row:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.feed-row-main { min-width: 0; }
+.feed-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  font-size: .78rem; color: var(--muted-2); font-weight: 600;
+  margin-bottom: 8px;
+}
+.feed-title { font-size: 1.05rem; font-weight: 650; line-height: 1.45; margin: 0; }
+.feed-title a { color: var(--text); text-decoration: none; }
+.feed-title a:hover { color: var(--purple); }
+.feed-excerpt {
+  margin: 8px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Skeleton loading state (shimmer). Rows match .feed-row geometry so
+   the swap from skeleton → content does not jump. */
+.skel {
+  height: 12px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--bg-soft) 25%, var(--surface) 50%, var(--bg-soft) 75%);
+  background-size: 200% 100%;
+  animation: omp-skel 1.3s ease-in-out infinite;
+}
+.skel + .skel { margin-top: 10px; }
+.skel-title { height: 18px; width: 55%; }
+.skel-title.skel-w70 { width: 70%; }
+.skel-meta { width: 32%; }
+.skel-line { width: 95%; }
+.skel-w70.skel-line { width: 75%; }
+@keyframes omp-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Error state (fetch failed) — visually distinct from the neutral
+   empty state below. */
+.notice-band.notice-error {
+  background: rgba(239, 68, 68, .08);
+  border-color: rgba(239, 68, 68, .32);
+  margin-bottom: 22px;
+}
+.notice-band.notice-error svg { color: var(--red, #ef4444); }
+.notice-band.notice-error p { margin: 4px 0 0; color: var(--muted); }
+.notice-band.notice-error strong { color: var(--text); }
+.notice-band.notice-error [data-retry] { font-weight: 700; }
+
+/* Genuine empty state (feed answered, nothing published here) */
+.feed-empty {
+  border: 1px dashed var(--border-strong); border-radius: var(--radius);
+  padding: 40px 24px; text-align: center; color: var(--muted);
+  display: grid; justify-items: center; gap: 6px;
+}
+.feed-empty svg { color: var(--muted-2); margin-bottom: 6px; }
+.feed-empty .h-3 { margin: 0; color: var(--text); }
+
 /* print: guides readable */
 @media print {
   .site-nav, .site-footer, .toc, .cta-band { display: none !important; }

@@ -15,17 +15,21 @@
 | Breach Check | ✅ Live (demo) | Educational k-anonymity demo — clearly labeled, **not** a live breach database |
 | Security Checklist | ✅ Live | 16 habits; progress stored in `localStorage` on-device only |
 
-Plus: 15 guides, FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps, and a global search (Ctrl+K) covering tools, guides, pages and live articles.
+Plus: the **Articles hub** (15 in-depth guides classified under the *Guides* category, plus live posts), FAQ, glossary, privacy/terms/security pages, HTML+XML sitemaps, and a global search (Ctrl+K) covering tools, articles, pages and live posts.
 
-## No-backend articles (dynamic feed + admin panel)
+## No-backend articles (one content hub + admin panel)
 
 Publishing content without running a backend:
 
-- **`/blog.html`** — the Articles feed, rendered client-side from the **articles table** in Supabase (public read-only access via a publishable key). Publishing happens from the admin panel.
+- **`/blog.html`** — **Articles, the single content hub**. It merges two sources into one filterable feed (News / Security / Deep Dives / How-To / Guides):
+  - live posts from the **articles table** in Supabase (public read-only access via a publishable key), and
+  - the fifteen **static guides** (`/guides/*.html`), baked into `blog.js` under the **Guides** category so they work even when Supabase is unreachable.
+- The hub has explicit UX states: skeleton while loading, a hard 10s fetch timeout, an error banner with **Retry** (static guides stay visible below it), and a genuine empty state per category — a fetch failure is never presented as "no articles".
+- There is deliberately **no separate top-level Guides page**: `/guides.html` and `/guides` 301-redirect to `/blog.html` (see `redirects` in `firebase.json`; a meta-refresh stub covers non-Firebase hosting).
 - **`/admin/`** — the **Article Manager**, protected by **Supabase Auth** (email + password) *and* an `is_admin` check against the `profiles` table. Sign in, write/edit articles with a Markdown toolbar and a live preview, and publish straight to the live feed. Drafts stay hidden until you publish them.
 - Article bodies may be written in **Markdown or HTML**. Both go through the same pipeline on the public feed *and* in the admin preview: `assets/js/markdown.js` (escapes first, then applies Markdown) → `assets/js/sanitize.js` (whitelist renderer — scripts/iframes/handlers/`javascript:` URLs stripped). What you preview is byte-for-byte what readers get.
 - Unpublishing is done with the **Status** field (draft / published / archived). The public renderer contains no keyword-based hiding rules — if a post is published, it is listed.
-- SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guides via `tools/build.py`.
+- SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guide pages under `/guides/`, surfaced through the Articles hub via the baked-in index in `blog.js`.
 
 ## Firebase Hosting
 

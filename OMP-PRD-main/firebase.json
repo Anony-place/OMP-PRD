@@ -11,6 +11,18 @@
       "**/*.md"
     ],
     "trailingSlash": false,
+    "redirects": [
+      {
+        "source": "/guides.html",
+        "destination": "/blog.html",
+        "type": 301
+      },
+      {
+        "source": "/guides",
+        "destination": "/blog.html",
+        "type": 301
+      }
+    ],
     "headers": [
       {
         "source": "**",
