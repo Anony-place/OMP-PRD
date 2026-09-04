@@ -7,10 +7,7 @@
       "**/.*",
       "**/node_modules/**",
       "tools/**",
-      "**/*.md",
-      "find-overflow*.js",
-      "test-*.js",
-      "audit-report.json"
+      "**/*.md"
     ],
     "trailingSlash": false,
     "headers": [
@@ -29,12 +26,6 @@
       },
       {
         "source": "/assets/**",
-        "headers": [
-          { "key": "Cache-Control", "value": "no-cache" }
-        ]
-      },
-      {
-        "source": "/content/**",
         "headers": [
           { "key": "Cache-Control", "value": "no-cache" }
         ]

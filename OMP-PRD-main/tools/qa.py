@@ -50,6 +50,8 @@ class Checker(HTMLParser):
             self.has["og"] += 1
         if tag == "meta" and a.get("name", "").startswith("twitter:"):
             self.has["twitter"] += 1
+        if tag == "meta" and a.get("name") == "robots" and "noindex" in a.get("content", ""):
+            self.has["noindex"] = True
         if tag == "main":
             self.has["main"] = True
 
@@ -113,10 +115,16 @@ for f in sorted(html_files):
         errors.append(f"{f}: missing meta description")
     if not c.has["canonical"]:
         errors.append(f"{f}: missing canonical")
-    if c.has["og"] < 5:
-        warnings.append(f"{f}: only {c.has['og']} og: tags")
-    if c.has["twitter"] < 3:
-        warnings.append(f"{f}: only {c.has['twitter']} twitter: tags")
+    # A noindex page (the private admin panel) must NOT carry social cards —
+    # there is nothing to share, and warning about it is a false positive.
+    if not c.has.get("noindex"):
+        if c.has["og"] < 5:
+            warnings.append(f"{f}: only {c.has['og']} og: tags")
+        if c.has["twitter"] < 3:
+            warnings.append(f"{f}: only {c.has['twitter']} twitter: tags")
+    else:
+        if c.has["og"] or c.has["twitter"]:
+            warnings.append(f"{f}: noindex page should not carry og:/twitter: cards")
     if not c.has["main"]:
         errors.append(f"{f}: missing <main>")
     if "<title>" not in src:

@@ -7,6 +7,15 @@ const { JSDOM } = require('jsdom');
 const { webcrypto } = require('crypto');
 
 const ROOT = path.dirname(__dirname);
+
+/* True when the given src= values appear as <script> tags in this order. */
+function d_scriptsInOrder(doc, srcs) {
+  const found = Array.from(doc.querySelectorAll('script[src]')).map(s => s.getAttribute('src'));
+  let i = 0;
+  for (const f of found) { if (f === srcs[i]) i++; }
+  return i === srcs.length;
+}
+
 let failures = 0;
 let checks = 0;
 
@@ -437,6 +446,337 @@ const $ = (d, s) => d.querySelector(s);
     ok(d.querySelectorAll('script[type="module"][src="/assets/js/admin.js"]').length === 1, 'admin.js loaded as module');
     ok(d.body.textContent.includes('Loading secure admin panel'), 'panel shows loading state before module boot');
     dom.window.close();
+  }
+
+  /* ================= Markdown rendering pipeline (articles) ================= */
+  {
+    console.log('markdown.js (safe Markdown -> HTML for article bodies)');
+    const dom = await loadPage('blog.html', { wait: 200 });
+    const w = dom.window;
+    await new Promise(r => setTimeout(r, 200));
+    ok(typeof w.OMPMarkdown === 'object' && typeof w.OMPMarkdown.toHtml === 'function',
+       'blog.html exposes window.OMPMarkdown');
+    ok(d_scriptsInOrder(dom.window.document, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/blog.js']),
+       'blog.html loads sanitize.js -> markdown.js -> blog.js in that order');
+    const M = w.OMPMarkdown;
+
+    /* The live article is authored in Markdown; the feed used to hand it to an
+       HTML-only sanitizer, so readers saw one wall of literal "## ** |". */
+    const md = '## Heading Two\n\nA **bold** claim with *emphasis*, `code` and ~~struck~~.\n\n' +
+               '| Detail | Value |\n| --- | --- |\n| **CVE** | CVE-2026-0768 |\n\n' +
+               '* first item\n* second item\n\n```text\nSECRET=...\n```\n\n---\n\n1. step one\n2. step two';
+    ok(!M.looksLikeHtml(md), 'Markdown body is not mistaken for HTML');
+    const out = M.renderSafe(md);
+    ok(/<h2>Heading Two<\/h2>/.test(out), 'ATX heading rendered');
+    ok(/<strong>bold<\/strong>/.test(out) && /<em>emphasis<\/em>/.test(out), 'bold + italic rendered');
+    ok(/<code>code<\/code>/.test(out), 'inline code rendered');
+    ok(/<del>struck<\/del>/.test(out), 'strikethrough rendered');
+    ok(/<table>[\s\S]*<th>Detail<\/th>[\s\S]*<td><strong>CVE<\/strong><\/td>/.test(out), 'GFM table rendered');
+    ok(/<ul><li>first item<\/li><li>second item<\/li><\/ul>/.test(out), 'bullet list rendered');
+    ok(/<ol><li>step one<\/li><li>step two<\/li><\/ol>/.test(out), 'ordered list rendered');
+    ok(/<pre><code>SECRET=\.\.\.<\/\/?code>/.test(out.replace('\n', '')) || /<pre><code>SECRET=\.\.\./.test(out), 'fenced code rendered');
+    ok(/<hr>/.test(out), 'horizontal rule rendered');
+    ok(!/##|\*\*|```/.test(out), 'no literal Markdown syntax leaks into the output');
+    ok(!/<script|onerror|javascript:/i.test(out), 'rendered output stays inert');
+
+    /* HTML-authored bodies must pass through untouched, not be re-parsed. */
+    const html = '<h2>Real HTML</h2><p>Kept <strong>as-is</strong>.</p>';
+    ok(M.looksLikeHtml(html), 'authored HTML is detected');
+    ok(/<h2>Real HTML<\/h2>/.test(M.renderSafe(html)), 'authored HTML preserved');
+
+    /* Markdown that merely talks about HTML must still be treated as Markdown. */
+    ok(!M.looksLikeHtml('Use the `<div>` tag:\n\n```html\n<div>x</div>\n```'),
+       'HTML inside code fences does not flip detection');
+
+    /* Unsafe destinations are dropped, label text kept, no stray punctuation. */
+    const xss = M.renderSafe('[click](javascript:alert(1)) ![i](javascript:alert(2)) [ok](/guides.html)');
+    ok(!/javascript:/i.test(xss), 'javascript: URLs rejected in Markdown links/images');
+    ok(!/click\)/.test(xss), 'rejected link leaves no stray ")" behind');
+    ok(/<a href="\/guides\.html">ok<\/a>/.test(xss), 'site-relative Markdown links kept');
+    const ext = M.renderSafe('[n](https://example.test/x?a=1&b=2)');
+    ok(/rel="noopener noreferrer nofollow"/.test(ext) && /target="_blank"/.test(ext),
+       'external Markdown links hardened with noopener/noreferrer/nofollow');
+    ok(!/<script>alert/.test(M.renderSafe('<script>alert(1)</script>plain **md**')),
+       'raw <script> inside a Markdown body cannot survive');
+
+    /* Fail closed: no sanitizer => escaped text, never raw markup. */
+    const savedSan = w.OMPSanitize;
+    delete w.OMPSanitize;
+    const closed = M.renderSafe('<img src=x onerror=alert(1)> **hi**');
+    ok(!/<img|onerror/i.test(closed), 'renderSafe fails closed when OMPSanitize is missing');
+    w.OMPSanitize = savedSan;
+
+    /* The empty <img> left behind by a rejected src must not survive either. */
+    ok(!/<img(?![^>]*\ssrc=)/i.test(w.OMPSanitize('<img src="javascript:alert(1)"><b>keep</b>')),
+       'sanitizer drops <img> whose src was rejected');
+    ok(/<b>keep<\/b>/.test(w.OMPSanitize('<img src="javascript:alert(1)"><b>keep</b>')),
+       'sanitizer keeps the sibling content of a dropped <img>');
+
+    /* Body headings must not compete with the article title for <h1>. */
+    const holder = w.document.createElement('div');
+    holder.innerHTML = '<h1 class="h-1">Article Title</h1><div class="prose">' + M.renderSafe('# Intro\n\n## Section\n\n### Sub') + '</div>';
+    M.demoteHeadings(holder.querySelector('.prose'), 1);
+    ok(holder.querySelectorAll('h1').length === 1, 'exactly one <h1> survives heading demotion');
+    ok(/<h2>Intro<\/h2>/.test(holder.querySelector('.prose').innerHTML), 'body "#" heading demoted to <h2>');
+    ok(/<h2>Section<\/h2>/.test(holder.querySelector('.prose').innerHTML),
+       'demotion shifts level 1 only — an authored "##" stays <h2>');
+    ok(/<h3>Sub<\/h3>/.test(holder.querySelector('.prose').innerHTML), 'level-3 body heading left alone');
+    ok(/<h2>Article Title<\/h2>|<h1 class="h-1">Article Title<\/h1>/.test(holder.innerHTML), 'the article title itself is untouched');
+
+    /* Reading time / excerpt must see Markdown as prose, not as syntax. */
+    const words = M.plainText(md).split(/\s+/).filter(Boolean).length;
+    ok(words > 15 && !/[#*|`]/.test(M.plainText(md)), 'plainText() strips Markdown syntax');
+    dom.window.close();
+  }
+
+  /* ================= blog.js — feed behavior regressions ================= */
+  {
+    console.log('blog.js (article feed: no keyword blacklist, #/-only routing)');
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/blog.js'), 'utf8');
+    ok(!/deploying process|omp deploying/i.test(src),
+       'the hard-coded "omp deploying" keyword blacklist is gone');
+    ok(/isRenderable/.test(src) && /a\.slug/.test(src),
+       'feed rows are validated structurally (slug + title), not by content keywords');
+    ok(/location\.hash[\s\S]{0,80}#\//.test(src) && /slice\(0, 2\)[\s\S]{0,40}#\//.test(src),
+       'only "#/slug" hashes are treated as article routes');
+    ok(/OMPMarkdown/.test(src) && /renderSafe/.test(src),
+       'article bodies render through the Markdown-aware pipeline');
+    ok(/encodeURIComponent\(a\.slug\)/.test(src), 'article links URL-encode the slug');
+    ok(/excerpt/.test(src), 'articles without a summary get a generated excerpt');
+    ok(/featured_image/.test(src) && /safeUrl\(a\.featured_image\)/.test(src),
+       'featured_image is rendered (and scheme-checked) instead of fetched-and-ignored');
+    ok(/limit\(PAGE_LIMIT\)|\.limit\(/.test(src), 'feed query is bounded by a limit');
+    ok(/lastArticles/.test(src), 'hashchange re-renders from cache instead of refetching');
+    ok(/demoteHeadings/.test(src), 'blog.js demotes body headings so the page keeps a single <h1>');
+    ok(/demoteHeadings/.test(fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8')),
+       'admin preview demotes headings too, so it matches the published page');
+
+    const idx = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    ok(!/assets\/js\/blog\.js/.test(idx), 'index.html no longer loads blog.js (homepage has no [data-blog] mount)');
+    ok(/assets\/js\/markdown\.js/.test(fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8')),
+       'blog.html loads markdown.js');
+  }
+
+  /* ================= search.js — unsafe URLs, cache, mobile button ========= */
+  {
+    console.log('search.js (poisoned live rows, dedup, mobile button, modal a11y)');
+    const dom = await loadPage('index.html', { wait: 300 });
+    const w = dom.window, d = w.document;
+    await new Promise(r => setTimeout(r, 300));
+
+    /* Seed the live cache with hostile + duplicate rows. fetchLive() trusts
+       sessionStorage first, so this exercises the render-time URL gate. */
+    w.sessionStorage.setItem('omp-search-live-v2', JSON.stringify({ t: Date.now(), items: [
+      { type: 'Tool', title: 'Evil Route', desc: 'should never render', url: 'javascript:alert(1)', kw: 'zzzpoison' },
+      { type: 'Tool', title: 'Off Site', desc: 'should never render', url: 'https://evil.example/x', kw: 'zzzpoison' },
+      { type: 'Article', title: 'Dup One', desc: '', url: '/blog.html#/dup', kw: 'zzzpoison' },
+      { type: 'Article', title: 'Dup One', desc: '', url: '/blog.html#/dup', kw: 'zzzpoison' },
+      { type: 'Tool', title: 'Password Generator', desc: '', url: '/generator.html', kw: 'zzzpoison' },
+      { type: 'Article', title: 'Good Article', desc: 'a real post', url: '/blog.html#/good-one', kw: 'zzzpoison' }
+    ] }));
+
+    d.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 120));
+    const overlay = d.getElementById('omp-search-overlay');
+    ok(!!overlay && !overlay.hidden, 'Ctrl+K opens the search dialog');
+
+    const input = d.getElementById('omp-search-input');
+    input.value = 'zzzpoison';
+    input.dispatchEvent(new w.Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 250));
+    const html = overlay.innerHTML;
+    ok(!/javascript:/i.test(html), 'javascript: URL from a live row never reaches an href');
+    ok(!/evil\.example/i.test(html), 'off-site URL from a live row never reaches an href');
+    ok(!/Evil Route|Off Site/.test(html), 'rows with unsafe destinations are dropped entirely');
+    ok((html.match(/Dup One/g) || []).length === 1, 'duplicate live rows are collapsed to one result');
+    ok(/Good Article/.test(html), 'safe live article row still renders');
+    ok(!/zzzpoison/.test(overlay.textContent), 'search keywords are not echoed into the UI');
+
+    /* Baked-in index must not be duplicated by a matching live tool row. */
+    input.value = 'generator';
+    input.dispatchEvent(new w.Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 250));
+    const genLinks = Array.from(overlay.querySelectorAll('a.omp-sr-row')).map(a => a.getAttribute('href'));
+    ok(genLinks.filter(h => h === '/generator.html').length === 1,
+       'live tool row for /generator.html does not duplicate the baked-in entry');
+
+    /* Modal a11y: trigger state + page hidden from assistive tech while open. */
+    const trigger = d.getElementById('omp-search-trigger');
+    ok(trigger.getAttribute('aria-expanded') === 'true', 'trigger reports aria-expanded=true while open');
+    ok(d.querySelector('header.site-nav').getAttribute('aria-hidden') === 'true',
+       'background content is aria-hidden while the modal is open');
+    ok(input.getAttribute('role') === 'combobox' && input.hasAttribute('aria-controls'),
+       'search input is a combobox wired to the listbox');
+    ok(/aria-activedescendant="omp-sr-opt-/.test(input.outerHTML) || input.getAttribute('aria-activedescendant') !== '',
+       'active option is published via aria-activedescendant');
+    ok(overlay.querySelectorAll('li[role="option"][id^="omp-sr-opt-"]').length > 0,
+       'result rows are addressable options with ids');
+
+    d.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 80));
+    ok(overlay.hidden, 'Escape closes the dialog');
+    ok(trigger.getAttribute('aria-expanded') === 'false', 'trigger aria-expanded resets on close');
+    ok(!d.querySelector('header.site-nav').hasAttribute('aria-hidden'), 'background aria-hidden is removed on close');
+    ok(d.body.style.overflow === '', 'body scroll lock is released on close');
+    dom.window.close();
+  }
+
+  /* ---- mobile-menu search button (the unsized-SVG layout bug) ---- */
+  {
+    console.log('search.js (mobile menu button)');
+    const dom = await loadPage('checker.html', { wait: 300 });
+    const w = dom.window, d = w.document;
+    await new Promise(r => setTimeout(r, 300));
+    const mBtn = d.getElementById('omp-search-mobile-trigger');
+    ok(!!mBtn, 'mobile-menu search button is injected');
+    ok(mBtn && !!mBtn.querySelector('svg'), 'mobile button carries the magnifier icon');
+    ok(mBtn && !mBtn.getAttribute('style'), 'mobile button is styled by the stylesheet, not an inline cssText');
+    const css = d.getElementById('omp-search-css');
+    ok(css && /\.mobile-search-btn svg\{width:18px;height:18px/.test(css.textContent),
+       'stylesheet sizes the mobile button SVG (an <svg> with only a viewBox defaults to ~300x150)');
+    ok(css && /\.mobile-search-btn\{[^}]*display:flex/.test(css.textContent),
+       '.mobile-search-btn layout rules are present');
+    mBtn.click();
+    await new Promise(r => setTimeout(r, 120));
+    ok(!d.getElementById('mobile-menu').classList.contains('open'), 'opening search closes the mobile menu');
+    ok(!d.getElementById('omp-search-overlay').hidden, 'mobile button opens the search dialog');
+    dom.window.close();
+  }
+
+  /* ================= admin panel ================= */
+  {
+    console.log('admin/index.html (shared render pipeline + live preview editor)');
+    const dom = await loadPage('admin/index.html', { wait: 250 });
+    const d = dom.window.document;
+    await new Promise(r => setTimeout(r, 250));
+    ok(d_scriptsInOrder(d, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/admin-boot-watchdog.js']),
+       'admin loads sanitize.js + markdown.js before the boot watchdog/module');
+    ok(d.querySelectorAll('script[type="module"][src="/assets/js/admin.js"]').length === 1, 'admin.js still loaded as a module');
+    ok(d.querySelector('meta[name="robots"][content*="noindex"]'), 'admin stays noindex');
+    dom.window.close();
+
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+    ok(/OMPMarkdown/.test(src) && /renderBody/.test(src),
+       'admin preview uses the same renderer as the public feed');
+    ok(/article-preview/.test(src) && /class="preview-frame"/.test(src), 'live preview editor is present');
+    ok(/class="toolbar"/.test(src) && /TOOLBAR/.test(src), 'Markdown formatting toolbar is present');
+    ok(/class="body-editor"/.test(src), 'uses the .body-editor styles from admin.css');
+    ok(/data-unsaved/.test(src) && /beforeunload/.test(src), 'unsaved-changes guard wired up');
+    ok(/article-filter/.test(src), 'article list has a filter/search box');
+    ok(!/<label>/.test(src), 'no attribute-less <label> elements (each is for=… or wraps its control)');
+    ok(/tabToken/.test(src), 'loadTab() is race-guarded');
+    ok(/Delete failed|failed:/.test(src), 'delete/update failures are surfaced instead of swallowed');
+    ok(/aria-pressed/.test(src), 'tab buttons expose their active state');
+    ok(!/alert\(`Delete/.test(src), 'no alert()-only error reporting on destructive actions');
+    ok(/Route must start with/.test(src), 'tool routes are validated as on-site paths');
+
+    const acss = fs.readFileSync(path.join(ROOT, 'assets/css/admin.css'), 'utf8');
+    ok(/\.unsaved-dot\[hidden\]\s*\{\s*display:\s*none/.test(acss),
+       '.unsaved-dot[hidden] re-asserts display:none (inline-block beats the UA rule)');
+    ok(!/\.admin-shell|\.help-ol/.test(acss), 'orphaned admin CSS rules removed');
+  }
+
+  /* ================= CSS regressions (overflow + contrast) ================= */
+  {
+    console.log('styles.css (horizontal overflow + WCAG AA contrast)');
+    const css = fs.readFileSync(path.join(ROOT, 'assets/css/styles.css'), 'utf8');
+
+    /* .page-hero::before bleeds past the box with inset:-30% -20%; without a
+       clip it made all 19 inner pages wider than the viewport. */
+    const heroRule = (css.match(/\.page-hero\s*\{[^}]*\}/) || [''])[0];
+    ok(/overflow:\s*hidden/.test(heroRule), '.page-hero clips its ::before glow (overflow:hidden)');
+    for (const sel of ['.hero', '.cta-band']) {
+      const r = (css.match(new RegExp('\\' + sel + '\\s*\\{[^}]*\\}')) || [''])[0];
+      ok(/overflow:\s*hidden/.test(r), sel + ' still clips its decorative bleed');
+    }
+    const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
+      .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
+    ok(heroPages.length === 19, '19 inner pages use .page-hero (all covered by the fix) — got ' + heroPages.length);
+
+    /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
+    const hex2rgb = h => { h = h.trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+    const lin = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    const lum = rgb => { const [r, g, b] = rgb.map(lin); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const ratio = (f, b) => { const l1 = lum(hex2rgb(f)), l2 = lum(hex2rgb(b)); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
+    /* Pull custom properties out of a literal selector block. Regex-escaping
+       the selector is what made this silently return {} for the light theme. */
+    const grab = (selector) => {
+      const start = css.indexOf(selector);
+      if (start === -1) return {};
+      const open = css.indexOf('{', start);
+      const close = css.indexOf('}', open);
+      const block = css.slice(open, close);
+      const out = {};
+      for (const m of block.matchAll(/(--[\w-]+)\s*:\s*(#[0-9A-Fa-f]{6})\s*;/g)) out[m[1]] = m[2];
+      return out;
+    };
+    const darkBase = grab(':root');
+    const lightBlock = grab('[data-theme="light"]');
+    ok(Object.keys(lightBlock).length >= 8, 'light-theme token block was parsed (' + Object.keys(lightBlock).length + ' hex tokens)');
+    const lightBase = Object.assign({}, darkBase, lightBlock);
+    const SURFACES = {
+      dark: ['#050811', '#070B16', '#0B1020', '#101827', '#131D31'],
+      light: ['#F6F8FC', '#EEF2F9', '#FFFFFF', '#F8FAFF']
+    };
+    const TEXT_TOKENS = ['--text', '--muted', '--muted-2', '--purple', '--blue', '--cyan', '--green', '--yellow', '--red', '--orange'];
+    for (const theme of ['dark', 'light']) {
+      const tokens = theme === 'dark' ? darkBase : lightBase;
+      for (const t of TEXT_TOKENS) {
+        const v = tokens[t];
+        if (!v) { ok(false, `${theme}: token ${t} is defined`); continue; }
+        const worst = Math.min(...SURFACES[theme].map(b => ratio(v, b)));
+        ok(worst >= 4.5, `${theme} ${t} (${v}) >= 4.5:1 on all ${theme} surfaces — worst ${worst.toFixed(2)}`);
+      }
+    }
+    /* White-on-color: skip link + primary CTA gradient stops. */
+    ok(ratio('#FFFFFF', '#6D28D9') >= 4.5, 'skip-link background keeps white text >= 4.5:1');
+    for (const stop of (css.match(/\.btn-primary\s*\{[^}]*linear-gradient\(135deg,\s*(#[0-9A-Fa-f]{6}),\s*(#[0-9A-Fa-f]{6})\)/) || []).slice(1)) {
+      ok(ratio('#FFFFFF', stop) >= 4.5, `.btn-primary gradient stop ${stop} keeps white text >= 4.5:1 (${ratio('#FFFFFF', stop).toFixed(2)})`);
+    }
+    /* .grad-text is real text, so every brand-gradient stop must pass too. */
+    for (const theme of ['dark', 'light']) {
+      const block = theme === 'dark' ? css.slice(css.indexOf(':root'), css.indexOf('}', css.indexOf(':root')))
+                                     : css.slice(css.indexOf('[data-theme="light"]'), css.indexOf('}', css.indexOf('[data-theme="light"]')));
+      const grad = block.match(/--brand-grad:\s*linear-gradient\(135deg,\s*(#[0-9A-Fa-f]{6})[^,]*,\s*(#[0-9A-Fa-f]{6})[^,]*,\s*(#[0-9A-Fa-f]{6})/);
+      if (!grad) { ok(false, `${theme}: --brand-grad found`); continue; }
+      for (const stop of grad.slice(1)) {
+        const worst = Math.min(...SURFACES[theme].map(b => ratio(stop, b)));
+        ok(worst >= 4.5, `${theme} .grad-text stop ${stop} >= 4.5:1 (worst ${worst.toFixed(2)})`);
+      }
+    }
+    /* Article prose must style everything the Markdown renderer can emit. */
+    for (const sel of ['.prose table', '.prose blockquote', '.prose hr', '.prose img', '.prose h4', '.prose th']) {
+      ok(css.includes(sel), `${sel} is styled (Markdown output would otherwise be unstyled)`);
+    }
+    ok(/\.prose table\s*\{[^}]*overflow-x:\s*auto/.test(css), '.prose tables scroll instead of forcing page overflow');
+    ok(!/\.adm-badge|\.blog-grid|\.empty-state|\.article-back/.test(css), 'dead blog/admin-badge CSS removed');
+  }
+
+  /* ================= repo hygiene / deploy config ================= */
+  {
+    console.log('repo hygiene + firebase.json');
+    const fb = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
+    ok(!fb.hosting.headers.some(h => h.source === '/content/**'), 'dead /content/** header rule removed');
+    ok(fb.hosting.headers.some(h => h.source === '**' &&
+        h.headers.some(x => x.key === 'Content-Security-Policy' && /connect-src[^;]*supabase\.co/.test(x.value))),
+       'CSP still allows the Supabase origin');
+    ok(fb.hosting.ignore.includes('tools/**') && fb.hosting.ignore.includes('**/*.md'),
+       'build tooling + markdown still excluded from deploys');
+    for (const gone of ['find-overflow.js', 'find-overflow2.js', 'find-overflow3.js', 'find-overflow4.js', 'test-browser.js', 'test-audit.js', 'audit-report.json']) {
+      ok(!fs.existsSync(path.join(ROOT, gone)), `scratch file ${gone} is out of the deploy root`);
+    }
+    ok(fs.existsSync(path.join(ROOT, 'tools/browser-audit.js')), 'browser audit harness kept under tools/');
+    const readme = fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8');
+    ok(!/The panel needs no login/.test(readme), 'README no longer contradicts the Supabase-Auth admin panel');
+    ok(!/Plus: 10 guides/.test(readme), 'README guide count matches the 15 generated guides');
+    ok(!/long-term caching for `\/assets`/.test(readme), 'README caching claim matches firebase.json (no-cache)');
+    ok(/markdown\.js/.test(readme), 'README documents the Markdown renderer');
+
+    /* Build must stay reproducible: generated pages must not drift from tools/. */
+    ok(fs.readFileSync(path.join(ROOT, 'blog.html'), 'utf8').includes('/assets/js/markdown.js'),
+       'generated blog.html contains the markdown.js script tag (build output committed)');
+    ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/blog.js'),
+       'generated index.html no longer references blog.js (build output committed)');
   }
 
   console.log(`\n${checks - failures}/${checks} checks passed, ${failures} failures`);

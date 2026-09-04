@@ -5,3 +5,4 @@ Thumbs.db
 __pycache__/
 .pytest_cache/
 .firebase/
+tools/audit-report.json

@@ -145,7 +145,10 @@ def main():
         desc="Privacy-first password tools that run entirely in your browser: real-time strength checker, CSPRNG generator, passphrase generator, entropy calculator and practical security guides. No account required.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
-        scripts_=["security.js", "wordlist.js", "checker.js", "generator.js", "blog.js"],
+        # blog.js is intentionally NOT loaded here: the homepage body has no
+        # [data-blog] mount point, so it fetched and parsed for nothing on the
+        # highest-traffic page. The article feed lives on /blog.html.
+        scripts_=["security.js", "wordlist.js", "checker.js", "generator.js"],
     ))
     write("checker.html", page(
         path="/checker.html", active="/checker.html",
@@ -225,7 +228,9 @@ def main():
         desc="Password security news, breach analysis and practical how-tos from the OopsMyPassword team.",
         body=blog_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/blog.html")]),
-        scripts_=["sanitize.js", "blog.js"],
+        # Order matters: sanitize.js and markdown.js expose the window globals
+        # that blog.js renders article bodies with (Markdown or HTML input).
+        scripts_=["sanitize.js", "markdown.js", "blog.js"],
     ))
     # NOTE: admin/index.html is intentionally NOT generated here.
     # The admin panel is hand-maintained (Supabase Auth) — regenerating it
