@@ -326,3 +326,52 @@ insert into public.article_categories (name, slug, sort_order) values
 on conflict (slug) do update
   set name      = excluded.name,
       sort_order = excluded.sort_order;
+
+
+-- ---------------------------------------------------------------------------
+-- 10. products (public catalog served at /products and /products/<slug>)
+-- ---------------------------------------------------------------------------
+-- The public products app (assets/js/products.js) reads this table through
+-- the publishable key; only published rows are visible to anon. Product
+-- URLs are slug-based (/products/<slug>) and handled by the Firebase
+-- rewrite "/products{,/**}" -> /products.html.
+create table if not exists public.products (
+  id             uuid primary key default gen_random_uuid(),
+  name           text not null,
+  slug           text not null unique,
+  summary        text,
+  description    text not null default '',
+  status         text not null default 'draft' check (status in ('draft','published','archived')),
+  featured_image text,
+  external_url   text,
+  sort_order     int not null default 0,
+  published_at   timestamptz,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  created_by     uuid references auth.users(id) on delete set null
+);
+
+alter table public.products enable row level security;
+
+-- Public catalog only ever reads PUBLISHED rows.
+drop policy if exists "products_select_published" on public.products;
+create policy "products_select_published" on public.products
+  for select to anon using (status = 'published');
+
+drop policy if exists "products_select_all_admin" on public.products;
+create policy "products_select_all_admin" on public.products
+  for select to authenticated using (public.is_admin());
+
+-- Admin-only writes (mirrors the articles pattern).
+drop policy if exists "products_admin_insert" on public.products;
+create policy "products_admin_insert" on public.products
+  for insert to authenticated with check (public.is_admin());
+drop policy if exists "products_admin_update" on public.products;
+create policy "products_admin_update" on public.products
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "products_admin_delete" on public.products;
+create policy "products_admin_delete" on public.products
+  for delete to authenticated using (public.is_admin());
+
+revoke all on public.products from anon;
+grant select on public.products to anon;      -- published only (RLS)

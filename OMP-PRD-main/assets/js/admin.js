@@ -14,7 +14,7 @@ const esc = (value = '') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;'
 const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
 
 /* Preview + saved article body go through exactly the same pipeline as
-   /blog.html (assets/js/markdown.js → assets/js/sanitize.js), so what the
+   /articles (assets/js/markdown.js → assets/js/sanitize.js), so what the
    author sees here is what readers get. Fail closed if either is missing. */
 function renderBody(source) {
   if (window.OMPMarkdown?.renderSafe) return window.OMPMarkdown.renderSafe(source || '');
@@ -264,7 +264,7 @@ function articleForm(host, categories, article) {
         <p class="tiny muted" id="${id('hint')}">Write Markdown (<code>## heading</code>, <code>**bold**</code>, <code>* item</code>, <code>| table |</code>, fenced code) — existing HTML bodies are detected and kept as-is. Everything is re-sanitized before it reaches readers.</p>
       </div>
       <div>
-        <div class="preview-head"><span class="tiny muted"><strong>Live preview</strong> — exactly what /blog.html renders</span><button type="button" class="btn btn-ghost btn-sm" id="refresh-preview">Refresh</button></div>
+        <div class="preview-head"><span class="tiny muted"><strong>Live preview</strong> — exactly what /articles renders</span><button type="button" class="btn btn-ghost btn-sm" id="refresh-preview">Refresh</button></div>
         <div class="preview-frame" style="padding:20px;overflow:auto"><div class="prose" id="article-preview" style="max-width:none"></div></div>
       </div>
     </div>
@@ -280,7 +280,7 @@ function articleForm(host, categories, article) {
   const paintPreview = () => {
     const title = titleInput.value.trim();
     preview.innerHTML = (title ? `<h1 class="h-1" style="font-size:1.7rem">${esc(title)}</h1>` : '') + renderBody(ta.value);
-    /* Mirror /blog.html exactly: the title is the only <h1>, so a "#" heading
+    /* Mirror /articles exactly: the title is the only <h1>, so a "#" heading
        in the body is demoted to <h2> here too. */
     if (window.OMPMarkdown?.demoteHeadings) window.OMPMarkdown.demoteHeadings(preview, 1);
     if (!title && !ta.value.trim()) preview.innerHTML = '<p class="muted">Nothing to preview yet.</p>';
@@ -356,7 +356,7 @@ function articleForm(host, categories, article) {
       }
       const slug = slugify(f.get('slug')) || slugify(f.get('title'));
       if (!slug) throw new Error('A slug is required — add a title or type one in.');
-      /* featured_image lands in an <img src=…> on /blog.html, so reject a
+      /* featured_image lands in an <img src=…> on /articles, so reject a
          javascript: / data:text/html value at the point of entry rather than
          relying only on the renderer's scheme gate. */
       const featuredRaw = String(f.get('featured_image') || '').trim();
