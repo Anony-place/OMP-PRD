@@ -37,7 +37,8 @@
       { "source": "/articles/password-entropy", "destination": "/guides/password-entropy.html" },
       { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" },
       { "source": "/articles/**", "destination": "/articles.html" },
-      { "source": "/products{,/**}", "destination": "/products.html" }
+      { "source": "/products{,/**}", "destination": "/products.html" },
+      { "source": "/sitemap.xml", "function": "sitemap" }
     ],
     "headers": [
       {
