@@ -448,6 +448,7 @@ on conflict (id) do update set public = excluded.public;
 -- Admins may upload/replace deliverables; admins may read them (owner
 -- support). NO anon policy exists — that is the point.
 drop policy if exists "product_files_admin_insert" on storage.objects;
+create policy "product_files_admin_insert" on storage.objects
   for insert to authenticated with check (bucket_id = 'product-files' and public.is_admin());
 drop policy if exists "product_files_admin_read" on storage.objects;
 create policy "product_files_admin_read" on storage.objects

@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs18"
+  },
   "hosting": {
     "site": "oopsmypassword",
     "public": ".",
@@ -8,7 +12,8 @@
       "**/node_modules/**",
       "tools/**",
       "supabase/**",
-      "**/*.md"
+      "**/*.md",
+      "sitemap.xml"
     ],
     "cleanUrls": true,
     "trailingSlash": false,

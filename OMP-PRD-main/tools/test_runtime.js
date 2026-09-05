@@ -36,7 +36,9 @@ const server = http.createServer((req, res) => {
   try { p = decodeURIComponent(p); } catch (e) { /* keep raw */ }
   const r = router.resolve(p, 0);
   if (r.type === 'redirect') { res.writeHead(r.status, { Location: r.location }); res.end('moved'); return; }
-  const file = path.join(ROOT, r.file || '/404.html');
+  /* Function rewrites (dynamic sitemap) fall back to the committed XML
+     in local tests — Cloud Functions are not running here. */
+  const file = path.join(ROOT, r.file || r.fallback || '/404.html');
   if (!file.startsWith(ROOT) || !fs.existsSync(file)) { res.writeHead(404); res.end('nf'); return; }
   res.writeHead(r.type === 'notfound' ? 404 : 200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
   res.end(fs.readFileSync(file));
@@ -642,12 +644,12 @@ const $ = (d, s) => d.querySelector(s);
       ['/articles/create-strong-password', { type: 'file', file: '/guides/create-strong-password.html' }],
       ['/articles/critical-langflow-vulnerability', { type: 'file', file: '/articles.html' }],
       ['/products/my-cybersecurity-book', { type: 'file', file: '/products.html' }],
-      ['/sitemap.xml',   { type: 'file', file: '/sitemap.xml' }],
+      ['/sitemap.xml',   { type: 'function', name: 'sitemap' }],
     ];
     for (const [p, want] of table) {
       const got = router.resolve(p, 0);
-      ok(got.type === want.type && got.file === want.file,
-         `direct navigation to ${p} serves ${want.file} — got ${got.type} ${got.file || ''}`);
+      ok(got.type === want.type && (want.file ? got.file === want.file : got.name === want.name),
+         `direct navigation to ${p} serves ${want.file || want.name} — got ${got.type} ${got.file || got.name || ''}`);
     }
 
     /* --- permanent redirects for legacy URLs --- */
@@ -804,6 +806,19 @@ const $ = (d, s) => d.querySelector(s);
        'sitemap.xml lists /products');
     ok(phtml.includes('data-products') && phtml.includes('/assets/js/products.js'),
        'products.html mounts the products app');
+    ok(/function coverUrl/.test(pjs) && pjs.includes('/storage/v1/object/public/products/'),
+       'product covers resolve storage-bucket paths to a public URL');
+    ok(pjs.includes('og:image') && pjs.includes('data-product-cover'),
+       'product views publish og:image and degrade a broken cover');
+    ok(ajs.includes('validateImage') && ajs.includes('cover-preview'),
+       'admin cover upload is magic-byte gated and previews the image');
+    ok(schema.includes('create policy "product_files_admin_insert"'),
+       'product-files insert policy is a complete CREATE POLICY statement');
+    const fbJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
+    ok(fbJson.hosting.ignore.includes('sitemap.xml'),
+       'static sitemap.xml is ignored so the Cloud Function rewrite actually runs');
+    ok(fbJson.functions && fbJson.functions.source === 'functions',
+       'firebase.json points the sitemap function at functions/');
   }
 
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
@@ -846,8 +861,8 @@ const $ = (d, s) => d.querySelector(s);
     input.dispatchEvent(new w.Event('input', { bubbles: true }));
     await new Promise(r => setTimeout(r, 250));
     const genLinks = Array.from(overlay.querySelectorAll('a.omp-sr-row')).map(a => a.getAttribute('href'));
-    ok(genLinks.filter(h => h === '/generator.html').length === 1,
-       'live tool row for /generator.html does not duplicate the baked-in entry');
+    ok(genLinks.filter(h => h === '/generator' || h === '/generator.html').length === 1,
+       'live tool row for /generator.html does not duplicate the baked-in /generator entry');
 
     /* Modal a11y: trigger state + page hidden from assistive tech while open. */
     const trigger = d.getElementById('omp-search-trigger');
@@ -1043,6 +1058,11 @@ const $ = (d, s) => d.querySelector(s);
     ok(/markdown\.js/.test(readme), 'README documents the Markdown renderer');
 
     /* Build must stay reproducible: generated pages must not drift from tools/. */
+    const layoutPy = fs.readFileSync(path.join(ROOT, 'tools/omp_build/layout.py'), 'utf8');
+    ok(layoutPy.includes('("/Articles", "/articles")') || layoutPy.includes('("Articles", "/articles")'),
+       'layout.py nav points Articles at the pretty /articles URL');
+    ok(!layoutPy.includes('("/Guides", "/guides') && !layoutPy.includes('("Guides", "/guides.html")'),
+       'layout.py primary nav no longer has a separate Guides item');
     ok(fs.readFileSync(path.join(ROOT, 'articles.html'), 'utf8').includes('/assets/js/markdown.js'),
        'generated articles.html contains the markdown.js script tag (build output committed)');
     ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/articles.js'),
@@ -1115,6 +1135,11 @@ const $ = (d, s) => d.querySelector(s);
     ok(F.describeBytes(u8(oledoc), 'a.doc').ok === true, 'OLE2 (.doc) accepted');
     ok(F.describeBytes(u8(chars('# Title\nhello')), 'a.md').ok === true, 'markdown text accepted');
     ok(F.describeBytes(u8(pdf), 'a.exe').ok === false, 'disallowed extension rejected');
+    const png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0];
+    const jpeg = [0xFF, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0, 0, 0];
+    ok(F.describeImageBytes(u8(png), 'cover.png').ok === true && F.describeImageBytes(u8(png), 'cover.png').contentType === 'image/png', 'real PNG cover accepted');
+    ok(F.describeImageBytes(u8(jpeg), 'cover.jpg').ok === true, 'real JPEG cover accepted');
+    ok(F.describeImageBytes(u8(chars('<html><script>x</script></html>')), 'cover.png').ok === false, 'HTML smuggled as .png cover rejected');
     ok(F.describeBytes(u8(chars('<svg><script>x</script></svg>')), 'a.txt').ok === false,
        'SVG-with-script renamed .txt rejected as dangerous');
 

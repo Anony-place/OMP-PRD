@@ -107,7 +107,8 @@
     if (window.OMPUrl && window.OMPUrl.safeUrl) {
       var u = window.OMPUrl.safeUrl(v,
         { attrSafe: false, noProtocolRelative: true, noUpLevel: true, allowMailto: false, sameOriginOnly: true });
-      return u === null ? '' : u;
+      if (u === null) return '';
+      return String(u).replace(/\.html(?=$|[?#])/i, '');
     }
     if (/^(\/|#)/.test(v) && !/^\/\//.test(v)) return v;
     if (/^https?:\/\//i.test(v)) {
@@ -191,7 +192,10 @@
   }
 
   function normalizeUrl(u) {
-    return String(u || '').replace(/\/+$/, '').toLowerCase();
+    /* Treat /generator.html and /generator as the same public URL so a
+       legacy tools-registry row cannot duplicate a baked-in pretty URL. */
+    var s = String(u || '').replace(/\.html(?=$|[?#])/i, '').replace(/\/+$/, '').toLowerCase();
+    return s || '/';
   }
 
   /* ---------- Ranking ---------- */
@@ -533,7 +537,7 @@
       else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIdx - 1); }
       else if (e.key === 'Enter') {
         var item = currentResults[activeIdx];
-        if (item) { closeSearch(); window.location.assign(item.url); }
+        if (item) { closeSearch(); window.location.assign(safeResultUrl(item.url) || '/'); }
       }
     });
     listEl.addEventListener('mouseover', function (e) {

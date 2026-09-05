@@ -98,7 +98,7 @@
         if (!has) { statCommon.textContent = '—'; }
         else if (r.flags.isCommon || r.flags.hasCommon) {
           statCommon.textContent = 'Yes';
-          statCommon.style.color = '#FB7185';
+          statCommon.style.color = 'var(--red)';
         } else {
           statCommon.textContent = 'No';
           statCommon.style.color = '';

@@ -98,7 +98,7 @@ def privacy_body():
     <p>Material changes will be posted on this page with an updated date. We will never claim compliance certifications we have not obtained; where a formal legal regime applies to how you use this site, consult qualified counsel.</p>
 
     <h2 id="contact">8. Contact</h2>
-    <p>Privacy questions and security reports: see the <a href="/contact.html">contact page</a> or our <a href="/security.html">security policy</a>.</p>
+    <p>Privacy questions and security reports: see the <a href="/contact">contact page</a> or our <a href="/security">security policy</a>.</p>
   </div>
 </section>
 """
@@ -123,7 +123,7 @@ def terms_body():
 
     <h2 id="your-responsibility">3. Your responsibilities</h2>
     <ul>
-      <li><strong>Be careful where you type secrets.</strong> While OMP is built to process them locally, you should never enter passwords into websites you do not understand or trust — including this one. Review our <a href="/privacy.html">privacy policy</a> and, if you wish, verify behavior in your browser's developer tools.</li>
+      <li><strong>Be careful where you type secrets.</strong> While OMP is built to process them locally, you should never enter passwords into websites you do not understand or trust — including this one. Review our <a href="/privacy">privacy policy</a> and, if you wish, verify behavior in your browser's developer tools.</li>
       <li>You are responsible for the passwords and passphrases you choose to use, where you store them, and how quickly you change them after incidents.</li>
       <li>Do not use OMP's tools to attack, test, or analyze systems you do not own or lack permission to assess.</li>
     </ul>
@@ -132,13 +132,13 @@ def terms_body():
     <p>The site is provided "as is" and "as available". Features may change, and tools may be added, relabeled as "Coming Soon", or retired. We aim for accuracy in all content but provide no warranty of completeness or fitness for a particular purpose.</p>
 
     <h2 id="liability">5. Limitation of liability</h2>
-    <p>To the maximum extent permitted by law, OMP and its authors are not liable for any damages arising from use of the site or reliance on its outputs — including account compromise, data loss, or breach impact. If you face a live security incident, engage qualified professionals and follow our <a href="/guides/after-a-data-breach.html">breach response guide</a> as general information only.</p>
+    <p>To the maximum extent permitted by law, OMP and its authors are not liable for any damages arising from use of the site or reliance on its outputs — including account compromise, data loss, or breach impact. If you face a live security incident, engage qualified professionals and follow our <a href="/articles/after-a-data-breach">breach response guide</a> as general information only.</p>
 
     <h2 id="ip">6. Intellectual property</h2>
     <p>Site content, guides and design are provided for personal and educational use. The bundled passphrase word list is the EFF's short wordlist, used under its permissive terms with thanks.</p>
 
     <h2 id="responsible-use">7. Responsible use</h2>
-    <p>Do not attempt to disrupt the site, scrape it abusively, or misrepresent its outputs (for example, presenting heuristic scores as certifications). Security researchers: see <a href="/security.html">our security policy</a> for reporting.</p>
+    <p>Do not attempt to disrupt the site, scrape it abusively, or misrepresent its outputs (for example, presenting heuristic scores as certifications). Security researchers: see <a href="/security">our security policy</a> for reporting.</p>
   </div>
 </section>
 """
@@ -184,7 +184,7 @@ def contact_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("shield","icon-22")}</span>
         <h3>Security reports</h3>
-        <p>Found a vulnerability in OMP itself? Please follow responsible disclosure via our <a href="/security.html" style="color:var(--purple)">security policy</a>. <strong>Never include a real password in any report.</strong></p>
+        <p>Found a vulnerability in OMP itself? Please follow responsible disclosure via our <a href="/security" style="color:var(--purple)">security policy</a>. <strong>Never include a real password in any report.</strong></p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("book","icon-22")}</span>
@@ -214,7 +214,7 @@ def faq_body():
 <section class="section-tight">
   <div class="container container-narrow">
     <div class="grid" style="gap:12px">{faq_details(FAQ_ITEMS)}</div>
-    <div class="notice-band mt-48">{icon("info","icon-20")}<p>Something missing? <a href="/contact.html" style="color:var(--purple)">Ask us</a> — good questions become new guides.</p></div>
+    <div class="notice-band mt-48">{icon("info","icon-20")}<p>Something missing? <a href="/contact" style="color:var(--purple)">Ask us</a> — good questions become new guides.</p></div>
   </div>
 </section>
 """
@@ -314,12 +314,12 @@ def security_body():
 def sitemap_body(guides):
     groups = [
         ("Tools", [(t["name"], t["href"]) for t in TOOLS]),
-        ("Guides", [("All guides", "/guides.html")] + [(g["title"], f"/guides/{g['slug']}.html") for g in guides]),
+        ("Articles", [("Articles hub", "/articles"), ("Products", "/products")] + [(g["title"], f"/articles/{g['slug']}") for g in guides]),
         ("Site", [
-            ("Home", "/"), ("About", "/about.html"), ("FAQ", "/faq.html"),
-            ("Glossary", "/glossary.html"), ("Security", "/security.html"),
-            ("Privacy", "/privacy.html"), ("Terms", "/terms.html"),
-            ("Contact", "/contact.html"),
+            ("Home", "/"), ("About", "/about"), ("FAQ", "/faq"),
+            ("Glossary", "/glossary"), ("Security", "/security"),
+            ("Privacy", "/privacy"), ("Terms", "/terms"),
+            ("Contact", "/contact"),
         ]),
     ]
     cols = "".join(

@@ -75,18 +75,44 @@ class Checker(HTMLParser):
 
 
 def resolve(path, base_file):
-    """Resolve site path to filesystem."""
+    """Resolve a public URL to a file on disk (cleanUrls + SPA rewrites)."""
     if path.startswith(("http://", "https://", "mailto:", "tel:", "data:", "javascript:")):
         return None, None
     p, _, frag = path.partition("#")
     if p == "":
         target = os.path.join(ROOT, base_file)
-    elif p.startswith("/"):
+        return target, frag
+    if p.startswith("/"):
         target = os.path.join(ROOT, p.lstrip("/"))
         if p.endswith("/"):
             target = os.path.join(target, "index.html")
     else:
         target = os.path.normpath(os.path.join(ROOT, os.path.dirname(base_file), p))
+
+    if os.path.exists(target):
+        return target, frag
+
+    # cleanUrls: /checker is served by checker.html
+    if not str(target).endswith(".html") and os.path.exists(target + ".html"):
+        return target + ".html", frag
+
+    # /articles/<static-guide-slug> is rewritten to /guides/<slug>.html
+    if p.startswith("/articles/"):
+        slug = p[len("/articles/"):].rstrip("/")
+        guide = os.path.join(ROOT, "guides", slug + ".html")
+        if os.path.exists(guide):
+            return guide, frag
+        # live article SPA: /articles/<slug> → articles.html
+        hub = os.path.join(ROOT, "articles.html")
+        if os.path.exists(hub):
+            return hub, frag
+
+    # /products and /products/<slug> → products.html
+    if p == "/products" or p.startswith("/products/"):
+        catalog = os.path.join(ROOT, "products.html")
+        if os.path.exists(catalog):
+            return catalog, frag
+
     return target, frag
 
 
@@ -138,13 +164,21 @@ for f, c in parsed.items():
         if not os.path.exists(target):
             errors.append(f"{f}: broken local link {href}")
         elif frag:
+            # SPA hash routes (#/c/guides, #/slug) are not HTML ids.
+            if frag.startswith("/"):
+                continue
             rel = os.path.relpath(target, ROOT)
             if rel.endswith(".html") and frag not in anchors.get(rel, set()):
                 errors.append(f"{f}: dead anchor {href} (#{frag} not in {rel})")
 
-# titles unique?
+def is_noindex(fname):
+    return parsed[fname].has.get("noindex")
+
+# titles unique among indexable pages (redirect stubs may share a destination)
 titles = {}
 for f in html_files:
+    if is_noindex(f):
+        continue
     src = open(os.path.join(ROOT, f), encoding="utf-8").read()
     m = re.search(r"<title>(.*?)</title>", src)
     if m:
@@ -153,9 +187,11 @@ for t, fs in titles.items():
     if len(fs) > 1:
         errors.append(f"duplicate title '{t}' on {fs}")
 
-# descriptions unique?
+# descriptions unique among indexable pages
 descs = {}
 for f in html_files:
+    if is_noindex(f):
+        continue
     src = open(os.path.join(ROOT, f), encoding="utf-8").read()
     m = re.search(r'<meta name="description" content="(.*?)">', src)
     if m:

@@ -33,8 +33,8 @@ G1 = {
 
 <h2 id="three-recipes">Three reliable recipes</h2>
 <ol>
-  <li><strong>CSPRNG password.</strong> Use our <a href="/generator.html">generator</a> or your password manager: 20 random characters with mixed types. Store it in the manager; you never need to see it.</li>
-  <li><strong>Diceware passphrase.</strong> 5–7 random words, e.g. <code>cobweb-giraffe-easel-poncho-vacuum</code>. Random words are memorable yet carry ~13 bits of entropy each from a 1,296-word list. Try the <a href="/passphrase.html">passphrase generator</a>.</li>
+  <li><strong>CSPRNG password.</strong> Use our <a href="/generator">generator</a> or your password manager: 20 random characters with mixed types. Store it in the manager; you never need to see it.</li>
+  <li><strong>Diceware passphrase.</strong> 5–7 random words, e.g. <code>cobweb-giraffe-easel-poncho-vacuum</code>. Random words are memorable yet carry ~13 bits of entropy each from a 1,296-word list. Try the <a href="/passphrase">passphrase generator</a>.</li>
   <li><strong>Manager master password.</strong> The one password you must memorize: a 6-word passphrase, written on paper and stored somewhere safe until it sticks.</li>
 </ol>
 
@@ -88,10 +88,10 @@ G2 = {
 <p>When any site is breached, attackers take the leaked email/password pairs and try them on banking, email and social networks — this is called <strong>credential stuffing</strong>. Reuse means one forgotten forum account can hand over your digital life. Uniqueness is the single highest-impact habit.</p>
 
 <h2 id="use-a-manager">2. Use a password manager</h2>
-<p>Nobody can invent and remember 100 unique random passwords. A password manager generates and stores them behind one strong master passphrase, and autofill refuses to type your password into a look-alike phishing domain — a security feature, not just a convenience. See <a href="/guides/password-manager-benefits.html">Password Manager Benefits</a>.</p>
+<p>Nobody can invent and remember 100 unique random passwords. A password manager generates and stores them behind one strong master passphrase, and autofill refuses to type your password into a look-alike phishing domain — a security feature, not just a convenience. See <a href="/articles/password-manager-benefits">Password Manager Benefits</a>.</p>
 
 <h2 id="enable-2fa">3. Enable two-factor authentication</h2>
-<p>2FA means a stolen password alone is not enough. Prefer app-based codes or hardware keys over SMS where possible, and store backup codes offline. Details in our <a href="/guides/two-factor-authentication.html">2FA guide</a>.</p>
+<p>2FA means a stolen password alone is not enough. Prefer app-based codes or hardware keys over SMS where possible, and store backup codes offline. Details in our <a href="/articles/two-factor-authentication">2FA guide</a>.</p>
 
 <h2 id="prioritize">4. Prioritize the crown jewels</h2>
 <ul>
@@ -102,7 +102,7 @@ G2 = {
 </ul>
 
 <h2 id="breach-response">5. Respond fast to breaches</h2>
-<p>If a service you use reports a breach: change that password immediately, change any account where you reused it, sign out other sessions if offered, and watch for phishing that exploits the news cycle. Full walkthrough: <a href="/guides/after-a-data-breach.html">What to Do After a Data Breach</a>.</p>
+<p>If a service you use reports a breach: change that password immediately, change any account where you reused it, sign out other sessions if offered, and watch for phishing that exploits the news cycle. Full walkthrough: <a href="/articles/after-a-data-breach">What to Do After a Data Breach</a>.</p>
 
 <h2 id="hygiene">6. Everyday hygiene</h2>
 <ul>
@@ -150,7 +150,7 @@ G3 = {
   <li><strong>Repeats:</strong> <code>aaaaaa</code>, <code>112233</code></li>
   <li><strong>Dates:</strong> <code>Summer2026</code>, <code>John1990</code> — a word plus a year is a top cracking rule.</li>
 </ul>
-<p>Our <a href="/checker.html">checker</a> flags all of these locally in your browser.</p>
+<p>Our <a href="/checker">checker</a> flags all of these locally in your browser.</p>
 
 <h2 id="substitutions">4. "Clever" leet substitutions</h2>
 <p><code>p@ssw0rd</code>, <code>5up3rman</code>, <code>1l0v3you</code> — cracking tools apply leetspeak rules exhaustively. Substitutions add complexity for you and essentially zero work for the attacker. Length and randomness beat mangling every time.</p>
@@ -168,8 +168,8 @@ G3 = {
 <h2 id="fixes">7. The fixes</h2>
 <ol>
   <li>Move everything into a password manager.</li>
-  <li>Regenerate reused or weak passwords with a <a href="/generator.html">random generator</a> — start with email, banking, and anything reused.</li>
-  <li>For passwords you must memorize, use 5–7 word <a href="/passphrase.html">passphrases</a>.</li>
+  <li>Regenerate reused or weak passwords with a <a href="/generator">random generator</a> — start with email, banking, and anything reused.</li>
+  <li>For passwords you must memorize, use 5–7 word <a href="/passphrase">passphrases</a>.</li>
   <li>Add 2FA so a single mistake is not fatal.</li>
 </ol>
 <div class="callout callout-warn"><p><strong>Honest metric:</strong> a password you can casually invent is a password a machine can casually guess. Outsource invention to randomness.</p></div>
@@ -214,7 +214,7 @@ G4 = {
 </ul>
 
 <h2 id="master-password">The master password</h2>
-<p>Your vault is only as strong as its master password. Use a 6-word passphrase (see our <a href="/passphrase.html">passphrase generator</a>), write it on paper stored somewhere physically safe until memorized, and enable 2FA on the manager account itself.</p>
+<p>Your vault is only as strong as its master password. Use a 6-word passphrase (see our <a href="/passphrase">passphrase generator</a>), write it on paper stored somewhere physically safe until memorized, and enable 2FA on the manager account itself.</p>
 
 <h2 id="migration">Migrating safely</h2>
 <ol>

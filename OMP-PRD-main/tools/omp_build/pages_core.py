@@ -49,7 +49,7 @@ def home_body(guides):
       <p class="lead reveal reveal-d2">Test your password strength in real-time, check security risks, generate stronger passwords, and learn how to protect your digital life.</p>
       <div class="hero-cta reveal reveal-d3">
         <a class="btn btn-primary btn-lg" href="#checker">{icon("gauge","icon-18")} Check Your Password</a>
-        <a class="btn btn-secondary btn-lg" href="/generator.html">{icon("dice","icon-18")} Generate Strong Password</a>
+        <a class="btn btn-secondary btn-lg" href="/generator">{icon("dice","icon-18")} Generate Strong Password</a>
       </div>
       <div class="hero-trust reveal reveal-d3">
         <span class="chip">{icon("check","icon-16")} No account required</span>
@@ -122,7 +122,7 @@ def home_body(guides):
         <li>{icon("check","icon-18")}<span><strong>Every character type enforced</strong>, then shuffled securely</span></li>
         <li>{icon("check","icon-18")}<span><strong>Ambiguity filter</strong> for <span class="mono">Il1O0</span>-confusable situations</span></li>
       </ul>
-      <a class="btn btn-secondary mt-24" href="/generator.html">Open full generator {icon("arrow","icon-16")}</a>
+      <a class="btn btn-secondary mt-24" href="/generator">Open full generator {icon("arrow","icon-16")}</a>
     </div>
     <div class="card card-pad reveal reveal-d1" data-generator>
       <h3 class="h-3">Quick generate</h3>
@@ -150,7 +150,20 @@ def home_body(guides):
       <p class="lead">Short, practical reads written for humans — no fear-mongering, no jargon walls.</p>
     </div>
     <div class="grid grid-3">{guide_cards}</div>
-    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/guides.html">Browse all 15 guides {icon("arrow","icon-16")}</a></div>
+    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/articles">Explore all articles &amp; guides {icon("arrow","icon-16")}</a></div>
+  </div>
+</section>
+
+<section class="section" id="products-teaser">
+  <div class="container">
+    <a href="/products" class="card card-pad card-link reveal" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between">
+      <div style="max-width:640px">
+        <span class="eyebrow">Shop</span>
+        <h2 class="h-3" style="margin-top:8px">Books, courses and toolkits from OopsMyPassword</h2>
+        <p class="muted" style="margin-top:8px">Deeper material than the free guides — printable checklists, structured courses and ready-to-use templates. Browse the catalog, buy through the storefront, download securely.</p>
+      </div>
+      <span class="btn btn-primary">Browse products {icon("arrow","icon-16")}</span>
+    </a>
   </div>
 </section>
 
@@ -171,8 +184,8 @@ def home_body(guides):
       <h2 class="h-1">A password tool you don't have to trust</h2>
       <p class="lead">Most "password checkers" quietly send your password to a server. OMP is architected so it <em>can't</em>: the analysis engine ships as JavaScript that never performs a network request. Open your browser's developer tools and watch — zero password traffic, ever.</p>
       <div class="flex gap-12 wrap mt-24">
-        <a class="btn btn-secondary" href="/privacy.html">Read the privacy policy</a>
-        <a class="btn btn-ghost" href="/about.html">Why we built this {icon("arrow","icon-16")}</a>
+        <a class="btn btn-secondary" href="/privacy">Read the privacy policy</a>
+        <a class="btn btn-ghost" href="/about">Why we built this {icon("arrow","icon-16")}</a>
       </div>
     </div>
   </div>
@@ -185,7 +198,7 @@ def home_body(guides):
       <h2 class="h-1">Straight answers</h2>
     </div>
     <div class="grid reveal" style="gap:12px">{faq_preview}</div>
-    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/faq.html">All 10 questions {icon("arrow","icon-16")}</a></div>
+    <div class="center mt-32 reveal"><a class="btn btn-secondary" href="/faq">All 10 questions {icon("arrow","icon-16")}</a></div>
   </div>
 </section>
 
@@ -196,7 +209,7 @@ def home_body(guides):
       <p class="lead mt-8" style="max-width:560px;margin-inline:auto">Test it, replace it, or learn why it works — all without creating an account.</p>
       <div class="flex gap-12 wrap mt-24" style="justify-content:center">
         <a class="btn btn-primary btn-lg" href="#checker">{icon("gauge","icon-18")} Check Your Password</a>
-        <a class="btn btn-secondary btn-lg" href="/guides.html">Read the Guides</a>
+        <a class="btn btn-secondary btn-lg" href="/articles">Explore the Articles</a>
       </div>
     </div>
   </div>
@@ -233,14 +246,14 @@ def checker_body():
       <div class="card card-pad"><span class="card-icon">{icon("alert","icon-22")}</span><h3>Pattern penalties</h3><p>Common passwords (exact and embedded), dictionary words including leetspeak forms, repeated runs (<span class="mono">aaaa</span>), sequences (<span class="mono">abcd</span>), keyboard walks (<span class="mono">qwerty</span>) and year-like dates.</p></div>
       <div class="card card-pad"><span class="card-icon">{icon("sigma","icon-22")}</span><h3>Entropy & crack time</h3><p>Pool-based entropy (<span class="mono">L·log₂N</span>) adjusted downward by detected patterns, then translated into an indicative offline crack time at ~10¹¹ guesses/second.</p></div>
     </div>
-    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Honest limits.</strong> A heuristic cannot know how your password was generated or where else you used it. A randomly generated 20-character password will outlive any "clever" human one regardless of what any meter says — including ours. <a href="/guides/password-entropy.html" style="color:var(--purple)">Read how entropy works</a>.</p></div>
+    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Honest limits.</strong> A heuristic cannot know how your password was generated or where else you used it. A randomly generated 20-character password will outlive any "clever" human one regardless of what any meter says — including ours. <a href="/articles/password-entropy" style="color:var(--purple)">Read how entropy works</a>.</p></div>
   </div>
 </section>
 <section class="section" style="padding-top:0">
   <div class="container container-narrow grid grid-3">
-    <a class="card card-pad card-link center" href="/generator.html"><span class="card-icon">{icon("dice","icon-22")}</span><h3>Weak result?</h3><p>Generate a strong replacement in one click.</p></a>
-    <a class="card card-pad card-link center" href="/password-health.html"><span class="card-icon">{icon("pulse","icon-22")}</span><h3>Want the full audit?</h3><p>Run the 10-point password health check.</p></a>
-    <a class="card card-pad card-link center" href="/guides/create-strong-password.html"><span class="card-icon">{icon("book","icon-22")}</span><h3>Build the habit</h3><p>How to create strong passwords that last.</p></a>
+    <a class="card card-pad card-link center" href="/generator"><span class="card-icon">{icon("dice","icon-22")}</span><h3>Weak result?</h3><p>Generate a strong replacement in one click.</p></a>
+    <a class="card card-pad card-link center" href="/password-health"><span class="card-icon">{icon("pulse","icon-22")}</span><h3>Want the full audit?</h3><p>Run the 10-point password health check.</p></a>
+    <a class="card card-pad card-link center" href="/articles/create-strong-password"><span class="card-icon">{icon("book","icon-22")}</span><h3>Build the habit</h3><p>How to create strong passwords that last.</p></a>
   </div>
 </section>
 """
@@ -312,7 +325,7 @@ def generator_body():
         <span class="card-icon">{icon("key","icon-22")}</span>
         <h3>Need something memorable?</h3>
         <p>Random words beat random characters for memorization. A 5-word passphrase from a 1,296-word list carries ~52 bits; 7 words ~72 bits.</p>
-        <a class="btn btn-secondary btn-sm mt-16" href="/passphrase.html">Try the passphrase generator {icon("arrow","icon-16")}</a>
+        <a class="btn btn-secondary btn-sm mt-16" href="/passphrase">Try the passphrase generator {icon("arrow","icon-16")}</a>
       </div>
     </div>
   </div>
@@ -394,7 +407,7 @@ def breach_body():
       <div class="step"><h3 class="h-3">Send only a prefix</h3><p class="muted">Only the first 5 characters of the hash are sent to the API — a "range" shared by hundreds of unrelated hashes. The service cannot tell which password you meant.</p></div>
       <div class="step"><h3 class="h-3">Match locally</h3><p class="muted">The API returns all hash suffixes in that range; your device compares locally. Full hash and password stay with you — anonymity set: everyone sharing the prefix.</p></div>
     </div>
-    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Where OMP is going:</strong> this demo is built behind a clean <span class="mono">BreachProvider</span>-style interface, so a real k-anonymity range API can be connected later without changing the UI — with explicit consent, documented in our <a href="/privacy.html" style="color:var(--purple)">privacy policy</a> before any network call ships.</p></div>
+    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Where OMP is going:</strong> this demo is built behind a clean <span class="mono">BreachProvider</span>-style interface, so a real k-anonymity range API can be connected later without changing the UI — with explicit consent, documented in our <a href="/privacy" style="color:var(--purple)">privacy policy</a> before any network call ships.</p></div>
   </div>
 </section>
 
@@ -409,7 +422,7 @@ def breach_body():
         <li><strong>Hashing is not encryption.</strong> It is one-way only against inputs with enough entropy — human passwords usually don't have it, which is exactly what cracking exploits.</li>
         <li><strong>The fix is layered:</strong> salted, memory-hard hashing (Argon2/bcrypt) on the server side; unique, generated passwords and 2FA on yours.</li>
       </ul>
-      <p>If a service you use was breached, follow the playbook in <a href="/guides/after-a-data-breach.html">What to Do After a Data Breach</a>.</p>
+      <p>If a service you use was breached, follow the playbook in <a href="/articles/after-a-data-breach">What to Do After a Data Breach</a>.</p>
     </div>
   </div>
 </section>
@@ -455,7 +468,7 @@ def health_body():
 </section>
 <section class="section" style="padding-top:0">
   <div class="container container-narrow">
-    <div class="notice-band">{icon("info","icon-20")}<p><strong>About reuse checks.</strong> Because OMP stores nothing and has no accounts, it genuinely cannot know where else a password is used — and we won't pretend otherwise. The reuse reminder is advice; enforcing uniqueness is a password manager's job. See <a href="/guides/password-manager-benefits.html" style="color:var(--purple)">Password Manager Benefits</a>.</p></div>
+    <div class="notice-band">{icon("info","icon-20")}<p><strong>About reuse checks.</strong> Because OMP stores nothing and has no accounts, it genuinely cannot know where else a password is used — and we won't pretend otherwise. The reuse reminder is advice; enforcing uniqueness is a password manager's job. See <a href="/articles/password-manager-benefits" style="color:var(--purple)">Password Manager Benefits</a>.</p></div>
   </div>
 </section>
 """
@@ -518,7 +531,7 @@ def entropy_body():
   <div class="container container-narrow prose">
     <h2 id="formula">The formula</h2>
     <p><code>H = L × log₂(N)</code> — length times the base-2 logarithm of the pool size. Each random lowercase letter adds ~4.7 bits; each mixed-case alphanumeric ~5.95 bits; each full-set character ~6.57 bits; each word from a 1,296-word list ~10.34 bits.</p>
-    <p>The catch: the formula only holds when selection is truly random. Human choices collapse the effective pool dramatically. Details, tables and attacker models: <a href="/guides/password-entropy.html">How Password Entropy Works</a>.</p>
+    <p>The catch: the formula only holds when selection is truly random. Human choices collapse the effective pool dramatically. Details, tables and attacker models: <a href="/articles/password-entropy">How Password Entropy Works</a>.</p>
   </div>
 </section>
 """
@@ -723,7 +736,7 @@ def checklist_body():
       <div class="progress-line mt-16" role="progressbar" aria-label="Checklist progress"><span data-checklist-bar></span></div>
     </div>
     <div class="grid mt-32" style="gap:36px">{''.join(groups)}</div>
-    <div class="notice-band mt-48">{icon("info","icon-20")}<p>Done with the basics? The <a href="/guides.html" style="color:var(--purple)">guides</a> go deeper on managers, 2FA, passkeys and breach response.</p></div>
+    <div class="notice-band mt-48">{icon("info","icon-20")}<p>Done with the basics? The <a href="/articles" style="color:var(--purple)">guides</a> go deeper on managers, 2FA, passkeys and breach response.</p></div>
   </div>
 </section>
 """

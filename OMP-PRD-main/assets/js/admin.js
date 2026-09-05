@@ -193,7 +193,7 @@ async function loadTab(tab) {
     const paintList = filter => {
       const q = String(filter || '').trim().toLowerCase();
       const shown = q ? rows.filter(p => [p.name, p.slug, p.product_type, p.status].some(v => String(v || '').toLowerCase().includes(q))) : rows;
-      listEl.innerHTML = shown.map(p => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(p.name)} ${p.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/products/${esc(p.slug)} · ${esc(p.product_type)} · ${esc(p.status)}${money(p) ? ' · ' + esc(money(p)) : ''}${p.file_path ? ' · 🔒 file' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-product="${esc(p.id)}" data-on="${p.featured ? '1' : ''}">${p.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-product="${esc(p.id)}" data-on="${p.status === 'published' ? '1' : ''}">${p.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-product="${esc(p.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-product="${esc(p.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+      listEl.innerHTML = shown.map(p => `<div class="admin-row">${p.featured_image ? `<img src="${esc(p.featured_image)}" alt="" width="48" height="32" style="width:48px;height:32px;object-fit:cover;border-radius:6px;flex:none;background:var(--bg-soft)">` : ''}<div class="grow"><div class="ttl">${esc(p.name)} ${p.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/products/${esc(p.slug)} · ${esc(p.product_type)} · ${esc(p.status)}${money(p) ? ' · ' + esc(money(p)) : ''}${p.file_path ? ' · 🔒 file' : ''}${p.featured_image ? ' · 🖼 cover' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-product="${esc(p.id)}" data-on="${p.featured ? '1' : ''}">${p.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-product="${esc(p.id)}" data-on="${p.status === 'published' ? '1' : ''}">${p.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-product="${esc(p.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-product="${esc(p.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
         || `<div class="admin-empty"><p class="muted">${rows.length ? 'No products match that filter.' : 'No products yet — create the first one.'}</p></div>`;
       const patch = async (btn, id, set) => {
         btn.disabled = true;
@@ -468,8 +468,9 @@ function productForm(host, product) {
       <div class="form-field">
         <label for="${id('cover')}">Cover image URL</label>
         <input id="${id('cover')}" name="featured_image" value="${esc(p.featured_image || '')}" placeholder="https://… or upload below">
-        <input id="${id('cover-file')}" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="margin-top:8px;padding:8px" aria-label="Upload cover image">
-        <p class="tiny muted" style="margin-top:6px">PNG/JPG/WebP/GIF up to 5 MB — uploaded to the public <code>products</code> covers bucket.</p>
+        <input id="${id('cover-file')}" type="file" accept="image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif" style="margin-top:8px;padding:8px" aria-label="Upload cover image">
+        <div id="${id('cover-preview')}" class="product-cover" style="max-width:280px;margin-top:10px;border-radius:var(--radius);overflow:hidden" hidden></div>
+        <p class="tiny muted" style="margin-top:6px">PNG/JPG/WebP/GIF up to 5 MB — uploaded to the public <code>products</code> covers bucket. The preview below is what /products shows.</p>
       </div>
       <div class="form-field">
         <label for="${id('file')}">Deliverable file (paid PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
@@ -496,18 +497,37 @@ function productForm(host, product) {
   const nameInput = document.querySelector(`#${id('name')}`);
   const slugInput = document.querySelector(`#${id('slug')}`);
   const coverInput = document.querySelector(`#${id('cover')}`);
+  const coverPreview = document.querySelector(`#${id('cover-preview')}`);
   const preview = document.querySelector('#product-preview');
+
+  const coverSrc = (raw) => {
+    const v = String(raw || '').trim();
+    if (!v) return '';
+    if (window.OMPUrl?.safeUrl) return window.OMPUrl.safeUrl(v, { allowDataImage: true }) || '';
+    return /^(https?:|\/|data:image\/)/i.test(v) ? v : '';
+  };
+
+  const paintCover = () => {
+    const src = coverSrc(coverInput.value);
+    if (!src) { coverPreview.hidden = true; coverPreview.replaceChildren(); return; }
+    coverPreview.hidden = false;
+    coverPreview.innerHTML = `<img src="${esc(src)}" alt="Cover preview" style="width:100%;height:100%;object-fit:cover">`;
+  };
 
   const paintPreview = () => {
     const name = nameInput.value.trim();
-    preview.innerHTML = (name ? `<h1 class="h-1" style="font-size:1.7rem">${esc(name)}</h1>` : '') + renderBody(ta.value);
+    const src = coverSrc(coverInput.value);
+    const coverHtml = src ? `<img src="${esc(src)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--radius);margin-bottom:14px">` : '';
+    preview.innerHTML = coverHtml + (name ? `<h1 class="h-1" style="font-size:1.7rem">${esc(name)}</h1>` : '') + renderBody(ta.value);
     if (window.OMPMarkdown?.demoteHeadings) window.OMPMarkdown.demoteHeadings(preview, 1);
-    if (!name && !ta.value.trim()) preview.innerHTML = '<p class="muted">Nothing to preview yet.</p>';
+    if (!name && !ta.value.trim() && !src) preview.innerHTML = '<p class="muted">Nothing to preview yet.</p>';
   };
+  paintCover();
   paintPreview();
   let previewTimer = null;
   const queuePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(paintPreview, 180); };
-  ta.addEventListener('input', queuePreview);
+  ta.addEventListener('input', () => { setDirty(form, true); queuePreview(); });
+  coverInput.addEventListener('input', () => { setDirty(form, true); paintCover(); queuePreview(); });
   form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
   document.querySelector('#refresh-product-preview').onclick = paintPreview;
 
@@ -526,15 +546,26 @@ function productForm(host, product) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     try {
-      if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) throw new Error('Cover must be a PNG, JPG, WebP or GIF image.');
-      if (file.size > 5 * 1024 * 1024) throw new Error('Cover image is larger than the 5 MB limit.');
+      const v = window.OMPFileValidate
+        ? await window.OMPFileValidate.validateImage(file)
+        : (() => {
+            if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) throw new Error('Cover must be a PNG, JPG, WebP or GIF image.');
+            if (file.size > 5 * 1024 * 1024) throw new Error('Cover image is larger than the 5 MB limit.');
+            return { ok: true, contentType: file.type };
+          })();
+      if (!v || !v.ok) throw new Error((v && v.error) || 'Cover image validation failed.');
       const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
       const path = `covers/${Date.now()}-${safeName}`;
-      const { error: upErr } = await supabase.storage.from('products').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      const { error: upErr } = await supabase.storage.from('products').upload(path, file, {
+        cacheControl: '3600', upsert: false, contentType: v.contentType || file.type
+      });
       if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
       const { data: pub } = supabase.storage.from('products').getPublicUrl(path);
+      if (!pub?.publicUrl) throw new Error('Upload succeeded but no public URL was returned. Check that the products storage bucket is public.');
       coverInput.value = pub.publicUrl;
       setDirty(form, true);
+      paintCover();
+      queuePreview();
       flash(form, 'Cover uploaded — remember to save.');
     } catch (err) {
       flash(form, err?.message || String(err));
@@ -567,8 +598,8 @@ function productForm(host, product) {
 
       /* Cover URL: same gate the article featured_image uses. */
       const rawCover = String(f.get('featured_image') || '').trim();
-      const cover = rawCover ? (window.OMPUrl ? window.OMPUrl.safeUrl(rawCover, { allowDataImage: true }) : (/^(https?:|\/|#|data:image\/[a-z]+;base64,)/i.test(rawCover) ? rawCover : null)) : null;
-      if (cover === null && rawCover) throw new Error('Cover image URL must be an http(s), site-relative or raster data: image.');
+      const cover = rawCover ? (window.OMPUrl ? window.OMPUrl.safeUrl(rawCover) : (/^(https?:|\/)/i.test(rawCover) ? rawCover : null)) : null;
+      if (cover === null && rawCover) throw new Error('Cover image URL must be an http(s) or site-relative URL. Upload a file instead of pasting a data: image.');
 
       /* Price/currency pair validation. */
       const rawPrice = String(f.get('price') || '').trim();
@@ -627,7 +658,7 @@ function toolForm(host, categories, tool) {
   const t = tool || {name:'',slug:'',description:'',route:'',icon:'',category_id:null,is_active:true,sort_order:0,metadata:{}};
   const uid = tool ? String(tool.id).slice(0, 8) : 'new';
   const id = n => `tf-${uid}-${n}`;
-  host.innerHTML = `<form id="tool-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${tool ? 'Edit tool' : 'New tool'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label for="${id('name')}">Name</label><input id="${id('name')}" name="name" required value="${esc(t.name)}"></div><div class="form-field"><label for="${id('slug')}">Slug</label><input id="${id('slug')}" name="slug" required value="${esc(t.slug)}"></div></div><div class="form-field"><label for="${id('desc')}">Description</label><textarea id="${id('desc')}" name="description" rows="3">${esc(t.description || '')}</textarea></div><div class="editor-row-3"><div class="form-field"><label for="${id('cat')}">Category</label><select id="${id('cat')}" name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${esc(c.id)}" ${c.id===t.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label for="${id('route')}">Route</label><input id="${id('route')}" name="route" placeholder="/checker.html" value="${esc(t.route || '')}"></div><div class="form-field"><label for="${id('icon')}">Icon</label><input id="${id('icon')}" name="icon" value="${esc(t.icon || '')}"></div></div><div class="editor-row-2"><div class="form-field"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(t.sort_order)||0}"></div><div class="opt-row"><div><div class="opt-name">Active</div><div class="opt-desc">Show this tool on the public registry.</div></div><span class="switch"><input name="is_active" type="checkbox" aria-label="Active" ${t.is_active?'checked':''}><span class="track"></span></span></div></div><div class="form-field"><label for="${id('meta')}">Metadata JSON</label><textarea id="${id('meta')}" name="metadata" rows="6">${esc(JSON.stringify(t.metadata || {}, null, 2))}</textarea></div><p class="tiny muted" style="margin-top:6px">Route must be a path on this site (for example <code>/checker.html</code>). Off-site or <code>javascript:</code> routes are rejected by the public search.</p><div class="flex gap-8" style="margin-top:14px"><button class="btn btn-primary" type="submit">Save tool</button><button class="btn btn-ghost" type="button" id="cancel-tool">Cancel</button></div></form>`;
+  host.innerHTML = `<form id="tool-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${tool ? 'Edit tool' : 'New tool'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label for="${id('name')}">Name</label><input id="${id('name')}" name="name" required value="${esc(t.name)}"></div><div class="form-field"><label for="${id('slug')}">Slug</label><input id="${id('slug')}" name="slug" required value="${esc(t.slug)}"></div></div><div class="form-field"><label for="${id('desc')}">Description</label><textarea id="${id('desc')}" name="description" rows="3">${esc(t.description || '')}</textarea></div><div class="editor-row-3"><div class="form-field"><label for="${id('cat')}">Category</label><select id="${id('cat')}" name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${esc(c.id)}" ${c.id===t.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label for="${id('route')}">Route</label><input id="${id('route')}" name="route" placeholder="/checker" value="${esc(t.route || '')}"></div><div class="form-field"><label for="${id('icon')}">Icon</label><input id="${id('icon')}" name="icon" value="${esc(t.icon || '')}"></div></div><div class="editor-row-2"><div class="form-field"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(t.sort_order)||0}"></div><div class="opt-row"><div><div class="opt-name">Active</div><div class="opt-desc">Show this tool on the public registry.</div></div><span class="switch"><input name="is_active" type="checkbox" aria-label="Active" ${t.is_active?'checked':''}><span class="track"></span></span></div></div><div class="form-field"><label for="${id('meta')}">Metadata JSON</label><textarea id="${id('meta')}" name="metadata" rows="6">${esc(JSON.stringify(t.metadata || {}, null, 2))}</textarea></div><p class="tiny muted" style="margin-top:6px">Route must be a path on this site (for example <code>/checker</code>). Off-site or <code>javascript:</code> routes are rejected by the public search.</p><div class="flex gap-8" style="margin-top:14px"><button class="btn btn-primary" type="submit">Save tool</button><button class="btn btn-ghost" type="button" id="cancel-tool">Cancel</button></div></form>`;
   const form = document.querySelector('#tool-form');
   document.querySelector('#cancel-tool').onclick = () => { host.innerHTML = ''; };
   form.addEventListener('submit', async e => {

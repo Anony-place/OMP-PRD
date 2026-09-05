@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
   try { p = decodeURIComponent(p); } catch (e) { /* keep raw */ }
   const r = router.resolve(p, 0);
   if (r.type === 'redirect') { res.writeHead(r.status, { Location: r.location }); res.end('moved'); return; }
-  const file = path.join(ROOT, r.file || '/404.html');
+  const file = path.join(ROOT, r.file || r.fallback || '/404.html');
   if (!file.startsWith(ROOT) || !fs.existsSync(file)) { res.writeHead(404); res.end('nf'); return; }
   res.writeHead(r.type === 'notfound' ? 404 : 200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream' });
   res.end(fs.readFileSync(file));
