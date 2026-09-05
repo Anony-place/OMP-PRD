@@ -38,24 +38,40 @@ function formatLastmod(dateString) {
 // Static routes that should always be in sitemap
 const STATIC_ROUTES = [
   '/',
-  '/checker/',
-  '/generator/',
-  '/tools/',
-  '/articles/',
-  '/products/',
-  '/breach-check/',
-  '/about/',
-  '/privacy/',
-  '/terms/',
-  '/contact/',
-  '/faq/',
-  '/glossary/',
-  '/security/',
-  '/password-health/',
-  '/entropy/',
-  '/passphrase/',
-  '/random-string/',
-  '/security-checklist/'
+  '/checker',
+  '/generator',
+  '/tools',
+  '/articles',
+  '/products',
+  '/breach-check',
+  '/about',
+  '/privacy',
+  '/terms',
+  '/contact',
+  '/faq',
+  '/glossary',
+  '/security',
+  '/sitemap',
+  '/password-health',
+  '/entropy',
+  '/passphrase',
+  '/random-string',
+  '/security-checklist',
+  '/articles/create-strong-password',
+  '/articles/password-best-practices',
+  '/articles/common-password-mistakes',
+  '/articles/how-long-should-a-password-be',
+  '/articles/password-vs-passphrase',
+  '/articles/password-manager-benefits',
+  '/articles/are-password-managers-safe',
+  '/articles/two-factor-authentication',
+  '/articles/passkeys-explained',
+  '/articles/password-vs-passkey',
+  '/articles/after-a-data-breach',
+  '/articles/check-if-password-was-leaked',
+  '/articles/phishing-attacks',
+  '/articles/password-entropy',
+  '/articles/password-cracking-time-table'
 ];
 
 // Generate sitemap XML
@@ -76,7 +92,7 @@ function generateSitemap(articles, products) {
   // Add published articles
   if (articles && articles.length > 0) {
     articles.forEach(article => {
-      if (article.status === 'published' && article.slug) {
+      if (article.status === 'published' && article.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(article.slug))) {
         const slug = escapeXml(article.slug);
         const url = `https://oopsmypassword.com/articles/${slug}`;
         
@@ -99,7 +115,7 @@ function generateSitemap(articles, products) {
   // Add published products
   if (products && products.length > 0) {
     products.forEach(product => {
-      if (product.status === 'published' && product.slug) {
+      if (product.status === 'published' && product.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(product.slug))) {
         const slug = escapeXml(product.slug);
         const url = `https://oopsmypassword.com/products/${slug}`;
         

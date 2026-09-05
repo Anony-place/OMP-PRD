@@ -75,7 +75,8 @@ function createRouter(rootDir, configPath) {
   }));
   const rewrites = (cfg.rewrites || []).map(r => ({
     regex: r.regex ? new RegExp('^' + r.regex + '$') : globToRegex(r.source),
-    destination: r.destination
+    destination: r.destination,
+    function: r.function
   }));
 
   const deployed = (p) => {
@@ -128,8 +129,9 @@ function createRouter(rootDir, configPath) {
     for (const r of rewrites) {
       const m = p.match(r.regex);
       if (m) {
-        const dest = substitute(r.destination, m);
-        if (dest.startsWith('/')) {
+        if (r.function) return { type: 'function', name: r.function };
+        const dest = substitute(r.destination || '', m);
+        if (dest && dest.startsWith('/')) {
           if (deployed(dest)) return { type: 'file', file: dest };
           // destination file missing -> continue down the rewrite list
           continue;

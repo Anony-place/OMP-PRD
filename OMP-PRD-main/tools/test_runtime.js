@@ -846,8 +846,8 @@ const $ = (d, s) => d.querySelector(s);
     input.dispatchEvent(new w.Event('input', { bubbles: true }));
     await new Promise(r => setTimeout(r, 250));
     const genLinks = Array.from(overlay.querySelectorAll('a.omp-sr-row')).map(a => a.getAttribute('href'));
-    ok(genLinks.filter(h => h === '/generator.html').length === 1,
-       'live tool row for /generator.html does not duplicate the baked-in entry');
+    ok(genLinks.filter(h => h === '/generator' || h === '/generator.html').length === 1,
+       'live tool row for /generator.html does not duplicate the baked-in /generator entry');
 
     /* Modal a11y: trigger state + page hidden from assistive tech while open. */
     const trigger = d.getElementById('omp-search-trigger');
@@ -1043,6 +1043,11 @@ const $ = (d, s) => d.querySelector(s);
     ok(/markdown\.js/.test(readme), 'README documents the Markdown renderer');
 
     /* Build must stay reproducible: generated pages must not drift from tools/. */
+    const layoutPy = fs.readFileSync(path.join(ROOT, 'tools/omp_build/layout.py'), 'utf8');
+    ok(layoutPy.includes('("/Articles", "/articles")') || layoutPy.includes('("Articles", "/articles")'),
+       'layout.py nav points Articles at the pretty /articles URL');
+    ok(!layoutPy.includes('("/Guides", "/guides') && !layoutPy.includes('("Guides", "/guides.html")'),
+       'layout.py primary nav no longer has a separate Guides item');
     ok(fs.readFileSync(path.join(ROOT, 'articles.html'), 'utf8').includes('/assets/js/markdown.js'),
        'generated articles.html contains the markdown.js script tag (build output committed)');
     ok(!fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('/assets/js/articles.js'),

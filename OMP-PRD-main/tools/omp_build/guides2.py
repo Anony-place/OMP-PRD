@@ -80,7 +80,7 @@ G7 = {
   <li><strong>Every account that reused it</strong> (this is where a password manager's audit view shines).</li>
   <li>If your email was involved and weakly protected, secure it — email resets everything else.</li>
 </ol>
-<p>Generate fresh, unique replacements with a <a href="/generator.html">random generator</a>, not by tweaking the old one.</p>
+<p>Generate fresh, unique replacements with a <a href="/generator">random generator</a>, not by tweaking the old one.</p>
 
 <h2 id="sessions">3. Kill sessions and tokens</h2>
 <p>Changing a password does not always sign out existing sessions or invalidate API tokens. Use "sign out of all devices", review connected apps, and revoke anything unfamiliar — especially on email, social and cloud accounts.</p>
@@ -89,11 +89,11 @@ G7 = {
 <ul>
   <li>Enable or upgrade 2FA (app/key over SMS).</li>
   <li>Refresh recovery emails/phones and security answers.</li>
-  <li>If the site supports <a href="/guides/passkeys-explained.html">passkeys</a>, switch — passkeys give attackers nothing reusable to steal.</li>
+  <li>If the site supports <a href="/articles/passkeys-explained">passkeys</a>, switch — passkeys give attackers nothing reusable to steal.</li>
 </ul>
 
 <h2 id="watch">5. Watch for follow-up scams</h2>
-<p>Breach news is prime phishing season. Expect emails claiming to be the breached company, "support" calls, and refund scams. Golden rules: navigate manually, never share codes, and treat urgency as a red flag. See <a href="/guides/phishing-attacks.html">How Phishing Attacks Steal Passwords</a>.</p>
+<p>Breach news is prime phishing season. Expect emails claiming to be the breached company, "support" calls, and refund scams. Golden rules: navigate manually, never share codes, and treat urgency as a red flag. See <a href="/articles/phishing-attacks">How Phishing Attacks Steal Passwords</a>.</p>
 
 <h2 id="identity">6. If identity data leaked</h2>
 <p>For government IDs, SSN-equivalents or payment cards: contact your bank, consider a credit freeze / fraud alert with your national bureaus, report card numbers for reissue, and document everything. Many jurisdictions give you free monitoring or remediation rights — check the official notice.</p>
@@ -138,7 +138,7 @@ G8 = {
 </ul>
 
 <h2 id="aitm">When phishers beat 2FA</h2>
-<p>Attacker-in-the-middle proxies relay the real login page live: you enter your password and TOTP code, the proxy forwards them instantly, and the attacker rides the authenticated session. Only <strong>origin-bound credentials</strong> — hardware keys and <a href="/guides/passkeys-explained.html">passkeys</a> — break this, because the signature simply will not validate for the wrong domain.</p>
+<p>Attacker-in-the-middle proxies relay the real login page live: you enter your password and TOTP code, the proxy forwards them instantly, and the attacker rides the authenticated session. Only <strong>origin-bound credentials</strong> — hardware keys and <a href="/articles/passkeys-explained">passkeys</a> — break this, because the signature simply will not validate for the wrong domain.</p>
 
 <h2 id="spot">How to spot them</h2>
 <ul>
@@ -246,7 +246,7 @@ L = password length
 N = size of the character pool each position is drawn from</code></pre>
 <p>Example: 16 characters chosen truly randomly from lowercase + digits (pool N = 36):</p>
 <pre><code>H = 16 × log₂(36) ≈ 16 × 5.17 ≈ 82.7 bits</code></pre>
-<p>Play with every combination on our <a href="/entropy.html">entropy calculator</a>.</p>
+<p>Play with every combination on our <a href="/entropy">entropy calculator</a>.</p>
 
 <h2 id="examples">Worked examples (truly random generation)</h2>
 <div class="table-scroll"><table class="crack-table">
@@ -274,7 +274,7 @@ N = size of the character pool each position is drawn from</code></pre>
 <p>Add it up as "time ≈ 2<sup>H−1</sup> / guesses-per-second" — half the space, on average, before the attacker finds you.</p>
 
 <h2 id="scores">Entropy vs strength scores</h2>
-<div class="callout callout-warn"><p>Our <a href="/checker.html">checker</a> shows both a 0–100 score and an entropy estimate. The score is a <strong>heuristic</strong> that penalizes patterns; the entropy figure is the naive pool-based number adjusted downward by those findings. Neither is a guarantee — pattern analysis cannot know how your password was actually generated. Treat both as guidance, not proof.</p></div>
+<div class="callout callout-warn"><p>Our <a href="/checker">checker</a> shows both a 0–100 score and an entropy estimate. The score is a <strong>heuristic</strong> that penalizes patterns; the entropy figure is the naive pool-based number adjusted downward by those findings. Neither is a guarantee — pattern analysis cannot know how your password was actually generated. Treat both as guidance, not proof.</p></div>
 
 <h2 id="takeaways">Takeaways</h2>
 <ul>

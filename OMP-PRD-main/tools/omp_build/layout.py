@@ -65,15 +65,32 @@ def logo_svg(uid):
         '</svg>'
     )
 
+def pretty_url(path):
+    """Public (clean) URL for a site path. Implementation files keep their .html names."""
+    if not path:
+        return "/"
+    p, _, frag = path.partition("#")
+    frag = ("#" + frag) if frag else ""
+    if p in ("/articles", "/guides", "/articles", "/blog"):
+        return "/articles" + frag
+    if p.startswith("/guides/") and p.endswith(".html"):
+        return "/articles/" + p[len("/guides/"):-5] + frag
+    if p.endswith(".html"):
+        p = p[:-5] or "/"
+    if p in ("/index",):
+        p = "/"
+    return p + frag
+
+
 NAV_LINKS = [
     ("Home", "/"),
-    ("Checker", "/checker.html"),
-    ("Generator", "/generator.html"),
-    ("Tools", "/tools.html"),
-    ("Guides", "/guides.html"),
-    ("Articles", "/blog.html"),
-    ("Breach Check", "/breach-check.html"),
-    ("About", "/about.html"),
+    ("Checker", "/checker"),
+    ("Generator", "/generator"),
+    ("Tools", "/tools"),
+    ("Articles", "/articles"),
+    ("Products", "/products"),
+    ("Breach Check", "/breach-check"),
+    ("About", "/about"),
 ]
 
 
@@ -135,11 +152,11 @@ def header(active):
     mobile_links += "".join(
         f'<a href="{href}">{label}{icon("arrow","icon-16")}</a>'
         for label, href in [
-            ("Password Health", "/password-health.html"),
-            ("Security Checklist", "/security-checklist.html"),
-            ("FAQ", "/faq.html"),
-            ("Privacy Policy", "/privacy.html"),
-            ("Contact", "/contact.html"),
+            ("Password Health", "/password-health"),
+            ("Security Checklist", "/security-checklist"),
+            ("FAQ", "/faq"),
+            ("Privacy Policy", "/privacy"),
+            ("Contact", "/contact"),
         ]
     )
     return f"""<a class="skip-link" href="#main">Skip to content</a>
@@ -172,24 +189,24 @@ def header(active):
 def footer():
     cols = [
         ("Tools", [
-            ("Password Checker", "/checker.html"),
-            ("Password Generator", "/generator.html"),
-            ("Breach Check", "/breach-check.html"),
-            ("Password Health", "/password-health.html"),
-            ("All Tools", "/tools.html"),
+            ("Password Checker", "/checker"),
+            ("Password Generator", "/generator"),
+            ("Breach Check", "/breach-check"),
+            ("Password Health", "/password-health"),
+            ("All Tools", "/tools"),
         ]),
         ("Resources", [
-            ("Guides", "/guides.html"),
-            ("Articles", "/blog.html"),
-            ("Security Checklist", "/security-checklist.html"),
-            ("FAQ", "/faq.html"),
-            ("Glossary", "/glossary.html"),
+            ("Articles", "/articles"),
+            ("Products", "/products"),
+            ("Security Checklist", "/security-checklist"),
+            ("FAQ", "/faq"),
+            ("Glossary", "/glossary"),
         ]),
         ("Company", [
-            ("About", "/about.html"),
-            ("Privacy", "/privacy.html"),
-            ("Terms", "/terms.html"),
-            ("Contact", "/contact.html"),
+            ("About", "/about"),
+            ("Privacy", "/privacy"),
+            ("Terms", "/terms"),
+            ("Contact", "/contact"),
         ]),
     ]
     col_html = ""
@@ -212,10 +229,10 @@ def footer():
     <div class="footer-bottom">
       <span>© <span data-year>2026</span> {BRAND}. Educational security tools.</span>
       <span class="flex gap-16 wrap">
-        <a href="/security.html">Security</a>
-        <a href="/sitemap.html">Sitemap</a>
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
       </span>
     </div>
   </div>
@@ -224,7 +241,7 @@ def footer():
 
 def scripts(*names):
     # url.js is the canonical URL safety validator used by sanitize.js /
-    # markdown.js / blog.js / search.js, so it must load first.
+    # markdown.js / articles.js / search.js, so it must load first.
     out = '<script src="/assets/js/url.js" defer></script>'
     out += '<script src="/assets/js/main.js" defer></script>'
     for n in names:
@@ -323,35 +340,35 @@ def tool_card(t, reveal=True):
 
 
 TOOLS = [
-    {"name": "Password Checker", "href": "/checker.html", "icon": "gauge", "status": "live",
+    {"name": "Password Checker", "href": "/checker", "icon": "gauge", "status": "live",
      "desc": "Real-time, fully local strength analysis with pattern detection, entropy estimates and actionable fixes.",
      "cta": "Check a password"},
-    {"name": "Password Generator", "href": "/generator.html", "icon": "dice", "status": "live",
+    {"name": "Password Generator", "href": "/generator", "icon": "dice", "status": "live",
      "desc": "Cryptographically secure passwords built with crypto.getRandomValues() — never Math.random().",
      "cta": "Generate a password"},
-    {"name": "Breach Check", "href": "/breach-check.html", "icon": "radar", "status": "live",
+    {"name": "Breach Check", "href": "/breach-check", "icon": "radar", "status": "live",
      "desc": "Learn how k-anonymity breach lookups work with a transparent, clearly-labeled local demo.",
      "cta": "Learn & try the demo"},
-    {"name": "Password Health", "href": "/password-health.html", "icon": "pulse", "status": "live",
+    {"name": "Password Health", "href": "/password-health", "icon": "pulse", "status": "live",
      "desc": "Run a full local audit — length, diversity, patterns, entropy and reuse hygiene — with a letter grade.",
      "cta": "Audit a password"},
-    {"name": "Passphrase Generator", "href": "/passphrase.html", "icon": "key", "status": "live",
+    {"name": "Passphrase Generator", "href": "/passphrase", "icon": "key", "status": "live",
      "desc": "Diceware-style passphrases from a 1,296-word list — memorable and measurably strong.",
      "cta": "Generate a passphrase"},
-    {"name": "Password Entropy Calculator", "href": "/entropy.html", "icon": "sigma", "status": "live",
+    {"name": "Password Entropy Calculator", "href": "/entropy", "icon": "sigma", "status": "live",
      "desc": "Explore how length and character pools translate into bits of entropy and real crack times.",
      "cta": "Calculate entropy"},
-    {"name": "Random String Generator", "href": "/random-string.html", "icon": "hash", "status": "live",
+    {"name": "Random String Generator", "href": "/random-string", "icon": "hash", "status": "live",
      "desc": "Tokens, IDs and test data from a CSPRNG — hex, Base64URL, alphanumeric and more.",
      "cta": "Generate strings"},
-    {"name": "Security Checklist", "href": "/security-checklist.html", "icon": "list", "status": "live",
+    {"name": "Security Checklist", "href": "/security-checklist", "icon": "list", "status": "live",
      "desc": "A practical account-security checklist you can work through in minutes — progress stays on your device.",
      "cta": "Open the checklist"},
 ]
 
 
 def guide_card(g, reveal=False):
-    return f"""<a href="/guides/{g['slug']}.html" class="card card-link guide-card">
+    return f"""<a href="/articles/{g['slug']}" class="card card-link guide-card">
   <div class="meta">{icon("book","icon-16")}<span>{g["category"]}</span><span class="divider-dot">·</span><span>{g["minutes"]} min read</span></div>
   <h3>{g["title"]}</h3>
   <p class="muted">{g["desc"]}</p>
@@ -410,7 +427,7 @@ def jsonld_article(g):
         "dateModified": DATE,
         "author": {"@type": "Organization", "name": BRAND, "url": SITE + "/"},
         "publisher": {"@type": "Organization", "name": BRAND, "url": SITE + "/"},
-        "mainEntityOfPage": SITE + "/guides/" + g["slug"] + ".html",
+        "mainEntityOfPage": SITE + "/articles/" + g["slug"],
         "image": SITE + "/assets/images/og-image.jpg",
         "inLanguage": "en",
     }

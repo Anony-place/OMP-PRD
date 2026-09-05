@@ -34,22 +34,22 @@ A1 = {
     <tr><td>Wi-Fi password</td><td class="mono">16</td><td class="mono">20 random</td><td>Offline cracking of captured handshakes</td></tr>
     <tr><td>Forgettable forum signup</td><td class="mono">12</td><td class="mono">16 random (manager)</td><td>Reuse — not weakness — is the danger</td></tr>
   </tbody></table></div>
-<p>If this sounds exhausting, it is — which is why <a href="/guides/password-manager-benefits.html">a password manager</a> does the remembering, and our <a href="/generator.html">generator</a> does the inventing.</p>
+<p>If this sounds exhausting, it is — which is why <a href="/articles/password-manager-benefits">a password manager</a> does the remembering, and our <a href="/generator">generator</a> does the inventing.</p>
 
 <h2 id="why-length-wins">Why length beats complexity</h2>
-<p>Entropy (a password's guess-resistance in bits) grows <em>multiplicatively</em> with length and only <em>additively</em> with character-set size: one extra random mixed-character adds ~6.6 bits, while forcing a symbol into an 8-character password adds ~2 bits total and typically just produces <code>Password1!</code>. Full math with worked tables: <a href="/guides/password-entropy.html">How Password Entropy Works</a>.</p>
+<p>Entropy (a password's guess-resistance in bits) grows <em>multiplicatively</em> with length and only <em>additively</em> with character-set size: one extra random mixed-character adds ~6.6 bits, while forcing a symbol into an 8-character password adds ~2 bits total and typically just produces <code>Password1!</code>. Full math with worked tables: <a href="/articles/password-entropy">How Password Entropy Works</a>.</p>
 
 <h2 id="online-vs-offline">Online vs offline attacks change the math</h2>
 <ul>
   <li><strong>Online guessing</strong> (through a login form) is throttled to a few attempts per second — even ~40 bits survives for years, and 2FA closes the door.</li>
-  <li><strong>Offline cracking</strong> (attacker stole the database) runs up to ~10¹¹ guesses per second against fast hashes. This is the scenario length defends against — and the one our <a href="/checker.html">checker</a> estimates for.</li>
+  <li><strong>Offline cracking</strong> (attacker stole the database) runs up to ~10¹¹ guesses per second against fast hashes. This is the scenario length defends against — and the one our <a href="/checker">checker</a> estimates for.</li>
 </ul>
 
 <h2 id="remember-long">How to actually handle long passwords</h2>
 <ol>
   <li>Memorize <strong>one</strong> long passphrase (your manager's master password).</li>
   <li>Let the manager generate 16–24-character random passwords everywhere else.</li>
-  <li>Use the <a href="/passphrase.html">passphrase generator</a> for anything you type often, like Wi-Fi.</li>
+  <li>Use the <a href="/passphrase">passphrase generator</a> for anything you type often, like Wi-Fi.</li>
   <li>Add 2FA so a single password failure is never fatal.</li>
 </ol>
 
@@ -111,18 +111,18 @@ A2 = {
 <ul>
   <li><strong>Offline attack on a fast hash</strong> — the "your database leaked and was hashed with MD5/SHA-1" scenario. This is the number that matters for random generation.</li>
   <li><strong>Slow hashing flips the table.</strong> If the site used bcrypt/Argon2, the same rig manages ~10⁴–10⁵ guesses/second — a million-fold defense you don't control but benefit from.</li>
-  <li><strong>Online attacks are nearly irrelevant for length</strong> — rate-limited logins make even modest random passwords safe for centuries; that's what <a href="/guides/two-factor-authentication.html">2FA</a> is for.</li>
-  <li><strong>Random generation is assumed.</strong> A human-typed "16-character password" usually contains words, names or patterns that collapse these numbers — see <a href="/guides/common-password-mistakes.html">Common Password Mistakes</a>.</li>
+  <li><strong>Online attacks are nearly irrelevant for length</strong> — rate-limited logins make even modest random passwords safe for centuries; that's what <a href="/articles/two-factor-authentication">2FA</a> is for.</li>
+  <li><strong>Random generation is assumed.</strong> A human-typed "16-character password" usually contains words, names or patterns that collapse these numbers — see <a href="/articles/common-password-mistakes">Common Password Mistakes</a>.</li>
 </ul>
 
 <h2 id="two-moves">The two moves that matter</h2>
 <ol>
   <li><strong>Go longer, not fancier.</strong> Every extra random character multiplies crack time by its pool size (26–95×).</li>
-  <li><strong>Be random per account.</strong> A century-strength password reused on a breached site is worth zero — <a href="/guides/password-manager-benefits.html">get a manager</a> to make both effortless.</li>
+  <li><strong>Be random per account.</strong> A century-strength password reused on a breached site is worth zero — <a href="/articles/password-manager-benefits">get a manager</a> to make both effortless.</li>
 </ol>
 
 <h2 id="test-yours">Test your own</h2>
-<p>See the assumption-transparent estimate for any password on the <a href="/checker.html">checker</a> (it never leaves your browser), or model exact pools and lengths with the <a href="/entropy.html">entropy calculator</a>. The deeper math is in <a href="/guides/password-entropy.html">How Password Entropy Works</a>.</p>
+<p>See the assumption-transparent estimate for any password on the <a href="/checker">checker</a> (it never leaves your browser), or model exact pools and lengths with the <a href="/entropy">entropy calculator</a>. The deeper math is in <a href="/articles/password-entropy">How Password Entropy Works</a>.</p>
 
 <h2 id="faq">Frequently asked questions</h2>
 <details class="faq-item"><summary>How long does it take to crack a 12-character password?<span class="chev"></span></summary><div class="faq-body"><p>A randomly generated 12-character password with all character types takes millions of years at 10¹¹ guesses/second offline. Mixed alphanumeric without symbols: ~1,150 years. Human-chosen 12-character passwords (words + substitutions) can fall in hours.</p></div></details>
@@ -172,7 +172,7 @@ A3 = {
 <div class="table-scroll"><table class="crack-table">
   <thead><tr><th>Risk</th><th>Severity</th><th>Neutralize it with</th></tr></thead>
   <tbody>
-    <tr><td>Weak master password</td><td>Highest</td><td>6–7-word passphrase (<a href="/passphrase.html">generator</a>)</td></tr>
+    <tr><td>Weak master password</td><td>Highest</td><td>6–7-word passphrase (<a href="/passphrase">generator</a>)</td></tr>
     <tr><td>Malware on your device</td><td>High</td><td>OS updates, screen lock, disk encryption</td></tr>
     <tr><td>Loss of master password</td><td>High</td><td>Recovery codes printed + stored physically</td></tr>
     <tr><td>Account-level takeover of the sync account</td><td>Medium</td><td>Strong 2FA on the manager account itself</td></tr>
@@ -186,10 +186,10 @@ A3 = {
 <h2 id="setup">Setting one up safely (15 minutes)</h2>
 <ol>
   <li>Pick a provider with a published security model and independent audits.</li>
-  <li>Create a 6-word master passphrase with the <a href="/passphrase.html">passphrase generator</a> — write it on paper until memorized.</li>
+  <li>Create a 6-word master passphrase with the <a href="/passphrase">passphrase generator</a> — write it on paper until memorized.</li>
   <li>Enable 2FA on the manager account. Store recovery codes offline.</li>
   <li>Import browser-saved passwords, then clear the browser store.</li>
-  <li>Regenerate your top 5 accounts (email, bank, work, cloud, shopping) with the <a href="/generator.html">password generator</a>.</li>
+  <li>Regenerate your top 5 accounts (email, bank, work, cloud, shopping) with the <a href="/generator">password generator</a>.</li>
 </ol>
 
 <h2 id="faq">Frequently asked questions</h2>
@@ -241,7 +241,7 @@ A4 = {
 <p>The same principle powers reputable third-party services such as Have I Been Pwned's Pwned Passwords and the built-in leak warnings in password managers and browsers.</p>
 
 <h2 id="golden-rule">The golden rule of password checking</h2>
-<div class="callout callout-warn"><p>A leak checker can only be trusted if (a) it never receives your password or even its full hash — only a prefix — and (b) you have reason to trust the operator. When in doubt, don't type real credentials anywhere. Practice on the <a href="/checker.html">fully local checker</a>, where verification is one developer-tools network tab away.</p></div>
+<div class="callout callout-warn"><p>A leak checker can only be trusted if (a) it never receives your password or even its full hash — only a prefix — and (b) you have reason to trust the operator. When in doubt, don't type real credentials anywhere. Practice on the <a href="/checker">fully local checker</a>, where verification is one developer-tools network tab away.</p></div>
 
 <h2 id="if-found">If your password shows up: the first hour</h2>
 <ol>
@@ -250,10 +250,10 @@ A4 = {
   <li><strong>Sign out other sessions</strong> where the service offers it; revoke unknown app connections.</li>
   <li><strong>Expect phishing.</strong> Breach news always brings follow-up scam waves referencing the incident.</li>
 </ol>
-<p>The full ordered playbook: <a href="/guides/after-a-data-breach.html">What to Do After a Data Breach</a>.</p>
+<p>The full ordered playbook: <a href="/articles/after-a-data-breach">What to Do After a Data Breach</a>.</p>
 
 <h2 id="try-demo">Try the mechanics locally</h2>
-<p>Our <a href="/breach-check.html">Breach Check page</a> demonstrates the entire model in your browser: SHA-1 hashing, prefix extraction, and prefix matching against a tiny built-in demo corpus. It is transparently labeled a demo — a real deployment would point the same architecture at a licensed range API. That's how this pattern should work everywhere.</p>
+<p>Our <a href="/breach-check">Breach Check page</a> demonstrates the entire model in your browser: SHA-1 hashing, prefix extraction, and prefix matching against a tiny built-in demo corpus. It is transparently labeled a demo — a real deployment would point the same architecture at a licensed range API. That's how this pattern should work everywhere.</p>
 
 <h2 id="faq">Frequently asked questions</h2>
 <details class="faq-item"><summary>Is it safe to type my password into a breach checker?<span class="chev"></span></summary><div class="faq-body"><p>Only if it uses k-anonymity (your password or full hash never leaves your device) and you trust the operator — otherwise no. A fully local analyzer (like OMP's) that makes no network calls is the safest form.</p></div></details>
@@ -309,7 +309,7 @@ A5 = {
   </tbody></table></div>
 
 <h2 id="the-math">The entropy math in one breath</h2>
-<p>A 20-character truly-random password from a 95-character pool holds <code>20 × log₂95 ≈ 131 bits</code>. Six words from a 1,296-word list hold <code>6 × log₂1296 ≈ 62 bits</code>. The random password wins on raw bits — but 62 bits resists years of online guessing and slow-hash offline attacks, and the passphrase can actually be remembered and typed. Different tools for different jobs, not rivals. Deeper dive: <a href="/guides/password-entropy.html">How Password Entropy Works</a>.</p>
+<p>A 20-character truly-random password from a 95-character pool holds <code>20 × log₂95 ≈ 131 bits</code>. Six words from a 1,296-word list hold <code>6 × log₂1296 ≈ 62 bits</code>. The random password wins on raw bits — but 62 bits resists years of online guessing and slow-hash offline attacks, and the passphrase can actually be remembered and typed. Different tools for different jobs, not rivals. Deeper dive: <a href="/articles/password-entropy">How Password Entropy Works</a>.</p>
 
 <h2 id="when-each">When to use which</h2>
 <ul>
@@ -320,7 +320,7 @@ A5 = {
 
 <h2 id="good-passphrase">Anatomy of a good passphrase (and a bad one)</h2>
 <ul>
-  <li><strong>Generated, not invented.</strong> "correct horse battery staple"-style phrases only work when words come from dice or a CSPRNG — humans pick correlated words (<code>ilovemydog</code>). Use the <a href="/passphrase.html">passphrase generator</a>.</li>
+  <li><strong>Generated, not invented.</strong> "correct horse battery staple"-style phrases only work when words come from dice or a CSPRNG — humans pick correlated words (<code>ilovemydog</code>). Use the <a href="/passphrase">passphrase generator</a>.</li>
   <li><strong>5–7 words from a published list.</strong> Fewer than 5 from a 1,296-word list is too thin for offline attacks; more than 7 is diminishing returns.</li>
   <li><strong>Separators don't add real entropy</strong> — hyphens, spaces or none are about readability and site rules, not security.</li>
 </ul>
@@ -328,9 +328,9 @@ A5 = {
 <h2 id="faq">Frequently asked questions</h2>
 <details class="faq-item"><summary>Is a passphrase just a long password?<span class="chev"></span></summary><div class="faq-body"><p>Technically yes — but the word "passphrase" signals word-based construction, which is what makes it memorable. Systems treat them identically; the difference is in how humans produce and recall them.</p></div></details>
 <details class="faq-item"><summary>Can passphrases be cracked with dictionary attacks?<span class="chev"></span></summary><div class="faq-body"><p>Attackers absolutely try known-word combinations — that's exactly why the words must be <em>randomly drawn</em> from a big list. Six random words from 1,296 choices ≈ 2⁶² possibilities; human-picked "random-seeming" words collapse to a tiny, cracked-first subset.</p></div></details>
-<details class="faq-item"><summary>Do spaces and capital letters make a passphrase stronger?<span class="chev"></span></summary><div class="faq-body"><p>Barely, in entropy terms — they mainly help satisfy site rules. What matters is word count and random selection. We show entropy honestly (and what actually drives it) on the <a href="/passphrase.html">generator page</a>.</p></div></details>
+<details class="faq-item"><summary>Do spaces and capital letters make a passphrase stronger?<span class="chev"></span></summary><div class="faq-body"><p>Barely, in entropy terms — they mainly help satisfy site rules. What matters is word count and random selection. We show entropy honestly (and what actually drives it) on the <a href="/passphrase">generator page</a>.</p></div></details>
 <details class="faq-item"><summary>Should my master password be a passphrase?<span class="chev"></span></summary><div class="faq-body"><p>Yes — it's the canonical passphrase use case: maximum-strength secret you must recall without help. Six or seven generated words, written down once, stored physically safe until memorized.</p></div></details>
-<details class="faq-item"><summary>Will passkeys make both obsolete?<span class="chev"></span></summary><div class="faq-body"><p>For sign-ins, eventually yes — <a href="/guides/passkeys-explained.html">passkeys</a> remove shared secrets entirely. But device unlocks, encryption keys and fallback passwords stay human-scale secrets for years, so choosing well still matters.</p></div></details>
+<details class="faq-item"><summary>Will passkeys make both obsolete?<span class="chev"></span></summary><div class="faq-body"><p>For sign-ins, eventually yes — <a href="/articles/passkeys-explained">passkeys</a> remove shared secrets entirely. But device unlocks, encryption keys and fallback passwords stay human-scale secrets for years, so choosing well still matters.</p></div></details>
 """,
     "faq": [
         ("Is a passphrase just a long password?",

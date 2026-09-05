@@ -27,7 +27,7 @@ from omp_build.pages_core import (  # noqa: E402
     generator_body, health_body, home_body, passphrase_body,
     random_string_body, tools_body,
 )
-from omp_build.pages_blog import blog_body  # noqa: E402
+from omp_build.pages_blog import articles_body, products_body  # noqa: E402
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
     security_body, sitemap_body, terms_body,
@@ -55,7 +55,7 @@ def guide_page(g):
     body = f"""
 <section class="article-hero">
   <div class="container container-narrow">
-    <nav aria-label="Breadcrumb" class="small muted"><a href="/guides.html" style="color:var(--purple)">Guides</a> <span class="divider-dot">/</span> {g["category"]}</nav>
+    <nav aria-label="Breadcrumb" class="small muted"><a href="/articles" style="color:var(--purple)">Articles</a> <span class="divider-dot">/</span> <a href="/articles#/c/guides" style="color:var(--purple)">Guides</a></nav>
     <h1 class="h-1 mt-16">{g["title"]}</h1>
     <p class="lead mt-8">{g["desc"]}</p>
     <div class="article-meta">
@@ -75,7 +75,7 @@ def guide_page(g):
       <article class="prose" itemscope itemtype="https://schema.org/Article">
         {g["body"].replace('<span class="chev"></span>', '<span class="chev">' + icon("chevron", "icon-18") + '</span>')}
         <hr class="hr-fade" style="margin-top:48px">
-        <div class="callout callout-info">{icon("shield","icon-20")}<p><strong>Put it into practice:</strong> run your next password through the <a href="/checker.html">local checker</a> — it never leaves your browser.</p></div>
+        <div class="callout callout-info">{icon("shield","icon-20")}<p><strong>Put it into practice:</strong> run your next password through the <a href="/checker">local checker</a> — it never leaves your browser.</p></div>
       </article>
     </div>
   </div>
@@ -90,51 +90,57 @@ def guide_page(g):
     jsonld = [
         jsonld_article(g),
         jsonld_breadcrumb([
-            ("Home", "/"), ("Guides", "/guides.html"),
-            (g["title"], f"/guides/{g['slug']}.html"),
+            ("Home", "/"), ("Articles", "/articles"),
+            ("Guides", "/articles#/c/guides"),
+            (g["title"], f"/articles/{g['slug']}"),
         ]),
     ]
     if g.get("faq"):
         jsonld.append(jsonld_faq(g["faq"]))
     return page(
-        path=f"/guides/{g['slug']}.html", active="/guides.html",
-        title=f"{g['title']} — OopsMyPassword Guides", desc=g["desc"],
+        path=f"/articles/{g['slug']}", active="/articles",
+        title=f"{g['title']} — OopsMyPassword Articles", desc=g["desc"],
         body=body, og_type="article", jsonld=jsonld,
-        head_extra=f'<meta property="article:published_time" content="{DATE}">',
+        head_extra=(
+            f'<meta property="article:published_time" content="{DATE}">\n'
+            f'  <meta property="article:section" content="Guides">'
+        ),
     )
 
 
-def guides_index():
-    cats = {}
-    for g in GUIDES:
-        cats.setdefault(g["category"], []).append(g)
-    sections = ""
-    for cat, items in cats.items():
-        cards = "\n".join(guide_card(g) for g in items)
-        sections += f"""
-<div class="mt-48">
-  <h2 class="h-2" style="margin-bottom:20px">{cat}</h2>
-  <div class="grid grid-3">{cards}</div>
-</div>"""
-    body = f"""
-<section class="page-hero">
-  <div class="container">
-    <span class="eyebrow">Learn</span>
-    <h1 class="h-1">Password Security Guides</h1>
-    <p class="lead">Fifteen practical guides covering everything from password length and cracking time to passkeys and breach response — each written in plain language, each actionable in one sitting.</p>
+# Legacy /guides.html is a noindex redirect stub (Firebase also 301s it).
+# Unique title so it does not collide with the Articles hub in SEO crawls.
+GUIDES_REDIRECT_STUB = """<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guides have moved — OopsMyPassword</title>
+  <meta name="description" content="Guides now live inside the Articles hub: security news, deep dives, how-tos and guides in one place.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://oopsmypassword.com/articles">
+  <meta http-equiv="refresh" content="0; url=/articles">
+  <meta name="theme-color" content="#050811">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+</head>
+<body>
+<main id="main" style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px 20px">
+  <div class="container" style="max-width:620px">
+    <span class="eyebrow">Guides have moved</span>
+    <h1 class="h-2" style="margin-top:12px">Guides are now part of <span class="grad-text">Articles</span></h1>
+    <p class="lead" style="margin-top:14px">Everything we publish — security news, deep dives, how-tos and guides — lives in one place now.</p>
+    <p style="margin-top:24px"><a class="btn btn-primary" href="/articles">Continue to Articles</a></p>
+    <p class="meta" style="margin-top:18px">Redirecting you automatically…</p>
   </div>
-</section>
-<section class="section-tight">
-  <div class="container">{sections}</div>
-</section>
+</main>
+<noscript>
+  <p style="text-align:center;padding:0 20px 48px"><a href="/articles" style="color:var(--purple)">Go to Articles →</a></p>
+</noscript>
+</body>
+</html>
 """
-    return page(
-        path="/guides.html", active="/guides.html",
-        title="Password Security Guides — OopsMyPassword",
-        desc="Fifteen practical, plain-language guides: password length and cracking time, strong passwords, managers, 2FA, passkeys, phishing, breach response and entropy.",
-        body=body,
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Guides", "/guides.html")]),
-    )
 
 
 # ------------------------------------------------------------------ main
@@ -145,92 +151,99 @@ def main():
         desc="Privacy-first password tools that run entirely in your browser: real-time strength checker, CSPRNG generator, passphrase generator, entropy calculator and practical security guides. No account required.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
-        # blog.js is intentionally NOT loaded here: the homepage body has no
-        # [data-blog] mount point, so it fetched and parsed for nothing on the
-        # highest-traffic page. The article feed lives on /blog.html.
+        # articles.js is intentionally NOT loaded here: the homepage body has no
+        # [data-articles] mount point. The article feed lives on /articles.
         scripts_=["security.js", "wordlist.js", "checker.js", "generator.js"],
     ))
     write("checker.html", page(
-        path="/checker.html", active="/checker.html",
+        path="/checker", active="/checker",
         title="Password Strength Checker — Free, Private, Client-Side | OopsMyPassword",
         desc="Test password strength in real time with pattern detection, entropy estimates and crack-time indication. 100% client-side: your password never leaves your browser.",
         body=checker_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Checker", "/checker.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Checker", "/checker")]),
         scripts_=["security.js", "wordlist.js", "checker.js"],
     ))
     write("generator.html", page(
-        path="/generator.html", active="/generator.html",
+        path="/generator", active="/generator",
         title="Password Generator — Secure CSPRNG, 20-Char Default | OopsMyPassword",
         desc="Generate cryptographically secure passwords locally with crypto.getRandomValues(). Length slider, character options, ambiguous-character filter. No Math.random(), ever.",
         body=generator_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Generator", "/generator.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Generator", "/generator")]),
         scripts_=["security.js", "generator.js"],
     ))
     write("tools.html", page(
-        path="/tools.html", active="/tools.html",
+        path="/tools", active="/tools",
         title="Password Security Tools — All Free & Client-Side | OopsMyPassword",
         desc="Eight browser-based password tools: checker, generator, breach-check demo, health audit, passphrases, entropy calculator, random strings and a security checklist.",
         body=tools_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Tools", "/tools.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Tools", "/tools")]),
     ))
     write("breach-check.html", page(
-        path="/breach-check.html", active="/breach-check.html",
+        path="/breach-check", active="/breach-check",
         title="Breach Check — How k-Anonymity Works + Local Demo | OopsMyPassword",
         desc="Learn why password reuse is dangerous and how privacy-preserving breach lookup works. Includes a clearly-labeled local demo — no live database, no false claims.",
         body=breach_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Breach Check", "/breach-check.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Breach Check", "/breach-check")]),
         scripts_=["security.js", "breach.js"],
     ))
     write("password-health.html", page(
-        path="/password-health.html", active="/tools.html",
+        path="/password-health", active="/tools",
         title="Password Health Check — Local 10-Point Audit | OopsMyPassword",
         desc="Run a local 10-point password audit: length, diversity, patterns, entropy and reuse hygiene, with a letter grade and fixes. No account, no stored history.",
         body=health_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Health", "/password-health.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Health", "/password-health")]),
         scripts_=["security.js", "wordlist.js", "health.js"],
     ))
     write("entropy.html", page(
-        path="/entropy.html", active="/tools.html",
+        path="/entropy", active="/tools",
         title="Password Entropy Calculator — Bits, Pools & Crack Times | OopsMyPassword",
         desc="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.",
         body=entropy_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Entropy Calculator", "/entropy.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Entropy Calculator", "/entropy")]),
         scripts_=["security.js", "wordlist.js", "entropy.js"],
     ))
     write("passphrase.html", page(
-        path="/passphrase.html", active="/tools.html",
+        path="/passphrase", active="/tools",
         title="Passphrase Generator — Diceware-Style, 1296-Word List | OopsMyPassword",
         desc="Generate memorable passphrases from the EFF short wordlist using a CSPRNG. Adjustable word count, separators, capitalization; honest entropy display.",
         body=passphrase_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Passphrase Generator", "/passphrase.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Passphrase Generator", "/passphrase")]),
         scripts_=["security.js", "wordlist.js", "passphrase.js"],
     ))
     write("random-string.html", page(
-        path="/random-string.html", active="/tools.html",
+        path="/random-string", active="/tools",
         title="Random String Generator — Hex, Base64URL, Alphanumeric | OopsMyPassword",
         desc="Generate random strings, tokens and IDs locally with a CSPRNG. Choose charset, length and batch size; copy with one click.",
         body=random_string_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Random String Generator", "/random-string.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Random String Generator", "/random-string")]),
         scripts_=["security.js", "generator.js"],
     ))
     write("security-checklist.html", page(
-        path="/security-checklist.html", active="/tools.html",
+        path="/security-checklist", active="/tools",
         title="Security Checklist — 16 Habits for Safer Accounts | OopsMyPassword",
         desc="A practical account-security checklist covering passwords, 2FA, devices and habits. Progress is stored on your device only.",
         body=checklist_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Security Checklist", "/security-checklist.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Security Checklist", "/security-checklist")]),
         scripts_=["checklist.js"],
     ))
-    write("guides.html", guides_index())
-    write("blog.html", page(
-        path="/blog.html", active="/blog.html",
+    write("guides.html", GUIDES_REDIRECT_STUB)
+    write("articles.html", page(
+        path="/articles", active="/articles",
         title="Articles — OopsMyPassword",
         desc="Password security news, breach analysis and practical how-tos from the OopsMyPassword team.",
-        body=blog_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/blog.html")]),
+        body=articles_body(GUIDES),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/articles")]),
         # Order matters: sanitize.js and markdown.js expose the window globals
-        # that blog.js renders article bodies with (Markdown or HTML input).
-        scripts_=["sanitize.js", "markdown.js", "blog.js"],
+        # that articles.js renders article bodies with (Markdown or HTML input).
+        scripts_=["sanitize.js", "markdown.js", "articles.js"],
+    ))
+    write("products.html", page(
+        path="/products", active="/products",
+        title="Products — OopsMyPassword",
+        desc="Books, courses, tools, templates and resources from OopsMyPassword — browse by type, search the catalog, and buy through the linked storefront.",
+        body=products_body(),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Products", "/products")]),
+        scripts_=["sanitize.js", "markdown.js", "products.js"],
     ))
     # NOTE: admin/index.html is intentionally NOT generated here.
     # The admin panel is hand-maintained (Supabase Auth) — regenerating it
@@ -238,57 +251,57 @@ def main():
     for g in GUIDES:
         write(f"guides/{g['slug']}.html", guide_page(g))
     write("about.html", page(
-        path="/about.html", active="/about.html",
+        path="/about", active="/about",
         title="About OopsMyPassword — Privacy-First Password Tools",
         desc="Why OMP exists, what it believes (client-side by default, no accounts, no fake claims), and the security principles behind every tool.",
         body=about_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("About", "/about.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("About", "/about")]),
     ))
     write("privacy.html", page(
-        path="/privacy.html", active="/about.html",
+        path="/privacy", active="/about",
         title="Privacy Policy — OopsMyPassword",
         desc="Passwords are processed locally and never stored, logged, or sent anywhere. No accounts, no trackers, no third-party fonts or CDNs. Read the plain-language policy.",
         body=privacy_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Privacy Policy", "/privacy.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Privacy Policy", "/privacy")]),
     ))
     write("terms.html", page(
-        path="/terms.html", active="/about.html",
+        path="/terms", active="/about",
         title="Terms of Use — OopsMyPassword",
         desc="OMP is an educational tool. Strength scores are heuristic estimates, not security guarantees. Read the terms before relying on any output.",
         body=terms_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Terms of Use", "/terms.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Terms of Use", "/terms")]),
     ))
     write("contact.html", page(
-        path="/contact.html", active="/about.html",
+        path="/contact", active="/about",
         title="Contact — OopsMyPassword",
         desc="Questions, corrections and guide requests. Send a message straight from the page — submissions land in the team's inbox. No password fields, no tracking.",
         body=contact_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Contact", "/contact.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Contact", "/contact")]),
         scripts_=["contact.js"],
     ))
     write("faq.html", page(
-        path="/faq.html", active="/about.html",
+        path="/faq", active="/about",
         title="FAQ — OopsMyPassword",
         desc="Is OMP free? Does it store passwords? How is strength calculated? What is entropy, a password manager, a passkey? Ten straight answers.",
         body=faq_body(),
         jsonld=jsonld_faq(FAQ_ITEMS),
     ))
     write("glossary.html", page(
-        path="/glossary.html", active="/about.html",
+        path="/glossary", active="/about",
         title="Security Glossary — OopsMyPassword",
         desc="Twenty password-security terms — entropy, salting, passkeys, k-anonymity, credential stuffing — defined in one or two sentences each.",
         body=glossary_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Glossary", "/glossary.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Glossary", "/glossary")]),
     ))
     write("security.html", page(
-        path="/security.html", active="/about.html",
+        path="/security", active="/about",
         title="Security & Responsible Disclosure — OopsMyPassword",
         desc="OMP's own security posture — static architecture, no password endpoints, textContent-only DOM handling, CSPRNG generation — plus how to report a vulnerability.",
         body=security_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Security", "/security.html")]),
+        jsonld=jsonld_breadcrumb([("Home", "/"), ("Security", "/security")]),
     ))
     write("sitemap.html", page(
-        path="/sitemap.html", active="/about.html",
+        path="/sitemap", active="/about",
         title="Sitemap — OopsMyPassword",
         desc="Every page on OopsMyPassword: tools, guides, and site information.",
         body=sitemap_body(GUIDES),
@@ -297,17 +310,20 @@ def main():
 
     # -------------------------------------------------- metadata files
     urls = ["/"] + [
-        "/checker.html", "/generator.html", "/tools.html", "/breach-check.html",
-        "/password-health.html", "/entropy.html", "/passphrase.html",
-        "/random-string.html", "/security-checklist.html", "/guides.html", "/blog.html",
-    ] + [f"/guides/{g['slug']}.html" for g in GUIDES] + [
-        "/about.html", "/privacy.html", "/terms.html", "/contact.html",
-        "/faq.html", "/glossary.html", "/security.html", "/sitemap.html",
+        "/checker", "/generator", "/tools", "/breach-check",
+        "/password-health", "/entropy", "/passphrase",
+        "/random-string", "/security-checklist", "/articles", "/products",
+    ] + [f"/articles/{g['slug']}" for g in GUIDES] + [
+        "/about", "/privacy", "/terms", "/contact",
+        "/faq", "/glossary", "/security", "/sitemap",
     ]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in urls:
-        pri = "1.0" if u == "/" else "0.8" if u.endswith(".html") and "/" not in u[1:-5] else "0.6"
+        pri = ("1.0" if u == "/" else
+               "0.9" if u in ("/articles", "/products") else
+               "0.7" if u.startswith("/articles/") else
+               "0.5" if u == "/sitemap" else "0.8")
         sm.append(f"  <url><loc>{SITE}{u}</loc><lastmod>{DATE}</lastmod>"
                   f'<changefreq>{"weekly" if u == "/" else "monthly"}</changefreq>'
                   f"<priority>{pri}</priority></url>")
@@ -350,13 +366,13 @@ def write_404():
     <p class="lead mt-16">Head back to safety and make sure your credentials are in better shape than this URL.</p>
     <div class="flex gap-12 wrap mt-32" style="justify-content:center">
       <a class="btn btn-primary" href="/">Go home</a>
-      <a class="btn btn-secondary" href="/checker.html">Check a password</a>
-      <a class="btn btn-ghost" href="/sitemap.html">View sitemap</a>
+      <a class="btn btn-secondary" href="/checker">Check a password</a>
+      <a class="btn btn-ghost" href="/sitemap">View sitemap</a>
     </div>
   </div>
 </section>"""
     write("404.html", page(
-        path="/404.html", active="/",
+        path="/404", active="/",
         title="Page Not Found — OopsMyPassword",
         desc="The page you were looking for doesn't exist. Try the password checker, generator, or guides instead.",
         body=body,
