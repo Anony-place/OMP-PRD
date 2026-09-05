@@ -105,6 +105,38 @@
     return /^(https?:\/\/|\/)/i.test(v) ? v : '';
   }
 
+  /* Cover field may be a full URL *or* a path inside the public
+     `products` storage bucket (covers/….jpg). Older rows stored the
+     path only, so the public page showed a blank card. */
+  function coverUrl(value) {
+    var raw = String(value == null ? '' : value).trim();
+    if (!raw) return '';
+    var https = safeUrl(raw);
+    if (https) return https;
+    if (/\.\.|\\|[\u0000-\u0020]/.test(raw)) return '';
+    var path = raw.replace(/^\/+/, '');
+    if (/^storage\/v1\/object\/public\/products\//i.test(path)) {
+      return SUPABASE_URL + '/' + path;
+    }
+    if (/^(covers\/)?[A-Za-z0-9._/-]+\.(png|jpe?g|webp|gif)$/i.test(path)) {
+      if (path.indexOf('covers/') !== 0) path = 'covers/' + path;
+      return SUPABASE_URL + '/storage/v1/object/public/products/' + path;
+    }
+    return '';
+  }
+
+  function wireBrokenCovers(scope) {
+    (scope || root).querySelectorAll('img[data-product-cover]').forEach(function (img) {
+      img.addEventListener('error', function () {
+        var fallback = document.createElement('span');
+        fallback.className = 'product-cover-fallback';
+        fallback.setAttribute('aria-hidden', 'true');
+        fallback.textContent = img.getAttribute('data-fallback') || '';
+        if (img.parentNode) img.parentNode.replaceChild(fallback, img);
+      });
+    });
+  }
+
   function fmtPrice(p) {
     if (p.price == null || p.price === '') return '';
     var n = Number(p.price);
@@ -151,6 +183,10 @@
       upsertMeta('meta[property="og:description"]', o.description);
       upsertMeta('meta[name="twitter:description"]', o.description);
     }
+    if (o.image) {
+      upsertMeta('meta[property="og:image"]', o.image);
+      upsertMeta('meta[name="twitter:image"]', o.image);
+    }
     var robots = document.head.querySelector('meta[name="robots"]');
     if (o.noindex) {
       if (!robots) { robots = document.createElement('meta'); robots.setAttribute('name', 'robots'); document.head.appendChild(robots); }
@@ -172,7 +208,7 @@
       description: (p.summary || plainText(p.description)).slice(0, 400),
       url: SITE_ORIGIN + path
     };
-    var img = safeUrl(p.featured_image);
+    var img = coverUrl(p.featured_image);
     if (/^https?:/i.test(img)) data.image = img;
     if (p.price != null && p.price !== '' && isFinite(Number(p.price))) {
       data.offers = {
@@ -232,11 +268,12 @@
 
   function cardHtml(p) {
     var path = productPath(p.slug);
-    var cover = safeUrl(p.featured_image);
+    var cover = coverUrl(p.featured_image);
     var price = fmtPrice(p);
+    var typeName = esc(typeLabel(safeType(p.product_type)).replace(/s$/, ''));
     var coverHtml = cover
-      ? '<img src="' + attr(cover) + '" alt="" loading="lazy">'
-      : '<span class="product-cover-fallback" aria-hidden="true">' + esc(typeLabel(safeType(p.product_type)).replace(/s$/, '')) + '</span>';
+      ? '<img src="' + attr(cover) + '" alt="" loading="lazy" data-product-cover data-fallback="' + typeName + '">'
+      : '<span class="product-cover-fallback" aria-hidden="true">' + typeName + '</span>';
     var inner = '<div class="product-cover">' + coverHtml + '</div>' +
       '<div class="product-body">' +
       '<div class="product-meta"><span class="ptype t-' + attr(safeType(p.product_type)) + '">' + esc(typeLabel(safeType(p.product_type)).replace(/s$/, '')) + '</span>' +
@@ -309,6 +346,7 @@
 
     root.innerHTML = html;
     wireRetry();
+    wireBrokenCovers(root);
 
     var search = root.querySelector('#product-search');
     if (search) {
@@ -332,7 +370,7 @@
 
   function productView(p) {
     var path = productPath(p.slug) || HUB_PATH;
-    var cover = safeUrl(p.featured_image);
+    var cover = coverUrl(p.featured_image);
     var link = safeUrl(p.external_url);
     var price = fmtPrice(p);
     var type = safeType(p.product_type);
@@ -350,7 +388,7 @@
 
     root.innerHTML = '<article class="card card-pad" style="max-width:900px;margin:0 auto">' +
       '<nav class="small muted" aria-label="Breadcrumb" style="margin-bottom:14px"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="' + HUB_PATH + '" style="color:var(--purple)">Products</a></nav>' +
-      (cover ? '<img src="' + attr(cover) + '" alt="" loading="lazy" style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px">' : '') +
+      (cover ? '<img src="' + attr(cover) + '" alt="" loading="lazy" data-product-cover style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px">' : '') +
       '<div style="margin-top:22px"><div class="product-meta"><span class="ptype t-' + attr(type) + '">' + esc(typeLabel(type).replace(/s$/, '')) + '</span>' +
       (p.featured ? '<span class="ptype t-featured">★ Featured</span>' : '') + '</div>' +
       '<h1 class="h-1 mt-16">' + esc(p.name) + '</h1>' +
@@ -364,12 +402,14 @@
     if (window.OMPMarkdown && window.OMPMarkdown.demoteHeadings) {
       window.OMPMarkdown.demoteHeadings(root.querySelector('.prose'), 1);
     }
+    wireBrokenCovers(root);
     setProductJsonLd(p, path);
     setMetaTags({
       path: path,
       ogType: 'product',
       title: String(p.name || 'Product') + ' — OopsMyPassword',
       description: description,
+      image: cover || undefined,
       noindex: false
     });
   }

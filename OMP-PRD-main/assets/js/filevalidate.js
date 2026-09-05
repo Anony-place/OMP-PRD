@@ -26,13 +26,20 @@
   var MAX_BYTES = 25 * 1024 * 1024; // 25 MB — mirrors the form's stated limit
 
   var ALLOWED_EXT = { pdf: 1, doc: 1, docx: 1, md: 1, txt: 1 };
+  var IMAGE_EXT = { png: 1, jpg: 1, jpeg: 1, webp: 1, gif: 1 };
+  var IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
   var CONTENT_TYPE = {
     pdf: 'application/pdf',
     doc: 'application/msword',
     docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     md: 'text/markdown; charset=utf-8',
-    txt: 'text/plain; charset=utf-8'
+    txt: 'text/plain; charset=utf-8',
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    webp: 'image/webp',
+    gif: 'image/gif'
   };
 
   function ext(name) {
@@ -103,6 +110,50 @@
     return { ok: true, error: null, ext: e, contentType: CONTENT_TYPE[e], signature: sig };
   }
 
+  /* Raster covers for /products. Magic-byte first so a renamed HTML
+     file can never be stored as image/png (X-Content-Type-Options:
+     nosniff on a wrong type is why uploaded covers were invisible). */
+  function sniffImage(u8) {
+    if (!u8 || u8.length < 12) return null;
+    if (u8[0] === 0x89 && u8[1] === 0x50 && u8[2] === 0x4E && u8[3] === 0x47) return 'png';
+    if (u8[0] === 0xFF && u8[1] === 0xD8 && u8[2] === 0xFF) return 'jpeg';
+    if (u8[0] === 0x47 && u8[1] === 0x49 && u8[2] === 0x46) return 'gif';
+    if (u8[0] === 0x52 && u8[1] === 0x49 && u8[2] === 0x46 && u8[3] === 0x46 &&
+        u8[8] === 0x57 && u8[9] === 0x45 && u8[10] === 0x42 && u8[11] === 0x50) return 'webp';
+    return null;
+  }
+
+  function describeImageBytes(u8, name) {
+    var e = ext(name);
+    var sig = sniffImage(u8);
+    if (!IMAGE_EXT[e]) {
+      return { ok: false, error: 'Cover must be a PNG, JPG, WebP or GIF image.', ext: e, contentType: null, signature: sig };
+    }
+    if (!sig) {
+      return { ok: false, error: 'This file is not a real PNG, JPG, WebP or GIF image.', ext: e, contentType: null, signature: sig };
+    }
+    if ((e === 'png' && sig !== 'png') ||
+        ((e === 'jpg' || e === 'jpeg') && sig !== 'jpeg') ||
+        (e === 'gif' && sig !== 'gif') ||
+        (e === 'webp' && sig !== 'webp')) {
+      return { ok: false, error: 'This file’s contents do not match its .' + e + ' extension.', ext: e, contentType: null, signature: sig };
+    }
+    return { ok: true, error: null, ext: e, contentType: CONTENT_TYPE[e], signature: sig };
+  }
+
+  function validateImage(file) {
+    return Promise.resolve().then(function () {
+      if (!file) return { ok: false, error: 'No file selected.' };
+      if (file.size > IMAGE_MAX_BYTES) {
+        return { ok: false, error: 'Cover image is larger than the 5 MB limit.' };
+      }
+      if (!('arrayBuffer' in file)) return { ok: false, error: 'Browser could not read this file.' };
+      return file.arrayBuffer().then(function (buf) {
+        return describeImageBytes(new Uint8Array(buf), file.name);
+      });
+    });
+  }
+
   /* Async entry point used by the admin pipeline. file is anything with
      .name, .size and .arrayBuffer() (a File/Blob, or a test mock). */
   function validateFile(file) {
@@ -121,8 +172,11 @@
 
   root.OMPFileValidate = {
     describeBytes: describeBytes,
+    describeImageBytes: describeImageBytes,
     validateFile: validateFile,
+    validateImage: validateImage,
     MAX_BYTES: MAX_BYTES,
+    IMAGE_MAX_BYTES: IMAGE_MAX_BYTES,
     CONTENT_TYPE: CONTENT_TYPE
   };
 

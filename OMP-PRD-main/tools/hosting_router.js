@@ -129,7 +129,15 @@ function createRouter(rootDir, configPath) {
     for (const r of rewrites) {
       const m = p.match(r.regex);
       if (m) {
-        if (r.function) return { type: 'function', name: r.function };
+        if (r.function) {
+          /* Production: the function owns the response (sitemap.xml is
+             ignored from Hosting so this rewrite actually runs). Locally
+             we still expose a static fallback so preview/tests can read
+             a valid XML document without emulating Cloud Functions. */
+          const fallback = (p === '/sitemap.xml' && fs.existsSync(path.join(rootDir, 'sitemap.xml')))
+            ? '/sitemap.xml' : null;
+          return { type: 'function', name: r.function, fallback };
+        }
         const dest = substitute(r.destination || '', m);
         if (dest && dest.startsWith('/')) {
           if (deployed(dest)) return { type: 'file', file: dest };
