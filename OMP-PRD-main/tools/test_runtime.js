@@ -1174,6 +1174,94 @@ const $ = (d, s) => d.querySelector(s);
     ok(/safeUrl\(a\.document_url\)/.test(blogSrc), 'document download URL is scheme-checked before rendering');
   }
 
+  /* ================= admin panel hardening (2026-09-06 pass) ================= */
+  {
+    console.log('admin.js (2026-09-06 audit fixes)');
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+
+    ok(!/\bdirty\s*=\s*(true|false)\b/.test(src), 'no single global `dirty` flag remains (dirty state is per form)');
+    ok(/const dirtyForms = new Set\(\)/.test(src), 'dirty tracking uses a per-form set');
+    ok(/dirtyForms\.forEach\(f => \{ if \(!document\.body\.contains\(f\)\)/.test(src),
+       'detached forms are pruned so a cancelled editor cannot block navigation');
+    ok(/clearDirty\(form\)/.test(src) && /isDirty\(form\)/.test(src), 'helpers clear/read dirty state per form');
+
+    /* The tool editor used to leave the guard armed forever. */
+    const toolCancel = src.slice(src.indexOf("querySelector('#cancel-tool')"));
+    ok(/isDirty\(form\)/.test(toolCancel.slice(0, 240)) && /dirtyForms\.delete\(form\)/.test(toolCancel.slice(0, 240)),
+       'toolForm Cancel clears its own dirty state');
+
+    ok(/documentHref\(/.test(src) && /function documentHref/.test(src), 'article document_url is scheme-checked before it becomes an href');
+    ok(!/href="\$\{esc\(a\.document_url\)\}"/.test(src), 'document_url is no longer interpolated raw into an href');
+
+    ok(/updated_at:new Date\(\)\.toISOString\(\)/.test(src), 'article save sets updated_at (no UPDATE trigger exists in most deployments)');
+    ok(/ADMIN_ROW_LIMIT/.test(src) && /\.limit\(ADMIN_ROW_LIMIT\)/.test(src), 'article list query is bounded');
+
+    ok(/bucketPathFromUrl/.test(src) && /bucketPathFromFilePath/.test(src) && /removeStorageObjects/.test(src),
+       'deleting/replacing content cleans up its Storage object');
+    ok(/removeStorageObjects\(\[bucketPathFromUrl\(row && row\.document_url\)\]\)/.test(src), 'article delete removes the attached document');
+
+    /* Edit buttons stayed disabled after a cancelled edit. */
+    const editHandler = src.slice(src.indexOf("[data-edit-article]"), src.indexOf("[data-delete-article]"));
+    ok(/btn\.disabled = false;/.test(editHandler), 'Edit button is re-enabled after the editor opens');
+
+    ok(/const SUPABASE_SDK_VERSION|esm\.sh\/@supabase\/supabase-js@\d+\.\d+\.\d+/.test(src), 'Supabase SDK import is version-pinned');
+    ok(!/esm\.sh\/@supabase\/supabase-js@2'/.test(src), 'Supabase SDK no longer floats on "@2"');
+
+    const articlesSrc = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
+    const productsSrc = fs.readFileSync(path.join(ROOT, 'assets/js/products.js'), 'utf8');
+    const pinned = /@supabase\/supabase-js@\d+\.\d+\.\d+/;
+    const v = (s) => (s.match(pinned) || [''])[0];
+    ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(src),
+       'every module loads the same pinned Supabase SDK version');
+
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf8');
+    ok(/<noscript>/.test(adminHtml), 'admin panel explains itself when JavaScript is disabled');
+  }
+
+  /* ================= sitemap: dynamic + wiring ================= */
+  {
+    console.log('sitemap (dynamic generation)');
+    const firebase = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
+    ok(firebase.hosting.ignore.includes('sitemap.xml'), 'committed sitemap.xml is ignored so it cannot shadow the rewrite');
+    ok(firebase.hosting.ignore.includes('functions/**'), 'functions/ source is never published as static content');
+    ok(firebase.hosting.ignore.includes('supabase/**'), 'supabase/ (schema + edge functions) is never published');
+    const rewrite = firebase.hosting.rewrites.find(r => r.source === '/sitemap.xml');
+    ok(rewrite && rewrite.function === 'sitemap', '/sitemap.xml rewrites to the sitemap function');
+
+    const headers = firebase.hosting.headers.find(h => h.source === '**').headers.map(h => h.key);
+    ok(headers.includes('Strict-Transport-Security'), 'HSTS header present');
+    ok(headers.includes('Cross-Origin-Opener-Policy'), 'COOP header present');
+
+    const fn = fs.readFileSync(path.join(ROOT, 'functions/index.js'), 'utf8');
+    ok(/SITEMAP_EDGE_URL/.test(fn), 'Firebase function proxies the Supabase Edge Function');
+    ok(/X-Sitemap-State/.test(fn), 'response reports which path served it');
+    ok(!/SUPABASE_SERVICE|SERVICE_ROLE|service_role/.test(fn), 'no service-role key in the Firebase function');
+    ok(/import\('\.\/sitemap-core\.mjs'\)/.test(fn), 'fallback reuses the shared sitemap core');
+
+    const robots = fs.readFileSync(path.join(ROOT, 'robots.txt'), 'utf8');
+    ok(/Disallow: \/functions\//.test(robots), 'robots.txt disallows /functions/');
+    ok(/Sitemap: https:\/\/oopsmypassword\.com\/sitemap\.xml/.test(robots), 'robots.txt still advertises the sitemap');
+
+    const sitemapPage = fs.readFileSync(path.join(ROOT, 'sitemap.html'), 'utf8');
+    ok(/data-sitemap-live/.test(sitemapPage) && /sitemap\.js/.test(sitemapPage),
+       'HTML sitemap page progressively lists live articles/products');
+  }
+
+  /* ================= supabase security model ================= */
+  {
+    console.log('supabase/ (RLS + storage)');
+    const sql = fs.readFileSync(path.join(ROOT, 'supabase/00_schema_migrations.sql'), 'utf8');
+    ok(/create policy "tools_admin_insert"/.test(sql), 'tools table has an admin INSERT policy');
+    ok(/create policy "tools_admin_update"/.test(sql), 'tools table has an admin UPDATE policy');
+    ok(/create policy "tools_admin_delete"/.test(sql), 'tools table has an admin DELETE policy');
+    ok(/create policy "tools_select_all_admin"/.test(sql), 'admins can see inactive tools');
+    ok(!/Admin write policies omitted for brevity/.test(sql), 'no "left as an exercise" policy gaps remain');
+    ok(/touch_updated_at/.test(sql) && /before update on public\.articles/.test(sql), 'articles.updated_at is maintained by a trigger');
+    ok(/before update on public\.products/.test(sql), 'products.updated_at is maintained by a trigger');
+    ok(/for select to anon, authenticated using \(status = 'published'\)/.test(sql),
+       'signed-in non-admins can read the public catalogue (no permission-denied gap)');
+  }
+
 
   console.log(`\n${checks - failures}/${checks} checks passed, ${failures} failures`);
   process.exit(failures ? 1 : 0);

@@ -1,4 +1,10 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+/* The SDK is loaded from esm.sh at runtime (the site ships no bundler and
+   no third-party scripts on public pages). The version is PINNED: a
+   floating "@2" means a new minor release — or a compromised publish —
+   changes what the admin panel executes with no code review. Bump it
+   deliberately, and keep every module on the same version
+   (tools/test_runtime.js asserts they agree). */
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
 
@@ -9,6 +15,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
 });
 const root = document.querySelector('#admin-root');
 let authUi = 'boot'; // 'boot' | 'login' | 'dashboard'
+
+/* Row cap for the admin lists. Large enough for a realistic library,
+   small enough that a tab switch stays instant and a runaway table
+   cannot make the panel fetch thousands of rows. */
+const ADMIN_ROW_LIMIT = 300;
 
 const esc = (value = '') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
@@ -117,7 +128,9 @@ async function loadTab(tab) {
 
   if (tab === 'articles') {
     const [{ data: articles, error }, { data: categories }] = await Promise.all([
-      supabase.from('articles').select('id,title,slug,status,published_at,updated_at,category_id,document_url').order('updated_at',{ascending:false}),
+      /* Bounded: the filter box searches what is loaded, so an unbounded
+         table would download every article on every tab switch. */
+      supabase.from('articles').select('id,title,slug,status,published_at,updated_at,category_id,document_url').order('updated_at',{ascending:false}).limit(ADMIN_ROW_LIMIT),
       supabase.from('article_categories').select('id,name,slug').order('name')
     ]);
     if (stale()) return;
@@ -137,15 +150,23 @@ async function loadTab(tab) {
       listEl.querySelectorAll('[data-edit-article]').forEach(btn => btn.onclick = async () => {
         btn.disabled = true;
         const { data, error: e2 } = await supabase.from('articles').select('*').eq('id',btn.dataset.editArticle).single();
-        if (e2 || !data) { btn.disabled = false; return flash(panel, e2 ? e2.message : 'That article could not be loaded.'); }
+        /* Always re-enable: the editor renders into a different container,
+           so leaving the button disabled until the next list repaint meant
+           a cancelled edit left a dead "Edit" button on screen. */
+        btn.disabled = false;
+        if (e2 || !data) return flash(panel, e2 ? e2.message : 'That article could not be loaded.');
         articleForm(editor, categories || [], data);
         editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
       listEl.querySelectorAll('[data-delete-article]').forEach(btn => btn.onclick = async () => {
         if (!confirm('Delete this article permanently?')) return;
         btn.disabled = true;
+        /* Read the row first: the attached document has to be removed from
+           Storage too, or deleting an article leaks its file forever. */
+        const { data: row } = await supabase.from('articles').select('id,slug,document_url').eq('id', btn.dataset.deleteArticle).maybeSingle();
         const { error: e2 } = await supabase.from('articles').delete().eq('id',btn.dataset.deleteArticle);
         if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+        await removeStorageObjects([bucketPathFromUrl(row && row.document_url)]);
         loadTab('articles');
       });
     };
@@ -165,7 +186,8 @@ async function loadTab(tab) {
     document.querySelectorAll('[data-edit-tool]').forEach(btn => btn.onclick = async () => {
       btn.disabled = true;
       const { data, error: e2 } = await supabase.from('tools').select('*').eq('id',btn.dataset.editTool).single();
-      if (e2 || !data) { btn.disabled = false; return flash(panel, e2 ? e2.message : 'That tool could not be loaded.'); }
+      btn.disabled = false;
+      if (e2 || !data) return flash(panel, e2 ? e2.message : 'That tool could not be loaded.');
       toolForm(editor, categories || [], data);
     });
     document.querySelectorAll('[data-delete-tool]').forEach(btn => btn.onclick = async () => {
@@ -193,7 +215,7 @@ async function loadTab(tab) {
     const paintList = filter => {
       const q = String(filter || '').trim().toLowerCase();
       const shown = q ? rows.filter(p => [p.name, p.slug, p.product_type, p.status].some(v => String(v || '').toLowerCase().includes(q))) : rows;
-      listEl.innerHTML = shown.map(p => `<div class="admin-row">${p.featured_image ? `<img src="${esc(p.featured_image)}" alt="" width="48" height="32" style="width:48px;height:32px;object-fit:cover;border-radius:6px;flex:none;background:var(--bg-soft)">` : ''}<div class="grow"><div class="ttl">${esc(p.name)} ${p.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/products/${esc(p.slug)} · ${esc(p.product_type)} · ${esc(p.status)}${money(p) ? ' · ' + esc(money(p)) : ''}${p.file_path ? ' · 🔒 file' : ''}${p.featured_image ? ' · 🖼 cover' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-product="${esc(p.id)}" data-on="${p.featured ? '1' : ''}">${p.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-product="${esc(p.id)}" data-on="${p.status === 'published' ? '1' : ''}">${p.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-product="${esc(p.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-product="${esc(p.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+      listEl.innerHTML = shown.map(p => `<div class="admin-row">${safeHref(p.featured_image) ? `<img src="${esc(safeHref(p.featured_image))}" alt="" width="48" height="32" style="width:48px;height:32px;object-fit:cover;border-radius:6px;flex:none;background:var(--bg-soft)">` : ''}<div class="grow"><div class="ttl">${esc(p.name)} ${p.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/products/${esc(p.slug)} · ${esc(p.product_type)} · ${esc(p.status)}${money(p) ? ' · ' + esc(money(p)) : ''}${p.file_path ? ' · 🔒 file' : ''}${p.featured_image ? ' · 🖼 cover' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-product="${esc(p.id)}" data-on="${p.featured ? '1' : ''}">${p.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-product="${esc(p.id)}" data-on="${p.status === 'published' ? '1' : ''}">${p.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-product="${esc(p.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-product="${esc(p.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
         || `<div class="admin-empty"><p class="muted">${rows.length ? 'No products match that filter.' : 'No products yet — create the first one.'}</p></div>`;
       const patch = async (btn, id, set) => {
         btn.disabled = true;
@@ -211,15 +233,21 @@ async function loadTab(tab) {
       listEl.querySelectorAll('[data-edit-product]').forEach(btn => btn.onclick = async () => {
         btn.disabled = true;
         const { data, error: e2 } = await supabase.from('products').select('*').eq('id', btn.dataset.editProduct).single();
-        if (e2 || !data) { btn.disabled = false; return flash(panel, e2 ? e2.message : 'That product could not be loaded.'); }
+        btn.disabled = false;
+        if (e2 || !data) return flash(panel, e2 ? e2.message : 'That product could not be loaded.');
         productForm(editor, data);
         editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
       listEl.querySelectorAll('[data-delete-product]').forEach(btn => btn.onclick = async () => {
         if (!confirm('Delete this product permanently?')) return;
         btn.disabled = true;
+        const { data: row } = await supabase.from('products').select('id,slug,file_path,featured_image').eq('id', btn.dataset.deleteProduct).maybeSingle();
         const { error: e2 } = await supabase.from('products').delete().eq('id', btn.dataset.deleteProduct);
         if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+        await removeStorageObjects([
+          bucketPathFromFilePath(row && row.file_path),
+          bucketPathFromUrl(row && row.featured_image)
+        ]);
         loadTab('products');
       });
     };
@@ -276,11 +304,97 @@ function applyMarkup(ta, rule) {
   ta.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-let dirty = false;
+/* Unsaved-changes tracking is PER FORM, not a single global flag. One
+   shared flag meant opening a product form after touching an article
+   inherited (and then cleared) the other form's dirty state — and a
+   cancelled tool form left the beforeunload guard armed forever,
+   because toolForm()'s Cancel never reset it. */
+const dirtyForms = new Set();
+
 function setDirty(form, on) {
-  dirty = on;
-  const dot = form?.querySelector('[data-unsaved]');
+  if (!form) return;
+  if (on) dirtyForms.add(form); else dirtyForms.delete(form);
+  const dot = form.querySelector('[data-unsaved]');
   if (dot) dot.hidden = !on;
+}
+
+function clearDirty(form) {
+  if (!form) return;
+  dirtyForms.delete(form);
+  const dot = form.querySelector('[data-unsaved]');
+  if (dot) dot.hidden = true;
+}
+
+function isDirty(form) {
+  return !!form && dirtyForms.has(form);
+}
+
+/* Prune forms that were cancelled or replaced: a detached node must not
+   keep blocking navigation. */
+function hasUnsavedWork() {
+  dirtyForms.forEach(f => { if (!document.body.contains(f)) dirtyForms.delete(f); });
+  return dirtyForms.size > 0;
+}
+
+function clearAllDirty() {
+  dirtyForms.clear();
+}
+
+/* Safe URL gate for anything that lands in an href/src attribute. Uses the
+   same canonical validator as the public site (assets/js/url.js) so the
+   admin panel and the public renderer can never disagree about what is
+   safe to link to. */
+function safeHref(value, opts) {
+  const v = String(value == null ? '' : value).trim();
+  if (!v) return '';
+  if (window.OMPUrl && window.OMPUrl.safeUrl) {
+    const safe = window.OMPUrl.safeUrl(v, opts || { attrSafe: true });
+    return safe === null ? '' : safe;
+  }
+  return /^(https?:\/\/|\/|#)/i.test(v) ? v : '';
+}
+
+/* document_url is stored by this panel, but a row can also be edited
+   outside it — so it is scheme-checked before it becomes an href here,
+   exactly as /articles does before rendering the download button. */
+function documentHref(value) {
+  return safeHref(value, { attrSafe: true });
+}
+
+/* Best-effort Storage cleanup. Deleting a row used to orphan its object
+   (article document, product deliverable, product cover), which is both a
+   cost leak and stale-content risk. Removal never blocks the delete: a
+   failed cleanup is logged, not thrown. */
+const BUCKET_URL_RE = /\/storage\/v1\/object\/public\/([a-z0-9_-]+)\/(.+)$/i;
+
+function bucketPathFromUrl(url) {
+  const m = String(url || '').match(BUCKET_URL_RE);
+  if (!m) return null;
+  return { bucket: m[1], path: decodeURIComponent(m[2]) };
+}
+
+function bucketPathFromFilePath(filePath) {
+  const raw = String(filePath || '').replace(/^\/+/, '');
+  const slash = raw.indexOf('/');
+  if (slash <= 0) return null;
+  return { bucket: raw.slice(0, slash), path: raw.slice(slash + 1) };
+}
+
+async function removeStorageObjects(locations) {
+  const targets = (locations || []).filter(Boolean);
+  const byBucket = new Map();
+  targets.forEach(t => {
+    if (!byBucket.has(t.bucket)) byBucket.set(t.bucket, []);
+    byBucket.get(t.bucket).push(t.path);
+  });
+  await Promise.all(Array.from(byBucket.entries()).map(async ([bucket, paths]) => {
+    try {
+      const { error } = await supabase.storage.from(bucket).remove(paths);
+      if (error) console.warn(`storage cleanup failed (${bucket}):`, error.message);
+    } catch (e) {
+      console.warn(`storage cleanup threw (${bucket}):`, e && e.message);
+    }
+  }));
 }
 
 function articleForm(host, categories, article) {
@@ -305,7 +419,8 @@ function articleForm(host, categories, article) {
     <div class="form-field">
       <label for="${id('doc')}">Attach document (PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
       <input id="${id('doc')}" name="document" type="file" accept=".pdf,.doc,.docx,.md,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" style="padding:10px">
-      ${a.document_url ? `<p class="tiny" style="margin-top:6px">Attached: <a href="${esc(a.document_url)}" target="_blank" rel="noopener">view current document</a> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label></p>` : '<p class="tiny muted" style="margin-top:6px">Optional — readers get a “Download document” button on the article page.</p>'}
+      ${documentHref(a.document_url) ? `<p class="tiny" style="margin-top:6px">Attached: <a href="${esc(documentHref(a.document_url))}" target="_blank" rel="noopener noreferrer">view current document</a> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label></p>`
+        : (a.document_url ? `<p class="tiny" style="margin-top:6px;color:var(--red)">This article has an attachment with an unsafe URL (${esc(a.document_url)}). It is not shown to readers — save with “remove attachment” to clear it.</p><label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label>` : '<p class="tiny muted" style="margin-top:6px">Optional — readers get a “Download document” button on the article page.</p>')}
     </div>
     <div class="editor-grid" style="margin-top:8px">
       <div class="editor-fields">
@@ -362,8 +477,8 @@ function articleForm(host, categories, article) {
   });
 
   const cancel = () => {
-    if (dirty && !confirm('Discard unsaved changes to this article?')) return;
-    dirty = false;
+    if (isDirty(form) && !confirm('Discard unsaved changes to this article?')) return;
+    dirtyForms.delete(form);
     host.innerHTML = '';
   };
   document.querySelector('#cancel-editor').onclick = cancel;
@@ -407,6 +522,10 @@ function articleForm(host, categories, article) {
       }
       const slug = slugify(f.get('slug')) || slugify(f.get('title'));
       if (!slug) throw new Error('A slug is required — add a title or type one in.');
+      /* Replacing the attachment orphans the previous object. Remove it
+         only after the new upload succeeded and the row is about to be
+         written — a half-applied delete would lose both files. */
+      const oldDoc = a.document_url && document_url !== a.document_url ? bucketPathFromUrl(a.document_url) : null;
       /* featured_image lands in an <img src=…> on /articles, so reject a
          javascript: / data:text/html value at the point of entry rather than
          relying only on the renderer's scheme gate. */
@@ -415,10 +534,14 @@ function articleForm(host, categories, article) {
         ? (window.OMPUrl ? window.OMPUrl.safeUrl(featuredRaw, { allowDataImage: true }) : (() => { const m = featuredRaw.match(/^(https?:|\/|#|data:image\/[a-z]+;base64,)/i); return m ? featuredRaw : null; })())
         : null;
       if (featured === null && featuredRaw) throw new Error('Featured image URL must be an http(s), site-relative or raster data: image.');
-      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:featured,document_url,published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+      /* updated_at is set explicitly: the table has no UPDATE trigger, so
+         without this the admin list's "sort by updated_at" silently
+         degrades to creation order and never reflects edits. */
+      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
       if (result.error) throw result.error;
-      dirty = false;
+      await removeStorageObjects([oldDoc]);
+      clearDirty(form);
       loadTab('articles');
     } catch (err) {
       submitBtn.disabled = false; submitBtn.textContent = 'Save article';
@@ -500,11 +623,15 @@ function productForm(host, product) {
   const coverPreview = document.querySelector(`#${id('cover-preview')}`);
   const preview = document.querySelector('#product-preview');
 
+  /* Deliberately does NOT allow data: images. The save path rejects them
+     (and the public /products page only renders http(s) or bucket-path
+     covers), so previewing one here would show an image that can never
+     be published. */
   const coverSrc = (raw) => {
     const v = String(raw || '').trim();
     if (!v) return '';
-    if (window.OMPUrl?.safeUrl) return window.OMPUrl.safeUrl(v, { allowDataImage: true }) || '';
-    return /^(https?:|\/|data:image\/)/i.test(v) ? v : '';
+    if (window.OMPUrl?.safeUrl) return window.OMPUrl.safeUrl(v, { attrSafe: true }) || '';
+    return /^(https?:|\/)/i.test(v) ? v : '';
   };
 
   const paintCover = () => {
@@ -573,8 +700,8 @@ function productForm(host, product) {
   });
 
   document.querySelector('#cancel-product').onclick = () => {
-    if (dirty && !confirm('Discard unsaved changes to this product?')) return;
-    dirty = false;
+    if (isDirty(form) && !confirm('Discard unsaved changes to this product?')) return;
+    dirtyForms.delete(form);
     host.innerHTML = '';
   };
 
@@ -614,6 +741,13 @@ function productForm(host, product) {
 
       /* Private deliverable upload: magic-byte preflight, forced
          Content-Type, PRIVATE bucket — no public URL is ever derived. */
+      /* Objects this save is about to stop referencing. Collected now,
+         deleted only after the row write succeeds. */
+      const orphans = [];
+      const previousFile = bucketPathFromFilePath(p.file_path);
+      const previousCover = bucketPathFromUrl(p.featured_image);
+      if (previousCover && previousCover.bucket === 'products') orphans.push(previousCover);
+
       let filePath = p.file_path || null;
       if (f.get('remove_file') === 'on') filePath = null;
       const file = f.get('deliverable');
@@ -641,11 +775,24 @@ function productForm(host, product) {
         featured_image: cover,
         external_url: purchaseUrl,
         file_path: filePath,
+        /* No UPDATE trigger exists on products either — keep updated_at
+           honest so the catalog and the sitemap lastmod stay accurate. */
+        updated_at: new Date().toISOString(),
         published_at: status === 'published' ? (p.published_at || new Date().toISOString()) : null
       };
       const result = product ? await supabase.from('products').update(payload).eq('id', product.id) : await supabase.from('products').insert(payload);
       if (result.error) throw result.error;
-      dirty = false;
+      /* Only now is it safe to drop the objects the row no longer
+         references (replaced deliverable / replaced-or-removed cover). */
+      if (filePath !== (p.file_path || null) && previousFile) orphans.push(previousFile);
+      if (cover === (p.featured_image || null)) {
+        /* Cover unchanged — never delete the object still in use. */
+        for (let i = orphans.length - 1; i >= 0; i--) {
+          if (orphans[i] === previousCover) orphans.splice(i, 1);
+        }
+      }
+      await removeStorageObjects(orphans);
+      clearDirty(form);
       loadTab('products');
     } catch (err) {
       submitBtn.disabled = false; submitBtn.textContent = product ? 'Save product' : 'Create product';
@@ -660,7 +807,11 @@ function toolForm(host, categories, tool) {
   const id = n => `tf-${uid}-${n}`;
   host.innerHTML = `<form id="tool-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${tool ? 'Edit tool' : 'New tool'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label for="${id('name')}">Name</label><input id="${id('name')}" name="name" required value="${esc(t.name)}"></div><div class="form-field"><label for="${id('slug')}">Slug</label><input id="${id('slug')}" name="slug" required value="${esc(t.slug)}"></div></div><div class="form-field"><label for="${id('desc')}">Description</label><textarea id="${id('desc')}" name="description" rows="3">${esc(t.description || '')}</textarea></div><div class="editor-row-3"><div class="form-field"><label for="${id('cat')}">Category</label><select id="${id('cat')}" name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${esc(c.id)}" ${c.id===t.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label for="${id('route')}">Route</label><input id="${id('route')}" name="route" placeholder="/checker" value="${esc(t.route || '')}"></div><div class="form-field"><label for="${id('icon')}">Icon</label><input id="${id('icon')}" name="icon" value="${esc(t.icon || '')}"></div></div><div class="editor-row-2"><div class="form-field"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(t.sort_order)||0}"></div><div class="opt-row"><div><div class="opt-name">Active</div><div class="opt-desc">Show this tool on the public registry.</div></div><span class="switch"><input name="is_active" type="checkbox" aria-label="Active" ${t.is_active?'checked':''}><span class="track"></span></span></div></div><div class="form-field"><label for="${id('meta')}">Metadata JSON</label><textarea id="${id('meta')}" name="metadata" rows="6">${esc(JSON.stringify(t.metadata || {}, null, 2))}</textarea></div><p class="tiny muted" style="margin-top:6px">Route must be a path on this site (for example <code>/checker</code>). Off-site or <code>javascript:</code> routes are rejected by the public search.</p><div class="flex gap-8" style="margin-top:14px"><button class="btn btn-primary" type="submit">Save tool</button><button class="btn btn-ghost" type="button" id="cancel-tool">Cancel</button></div></form>`;
   const form = document.querySelector('#tool-form');
-  document.querySelector('#cancel-tool').onclick = () => { host.innerHTML = ''; };
+  document.querySelector('#cancel-tool').onclick = () => {
+    if (isDirty(form) && !confirm('Discard unsaved changes to this tool?')) return;
+    dirtyForms.delete(form);
+    host.innerHTML = '';
+  };
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -708,7 +859,7 @@ async function route() {
     return;
   }
   const expired = authUi === 'dashboard';
-  dirty = false;
+  clearAllDirty();
   loginView(expired ? 'Your session ended. Please sign in again.' : '');
 }
 
@@ -732,7 +883,7 @@ supabase.auth.onAuthStateChange(event => {
 
 /* Warn before losing a half-written article to a stray reload. */
 window.addEventListener('beforeunload', e => {
-  if (!dirty) return;
+  if (!hasUnsavedWork()) return;
   e.preventDefault();
   e.returnValue = '';
 });

@@ -339,4 +339,11 @@ def sitemap_body(guides):
 <section class="section-tight">
   <div class="container"><div class="footer-grid" style="grid-template-columns:repeat(3,1fr);padding:0">{cols}</div></div>
 </section>
+<section class="section-tight" data-sitemap-live hidden>
+  <div class="container">
+    <h2 class="h-3">Live articles &amp; products</h2>
+    <p class="muted small" style="margin-top:6px">Published from the admin panel — the same entries the XML sitemap lists.</p>
+    <div class="footer-grid" style="grid-template-columns:repeat(2,1fr);padding:0;margin-top:16px" data-sitemap-live-grid></div>
+  </div>
+</section>
 """

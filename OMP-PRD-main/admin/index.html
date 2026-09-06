@@ -18,6 +18,12 @@
     <div class="card card-pad" style="max-width:980px;margin:0 auto">
       <div class="muted">Loading secure admin panel…</div>
     </div>
+    <noscript>
+      <div class="card card-pad" style="max-width:640px;margin:16px auto 0">
+        <div class="notice-band"><p><strong>JavaScript is required.</strong></p>
+        <p class="muted" style="margin-top:8px">The admin panel is a client-side app: it signs in with Supabase Auth and renders content from the browser. Enable JavaScript for this site and reload.</p></div>
+      </div>
+    </noscript>
   </main>
   <!-- Shared render pipeline: the editor preview must produce exactly what
        /articles serves, so both load sanitize.js + markdown.js. url.js is

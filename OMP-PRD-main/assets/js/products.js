@@ -444,7 +444,7 @@
   var clientPromise = null;
   function getClient() {
     if (!clientPromise) {
-      clientPromise = import('https://esm.sh/@supabase/supabase-js@2')
+      clientPromise = import('https://esm.sh/@supabase/supabase-js@2.115.0')
         .then(function (mod) { return mod.createClient(SUPABASE_URL, SUPABASE_KEY, { global: { fetch: timedFetch } }); })
         .catch(function (e) { clientPromise = null; throw e; });
     }
