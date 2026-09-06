@@ -175,8 +175,36 @@ alter table public.tools enable row level security;
 drop policy if exists "tools_select_active" on public.tools;
 create policy "tools_select_active" on public.tools
   for select to anon using (is_active = true);
--- Admin write policies omitted for brevity — mirror the articles pattern
--- (insert/update/delete to authenticated with check (public.is_admin())).
+
+-- Admins must be able to see INACTIVE rows too, otherwise the Tools tab
+-- cannot list or edit a tool that was switched off.
+drop policy if exists "tools_select_all_admin" on public.tools;
+create policy "tools_select_all_admin" on public.tools
+  for select to authenticated using (public.is_admin());
+
+-- Admin write policies. These used to be "left as an exercise", which meant
+-- the admin panel's Tools tab could never save: RLS silently returned zero
+-- rows on UPDATE and rejected INSERT/DELETE outright.
+drop policy if exists "tools_admin_insert" on public.tools;
+create policy "tools_admin_insert" on public.tools
+  for insert to authenticated with check (public.is_admin());
+drop policy if exists "tools_admin_update" on public.tools;
+create policy "tools_admin_update" on public.tools
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "tools_admin_delete" on public.tools;
+create policy "tools_admin_delete" on public.tools
+  for delete to authenticated using (public.is_admin());
+
+-- Tool categories follow the same shape as article categories.
+drop policy if exists "tool_categories_admin_insert" on public.tool_categories;
+create policy "tool_categories_admin_insert" on public.tool_categories
+  for insert to authenticated with check (public.is_admin());
+drop policy if exists "tool_categories_admin_update" on public.tool_categories;
+create policy "tool_categories_admin_update" on public.tool_categories
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "tool_categories_admin_delete" on public.tool_categories;
+create policy "tool_categories_admin_delete" on public.tool_categories
+  for delete to authenticated using (public.is_admin());
 
 
 -- ---------------------------------------------------------------------------
@@ -297,6 +325,7 @@ create policy "articles_bucket_admin_delete" on storage.objects
 -- ---------------------------------------------------------------------------
 -- The publishable key is public by design. Revoke any blanket privileges that
 -- could let it read drafts, profiles, media, or mutate any table.
+-- Anon (the publishable key) — read the public catalogue only.
 revoke all on public.articles, public.article_categories, public.tools,
           public.tool_categories, public.media, public.contact_messages,
           public.profiles from anon;
@@ -304,9 +333,54 @@ grant select on public.articles to anon;                 -- published only (RLS)
 grant select on public.article_categories to anon;
 grant select on public.tools to anon;                    -- active only (RLS)
 grant select on public.tool_categories to anon;
+grant select on public.products to anon;                 -- published only (RLS)
 grant insert on public.contact_messages to anon;         -- public form only
 -- NOTE: profiles is NOT granted to anon. Only authenticated (signed-in) users,
 -- and only their own row, per the policy above.
+
+-- Authenticated non-admins. `articles` / `products` used to expose published
+-- rows to anon and *all* rows to admins, with nothing in between — so a
+-- signed-in non-admin reading the public catalogue got "permission denied".
+-- Widening the existing published-only policies to `authenticated` fixes that
+-- without leaking drafts: RLS still restricts the rows.
+drop policy if exists "articles_select_published" on public.articles;
+create policy "articles_select_published" on public.articles
+  for select to anon, authenticated using (status = 'published');
+
+-- media / contact_messages stay admin-only; they are never granted to anon.
+-- (The published-only products policy is widened to authenticated in the
+-- products section below.)
+
+
+-- ---------------------------------------------------------------------------
+-- 8b. updated_at maintenance
+-- ---------------------------------------------------------------------------
+-- Both tables declare `updated_at timestamptz not null default now()` but
+-- nothing ever advanced it, so:
+--   * the admin list's "sort by updated_at" was really creation order, and
+--   * the sitemap's <lastmod> never moved when an article was edited,
+--     which is the single biggest signal crawlers take from a sitemap.
+-- admin.js now sets updated_at explicitly on save; this trigger keeps it
+-- correct for edits made from the SQL editor or any other client.
+create or replace function public.touch_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists articles_touch_updated_at on public.articles;
+create trigger articles_touch_updated_at
+  before update on public.articles
+  for each row execute function public.touch_updated_at();
+
+drop trigger if exists products_touch_updated_at on public.products;
+create trigger products_touch_updated_at
+  before update on public.products
+  for each row execute function public.touch_updated_at();
 
 
 -- ---------------------------------------------------------------------------
@@ -389,7 +463,7 @@ alter table public.products enable row level security;
 -- the app simply does not select it, and RLS keeps drafts invisible anyway).
 drop policy if exists "products_select_published" on public.products;
 create policy "products_select_published" on public.products
-  for select to anon using (status = 'published');
+  for select to anon, authenticated using (status = 'published');
 
 drop policy if exists "products_select_all_admin" on public.products;
 create policy "products_select_all_admin" on public.products

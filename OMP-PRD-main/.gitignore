@@ -6,3 +6,9 @@ __pycache__/
 .pytest_cache/
 .firebase/
 tools/audit-report.json
+.env
+.env.local
+functions/.env
+supabase/functions/.env.local
+supabase/.branches
+supabase/.temp

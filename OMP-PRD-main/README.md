@@ -31,9 +31,30 @@ Publishing content without running a backend:
 - Unpublishing is done with the **Status** field (draft / published / archived). The public renderer contains no keyword-based hiding rules — if a post is published, it is listed.
 - SEO rule of thumb: news/updates → dynamic feed; content that must rank → static guide pages under `/guides/`, surfaced through the Articles hub via the baked-in index in `blog.js`.
 
+## Dynamic sitemap (Supabase Edge Function)
+
+`/sitemap.xml` is **generated at request time**, not baked at build time:
+
+```text
+GET /sitemap.xml
+  → Firebase Hosting rewrite            (firebase.json: sitemap.xml is in hosting.ignore)
+  → Firebase Cloud Function `sitemap`   (functions/index.js — thin bridge, no sitemap logic)
+  → Supabase Edge Function `sitemap`    (supabase/functions/sitemap/ — builds the XML)
+  → Supabase Postgres                   (articles + products, status = 'published')
+```
+
+- Published articles and products appear automatically; drafts/archived rows never do (RLS *and* the generator both filter).
+- `<lastmod>` per URL: `published_at` → `updated_at` → `created_at` for live rows, and a fixed build stamp for static pages (stamping "today" on every static URL teaches crawlers to ignore the signal).
+- Slugs are charset-guarded and every value is XML-escaped before it reaches the document.
+- The Edge Function degrades instead of failing: a database error still returns a valid static-route sitemap, and the response carries an `X-Sitemap-State` header (`edge` / `rest-fallback` / `static-fallback`). `/sitemap.xml` never 404s or 500s.
+- `sitemap-core.mjs` is the single, shared source of the route list and the safety rules. It is imported by the Edge Function, by the Firebase fallback (a synced copy), and by the Node tests; `tools/build.py` parses it so even the committed snapshot cannot drift.
+- `/sitemap` (the human-facing HTML page) lists the same live articles and products — it asks the Edge Function for `?format=json` and renders nothing if that call fails.
+
+See [`supabase/functions/README.md`](supabase/functions/README.md) for deploy and verification commands.
+
 ## Firebase Hosting
 
-`firebase.json` is included and ready: public dir at repo root, `tools/**` and markdown files excluded from deploys, CSP + security headers, and `no-cache` (revalidate) for HTML pages (by path pattern and `**/*.html`) and `/assets/**`.
+`firebase.json` is included and ready: public dir at repo root, `tools/**`, `functions/**`, `supabase/**` and markdown files excluded from deploys, CSP + security headers (HSTS, COOP, CORP, nosniff, Permissions-Policy, Referrer-Policy), and `no-cache` (revalidate) for HTML pages (by path pattern and `**/*.html`) and `/assets/**`.
 
 ### URL architecture (pretty public URLs)
 
@@ -82,16 +103,20 @@ firebase deploy --only hosting
 /assets/js/url.js      → canonical URL safety validator (window.OMPUrl) — the single scheme allowlist used by sanitize/markdown/blog/search
 /assets/js/filevalidate.js → magic-byte + Content-Type preflight for admin document uploads (window.OMPFileValidate)
 /assets/js/search.js   → global Ctrl+K search (baked-in index incl. tools/articles/FAQ/glossary + live articles/tools, all pretty URLs)
-/firebase.json         → hosting config: security headers, cleanUrls, legacy 301s, /articles+products rewrites; supabase/ and tools/ excluded from deploys
+/assets/js/sitemap.js  → progressive enhancement for /sitemap: lists the live articles/products from the sitemap Edge Function
+/firebase.json         → hosting config: security headers, cleanUrls, legacy 301s, /articles+products+sitemap.xml rewrites; supabase/, functions/ and tools/ excluded from deploys
 /supabase/             → the intended Supabase schema + RLS + Storage policies (applied in the SQL Editor, never published)
 /assets/css/styles.css → design system
 /assets/js/security.js → shared analysis engine (window.OMPSecurity / module.exports)
 /assets/js/*.js        → page behaviors
 /assets/icons|images   → favicon, app icons, OG image
 /robots.txt /sitemap.xml /manifest.webmanifest
+/supabase/functions/sitemap/ → Supabase Edge Function: the dynamic /sitemap.xml (Deno)
+/functions/                  → Firebase Cloud Function: hosts that sitemap on /sitemap.xml
 /tools/build.py        → page generator (single source of truth for layout/content)
 /tools/omp_build/      → page bodies, guides content
 /tools/qa.py           → static QA: links, anchors, tag balance, SEO basics
+/tools/test_sitemap.js → sitemap generator + deployment wiring tests
 /tools/test_runtime.js → jsdom integration tests (requires: npm i jsdom)
 /tools/browser-audit.js→ full browser audit: overflow, contrast, a11y, SEO (requires: npm i playwright)
 /tools/preview_server.js→ local server with Firebase-equivalent routing (node tools/preview_server.js [port])

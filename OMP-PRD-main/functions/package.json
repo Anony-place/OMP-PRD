@@ -4,8 +4,10 @@
   "description": "OMP Firebase Cloud Functions",
   "main": "index.js",
   "scripts": {
-    "serve": "firebase-emulators:start --only functions",
-    "shell": "firebase-functions:shell",
+    "sync:sitemap": "node sync-sitemap-core.js",
+    "predeploy": "npm run sync:sitemap",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
     "start": "npm run shell",
     "logs": "firebase functions:log"
   },
@@ -13,7 +15,6 @@
     "node": "18"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
     "firebase-functions": "^4.6.1",
     "firebase-admin": "^11.11.0"
   },
