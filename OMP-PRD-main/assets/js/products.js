@@ -388,7 +388,7 @@
 
     root.innerHTML = '<article class="card card-pad" style="max-width:900px;margin:0 auto">' +
       '<nav class="small muted" aria-label="Breadcrumb" style="margin-bottom:14px"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="' + HUB_PATH + '" style="color:var(--purple)">Products</a></nav>' +
-      (cover ? '<img src="' + attr(cover) + '" alt="" loading="lazy" data-product-cover style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px">' : '') +
+      (cover ? '<img src="' + attr(cover) + '" alt="" loading="lazy" data-product-cover style="width:100%;max-height:620px;object-fit:contain;background:var(--surface);border-radius:var(--radius);margin-top:8px">' : '') +
       '<div style="margin-top:22px"><div class="product-meta"><span class="ptype t-' + attr(type) + '">' + esc(typeLabel(type).replace(/s$/, '')) + '</span>' +
       (p.featured ? '<span class="ptype t-featured">★ Featured</span>' : '') + '</div>' +
       '<h1 class="h-1 mt-16">' + esc(p.name) + '</h1>' +
