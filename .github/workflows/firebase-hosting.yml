@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   deploy:
@@ -19,10 +19,35 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
+
+      - name: Fix product detail cover
+        working-directory: OMP-PRD-main
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('assets/js/products.js')
+          s = p.read_text()
+          old = 'style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px"'
+          new = 'style="width:100%;max-height:620px;object-fit:contain;background:var(--surface);border-radius:var(--radius);margin-top:8px"'
+          if old in s:
+              p.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Commit source fix
+        run: |
+          if git diff --quiet -- OMP-PRD-main/assets/js/products.js; then
+            echo "Product detail cover is already fixed."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add OMP-PRD-main/assets/js/products.js
+            git commit -m "Fix product detail cover cropping"
+            git push
+          fi
 
       - name: Deploy Hosting
         working-directory: OMP-PRD-main
