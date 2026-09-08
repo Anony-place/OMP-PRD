@@ -1,0 +1,39 @@
+name: Fix Product Detail Cover
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fix detail cover rendering
+        working-directory: OMP-PRD-main
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('assets/js/products.js')
+          s = p.read_text()
+          old = 'style=\\"width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px\\"'
+          new = 'style=\\"width:100%;max-height:620px;object-fit:contain;background:var(--surface);border-radius:var(--radius);margin-top:8px\\"'
+          if old not in s:
+              raise SystemExit('Expected product detail cover style was not found')
+          p.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Commit fix and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add OMP-PRD-main/assets/js/products.js
+          git rm .github/workflows/fix-product-detail-cover.yml
+          git commit -m "Fix product detail cover cropping"
+          git push
