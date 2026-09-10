@@ -39,7 +39,7 @@
       { "source": "/articles/phishing-attacks", "destination": "/guides/phishing-attacks.html" },
       { "source": "/articles/password-entropy", "destination": "/guides/password-entropy.html" },
       { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" },
-      { "source": "/articles/**", "destination": "/articles.html" },
+      { "source": "/articles/**", "function": "article" },
       { "source": "/products{,/**}", "destination": "/products.html" }
     ],
     "headers": [
