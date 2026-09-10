@@ -1,0 +1,1 @@
+SEO fix: published article pages are server-rendered with canonical, metadata and structured data; missing slugs return 404/noindex; Firebase deploy includes Hosting and Functions.
