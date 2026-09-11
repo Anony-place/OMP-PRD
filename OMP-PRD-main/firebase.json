@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "source": "functions"
-  },
   "hosting": {
     "site": "oopsmypassword",
     "public": ".",
@@ -11,9 +8,7 @@
       "**/node_modules/**",
       "tools/**",
       "supabase/**",
-      "functions/**",
-      "**/*.md",
-      "sitemap.xml"
+      "functions/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
@@ -23,8 +18,7 @@
       { "source": "/guides.html", "destination": "/articles", "type": 301 },
       { "source": "/guides", "destination": "/articles", "type": 301 },
       { "regex": "/guides/(.*)\\.html", "destination": "/articles/:1", "type": 301 },
-      { "regex": "/guides/(.+)", "destination": "/articles/:1", "type": 301 },
-      { "source": "/sitemap.xml", "destination": "https://aeehfulikupskyrvcpzb.supabase.co/functions/v1/sitemap", "type": 301 }
+      { "regex": "/guides/(.+)", "destination": "/articles/:1", "type": 301 }
     ],
     "rewrites": [
       { "source": "/articles/create-strong-password", "destination": "/guides/create-strong-password.html" },
@@ -42,7 +36,6 @@
       { "source": "/articles/phishing-attacks", "destination": "/guides/phishing-attacks.html" },
       { "source": "/articles/password-entropy", "destination": "/guides/password-entropy.html" },
       { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" },
-      { "source": "/articles/**", "function": "article" },
       { "source": "/products{,/**}", "destination": "/products.html" }
     ],
     "headers": [
