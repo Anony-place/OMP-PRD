@@ -1,4 +1,4 @@
-name: Deploy Firebase Hosting + Functions
+name: Deploy Firebase Hosting
 
 on:
   push:
@@ -8,6 +8,11 @@ on:
 
 permissions:
   contents: write
+
+env:
+  SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
+  SUPABASE_PUBLISHABLE_KEY: sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
+  SITE_ORIGIN: https://oopsmypassword.web.app
 
 jobs:
   deploy:
@@ -49,12 +54,21 @@ jobs:
             git push
           fi
 
-      - name: Install Functions dependencies
-        working-directory: OMP-PRD-main/functions
-        run: npm ci --omit=dev
+      - name: Build static SEO pages
+        working-directory: OMP-PRD-main
+        run: node scripts/build-static-seo.mjs
 
-      - name: Deploy Hosting and Functions
+      - name: Verify generated SEO output
+        working-directory: OMP-PRD-main
+        run: |
+          test -s sitemap.xml
+          test -s articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          grep -q 'How Does AI Work?' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          grep -q 'canonical' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          echo "Static SEO verification passed."
+
+      - name: Deploy Hosting
         working-directory: OMP-PRD-main
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase deploy --only hosting,functions --token "$FIREBASE_TOKEN" --non-interactive
+        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
