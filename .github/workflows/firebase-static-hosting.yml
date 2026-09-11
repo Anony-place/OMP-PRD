@@ -1,0 +1,60 @@
+name: Deploy Firebase Hosting Static SEO
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
+  SUPABASE_PUBLISHABLE_KEY: sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
+  SITE_ORIGIN: https://oopsmypassword.web.app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Fix product detail cover
+        working-directory: OMP-PRD-main
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('assets/js/products.js')
+          s = p.read_text()
+          old = 'style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px"'
+          new = 'style="width:100%;max-height:620px;object-fit:contain;background:var(--surface);border-radius:var(--radius);margin-top:8px"'
+          if old in s:
+              p.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Build static SEO pages
+        working-directory: OMP-PRD-main
+        run: node scripts/build-static-seo.mjs
+
+      - name: Verify static SEO output
+        working-directory: OMP-PRD-main
+        run: |
+          test -s sitemap.xml
+          test -s articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          grep -q 'How Does AI Work?' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
+          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' sitemap.xml
+          echo "Static SEO verification passed."
+
+      - name: Deploy Hosting only
+        working-directory: OMP-PRD-main
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
