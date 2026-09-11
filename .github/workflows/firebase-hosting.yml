@@ -1,4 +1,4 @@
-name: Deploy Firebase Hosting
+name: Deploy Firebase Hosting + Functions
 
 on:
   push:
@@ -49,8 +49,8 @@ jobs:
             git push
           fi
 
-      - name: Deploy Hosting
+      - name: Deploy Hosting and Functions
         working-directory: OMP-PRD-main
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+        run: firebase deploy --only hosting,functions --token "$FIREBASE_TOKEN" --non-interactive
