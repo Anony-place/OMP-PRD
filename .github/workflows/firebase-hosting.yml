@@ -49,6 +49,10 @@ jobs:
             git push
           fi
 
+      - name: Install Functions dependencies
+        working-directory: OMP-PRD-main/functions
+        run: npm ci --omit=dev
+
       - name: Deploy Hosting and Functions
         working-directory: OMP-PRD-main
         env:
