@@ -4,4 +4,4 @@ Disallow: /tools/
 Disallow: /admin/
 Disallow: /functions/
 
-Sitemap: https://oopsmypassword.com/sitemap.xml
+Sitemap: https://oopsmypassword.web.app/sitemap.xml
