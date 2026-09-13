@@ -1,1 +1,1 @@
-SEO fix: published article pages are server-rendered with canonical, metadata and structured data; missing slugs return 404/noindex; Firebase deploy includes Hosting and Functions.
+Sitemap endpoint uses a fresh Google-specific URL to avoid stale /sitemap.xml processing issues. See google-sitemap.xml.
