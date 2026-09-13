@@ -1,1 +1,1 @@
-Sitemap endpoint uses a fresh Google-specific URL to avoid stale /sitemap.xml processing issues. See google-sitemap.xml.
+Sitemap deployment now creates a fresh Google sitemap endpoint at /google-sitemap.xml from the dynamically generated sitemap and deploys robots.txt pointing Google to that endpoint.
