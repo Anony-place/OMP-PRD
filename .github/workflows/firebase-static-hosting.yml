@@ -74,7 +74,10 @@ jobs:
             echo "- product pages: $(ls products/*.html 2>/dev/null | wc -l | tr -d ' ')"
             echo "- sitemap URLs: $(grep -c '<loc>' sitemap.xml | tr -d ' ')"
           } >> "$GITHUB_STEP_SUMMARY"
-          grep -c '<loc>' sitemap.xml | xargs -I{} echo "sitemap has {} URLs"
+          # Echo the same numbers as a notice annotation: the step summary is
+          # only readable in the web UI, while annotations come back through
+          # the check-runs API, which is what tooling can actually verify.
+          echo "::notice title=Build inventory::static=$(find . -maxdepth 1 -name '*.html' | wc -l | tr -d ' ') guides=$(ls guides/*.html 2>/dev/null | wc -l | tr -d ' ') articles=$(ls articles/*.html 2>/dev/null | wc -l | tr -d ' ') products=$(ls products/*.html 2>/dev/null | wc -l | tr -d ' ') sitemap_urls=$(grep -c '<loc>' sitemap.xml | tr -d ' ')"
 
       - name: Sitemap generator and wiring tests
         working-directory: OMP-PRD-main
