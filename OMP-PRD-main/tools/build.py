@@ -58,7 +58,9 @@ def load_sitemap_core():
     if not routes:
         raise SystemExit("sitemap-core.mjs: STATIC_ROUTES is empty")
 
-    lastmod = re.search(r"export const STATIC_LASTMOD = '([^']+)'", src)
+    # The value is deliberately allowed to be empty: no lastmod is asserted for
+    # generated pages. [^']* (not [^']+) so an empty stamp still parses.
+    lastmod = re.search(r"export const STATIC_LASTMOD = '([^']*)'", src)
     if not lastmod:
         raise SystemExit("sitemap-core.mjs: STATIC_LASTMOD not found")
 
@@ -356,7 +358,11 @@ def main():
                "0.9" if u in ("/articles", "/products") else
                "0.7" if u.startswith("/articles/") or u.startswith("/products/") else
                "0.5" if u == "/sitemap" else "0.8")
-        sm.append(f"  <url><loc>{SITE}{u}</loc><lastmod>{static_lastmod}</lastmod>"
+        # static_lastmod is empty by design: there is no honest per-page
+        # modification date for a generated page, so the optional element is
+        # omitted instead of stamped with an invented one.
+        lm = f"<lastmod>{static_lastmod}</lastmod>" if static_lastmod else ""
+        sm.append(f"  <url><loc>{SITE}{u}</loc>{lm}"
                   f'<changefreq>{"weekly" if u == "/" else "monthly"}</changefreq>'
                   f"<priority>{pri}</priority></url>")
     sm.append("</urlset>")

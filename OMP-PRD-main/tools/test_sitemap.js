@@ -175,12 +175,26 @@ function group(name) {
     });
   });
 
-  check('lastmod is a valid ISO date and falls back to the static stamp', () => {
+  check('lastmod is asserted only where a real date exists', () => {
     const xml = core.buildSitemapXml(OPTS);
+    /* An empty <lastmod> is malformed, so the element must be omitted whole. */
+    assert(!/<lastmod>\s*<\/lastmod>/.test(xml), 'empty <lastmod> element emitted');
     const mods = (xml.match(/<lastmod>([^<]*)<\/lastmod>/g) || []).map((s) => s.slice(9, -10));
-    assert(mods.length > 0, 'no lastmod entries');
     mods.forEach((m) => assert(/^\d{4}-\d{2}-\d{2}$/.test(m), 'bad lastmod: ' + m));
-    assert(core.formatLastmod('not a date', '2026-01-01') === '2026-01-01', 'invalid date did not fall back');
+
+    /* Generated pages have no honest modification date, so the static routes
+       must carry none. If a stamp reappears here it is an invented date. */
+    const staticXml = core.buildSitemapXml({ site: SITE });
+    const staticUrls = staticXml.match(/<url>[\s\S]*?<\/url>/g) || [];
+    assert(staticUrls.length > 0, 'no static URLs generated');
+    const stamped = staticUrls.filter((u) => u.includes('<lastmod>'));
+    assert(stamped.length === 0,
+      `${stamped.length} static routes carry a lastmod with no real date behind them`);
+
+    /* Articles and products do have real timestamps, so they must keep theirs —
+       otherwise the policy above would silently strip genuine signal. */
+    assert(mods.length > 0, 'database-backed rows lost their lastmod');
+    assert(core.formatLastmod('not a date', '') === '', 'invalid date did not fall back to empty');
     assert(core.formatLastmod('2026-09-04T10:00:00Z') === '2026-09-04', 'UTC date not formatted');
   });
 

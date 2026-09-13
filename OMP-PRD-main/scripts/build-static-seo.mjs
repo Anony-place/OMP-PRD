@@ -11,7 +11,9 @@ const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').repla
 const ROOT = process.cwd();
 const ARTICLES_DIR = join(ROOT, 'articles');
 const PRODUCTS_DIR = join(ROOT, 'products');
-const STATIC_LASTMOD = '2026-09-11';
+/* Fallback for a missing/undateable database timestamp: emit no lastmod
+   rather than a made-up one. */
+const UNKNOWN_LASTMOD = '';
 const PRODUCT_FIELDS = 'slug,name,summary,description,product_type,price,currency,cta_label,featured,featured_image,external_url,status,published_at,updated_at,created_at';
 const PRODUCT_TYPES = { book: 'Book', course: 'Course', tool: 'Tool', template: 'Template', resource: 'Resource', other: 'Resource' };
 
@@ -340,8 +342,15 @@ function sitemapXml({ articles, products }) {
   /* Every real public page, not just a hand-picked subset. Omitting the tool
      pages here meant Google never learned /checker, /generator, /tools and
      /breach-check existed — the site's primary pages. */
+  /* No lastmod for the static routes. There is no per-page modification date
+     to report: these pages are regenerated from tools/omp_build on every
+     build, so any constant here is invented, and git commit dates are no
+     better - an infrastructure change touches every generator at once and
+     would advertise content churn that never happened. <lastmod> is optional,
+     so it is omitted rather than guessed. Articles and products below carry
+     real database timestamps. */
   for (const route of STATIC_ROUTES) {
-    add(urlFor(route), STATIC_LASTMOD, route);
+    add(urlFor(route), '', route);
   }
 
   for (const article of articles) {
@@ -357,15 +366,15 @@ function sitemapXml({ articles, products }) {
 
   const body = [...urls.entries()]
     .map(([loc, { lastmod, priority }]) =>
-      `<url><loc>${esc(loc)}</loc><lastmod>${lastmod}</lastmod><priority>${priority}</priority></url>`)
+      `<url><loc>${esc(loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<priority>${priority}</priority></url>`)
     .join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
 }
 
 function dateOnly(value) {
-  if (!value) return STATIC_LASTMOD;
+  if (!value) return UNKNOWN_LASTMOD;
   const ms = Date.parse(value);
-  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : STATIC_LASTMOD;
+  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : UNKNOWN_LASTMOD;
 }
 
 async function main() {

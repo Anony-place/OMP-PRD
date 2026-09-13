@@ -207,6 +207,22 @@ function checkSitemap(file, routes, noindexRoutes) {
   const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((mm) => mm[1]);
   if (!entries.length) fail(`${file}: no <url> entries`);
 
+  /* <lastmod> must be a real date or absent. An empty element is malformed,
+     and a stamp on a generated page is an invented date. */
+  if (/<lastmod>\s*<\/lastmod>/.test(xml)) fail(`${file}: empty <lastmod> element — omit it instead`);
+  for (const entry of entries) {
+    const lm = (entry.match(/<lastmod>([\s\S]*?)<\/lastmod>/) || [])[1];
+    const loc = (entry.match(/<loc>([\s\S]*?)<\/loc>/) || [])[1] || '';
+    if (lm === undefined) continue;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(lm)) fail(`${file}: ${loc} has a malformed <lastmod> "${lm}"`);
+    const isDbBacked = /^\/articles\/[^/]+$/.test(loc.slice(SITE.length)) ||
+                       /^\/products\/[^/]+$/.test(loc.slice(SITE.length));
+    const isStaticGuide = loc.slice(SITE.length).startsWith('/guides/');
+    if (!isDbBacked && !isStaticGuide) {
+      fail(`${file}: ${loc} asserts <lastmod> ${lm}, but generated pages have no real modification date`);
+    }
+  }
+
   const locs = entries.map((e) => (e.match(/<loc>([\s\S]*?)<\/loc>/) || [])[1]);
   locs.forEach((loc, i) => {
     const where = `${file} entry ${i + 1}`;
