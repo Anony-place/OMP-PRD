@@ -42,13 +42,24 @@ jobs:
 
       - name: Prepare fresh Google sitemap endpoint
         working-directory: OMP-PRD-main
-        run: cp sitemap.xml google-sitemap.xml
+        run: |
+          cp sitemap.xml google-sitemap.xml
+          printf '%s\n' \
+            'User-agent: *' \
+            'Allow: /' \
+            'Disallow: /tools/' \
+            'Disallow: /admin/' \
+            'Disallow: /functions/' \
+            '' \
+            'Sitemap: https://oopsmypassword.web.app/google-sitemap.xml' > robots.txt
 
       - name: Verify static SEO output
         working-directory: OMP-PRD-main
         run: |
           test -s sitemap.xml
           test -s google-sitemap.xml
+          test -s robots.txt
+          grep -q 'Sitemap: https://oopsmypassword.web.app/google-sitemap.xml' robots.txt
           test -s articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
           grep -q 'How Does AI Work?' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
           grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
