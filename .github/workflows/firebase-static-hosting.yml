@@ -157,7 +157,15 @@ jobs:
             exit 0
           fi
           KEY="${KEY_FILE%.txt}"
-          SITE_HOST="oopsmypassword.web.app"
+          # Derive the host from SITE_ORIGIN so this step cannot drift from the
+          # origin every other generator uses.
+          SITE_HOST="${SITE_ORIGIN#http://}"
+          SITE_HOST="${SITE_HOST#https://}"
+          SITE_HOST="${SITE_HOST%%/*}"
+          if [ -z "$SITE_HOST" ]; then
+            echo "::warning::SITE_ORIGIN is unset; skipping IndexNow."
+            exit 0
+          fi
 
           # Give Hosting a moment to propagate the key file before submitting.
           for i in 1 2 3 4 5; do
@@ -180,11 +188,11 @@ jobs:
           printf '%s\n' "$URLS" | python3 -c '
           import json, sys
           urls = [u.strip() for u in sys.stdin if u.strip()]
-          print(json.dumps({"host": "oopsmypassword.web.app",
-                            "key": sys.argv[1],
-                            "keyLocation": "https://oopsmypassword.web.app/" + sys.argv[1] + ".txt",
+          print(json.dumps({"host": sys.argv[1],
+                            "key": sys.argv[2],
+                            "keyLocation": sys.argv[3] + "/" + sys.argv[2] + ".txt",
                             "urlList": urls}))
-          ' "$KEY" > /tmp/indexnow.json
+          ' "$SITE_HOST" "$KEY" "https://$SITE_HOST" > /tmp/indexnow.json
 
           status=$(curl -s -o /tmp/indexnow.out -w '%{http_code}' \
             -X POST "https://api.indexnow.org/indexnow" \
