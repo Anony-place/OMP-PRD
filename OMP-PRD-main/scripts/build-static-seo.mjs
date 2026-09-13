@@ -128,18 +128,23 @@ function sanitizeHtml(input) {
 
    - `id`: a repeated id produces duplicate anchors and collides with the
      in-page links every other page relies on.
-   - `<h1>`: the page template already owns the single h1, so an h1 in the body
-     gives the page two.
+   - headings: the page template already owns the single h1, so any heading in
+     the body has to sit underneath it.
 
-   Strip ids and demote body headings by one level, which keeps the article's
-   own outline intact under the page title. */
+   Strip ids, then shift every body heading so the shallowest one used becomes
+   an h2. A flat shift by one is not enough: these articles open with "##", so
+   a +1 shift lands them on h3 and leaves the page jumping h1 -> h3. Anchoring
+   on the content's own minimum keeps the article's relative outline intact and
+   always starts it directly under the page title. */
 function normalizeInjected(html) {
-  return String(html || '')
-    .replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-    .replace(/<(\/?)h([1-5])(\s|>)/gi, (m, slash, level, tail) => {
-      const demoted = Math.min(Number(level) + 1, 6);
-      return `<${slash}h${demoted}${tail}`;
-    });
+  const source = String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  const levels = [...source.matchAll(/<h([1-6])[\s>]/gi)].map((m) => Number(m[1]));
+  const shift = levels.length ? Math.max(2 - Math.min(...levels), 0) : 0;
+  if (!shift) return source;
+  return source.replace(/<(\/?)h([1-6])(\s|>)/gi, (m, slash, level, tail) => {
+    const shifted = Math.min(Number(level) + shift, 6);
+    return `<${slash}h${shifted}${tail}`;
+  });
 }
 
 async function fetchRows(table, fields) {
