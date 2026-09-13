@@ -123,12 +123,23 @@ function sanitizeHtml(input) {
 }
 
 /* Admin-authored article bodies are injected straight into the generated page,
-   so anything they carry becomes part of our markup. `id` is the one attribute
-   that can break the page rather than just look odd: a repeated id produces
-   duplicate anchors, and it collides with the in-page links every other page
-   relies on. Strip it on the way in. */
-function stripIds(html) {
-  return String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+   so anything they carry becomes part of our markup. Two attributes/elements
+   can break the page rather than just look odd:
+
+   - `id`: a repeated id produces duplicate anchors and collides with the
+     in-page links every other page relies on.
+   - `<h1>`: the page template already owns the single h1, so an h1 in the body
+     gives the page two.
+
+   Strip ids and demote body headings by one level, which keeps the article's
+   own outline intact under the page title. */
+function normalizeInjected(html) {
+  return String(html || '')
+    .replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .replace(/<(\/?)h([1-5])(\s|>)/gi, (m, slash, level, tail) => {
+      const demoted = Math.min(Number(level) + 1, 6);
+      return `<${slash}h${demoted}${tail}`;
+    });
 }
 
 async function fetchRows(table, fields) {
@@ -152,7 +163,7 @@ function articleHtml(article) {
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const published = article.published_at || article.created_at || new Date().toISOString();
   const modified = article.updated_at || published;
-  const content = stripIds(sanitizeHtml(article.content || ''));
+  const content = normalizeInjected(sanitizeHtml(article.content || ''));
   const image = article.featured_image ? String(article.featured_image) : '';
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -224,7 +235,7 @@ function productHtml(product) {
   const summary = String(product.summary || '').trim()
     || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
-  const content = stripIds(sanitizeHtml(product.description || ''));
+  const content = normalizeInjected(sanitizeHtml(product.description || ''));
   const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : '';
   const typeLabel = PRODUCT_TYPES[String(product.product_type || 'other')] || 'Resource';
   const published = product.published_at || product.created_at || new Date().toISOString();
