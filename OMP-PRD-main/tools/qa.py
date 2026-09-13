@@ -224,5 +224,10 @@ if errors:
     print(f"\n{len(errors)} ERRORS:")
     for e in errors:
         print("  ", e)
+    # Surface each error as a GitHub Actions annotation too, so the reason is
+    # visible on the run summary without downloading the full job log.
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        for e in errors:
+            print(f"::error title=QA failure::{e}")
     sys.exit(1)
 print("NO ERRORS — all links, anchors, tags, SEO basics pass.")

@@ -517,6 +517,12 @@ if (warnings.length) {
 if (failures.length) {
   console.error(`\nSEO verification FAILED (${failures.length} problem${failures.length === 1 ? '' : 's'}):`);
   failures.forEach((f) => console.error('  - ' + f));
+  /* Also surface each failure as a GitHub Actions annotation, so the reason is
+     visible on the run summary and via the check-runs API without downloading
+     the full job log. */
+  if (process.env.GITHUB_ACTIONS === 'true') {
+    failures.forEach((f) => console.log(`::error title=SEO regression::${f}`));
+  }
   process.exit(1);
 }
 console.log('\nSEO verification passed.');
