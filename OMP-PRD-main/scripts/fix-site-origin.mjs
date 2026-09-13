@@ -2,7 +2,7 @@ import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const ROOT = process.cwd();
-const OLD_ORIGIN = 'https://oopsmypassword.com';
+const OLD_ORIGIN = 'https://oopsmypassword.web.app';
 const NEW_ORIGIN = 'https://oopsmypassword.web.app';
 const TEXT_EXTENSIONS = new Set([
   '.html', '.js', '.css', '.json', '.xml', '.txt', '.webmanifest', '.md', '.mjs', '.py'

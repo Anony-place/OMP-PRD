@@ -15,7 +15,10 @@
    loads it as ESM without needing a package.json.
    ============================================================ */
 
-export const DEFAULT_SITE = 'https://oopsmypassword.com';
+/* Canonical production origin. Must be a live, resolving origin: every <loc>
+   in the sitemap is built from it, and a sitemap URL that points at a dead
+   domain is dropped by crawlers as off-site. Callers override via SITE_ORIGIN. */
+export const DEFAULT_SITE = 'https://oopsmypassword.web.app';
 
 /* Static lastmod for the pages that only change when the site is
    rebuilt. Using "today" for every static URL makes the whole sitemap

@@ -1,11 +1,16 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+/* Single source of truth for the sitemap route list. Importing the shared
+   core means the deployed sitemap can never drift from the route set the
+   rest of the site (tools/build.py, the Edge Function) advertises. */
+import { STATIC_ROUTES, isValidSlug, priorityForRoute } from '../functions/sitemap-core.mjs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
 const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '');
 const ROOT = process.cwd();
 const ARTICLES_DIR = join(ROOT, 'articles');
+const STATIC_LASTMOD = '2026-09-11';
 
 function esc(value) {
   return String(value ?? '')
@@ -193,19 +198,45 @@ ${ogImage}
 }
 
 function sitemapXml({ articles, products }) {
-  const staticUrls = ['', 'articles', 'products', 'about', 'privacy', 'terms', 'contact', 'faq', 'security', 'glossary'];
   const urls = new Map();
-  for (const path of staticUrls) urls.set(`${SITE}/${path}`.replace(/\/$/, '') || `${SITE}/`, '2026-09-11');
+  /* The site root must keep its trailing slash: index.html canonicalises to
+     "<origin>/", so a <loc> of "<origin>" would not match its own canonical.
+     Every other route is trailing-slash free (trailingSlash: false). */
+  const urlFor = (route) => (route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`);
+  const add = (loc, lastmod, route) => {
+    if (urls.has(loc)) return;
+    urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') });
+  };
+
+  /* Every real public page, not just a hand-picked subset. Omitting the tool
+     pages here meant Google never learned /checker, /generator, /tools and
+     /breach-check existed — the site's primary pages. */
+  for (const route of STATIC_ROUTES) {
+    add(urlFor(route), STATIC_LASTMOD, route);
+  }
+
   for (const article of articles) {
+    if (!isValidSlug(article.slug)) continue;
     const modified = article.updated_at || article.published_at || article.created_at;
-    urls.set(`${SITE}/articles/${encodeURIComponent(article.slug)}`, modified ? new Date(modified).toISOString().slice(0, 10) : '2026-09-11');
+    add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(modified), `/articles/${article.slug}`);
   }
   for (const product of products) {
+    if (!isValidSlug(product.slug)) continue;
     const modified = product.updated_at || product.published_at || product.created_at;
-    urls.set(`${SITE}/products/${encodeURIComponent(product.slug)}`, modified ? new Date(modified).toISOString().slice(0, 10) : '2026-09-11');
+    add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(modified), `/products/${product.slug}`);
   }
-  const body = [...urls.entries()].map(([loc, lastmod]) => `<url><loc>${esc(loc)}</loc><lastmod>${lastmod}</lastmod></url>`).join('');
+
+  const body = [...urls.entries()]
+    .map(([loc, { lastmod, priority }]) =>
+      `<url><loc>${esc(loc)}</loc><lastmod>${lastmod}</lastmod><priority>${priority}</priority></url>`)
+    .join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
+}
+
+function dateOnly(value) {
+  if (!value) return STATIC_LASTMOD;
+  const ms = Date.parse(value);
+  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : STATIC_LASTMOD;
 }
 
 async function main() {
@@ -220,8 +251,13 @@ async function main() {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(article.slug || ''))) continue;
     await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article), 'utf8');
   }
-  await writeFile(join(ROOT, 'sitemap.xml'), sitemapXml({ articles, products }), 'utf8');
-  console.log(`Built ${articles.length} published article pages and sitemap with ${products.length} published products.`);
+  const xml = sitemapXml({ articles, products });
+  await writeFile(join(ROOT, 'sitemap.xml'), xml, 'utf8');
+  /* Keep the legacy alias byte-identical so the two endpoints can never
+     disagree — robots.txt advertises /sitemap.xml only. */
+  await writeFile(join(ROOT, 'google-sitemap.xml'), xml, 'utf8');
+  const urlCount = (xml.match(/<loc>/g) || []).length;
+  console.log(`Built ${articles.length} published article pages and a sitemap with ${urlCount} URLs (${products.length} published products) at ${SITE}.`);
 }
 
 main().catch((error) => {

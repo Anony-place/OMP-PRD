@@ -139,8 +139,13 @@ for f in sorted(html_files):
         errors.append(f"{f}: expected exactly 1 <h1>, found {c.has['h1']}")
     if not c.has["meta_desc"]:
         errors.append(f"{f}: missing meta description")
-    if not c.has["canonical"]:
+    # Indexable pages must self-canonicalise. noindex pages (the 404 and the
+    # admin panel) must NOT — a canonical on an error page turns it into a
+    # soft 404 in Search Console.
+    if not c.has.get("noindex") and not c.has["canonical"]:
         errors.append(f"{f}: missing canonical")
+    if c.has.get("noindex") and c.has["canonical"]:
+        errors.append(f"{f}: noindex page should not carry a canonical")
     # A noindex page (the private admin panel) must NOT carry social cards —
     # there is nothing to share, and warning about it is a false positive.
     if not c.has.get("noindex"):

@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 """Shared layout: head, header, footer, icons, reusable components."""
 
-SITE = "https://oopsmypassword.com"
+import os
+
+# Canonical production origin. Every <link rel="canonical">, og:url, og:image
+# and JSON-LD url on the site is derived from this, so it MUST be an origin
+# that actually resolves — a canonical pointing at a dead domain tells Google
+# to index that other domain instead and leaves this one unindexed.
+#
+# Override with SITE_ORIGIN for previews/staging (the deploy workflow sets it).
+SITE = (os.environ.get("SITE_ORIGIN") or "https://oopsmypassword.web.app").rstrip("/")
 BRAND = "OopsMyPassword"
 TWITTER = "@oopsmypassword"
 DATE = "2026-08-23"
@@ -94,8 +102,29 @@ NAV_LINKS = [
 ]
 
 
-def head(*, title, desc, path, og_type="website", jsonld=None, extra=""):
+def head(*, title, desc, path, og_type="website", jsonld=None, extra="", robots=None):
     canonical = SITE + path
+    # `robots` overrides the default indexable behaviour. Error pages (404)
+    # pass "noindex" — and in that case no canonical is emitted, because a
+    # canonical on a 404 makes Google treat it as a soft 404 and wastes crawl.
+    noindex = bool(robots) and "noindex" in robots
+    robots_html = f'\n  <meta name="robots" content="{robots}">' if robots else ""
+    canonical_html = "" if noindex else f'\n  <link rel="canonical" href="{canonical}">'
+    # A noindex page has nothing to share, so it carries no social cards —
+    # tools/qa.py flags them as a false positive.
+    social_html = "" if noindex else f"""
+  <meta property="og:type" content="{og_type}">
+  <meta property="og:site_name" content="{BRAND}">
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{desc}">
+  <meta property="og:url" content="{canonical}">
+  <meta property="og:image" content="{SITE}/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{title}">
+  <meta name="twitter:description" content="{desc}">
+  <meta name="twitter:image" content="{SITE}/assets/images/og-image.jpg">"""
     jsonld_html = ""
     if jsonld:
         import json
@@ -113,23 +142,10 @@ def head(*, title, desc, path, og_type="website", jsonld=None, extra=""):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
-  <meta name="description" content="{desc}">
-  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
-  <link rel="canonical" href="{canonical}">
+  <meta name="description" content="{desc}">{robots_html}
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />{canonical_html}
   <meta name="theme-color" content="#050811">
-  <meta name="color-scheme" content="dark light">
-  <meta property="og:type" content="{og_type}">
-  <meta property="og:site_name" content="{BRAND}">
-  <meta property="og:title" content="{title}">
-  <meta property="og:description" content="{desc}">
-  <meta property="og:url" content="{canonical}">
-  <meta property="og:image" content="{SITE}/assets/images/og-image.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{title}">
-  <meta name="twitter:description" content="{desc}">
-  <meta name="twitter:image" content="{SITE}/assets/images/og-image.jpg">
+  <meta name="color-scheme" content="dark light">{social_html}
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
@@ -249,9 +265,9 @@ def scripts(*names):
     return out
 
 
-def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scripts_=None, head_extra="", body_class=""):
+def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scripts_=None, head_extra="", body_class="", robots=None):
     html = (
-        head(title=title, desc=desc, path=path, og_type=og_type, jsonld=jsonld, extra=head_extra)
+        head(title=title, desc=desc, path=path, og_type=og_type, jsonld=jsonld, extra=head_extra, robots=robots)
         + f'\n<body class="{body_class}">\n'
         + header(active)
         + f'\n<main id="main">\n{body}\n</main>\n'

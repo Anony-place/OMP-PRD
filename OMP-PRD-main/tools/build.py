@@ -138,15 +138,16 @@ def guide_page(g):
 
 # Legacy /guides.html is a noindex redirect stub (Firebase also 301s it).
 # Unique title so it does not collide with the Articles hub in SEO crawls.
-GUIDES_REDIRECT_STUB = """<!DOCTYPE html>
+GUIDES_REDIRECT_STUB = f"""<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guides have moved — OopsMyPassword</title>
   <meta name="description" content="Guides now live inside the Articles hub: security news, deep dives, how-tos and guides in one place.">
+  <!-- noindex + no canonical: this stub exists only as a fallback for the
+       Firebase 301 from /guides.html, so it must never enter the index. -->
   <meta name="robots" content="noindex">
-  <link rel="canonical" href="https://oopsmypassword.com/articles">
   <meta http-equiv="refresh" content="0; url=/articles">
   <meta name="theme-color" content="#050811">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
@@ -403,11 +404,14 @@ def write_404():
     </div>
   </div>
 </section>"""
+    # noindex + no canonical: a 404 with a canonical to /404 reads as a soft
+    # 404 in Search Console and adds a junk URL to the index.
     write("404.html", page(
         path="/404", active="/",
         title="Page Not Found — OopsMyPassword",
         desc="The page you were looking for doesn't exist. Try the password checker, generator, or guides instead.",
         body=body,
+        robots="noindex, follow",
     ))
 
 

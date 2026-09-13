@@ -1,5 +1,11 @@
 name: Deploy Firebase Hosting Static SEO
 
+# NOTE: GitHub only reads workflows from .github/workflows at the *repository
+# root*. A copy under OMP-PRD-main/.github/workflows/ is never executed — that
+# is why the full build pipeline (build.py + origin normalization + sitemap
+# regeneration) never ran and the site shipped with truncated sitemaps and
+# canonicals pointing at a dead domain. Keep this file the single workflow.
+
 on:
   push:
     branches:
@@ -10,6 +16,10 @@ env:
   SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
   SUPABASE_PUBLISHABLE_KEY: sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
   SITE_ORIGIN: https://oopsmypassword.web.app
+  # Retired apex domain. It does not resolve, so any canonical or sitemap URL
+  # pointing at it keeps that page out of the index. Consumed by
+  # scripts/verify-seo.mjs, which fails the deploy if it appears anywhere.
+  LEGACY_ORIGIN: https://oopsmypassword.com
 
 jobs:
   deploy:
@@ -26,32 +36,34 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Fix product detail cover
+      - name: Build static site metadata and pages
         working-directory: OMP-PRD-main
+        # build.py regenerates every HTML page from tools/omp_build (canonicals,
+        # og:, JSON-LD), robots.txt, manifest and the static sitemap snapshot.
+        # build-static-seo.mjs then adds the live Supabase articles/products and
+        # renders each article as crawlable HTML.
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('assets/js/products.js')
-          s = p.read_text()
-          old = 'style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius);margin-top:8px"'
-          new = 'style="width:100%;max-height:620px;object-fit:contain;background:var(--surface);border-radius:var(--radius);margin-top:8px"'
-          if old in s:
-              p.write_text(s.replace(old, new, 1))
-          PY
+          python3 tools/build.py
+          node scripts/build-static-seo.mjs
 
-      - name: Build static SEO pages
+      - name: Normalize production site origin
         working-directory: OMP-PRD-main
-        run: node scripts/build-static-seo.mjs
+        # Safety net for any hand-edited file that still carries an old origin.
+        run: node scripts/fix-site-origin.mjs
+
+      - name: Prepare the Google sitemap alias
+        working-directory: OMP-PRD-main
+        # robots.txt advertises /sitemap.xml only. The alias is kept as a
+        # byte-identical copy so a previously submitted /google-sitemap.xml
+        # keeps resolving to the same content instead of going stale.
+        run: cp sitemap.xml google-sitemap.xml
 
       - name: Verify static SEO output
         working-directory: OMP-PRD-main
-        run: |
-          test -s sitemap.xml
-          test -s articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'How Does AI Work?' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' sitemap.xml
-          echo "Static SEO verification passed."
+        # Fails the deploy if any page canonicalises off-origin, if the 404 is
+        # indexable, if a sitemap is malformed or missing pages, or if
+        # robots.txt advertises an endpoint that is not the one being shipped.
+        run: node scripts/verify-seo.mjs
 
       - name: Deploy Hosting only
         working-directory: OMP-PRD-main

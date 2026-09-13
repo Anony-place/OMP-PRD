@@ -11,7 +11,7 @@ const functions = require('firebase-functions');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.com').replace(/\/+$/, '');
+const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '');
 const STATIC_LASTMOD = process.env.STATIC_LASTMOD || '2026-08-23';
 const EDGE_URL = process.env.SITEMAP_EDGE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co/functions/v1/sitemap';
 const EDGE_TIMEOUT_MS = 8000;
@@ -170,7 +170,7 @@ function articleDocument(article) {
     { '@type': 'ListItem', position: 3, name: title, item: canonical }
   ]};
   const ogImage = image ? `<meta property="og:image" content="${escHtml(image)}">` : '';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)} | OopsMyPassword</title><meta name="description" content="${escHtml(summary)}"><link rel="canonical" href="${escHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:title" content="${escHtml(title)}"><meta property="og:description" content="${escHtml(summary)}"><meta property="og:url" content="${escHtml(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escHtml(title)}"><meta name="twitter:description" content="${escHtml(summary)}"><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script><link rel="stylesheet" href="/assets/css/style.css"></head><body><main><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${escHtml(title)}</span></nav><article><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p><p><time datetime="${escHtml(published)}">${escHtml(new Date(published).toISOString().slice(0,10))}</time></p><div class="article-content">${content}</div></article></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)} | OopsMyPassword</title><meta name="description" content="${escHtml(summary)}"><link rel="canonical" href="${escHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:title" content="${escHtml(title)}"><meta property="og:description" content="${escHtml(summary)}"><meta property="og:url" content="${escHtml(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escHtml(title)}"><meta name="twitter:description" content="${escHtml(summary)}"><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script><link rel="stylesheet" href="/assets/css/styles.css"></head><body><main><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${escHtml(title)}</span></nav><article><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p><p><time datetime="${escHtml(published)}">${escHtml(new Date(published).toISOString().slice(0,10))}</time></p><div class="article-content">${content}</div></article></main></body></html>`;
 }
 
 function article404(slug) {
