@@ -339,6 +339,25 @@ function checkSchema(file, item) {
   if (!t) return fail(`${file}: JSON-LD object without @type`);
   if (item['@context'] !== 'https://schema.org') return fail(`${file}: ${t} has wrong @context`);
 
+  /* No fabricated rich-result data. Nothing in the Supabase schema holds
+     ratings, reviews or stock, so if one of these appears it was invented
+     rather than read. */
+  const UNSUPPORTED = ['aggregateRating', 'review', 'ratingValue', 'bestRating', 'worstRating'];
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    for (const key of UNSUPPORTED) {
+      if (key in node) fail(`${file}: ${t} carries "${key}", which no data source in this project provides`);
+    }
+    if ('availability' in node) {
+      fail(`${file}: ${t} carries "availability", but the products table has no stock field`);
+    }
+    for (const value of Object.values(node)) {
+      if (Array.isArray(value)) value.forEach(walk);
+      else if (value && typeof value === 'object') walk(value);
+    }
+  };
+  walk(item);
+
   const types = Array.isArray(t) ? t : [t];
   for (const type of types) {
     if (type === 'BreadcrumbList') {
@@ -379,9 +398,6 @@ function checkSchema(file, item) {
           fail(`${file}: Product Offer has invalid priceCurrency ${o.priceCurrency}`);
         }
       }
-      /* Ratings/reviews must never be invented. */
-      if (item.aggregateRating) fail(`${file}: Product carries aggregateRating — remove unless reviews genuinely exist`);
-      if (item.review) fail(`${file}: Product carries review — remove unless reviews genuinely exist`);
     }
     if (['WebSite', 'WebApplication', 'SoftwareApplication', 'Organization'].includes(type)) {
       if (!item.url) fail(`${file}: ${type} missing url`);

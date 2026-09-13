@@ -266,9 +266,11 @@ function productHtml(product) {
       '@type': 'Offer',
       price: String(price),
       priceCurrency: currency,
-      availability: 'https://schema.org/InStock',
       url: buyUrl || canonical,
     };
+    /* No availability. The products table has no stock field, so any value
+       here would be an unsupported claim about the catalogue. It is optional
+       in schema.org and not required for Google's Product snippets. */
   }
   const breadcrumb = {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
