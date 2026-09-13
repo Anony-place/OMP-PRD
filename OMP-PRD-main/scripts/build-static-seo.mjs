@@ -122,6 +122,15 @@ function sanitizeHtml(input) {
     .replace(/javascript\s*:/gi, '');
 }
 
+/* Admin-authored article bodies are injected straight into the generated page,
+   so anything they carry becomes part of our markup. `id` is the one attribute
+   that can break the page rather than just look odd: a repeated id produces
+   duplicate anchors, and it collides with the in-page links every other page
+   relies on. Strip it on the way in. */
+function stripIds(html) {
+  return String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+}
+
 async function fetchRows(table, fields) {
   const params = new URLSearchParams({ select: fields, status: 'eq.published', limit: '2000' });
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
@@ -143,7 +152,7 @@ function articleHtml(article) {
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const published = article.published_at || article.created_at || new Date().toISOString();
   const modified = article.updated_at || published;
-  const content = sanitizeHtml(article.content || '');
+  const content = stripIds(sanitizeHtml(article.content || ''));
   const image = article.featured_image ? String(article.featured_image) : '';
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -215,7 +224,7 @@ function productHtml(product) {
   const summary = String(product.summary || '').trim()
     || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
-  const content = sanitizeHtml(product.description || '');
+  const content = stripIds(sanitizeHtml(product.description || ''));
   const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : '';
   const typeLabel = PRODUCT_TYPES[String(product.product_type || 'other')] || 'Resource';
   const published = product.published_at || product.created_at || new Date().toISOString();
