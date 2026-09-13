@@ -36,9 +36,15 @@ jobs:
               p.write_text(s.replace(old, new, 1))
           PY
 
-      - name: Build static SEO pages
+      - name: Build static site metadata and pages
         working-directory: OMP-PRD-main
-        run: node scripts/build-static-seo.mjs
+        run: |
+          python3 tools/build.py
+          node scripts/build-static-seo.mjs
+
+      - name: Normalize production site origin
+        working-directory: OMP-PRD-main
+        run: node scripts/fix-site-origin.mjs
 
       - name: Prepare fresh Google sitemap endpoint
         working-directory: OMP-PRD-main
@@ -60,12 +66,11 @@ jobs:
           test -s google-sitemap.xml
           test -s robots.txt
           grep -q 'Sitemap: https://oopsmypassword.web.app/google-sitemap.xml' robots.txt
-          test -s articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'How Does AI Work?' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence.html
-          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' sitemap.xml
-          grep -q 'https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence' google-sitemap.xml
-          python - <<'PY'
+          if grep -R -n --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=functions --exclude-dir=supabase --exclude-dir=tools 'https://oopsmypassword.com' .; then
+            echo 'Old .com production origin is still present in deployable files.'
+            exit 1
+          fi
+          python3 - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
           for name in ('sitemap.xml', 'google-sitemap.xml'):
