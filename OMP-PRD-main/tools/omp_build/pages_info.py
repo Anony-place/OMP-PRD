@@ -183,17 +183,17 @@ def contact_body():
     <div class="grid" style="align-content:start">
       <div class="card card-pad">
         <span class="card-icon">{icon("shield","icon-22")}</span>
-        <h3>Security reports</h3>
+        <h2 class="h-3">Security reports</h2>
         <p>Found a vulnerability in OMP itself? Please follow responsible disclosure via our <a href="/security" style="color:var(--purple)">security policy</a>. <strong>Never include a real password in any report.</strong></p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("book","icon-22")}</span>
-        <h3>Guide requests</h3>
+        <h2 class="h-3">Guide requests</h2>
         <p>Want a topic covered — enterprise SSO, hardware keys, securing a parent's accounts? Suggest it and we'll consider it for the guide library.</p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("info","icon-22")}</span>
-        <h3>What we ask you not to send</h3>
+        <h2 class="h-3">What we ask you not to send</h2>
         <p>Do not email real passwords, session tokens, or other live secrets — yours or anyone else's. Describe issues with synthetic examples.</p>
       </div>
     </div>
@@ -246,7 +246,7 @@ GLOSSARY = [
 
 def glossary_body():
     terms = "\n".join(
-        f'<div class="card card-pad"><h3 class="h-3">{t}</h3><p class="muted small mt-8">{d}</p></div>'
+        f'<div class="card card-pad"><h2 class="h-3">{t}</h2><p class="muted small mt-8">{d}</p></div>'
         for t, d in GLOSSARY
     )
     return f"""
@@ -323,7 +323,7 @@ def sitemap_body(guides):
         ]),
     ]
     cols = "".join(
-        '<div class="footer-col card card-pad"><h4>' + name + "</h4><ul>"
+        '<div class="footer-col card card-pad"><div class="footer-col-title">' + name + "</div><ul>"
         + "".join(f'<li><a href="{href}">{label}</a></li>' for label, href in links)
         + "</ul></div>"
         for name, links in groups

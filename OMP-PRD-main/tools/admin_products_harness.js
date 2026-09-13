@@ -79,7 +79,7 @@ function makeClient() {
 
 async function boot() {
   const html = `<!doctype html><html><head></head><body><div id="admin-root"></div></body></html>`;
-  const dom = new JSDOM(html, { url: 'https://oopsmypassword.com/admin/', runScripts: 'outside-only', pretendToBeVisual: true });
+  const dom = new JSDOM(html, { url: 'https://oopsmypassword.web.app/admin/', runScripts: 'outside-only', pretendToBeVisual: true });
   const w = dom.window;
   w.matchMedia = w.matchMedia || (q => ({ matches: false, media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} }));
   w.Element.prototype.scrollIntoView = w.Element.prototype.scrollIntoView || function () {};

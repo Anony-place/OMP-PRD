@@ -46,7 +46,7 @@ const STATIC_LASTMOD_VALUE = Deno.env.get('STATIC_LASTMOD') ?? STATIC_LASTMOD;
    /sitemap page). The XML view is fetched server-side by the Firebase
    proxy, which needs no CORS at all. */
 const ALLOWED_ORIGINS = (Deno.env.get('SITEMAP_ALLOWED_ORIGINS') ??
-  'https://oopsmypassword.com,https://password-e9a30.web.app,http://localhost:5000')
+  'https://oopsmypassword.web.app,https://password-e9a30.web.app,http://localhost:5000')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);

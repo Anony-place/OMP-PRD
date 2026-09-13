@@ -228,7 +228,7 @@ def footer():
     col_html = ""
     for title, links in cols:
         items = "".join(f'<li><a href="{href}">{label}</a></li>' for label, href in links)
-        col_html += f'<div class="footer-col"><h4>{title}</h4><ul>{items}</ul></div>'
+        col_html += f'<div class="footer-col"><div class="footer-col-title">{title}</div><ul>{items}</ul></div>'
     return f"""<footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
@@ -322,6 +322,7 @@ def checker_markup(context="page"):
     <div class="check-chip-row" data-cats></div>
 
     <div class="analysis-panel">
+      <h2 class="sr-only">Live strength analysis</h2>
       <div>
         <h3 class="subhead-sm">Analysis</h3>
         <ul class="check-list" data-findings></ul>
@@ -347,7 +348,7 @@ def tool_card(t, reveal=True):
     )
     inner = f"""
   <div class="tool-top"><span class="card-icon">{icon(t["icon"], "icon-22")}</span>{badge}</div>
-  <h3>{t["name"]}</h3>
+  <h2 class="tool-card-title">{t["name"]}</h2>
   <p>{t["desc"]}</p>
   <span class="tool-cta">{t["cta"]} {icon("arrow","icon-16")}</span>"""
     if t["status"] == "live":

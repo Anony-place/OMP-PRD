@@ -10,7 +10,10 @@ const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_pub
 const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '');
 const ROOT = process.cwd();
 const ARTICLES_DIR = join(ROOT, 'articles');
+const PRODUCTS_DIR = join(ROOT, 'products');
 const STATIC_LASTMOD = '2026-09-11';
+const PRODUCT_FIELDS = 'slug,name,summary,description,product_type,price,currency,cta_label,featured,featured_image,external_url,status,published_at,updated_at,created_at';
+const PRODUCT_TYPES = { book: 'Book', course: 'Course', tool: 'Tool', template: 'Template', resource: 'Resource', other: 'Resource' };
 
 function esc(value) {
   return String(value ?? '')
@@ -197,6 +200,105 @@ ${ogImage}
 `;
 }
 
+/* Server-rendered product detail page.
+
+   Without this, every /products/<slug> request fell through the
+   "/products{,/**}" rewrite to products.html, whose hard-coded canonical is
+   /products — so the first HTML response for a product page canonicalised to
+   the hub, and the correct canonical only appeared after products.js ran.
+   Real files now win over the rewrite (Hosting only rewrites when no file
+   matches), giving crawlers a self-canonical page with Product JSON-LD in the
+   initial response. products.js still hydrates the same URL. */
+function productHtml(product) {
+  const slug = String(product.slug || '').trim();
+  const name = String(product.name || 'Product').trim();
+  const summary = String(product.summary || '').trim()
+    || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+  const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
+  const content = sanitizeHtml(product.description || '');
+  const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : '';
+  const typeLabel = PRODUCT_TYPES[String(product.product_type || 'other')] || 'Resource';
+  const published = product.published_at || product.created_at || new Date().toISOString();
+  const modified = product.updated_at || published;
+
+  /* Offers only when there is a real, numeric price — inventing one would be
+     fabricated structured data. */
+  const price = Number(product.price);
+  const hasPrice = product.price != null && product.price !== '' && Number.isFinite(price);
+  const currency = /^[A-Z]{3}$/.test(String(product.currency || '')) ? String(product.currency) : 'USD';
+  const buyUrl = /^https?:\/\//i.test(String(product.external_url || '')) ? String(product.external_url) : '';
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name,
+    description: summary,
+    url: canonical,
+  };
+  if (image) productSchema.image = [image];
+  if (hasPrice) {
+    productSchema.offers = {
+      '@type': 'Offer',
+      price: String(price),
+      priceCurrency: currency,
+      availability: 'https://schema.org/InStock',
+      url: buyUrl || canonical,
+    };
+  }
+  const breadcrumb = {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Products', item: `${SITE}/products` },
+      { '@type': 'ListItem', position: 3, name, item: canonical },
+    ],
+  };
+
+  const ogImage = image ? `<meta property="og:image" content="${esc(image)}">` : '';
+  const cta = String(product.cta_label || '').trim() || (buyUrl ? 'Buy now' : 'Learn more');
+  const ctaHtml = buyUrl
+    ? `<p><a class="btn btn-primary" href="${esc(buyUrl)}" rel="noopener noreferrer">${esc(cta)} →</a></p>`
+    : '<p class="muted">Secure download delivered after purchase.</p>';
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(name)} — OopsMyPassword</title>
+<meta name="description" content="${esc(summary)}">
+<link rel="canonical" href="${esc(canonical)}">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="OopsMyPassword">
+<meta property="og:title" content="${esc(name)}">
+<meta property="og:description" content="${esc(summary)}">
+<meta property="og:url" content="${esc(canonical)}">
+${ogImage}
+<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">
+<meta name="twitter:title" content="${esc(name)}">
+<meta name="twitter:description" content="${esc(summary)}">
+<script type="application/ld+json">${escJson(productSchema)}</script>
+<script type="application/ld+json">${escJson(breadcrumb)}</script>
+<link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+<main class="container">
+<nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/products">Products</a> / <span>${esc(name)}</span></nav>
+<article>
+<header>
+<p class="product-meta"><span class="ptype">${esc(typeLabel)}</span></p>
+<h1>${esc(name)}</h1>
+<p class="lead">${esc(summary)}</p>
+<p><time datetime="${esc(published)}">${esc(new Date(published).toISOString().slice(0, 10))}</time></p>
+</header>
+${ctaHtml}
+<div class="product-content prose">${content}</div>
+</article>
+</main>
+</body>
+</html>
+`;
+}
+
 function sitemapXml({ articles, products }) {
   const urls = new Map();
   /* The site root must keep its trailing slash: index.html canonicalises to
@@ -242,22 +344,34 @@ function dateOnly(value) {
 async function main() {
   const [articles, products] = await Promise.all([
     fetchRows('articles', 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image'),
-    fetchRows('products', 'slug,name,status,published_at,updated_at,created_at'),
+    fetchRows('products', PRODUCT_FIELDS),
   ]);
 
   await rm(ARTICLES_DIR, { recursive: true, force: true });
   await mkdir(ARTICLES_DIR, { recursive: true });
+  let articlePages = 0;
   for (const article of articles) {
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(article.slug || ''))) continue;
+    if (!isValidSlug(article.slug)) continue;
     await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article), 'utf8');
+    articlePages++;
   }
+
+  await rm(PRODUCTS_DIR, { recursive: true, force: true });
+  await mkdir(PRODUCTS_DIR, { recursive: true });
+  let productPages = 0;
+  for (const product of products) {
+    if (!isValidSlug(product.slug)) continue;
+    await writeFile(join(PRODUCTS_DIR, `${product.slug}.html`), productHtml(product), 'utf8');
+    productPages++;
+  }
+
   const xml = sitemapXml({ articles, products });
   await writeFile(join(ROOT, 'sitemap.xml'), xml, 'utf8');
   /* Keep the legacy alias byte-identical so the two endpoints can never
      disagree — robots.txt advertises /sitemap.xml only. */
   await writeFile(join(ROOT, 'google-sitemap.xml'), xml, 'utf8');
   const urlCount = (xml.match(/<loc>/g) || []).length;
-  console.log(`Built ${articles.length} published article pages and a sitemap with ${urlCount} URLs (${products.length} published products) at ${SITE}.`);
+  console.log(`Built ${articlePages} article pages and ${productPages} product pages; sitemap has ${urlCount} URLs at ${SITE}.`);
 }
 
 main().catch((error) => {

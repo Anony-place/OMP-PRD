@@ -51,12 +51,12 @@ function mockClientModuleSource({ rows, error, delayMs }) {
 
 async function boot(pathname, cfg) {
   const html = `<!doctype html><html><head>
-<link rel="canonical" href="https://oopsmypassword.com/products">
+<link rel="canonical" href="https://oopsmypassword.web.app/products">
 <meta property="og:url" content=""><meta property="og:type" content="">
 <meta property="og:title" content=""><meta property="og:description" content="">
 <meta name="twitter:title" content=""><meta name="twitter:description" content="">
 </head><body><main><div data-products></div></main></body></html>`;
-  const dom = new JSDOM(html, { url: 'https://oopsmypassword.com' + pathname, runScripts: 'outside-only', pretendToBeVisual: true });
+  const dom = new JSDOM(html, { url: 'https://oopsmypassword.web.app' + pathname, runScripts: 'outside-only', pretendToBeVisual: true });
   const w = dom.window;
   w.matchMedia = w.matchMedia || (q => ({ matches: false, media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} }));
   for (const src of LIBS) w.eval(src);
@@ -99,7 +99,7 @@ async function boot(pathname, cfg) {
     // deliverable privacy
     ok(!root.innerHTML.includes('product-files/'), 'private storage path never rendered');
     // meta
-    ok(w.document.querySelector('link[rel="canonical"]').href === 'https://oopsmypassword.com/products', 'list view canonical = /products');
+    ok(w.document.querySelector('link[rel="canonical"]').href === 'https://oopsmypassword.web.app/products', 'list view canonical = /products');
     ok(!w.document.querySelector('meta[name="robots"]'), 'populated catalog is indexable');
 
     /* ---------- type filter ---------- */
@@ -132,7 +132,7 @@ async function boot(pathname, cfg) {
     const data = JSON.parse(ld.textContent);
     ok(data['@type'] === 'Product' && data.name === 'The Passphrase Book', 'JSON-LD Product emitted');
     ok(data.offers && data.offers.price === '29.99' && data.offers.priceCurrency === 'USD' && data.offers.availability.includes('InStock'), 'JSON-LD Offer complete');
-    ok(det.w.document.querySelector('link[rel="canonical"]').href === 'https://oopsmypassword.com/products/passphrase-book', 'detail canonical rewritten');
+    ok(det.w.document.querySelector('link[rel="canonical"]').href === 'https://oopsmypassword.web.app/products/passphrase-book', 'detail canonical rewritten');
     ok(det.w.document.querySelector('meta[property="og:type"]').content === 'product', 'og:type = product');
     ok(det.w.document.title.includes('The Passphrase Book'), 'document title includes product name');
     ok(!det.w.document.querySelector('meta[name="robots"]'), 'valid product is indexable');

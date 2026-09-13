@@ -277,6 +277,37 @@ function group(name) {
     assert(legacy === 'https://oopsmypassword.com', 'LEGACY_ORIGIN is not declared correctly: ' + legacy);
     const occurrences = yml.split(legacy).length - 1;
     assert(occurrences === 1, 'dead origin appears ' + occurrences + 'x in the workflow; it may only be the LEGACY_ORIGIN value');
+    assert(yml.includes('scripts/verify-seo.mjs'), 'workflow does not run the SEO verifier before deploying');
+    assert(yml.includes('indexnow'), 'workflow no longer submits URLs to IndexNow');
+  });
+
+  check('the IndexNow key file is present, self-consistent and deployable', () => {
+    const keys = fs.readdirSync(ROOT).filter((f) => /^[0-9a-f]{8,128}\.txt$/.test(f));
+    assert(keys.length === 1, 'expected exactly one IndexNow key file, found ' + keys.length);
+    const file = keys[0];
+    const key = file.replace(/\.txt$/, '');
+    const body = fs.readFileSync(path.join(ROOT, file), 'utf8').trim();
+    assert(body === key, 'key file body does not match its filename — Bing would reject submissions');
+    const cfg = JSON.parse(fs.readFileSync(FIREBASE_JSON, 'utf8'));
+    const ignored = (cfg.hosting.ignore || []).some((pattern) => {
+      const re = new RegExp('^' + pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*') + '$');
+      return re.test(file);
+    });
+    assert(!ignored, 'firebase.json ignore would prevent /' + file + ' from being deployed');
+  });
+
+  check('robots.txt blocks only genuinely private paths', () => {
+    const robots = fs.readFileSync(ROBOTS_TXT, 'utf8');
+    const disallowed = (robots.match(/^Disallow:[ \t]*(\S+)[ \t]*$/gm) || [])
+      .map((l) => l.replace(/^Disallow:[ \t]*/, '').trim());
+    const allowed = ['/admin', '/functions'];
+    disallowed.forEach((d) => {
+      assert(allowed.some((p) => d === p || d === p + '/'),
+        'Disallow ' + d + ' is not a known private path — it may hide public content from crawlers');
+    });
+    /* /tools was once blocked here; trailingSlash:false means the public page
+       is /tools, so the rule hid nothing real while implying it did. */
+    assert(!disallowed.some((d) => d.startsWith('/tools')), '/tools is a public page and must not be blocked');
   });
 
   check('committed sitemap.xml contains the full generated static route set', () => {

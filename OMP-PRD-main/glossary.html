@@ -66,26 +66,26 @@
   </div>
 </section>
 <section class="section-tight">
-  <div class="container"><div class="grid grid-3"><div class="card card-pad"><h3 class="h-3">2FA / MFA</h3><p class="muted small mt-8">Requiring two or more proofs (something you know, have, or are) to sign in.</p></div>
-<div class="card card-pad"><h3 class="h-3">Brute-force attack</h3><p class="muted small mt-8">Systematically guessing credentials until one works — industrialized by GPUs against leaked hash databases.</p></div>
-<div class="card card-pad"><h3 class="h-3">Credential stuffing</h3><p class="muted small mt-8">Replaying email/password pairs leaked from one breach across other services, betting on reuse.</p></div>
-<div class="card card-pad"><h3 class="h-3">CSPRNG</h3><p class="muted small mt-8">Cryptographically secure pseudo-random number generator — unpredictable randomness suitable for keys and passwords. In browsers: crypto.getRandomValues().</p></div>
-<div class="card card-pad"><h3 class="h-3">Diceware</h3><p class="muted small mt-8">Generating passphrases by randomly picking words from a published list; entropy = words × log₂(list size).</p></div>
-<div class="card card-pad"><h3 class="h-3">Entropy (bits)</h3><p class="muted small mt-8">A measure of unpredictability: log₂ of the search space. Each bit doubles the attacker's work.</p></div>
-<div class="card card-pad"><h3 class="h-3">Hash (password)</h3><p class="muted small mt-8">A one-way fingerprint of a password. Slow, salted, memory-hard hashes (Argon2, bcrypt) resist cracking; fast unsalted ones (MD5, SHA-1) do not.</p></div>
-<div class="card card-pad"><h3 class="h-3">k-anonymity</h3><p class="muted small mt-8">A privacy model where a lookup (e.g., a breached-password check) is mixed into a set of at least k possibilities, so the server cannot tell what you searched for.</p></div>
-<div class="card card-pad"><h3 class="h-3">Key stretching</h3><p class="muted small mt-8">Deliberately slowing password verification (many hash rounds) to make each guess expensive for attackers.</p></div>
-<div class="card card-pad"><h3 class="h-3">Master password</h3><p class="muted small mt-8">The single strong passphrase that unlocks a password manager; the one secret worth memorizing carefully.</p></div>
-<div class="card card-pad"><h3 class="h-3">Passkey</h3><p class="muted small mt-8">A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site's public key — no shared secret.</p></div>
-<div class="card card-pad"><h3 class="h-3">Passphrase</h3><p class="muted small mt-8">A password made of several random words — long, memorable, and measurably strong.</p></div>
-<div class="card card-pad"><h3 class="h-3">Password manager</h3><p class="muted small mt-8">Software that generates, encrypts, and fills unique passwords per account, unlocked by one master password.</p></div>
-<div class="card card-pad"><h3 class="h-3">Phishing</h3><p class="muted small mt-8">Impersonating a trusted service to trick you into revealing credentials — the leading cause of account takeover.</p></div>
-<div class="card card-pad"><h3 class="h-3">Rainbow table</h3><p class="muted small mt-8">Precomputed lookup of hash→password pairs; defeated by salting.</p></div>
-<div class="card card-pad"><h3 class="h-3">Rate limiting</h3><p class="muted small mt-8">Server-side throttling of login attempts; the main defense against online guessing.</p></div>
-<div class="card card-pad"><h3 class="h-3">Salt</h3><p class="muted small mt-8">A per-password random value mixed into hashing so identical passwords hash differently.</p></div>
-<div class="card card-pad"><h3 class="h-3">SIM swapping</h3><p class="muted small mt-8">Convincing a carrier to move your phone number to an attacker's SIM, hijacking SMS codes.</p></div>
-<div class="card card-pad"><h3 class="h-3">TOTP</h3><p class="muted small mt-8">Time-based one-time codes from authenticator apps, rotating every 30 seconds.</p></div>
-<div class="card card-pad"><h3 class="h-3">WebAuthn</h3><p class="muted small mt-8">The web standard behind passkeys and hardware security keys, binding credentials to a site's origin.</p></div></div></div>
+  <div class="container"><div class="grid grid-3"><div class="card card-pad"><h2 class="h-3">2FA / MFA</h2><p class="muted small mt-8">Requiring two or more proofs (something you know, have, or are) to sign in.</p></div>
+<div class="card card-pad"><h2 class="h-3">Brute-force attack</h2><p class="muted small mt-8">Systematically guessing credentials until one works — industrialized by GPUs against leaked hash databases.</p></div>
+<div class="card card-pad"><h2 class="h-3">Credential stuffing</h2><p class="muted small mt-8">Replaying email/password pairs leaked from one breach across other services, betting on reuse.</p></div>
+<div class="card card-pad"><h2 class="h-3">CSPRNG</h2><p class="muted small mt-8">Cryptographically secure pseudo-random number generator — unpredictable randomness suitable for keys and passwords. In browsers: crypto.getRandomValues().</p></div>
+<div class="card card-pad"><h2 class="h-3">Diceware</h2><p class="muted small mt-8">Generating passphrases by randomly picking words from a published list; entropy = words × log₂(list size).</p></div>
+<div class="card card-pad"><h2 class="h-3">Entropy (bits)</h2><p class="muted small mt-8">A measure of unpredictability: log₂ of the search space. Each bit doubles the attacker's work.</p></div>
+<div class="card card-pad"><h2 class="h-3">Hash (password)</h2><p class="muted small mt-8">A one-way fingerprint of a password. Slow, salted, memory-hard hashes (Argon2, bcrypt) resist cracking; fast unsalted ones (MD5, SHA-1) do not.</p></div>
+<div class="card card-pad"><h2 class="h-3">k-anonymity</h2><p class="muted small mt-8">A privacy model where a lookup (e.g., a breached-password check) is mixed into a set of at least k possibilities, so the server cannot tell what you searched for.</p></div>
+<div class="card card-pad"><h2 class="h-3">Key stretching</h2><p class="muted small mt-8">Deliberately slowing password verification (many hash rounds) to make each guess expensive for attackers.</p></div>
+<div class="card card-pad"><h2 class="h-3">Master password</h2><p class="muted small mt-8">The single strong passphrase that unlocks a password manager; the one secret worth memorizing carefully.</p></div>
+<div class="card card-pad"><h2 class="h-3">Passkey</h2><p class="muted small mt-8">A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site's public key — no shared secret.</p></div>
+<div class="card card-pad"><h2 class="h-3">Passphrase</h2><p class="muted small mt-8">A password made of several random words — long, memorable, and measurably strong.</p></div>
+<div class="card card-pad"><h2 class="h-3">Password manager</h2><p class="muted small mt-8">Software that generates, encrypts, and fills unique passwords per account, unlocked by one master password.</p></div>
+<div class="card card-pad"><h2 class="h-3">Phishing</h2><p class="muted small mt-8">Impersonating a trusted service to trick you into revealing credentials — the leading cause of account takeover.</p></div>
+<div class="card card-pad"><h2 class="h-3">Rainbow table</h2><p class="muted small mt-8">Precomputed lookup of hash→password pairs; defeated by salting.</p></div>
+<div class="card card-pad"><h2 class="h-3">Rate limiting</h2><p class="muted small mt-8">Server-side throttling of login attempts; the main defense against online guessing.</p></div>
+<div class="card card-pad"><h2 class="h-3">Salt</h2><p class="muted small mt-8">A per-password random value mixed into hashing so identical passwords hash differently.</p></div>
+<div class="card card-pad"><h2 class="h-3">SIM swapping</h2><p class="muted small mt-8">Convincing a carrier to move your phone number to an attacker's SIM, hijacking SMS codes.</p></div>
+<div class="card card-pad"><h2 class="h-3">TOTP</h2><p class="muted small mt-8">Time-based one-time codes from authenticator apps, rotating every 30 seconds.</p></div>
+<div class="card card-pad"><h2 class="h-3">WebAuthn</h2><p class="muted small mt-8">The web standard behind passkeys and hardware security keys, binding credentials to a site's origin.</p></div></div></div>
 </section>
 
 </main>
@@ -100,7 +100,7 @@
           <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
         </div>
       </div>
-      <div class="footer-col"><h4>Tools</h4><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><h4>Resources</h4><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><h4>Company</h4><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>

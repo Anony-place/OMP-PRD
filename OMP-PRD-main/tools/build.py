@@ -127,7 +127,7 @@ def guide_page(g):
         jsonld.append(jsonld_faq(g["faq"]))
     return page(
         path=f"/articles/{g['slug']}", active="/articles",
-        title=f"{g['title']} — OopsMyPassword Articles", desc=g["desc"],
+        title=f"{g['title']} | OopsMyPassword", desc=g["desc"],
         body=body, og_type="article", jsonld=jsonld,
         head_extra=(
             f'<meta property="article:published_time" content="{DATE}">\n'
@@ -177,7 +177,7 @@ def main():
     write("index.html", page(
         path="/", active="/",
         title="OopsMyPassword — Test, Generate & Learn Password Security (No Account)",
-        desc="Privacy-first password tools that run entirely in your browser: real-time strength checker, CSPRNG generator, passphrase generator, entropy calculator and practical security guides. No account required.",
+        desc="Free, privacy-first password tools that run entirely in your browser: strength checker, CSPRNG generator, passphrase builder and plain-language security guides.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
         # articles.js is intentionally NOT loaded here: the homepage body has no
@@ -362,9 +362,34 @@ def main():
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
 
+    # IndexNow: a real, generated key file must be publicly served at
+    # /<key>.txt for Bing/Yandex to accept URL submissions. The key is public
+    # by design (it is served on the site) and is not a credential — it only
+    # proves the submitter controls this host. Regenerated here only if absent,
+    # so the key stays stable across deploys.
+    existing = [f for f in os.listdir(ROOT)
+                if re.fullmatch(r"[0-9a-f]{8,128}\.txt", f)]
+    if not existing:
+        raise SystemExit(
+            "no IndexNow key file (<hex>.txt) found in the site root — "
+            "generate one with: python3 -c \"import secrets;print(secrets.token_hex(16))\" "
+            "and commit <key>.txt containing the key")
+    indexnow_key = existing[0][:-4]
+    # Written to a build-info line, not into robots.txt: IndexNow ownership is
+    # proven by serving /<key>.txt, and "IndexNow-Key:" is not a standard
+    # robots.txt directive.
+    print("IndexNow key:", indexnow_key, f"(served at /{indexnow_key}.txt)")
+
+    # Only genuinely private paths are blocked.
+    #   /admin/    - the noindex admin panel
+    #   /functions/- Cloud Function sources (not deployed, blocked in depth)
+    # /tools/ was previously listed here. That was a no-op AND a hazard:
+    # trailingSlash:false means the public toolbox is /tools (no slash), so
+    # the rule matched nothing real while making it look as though a primary,
+    # heavily-linked page was blocked from crawlers. robots.txt is not a
+    # substitute for noindex, and must never appear to hide public content.
     write("robots.txt", f"""User-agent: *
 Allow: /
-Disallow: /tools/
 Disallow: /admin/
 Disallow: /functions/
 
