@@ -59,6 +59,23 @@ jobs:
         # keeps resolving to the same content instead of going stale.
         run: cp sitemap.xml google-sitemap.xml
 
+      - name: Report what was built
+        working-directory: OMP-PRD-main
+        # The article/product pages come from Supabase at build time, so a run
+        # can pass the gate while having generated none of them - a silent
+        # regression if the database or its credentials change. Put the counts
+        # on the run summary so that is visible at a glance.
+        run: |
+          {
+            echo "### Build inventory"
+            echo "- static HTML pages: $(find . -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')"
+            echo "- guide pages: $(ls guides/*.html 2>/dev/null | wc -l | tr -d ' ')"
+            echo "- article pages: $(ls articles/*.html 2>/dev/null | wc -l | tr -d ' ')"
+            echo "- product pages: $(ls products/*.html 2>/dev/null | wc -l | tr -d ' ')"
+            echo "- sitemap URLs: $(grep -c '<loc>' sitemap.xml | tr -d ' ')"
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep -c '<loc>' sitemap.xml | xargs -I{} echo "sitemap has {} URLs"
+
       - name: Sitemap generator and wiring tests
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
