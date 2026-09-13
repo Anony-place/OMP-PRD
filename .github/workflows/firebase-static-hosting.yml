@@ -10,6 +10,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -22,7 +25,8 @@ env:
   LEGACY_ORIGIN: https://oopsmypassword.com
 
 jobs:
-  deploy:
+  seo-check:
+    name: Build and verify SEO output
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,9 +36,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
 
       - name: Build static site metadata and pages
         working-directory: OMP-PRD-main
@@ -58,11 +59,54 @@ jobs:
         # keeps resolving to the same content instead of going stale.
         run: cp sitemap.xml google-sitemap.xml
 
+      - name: Sitemap generator and wiring tests
+        working-directory: OMP-PRD-main
+        run: node tools/test_sitemap.js
+
+      - name: Site-wide link, anchor and SEO sweep
+        working-directory: OMP-PRD-main
+        run: python3 tools/qa.py
+
       - name: Verify static SEO output
         working-directory: OMP-PRD-main
-        # Fails the deploy if any page canonicalises off-origin, if the 404 is
+        # Fails the build if any page canonicalises off-origin, if the 404 is
         # indexable, if a sitemap is malformed or missing pages, or if
         # robots.txt advertises an endpoint that is not the one being shipped.
+        run: node scripts/verify-seo.mjs
+
+  deploy:
+    name: Deploy to Firebase Hosting
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: seo-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Build static site metadata and pages
+        working-directory: OMP-PRD-main
+        run: |
+          python3 tools/build.py
+          node scripts/build-static-seo.mjs
+
+      - name: Normalize production site origin
+        working-directory: OMP-PRD-main
+        run: node scripts/fix-site-origin.mjs
+
+      - name: Prepare the Google sitemap alias
+        working-directory: OMP-PRD-main
+        run: cp sitemap.xml google-sitemap.xml
+
+      - name: Re-verify before deploy
+        working-directory: OMP-PRD-main
         run: node scripts/verify-seo.mjs
 
       - name: Deploy Hosting only

@@ -11,13 +11,28 @@ returns 404).
 
 ## The pipeline
 
+Two jobs in `.github/workflows/firebase-static-hosting.yml`:
+
+**`seo-check`** — runs on every push *and* every pull request to `main`, so an
+SEO regression is caught at review time rather than after it ships.
+
 ```
 python3 tools/build.py            # every HTML page, robots.txt, manifest, sitemap snapshot
-node scripts/build-static-seo.mjs # + live Supabase articles/products, article HTML
+node scripts/build-static-seo.mjs # + live Supabase articles/products and their HTML
 node scripts/fix-site-origin.mjs  # safety net for stale origins
 cp sitemap.xml google-sitemap.xml # byte-identical alias
-node scripts/verify-seo.mjs       # gate — fails the deploy on any SEO regression
+node tools/test_sitemap.js        # sitemap generator + deployment wiring (23 assertions)
+python3 tools/qa.py               # site-wide links, anchors, tags, SEO basics
+node scripts/verify-seo.mjs       # the gate
+```
+
+**`deploy`** — `needs: seo-check`, and gated to
+`github.ref == 'refs/heads/main' && github.event_name != 'pull_request'`, so a
+pull request can never deploy. It rebuilds, re-verifies, then:
+
+```
 firebase deploy --only hosting
+curl -X POST https://api.indexnow.org/indexnow   # best-effort, continue-on-error
 ```
 
 `SITE_ORIGIN` (workflow env) is the single source of the production origin and
