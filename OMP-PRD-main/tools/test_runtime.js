@@ -622,7 +622,7 @@ const $ = (d, s) => d.querySelector(s);
     /* Sitemaps: hub listed, legacy hub gone, guide articles kept. */
     const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
     ok(!sm.includes('/guides.html</loc>'), 'sitemap.xml drops the removed /guides.html page');
-    ok(sm.includes('https://oopsmypassword.com/articles</loc>'), 'sitemap.xml lists the Articles hub at its pretty URL');
+    ok(sm.includes('https://oopsmypassword.web.app/articles</loc>'), 'sitemap.xml lists the Articles hub at its pretty URL');
     ok((sm.match(/\/articles\/[a-z0-9-]+<\/loc>/g) || []).length === 15, 'sitemap.xml lists all 15 guide articles at /articles/<slug>');
     ok(!/\.html<\/loc>/.test(sm), 'sitemap.xml contains no .html implementation URLs');
   }
@@ -802,7 +802,7 @@ const $ = (d, s) => d.querySelector(s);
     ok(sjs.includes("title: 'Products', desc: 'Books, courses"), 'baked-in index lists the Products hub page');
 
     /* --- sitemap + page shell --- */
-    ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('https://oopsmypassword.com/products</loc>'),
+    ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('https://oopsmypassword.web.app/products</loc>'),
        'sitemap.xml lists /products');
     ok(phtml.includes('data-products') && phtml.includes('/assets/js/products.js'),
        'products.html mounts the products app');

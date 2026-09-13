@@ -12,7 +12,7 @@ The **dynamic** `/sitemap.xml`.
 | | |
 |---|---|
 | Source | `supabase/functions/sitemap/index.ts` (+ the shared `sitemap-core.mjs`) |
-| Public URL | `https://oopsmypassword.com/sitemap.xml` (via the Firebase proxy below) |
+| Public URL | `https://oopsmypassword.web.app/sitemap.xml` (via the Firebase proxy below) |
 | Direct URL | `https://aeehfulikupskyrvcpzb.supabase.co/functions/v1/sitemap` |
 | Methods | `GET`, `HEAD`, `OPTIONS` (anything else → 405) |
 | Content-Type | `application/xml; charset=utf-8` |
@@ -73,9 +73,9 @@ firebase deploy --only functions,hosting
 ### Configuration (Supabase secrets)
 
 ```bash
-supabase secrets set SITE_ORIGIN=https://oopsmypassword.com \
+supabase secrets set SITE_ORIGIN=https://oopsmypassword.web.app \
   STATIC_LASTMOD=2026-08-23 \
-  SITEMAP_ALLOWED_ORIGINS=https://oopsmypassword.com,https://password-e9a30.web.app \
+  SITEMAP_ALLOWED_ORIGINS=https://oopsmypassword.web.app,https://password-e9a30.web.app \
   --project-ref aeehfulikupskyrvcpzb
 ```
 
@@ -93,7 +93,7 @@ curl -s 'http://localhost:54321/functions/v1/sitemap?format=json'
 ### Verify in production
 
 ```bash
-curl -sD - https://oopsmypassword.com/sitemap.xml -o /tmp/sitemap.xml | grep -i 'x-sitemap-state\|content-type'
+curl -sD - https://oopsmypassword.web.app/sitemap.xml -o /tmp/sitemap.xml | grep -i 'x-sitemap-state\|content-type'
 grep -c '<loc>' /tmp/sitemap.xml          # should include the live articles/products
 grep -c '/products/' /tmp/sitemap.xml     # at least 1 (the live product)
 ```

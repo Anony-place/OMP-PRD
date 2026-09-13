@@ -15,13 +15,20 @@
    loads it as ESM without needing a package.json.
    ============================================================ */
 
-export const DEFAULT_SITE = 'https://oopsmypassword.com';
+/* Canonical production origin. Must be a live, resolving origin: every <loc>
+   in the sitemap is built from it, and a sitemap URL that points at a dead
+   domain is dropped by crawlers as off-site. Callers override via SITE_ORIGIN. */
+export const DEFAULT_SITE = 'https://oopsmypassword.web.app';
 
-/* Static lastmod for the pages that only change when the site is
-   rebuilt. Using "today" for every static URL makes the whole sitemap
-   look like it changed daily, which teaches crawlers to ignore the
-   lastmod signal — so it is a fixed build stamp instead. */
-export const STATIC_LASTMOD = '2026-08-23';
+/* No lastmod for the static routes. There is no per-page modification date
+   to report: these pages are regenerated from tools/omp_build on every build.
+   A hardcoded stamp is an invented date, "today" on every deploy makes the
+   whole sitemap look like it changed daily (which teaches crawlers to ignore
+   the signal), and git commit dates are no better because an infrastructure
+   change touches every generator at once. <lastmod> is optional, so it is
+   omitted rather than guessed. Articles and products carry real database
+   timestamps and still report one. */
+export const STATIC_LASTMOD = '';
 
 /* Pretty public URLs, no trailing slash (matches trailingSlash:false in
    firebase.json). The fifteen baked-in guides are rewritten by Firebase
@@ -186,7 +193,7 @@ export function buildSitemapXml(options = {}) {
   for (const u of urls) {
     lines.push('  <url>');
     lines.push(`    <loc>${escapeXml(u.loc)}</loc>`);
-    lines.push(`    <lastmod>${escapeXml(u.lastmod)}</lastmod>`);
+    if (u.lastmod) lines.push(`    <lastmod>${escapeXml(u.lastmod)}</lastmod>`);
     lines.push(`    <changefreq>${escapeXml(u.changefreq)}</changefreq>`);
     lines.push(`    <priority>${escapeXml(u.priority)}</priority>`);
     lines.push('  </url>');

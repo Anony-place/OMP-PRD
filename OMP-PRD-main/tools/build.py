@@ -58,7 +58,9 @@ def load_sitemap_core():
     if not routes:
         raise SystemExit("sitemap-core.mjs: STATIC_ROUTES is empty")
 
-    lastmod = re.search(r"export const STATIC_LASTMOD = '([^']+)'", src)
+    # The value is deliberately allowed to be empty: no lastmod is asserted for
+    # generated pages. [^']* (not [^']+) so an empty stamp still parses.
+    lastmod = re.search(r"export const STATIC_LASTMOD = '([^']*)'", src)
     if not lastmod:
         raise SystemExit("sitemap-core.mjs: STATIC_LASTMOD not found")
 
@@ -127,7 +129,7 @@ def guide_page(g):
         jsonld.append(jsonld_faq(g["faq"]))
     return page(
         path=f"/articles/{g['slug']}", active="/articles",
-        title=f"{g['title']} — OopsMyPassword Articles", desc=g["desc"],
+        title=f"{g['title']} | OopsMyPassword", desc=g["desc"],
         body=body, og_type="article", jsonld=jsonld,
         head_extra=(
             f'<meta property="article:published_time" content="{DATE}">\n'
@@ -138,15 +140,16 @@ def guide_page(g):
 
 # Legacy /guides.html is a noindex redirect stub (Firebase also 301s it).
 # Unique title so it does not collide with the Articles hub in SEO crawls.
-GUIDES_REDIRECT_STUB = """<!DOCTYPE html>
+GUIDES_REDIRECT_STUB = f"""<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guides have moved — OopsMyPassword</title>
   <meta name="description" content="Guides now live inside the Articles hub: security news, deep dives, how-tos and guides in one place.">
+  <!-- noindex + no canonical: this stub exists only as a fallback for the
+       Firebase 301 from /guides.html, so it must never enter the index. -->
   <meta name="robots" content="noindex">
-  <link rel="canonical" href="https://oopsmypassword.com/articles">
   <meta http-equiv="refresh" content="0; url=/articles">
   <meta name="theme-color" content="#050811">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
@@ -176,7 +179,7 @@ def main():
     write("index.html", page(
         path="/", active="/",
         title="OopsMyPassword — Test, Generate & Learn Password Security (No Account)",
-        desc="Privacy-first password tools that run entirely in your browser: real-time strength checker, CSPRNG generator, passphrase generator, entropy calculator and practical security guides. No account required.",
+        desc="Free, privacy-first password tools that run entirely in your browser: strength checker, CSPRNG generator, passphrase builder and plain-language security guides.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
         # articles.js is intentionally NOT loaded here: the homepage body has no
@@ -355,15 +358,44 @@ def main():
                "0.9" if u in ("/articles", "/products") else
                "0.7" if u.startswith("/articles/") or u.startswith("/products/") else
                "0.5" if u == "/sitemap" else "0.8")
-        sm.append(f"  <url><loc>{SITE}{u}</loc><lastmod>{static_lastmod}</lastmod>"
+        # static_lastmod is empty by design: there is no honest per-page
+        # modification date for a generated page, so the optional element is
+        # omitted instead of stamped with an invented one.
+        lm = f"<lastmod>{static_lastmod}</lastmod>" if static_lastmod else ""
+        sm.append(f"  <url><loc>{SITE}{u}</loc>{lm}"
                   f'<changefreq>{"weekly" if u == "/" else "monthly"}</changefreq>'
                   f"<priority>{pri}</priority></url>")
     sm.append("</urlset>")
     write("sitemap.xml", "\n".join(sm) + "\n")
 
+    # IndexNow: a real, generated key file must be publicly served at
+    # /<key>.txt for Bing/Yandex to accept URL submissions. The key is public
+    # by design (it is served on the site) and is not a credential — it only
+    # proves the submitter controls this host. Regenerated here only if absent,
+    # so the key stays stable across deploys.
+    existing = [f for f in os.listdir(ROOT)
+                if re.fullmatch(r"[0-9a-f]{8,128}\.txt", f)]
+    if not existing:
+        raise SystemExit(
+            "no IndexNow key file (<hex>.txt) found in the site root — "
+            "generate one with: python3 -c \"import secrets;print(secrets.token_hex(16))\" "
+            "and commit <key>.txt containing the key")
+    indexnow_key = existing[0][:-4]
+    # Written to a build-info line, not into robots.txt: IndexNow ownership is
+    # proven by serving /<key>.txt, and "IndexNow-Key:" is not a standard
+    # robots.txt directive.
+    print("IndexNow key:", indexnow_key, f"(served at /{indexnow_key}.txt)")
+
+    # Only genuinely private paths are blocked.
+    #   /admin/    - the noindex admin panel
+    #   /functions/- Cloud Function sources (not deployed, blocked in depth)
+    # /tools/ was previously listed here. That was a no-op AND a hazard:
+    # trailingSlash:false means the public toolbox is /tools (no slash), so
+    # the rule matched nothing real while making it look as though a primary,
+    # heavily-linked page was blocked from crawlers. robots.txt is not a
+    # substitute for noindex, and must never appear to hide public content.
     write("robots.txt", f"""User-agent: *
 Allow: /
-Disallow: /tools/
 Disallow: /admin/
 Disallow: /functions/
 
@@ -403,11 +435,14 @@ def write_404():
     </div>
   </div>
 </section>"""
+    # noindex + no canonical: a 404 with a canonical to /404 reads as a soft
+    # 404 in Search Console and adds a junk URL to the index.
     write("404.html", page(
         path="/404", active="/",
         title="Page Not Found — OopsMyPassword",
         desc="The page you were looking for doesn't exist. Try the password checker, generator, or guides instead.",
         body=body,
+        robots="noindex, follow",
     ))
 
 

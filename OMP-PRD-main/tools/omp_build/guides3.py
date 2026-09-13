@@ -5,7 +5,7 @@ FAQ block (rendered + FAQPage JSON-LD), dense internal links."""
 
 A1 = {
     "slug": "how-long-should-a-password-be",
-    "title": "How Long Should a Password Be in 2026? (By Account Type)",
+    "title": "How Long Should a Password Be?",
     "desc": "The quick answer: 16+ characters for anything important, 12 as an absolute floor — with a per-account table and the math that explains why length beats complexity.",
     "category": "Fundamentals",
     "minutes": 6,
@@ -77,7 +77,7 @@ A1 = {
 
 A2 = {
     "slug": "password-cracking-time-table",
-    "title": "Password Cracking Time: How Long to Crack 8, 12 or 16 Characters?",
+    "title": "Password Cracking Times by Length",
     "desc": "See exactly how long a GPU rig needs to crack passwords by length and character type — plus the two changes that move you from minutes to millennia.",
     "category": "Deep Dives",
     "minutes": 7,
@@ -145,7 +145,7 @@ A2 = {
 
 A3 = {
     "slug": "are-password-managers-safe",
-    "title": "Is It Safe to Use a Password Manager? (Honest Risk Breakdown)",
+    "title": "Are Password Managers Safe?",
     "desc": "Yes — safer than any realistic alternative. How zero-knowledge vaults protect you even when providers are breached, what the real risks are, and how to set one up safely.",
     "category": "Tools",
     "minutes": 7,
@@ -279,7 +279,7 @@ A4 = {
 
 A5 = {
     "slug": "password-vs-passphrase",
-    "title": "Password vs Passphrase: Which Should You Actually Use?",
+    "title": "Password vs Passphrase: Which to Use",
     "desc": "For anything you must memorize, a passphrase wins; for everything else, a random password in a manager does. The comparison table and entropy math that settle it.",
     "category": "Fundamentals",
     "minutes": 6,

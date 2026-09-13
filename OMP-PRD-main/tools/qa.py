@@ -123,6 +123,18 @@ for dirpath, dirnames, filenames in os.walk(ROOT):
         if f.endswith(".html"):
             html_files.append(os.path.relpath(os.path.join(dirpath, f), ROOT))
 
+# articles/ and products/ are built at deploy time from the Supabase database
+# by scripts/build-static-seo.mjs, and they embed admin-authored HTML verbatim.
+# This sweep audits the pages tools/build.py generates from tools/omp_build —
+# its duplicate-id and tag-balance rules would otherwise fail the build over
+# something an author typed into an article body, which is not a site defect.
+# The generated pages are covered by scripts/verify-seo.mjs instead (canonical,
+# title, description, H1, heading order, img alt, JSON-LD, routability), which
+# is designed to tolerate injected content.
+GENERATED_DIRS = {"articles", "products"}
+html_files = [f for f in html_files
+              if os.path.dirname(f).split(os.sep)[0] not in GENERATED_DIRS]
+
 anchors = {}  # file -> set(ids)
 parsed = {}
 for f in sorted(html_files):
@@ -139,8 +151,13 @@ for f in sorted(html_files):
         errors.append(f"{f}: expected exactly 1 <h1>, found {c.has['h1']}")
     if not c.has["meta_desc"]:
         errors.append(f"{f}: missing meta description")
-    if not c.has["canonical"]:
+    # Indexable pages must self-canonicalise. noindex pages (the 404 and the
+    # admin panel) must NOT — a canonical on an error page turns it into a
+    # soft 404 in Search Console.
+    if not c.has.get("noindex") and not c.has["canonical"]:
         errors.append(f"{f}: missing canonical")
+    if c.has.get("noindex") and c.has["canonical"]:
+        errors.append(f"{f}: noindex page should not carry a canonical")
     # A noindex page (the private admin panel) must NOT carry social cards —
     # there is nothing to share, and warning about it is a false positive.
     if not c.has.get("noindex"):
@@ -207,5 +224,10 @@ if errors:
     print(f"\n{len(errors)} ERRORS:")
     for e in errors:
         print("  ", e)
+    # Surface each error as a GitHub Actions annotation too, so the reason is
+    # visible on the run summary without downloading the full job log.
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        for e in errors:
+            print(f"::error title=QA failure::{e}")
     sys.exit(1)
 print("NO ERRORS — all links, anchors, tags, SEO basics pass.")

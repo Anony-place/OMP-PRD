@@ -26,7 +26,7 @@
 
   var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
-  var SITE_ORIGIN = 'https://oopsmypassword.com';
+  var SITE_ORIGIN = 'https://oopsmypassword.web.app';
   var HUB_PATH = '/products';
   var BASE_TITLE = 'Products — OopsMyPassword';
   var PAGE_LIMIT = 100;

@@ -658,7 +658,7 @@ def random_string_body():
     <div class="grid" style="align-content:start">
       <div class="card card-pad">
         <span class="card-icon">{icon("info","icon-22")}</span>
-        <h3>What these are for</h3>
+        <h2 class="h-3">What these are for</h2>
         <ul class="list-plain">
           <li>{icon("check","icon-18")}<span><strong>Test fixtures</strong> and sample data</span></li>
           <li>{icon("check","icon-18")}<span><strong>Non-guessable IDs</strong> (128-bit Base64URL ≈ UUIDv4 strength)</span></li>
