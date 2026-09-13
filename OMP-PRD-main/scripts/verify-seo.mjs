@@ -498,7 +498,23 @@ function checkIndexNow() {
   console.log(`  INDEXNOW key ${key} served at /${file}`);
 }
 
+/* Nothing may tell crawlers to drop the sitemap or the pages it lists. */
+function checkNoindexHeaders() {
+  const fns = path.join(ROOT, 'functions', 'index.js');
+  if (!fs.existsSync(fns)) return;
+  const src = fs.readFileSync(fns, 'utf8');
+  /* A "noindex" applied to every sitemap response would un-index the whole
+     site, so it must not sit in the shared XML responder. The one legitimate
+     use is on 404 responses. */
+  const responder = src.match(/function respond\([\s\S]*?\n}/);
+  if (responder && /X-Robots-Tag[^\n]*noindex/i.test(responder[0])) {
+    fail('functions/index.js: the sitemap responder sets X-Robots-Tag: noindex, which would un-index every URL the sitemap lists');
+  }
+  console.log('  HEADERS no noindex on sitemap or page responses');
+}
+
 checkIndexNow();
+checkNoindexHeaders();
 
 /* The 404 must behave like a 404. */
 const nf = path.join(ROOT, '404.html');

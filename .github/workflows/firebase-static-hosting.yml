@@ -105,9 +105,16 @@ jobs:
         working-directory: OMP-PRD-main
         run: cp sitemap.xml google-sitemap.xml
 
-      - name: Re-verify before deploy
+      - name: Re-run the full gate on the artifact being deployed
         working-directory: OMP-PRD-main
-        run: node scripts/verify-seo.mjs
+        # seo-check ran the same gate, but on its own checkout and its own
+        # Supabase query. This job rebuilds from scratch, so the database may
+        # have changed in between - run every check again on the exact files
+        # about to ship rather than trusting the earlier job's verdict.
+        run: |
+          node tools/test_sitemap.js
+          python3 tools/qa.py
+          node scripts/verify-seo.mjs
 
       - name: Deploy Hosting only
         working-directory: OMP-PRD-main

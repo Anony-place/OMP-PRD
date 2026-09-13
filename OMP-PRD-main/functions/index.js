@@ -29,7 +29,10 @@ function respond(res, xml, { cacheControl, state }) {
   res.set('Content-Type', 'application/xml; charset=utf-8');
   res.set('Cache-Control', cacheControl);
   res.set('X-Content-Type-Options', 'nosniff');
-  res.set('X-Robots-Tag', 'noindex');
+  /* Deliberately no X-Robots-Tag here. This responds to sitemap requests, and
+     "noindex" on a sitemap tells crawlers to drop the very URLs it lists —
+     which would silently un-index the whole site. The sitemap itself needs no
+     indexing directive; it is a crawl input, not a document. */
   res.set('X-Sitemap-State', state);
   return res.status(200).send(xml);
 }

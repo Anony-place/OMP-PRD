@@ -28,12 +28,21 @@ node scripts/verify-seo.mjs       # the gate
 
 **`deploy`** — `needs: seo-check`, and gated to
 `github.ref == 'refs/heads/main' && github.event_name != 'pull_request'`, so a
-pull request can never deploy. It rebuilds, re-verifies, then:
+pull request can never deploy. It rebuilds from scratch and re-runs the *whole*
+gate on that artifact — `seo-check` verified its own checkout against its own
+Supabase query, and the database may have moved in between, so the earlier
+verdict is not trusted for what actually ships. Then:
 
 ```
+node tools/test_sitemap.js        # re-run on the artifact being deployed
+python3 tools/qa.py
+node scripts/verify-seo.mjs
 firebase deploy --only hosting
 curl -X POST https://api.indexnow.org/indexnow   # best-effort, continue-on-error
 ```
+
+Both gates also emit `::error::` GitHub annotations on failure, so the reason
+shows up on the run summary without downloading the job log.
 
 `SITE_ORIGIN` (workflow env) is the single source of the production origin and
 feeds `tools/omp_build/layout.py`, `scripts/build-static-seo.mjs` and
