@@ -142,6 +142,31 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
 
+      - name: Prove Googlebot can fetch the live sitemap
+        # Search Console "Couldn't fetch" is this check failing in production.
+        # Hosting can take a few seconds to propagate, so retry briefly.
+        working-directory: OMP-PRD-main
+        run: |
+          set -euo pipefail
+          SITE_HOST="${SITE_ORIGIN#http://}"
+          SITE_HOST="${SITE_HOST#https://}"
+          SITE_HOST="${SITE_HOST%%/*}"
+          URL="https://${SITE_HOST}/sitemap.xml"
+          UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+          code=""
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -sS -o /tmp/live-sitemap.xml -w '%{http_code}' -A "$UA" "$URL" || true)
+            if [ "$code" = "200" ] && grep -q '<urlset' /tmp/live-sitemap.xml && grep -q '<?xml' /tmp/live-sitemap.xml; then
+              echo "Live sitemap OK (HTTP $code) at $URL"
+              head -c 240 /tmp/live-sitemap.xml; echo
+              exit 0
+            fi
+            echo "attempt $i: HTTP ${code:-000}; waiting for Hosting..."
+            sleep 10
+          done
+          echo "::error::Live sitemap at $URL is not fetchable (last HTTP ${code:-000}). Search Console will report Couldn't fetch."
+          exit 1
+
       - name: Submit URLs to IndexNow (Bing / Yandex)
         working-directory: OMP-PRD-main
         # Best-effort. IndexNow needs no secret: ownership is proven by the

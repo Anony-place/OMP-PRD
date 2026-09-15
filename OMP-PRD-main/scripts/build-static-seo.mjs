@@ -229,13 +229,10 @@ ${ogImage}
 
 /* Server-rendered product detail page.
 
-   Without this, every /products/<slug> request fell through the
-   "/products{,/**}" rewrite to products.html, whose hard-coded canonical is
-   /products — so the first HTML response for a product page canonicalised to
-   the hub, and the correct canonical only appeared after products.js ran.
-   Real files now win over the rewrite (Hosting only rewrites when no file
-   matches), giving crawlers a self-canonical page with Product JSON-LD in the
-   initial response. products.js still hydrates the same URL. */
+   Hosting serves products/<slug>.html for /products/<slug> (cleanUrls).
+   Unknown slugs 404 — there is no catch-all rewrite to the hub, because a
+   200 of products.html on a junk URL is a soft 404 that keeps the site out
+   of the index. products.js still hydrates the same URL when the file exists. */
 function productHtml(product) {
   const slug = String(product.slug || '').trim();
   const name = String(product.name || 'Product').trim();

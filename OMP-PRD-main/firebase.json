@@ -35,8 +35,7 @@
       { "source": "/articles/check-if-password-was-leaked", "destination": "/guides/check-if-password-was-leaked.html" },
       { "source": "/articles/phishing-attacks", "destination": "/guides/phishing-attacks.html" },
       { "source": "/articles/password-entropy", "destination": "/guides/password-entropy.html" },
-      { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" },
-      { "source": "/products{,/**}", "destination": "/products.html" }
+      { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" }
     ],
     "headers": [
       {
@@ -57,10 +56,25 @@
         ]
       },
       {
-        "source": "/sitemap.xml",
+        "source": "/@(sitemap.xml|google-sitemap.xml)",
         "headers": [
           { "key": "Content-Type", "value": "application/xml; charset=UTF-8" },
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          { "key": "Cache-Control", "value": "public, max-age=300" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" },
+          { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
+          { "key": "Cross-Origin-Opener-Policy", "value": "unsafe-none" },
+          { "key": "Content-Security-Policy", "value": "default-src 'none'" }
+        ]
+      },
+      {
+        "source": "/robots.txt",
+        "headers": [
+          { "key": "Content-Type", "value": "text/plain; charset=UTF-8" },
+          { "key": "Cache-Control", "value": "public, max-age=300" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" },
+          { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
+          { "key": "Cross-Origin-Opener-Policy", "value": "unsafe-none" },
+          { "key": "Content-Security-Policy", "value": "default-src 'none'" }
         ]
       },
       {

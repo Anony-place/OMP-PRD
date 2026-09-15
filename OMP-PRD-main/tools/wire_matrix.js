@@ -2,8 +2,9 @@
    Wire matrix — end-to-end checks of the local Firebase Hosting
    model (tools/hosting_router.js) against the URL architecture:
    cleanUrls 301s, trailingSlash:false, legacy /blog + /guides
-   redirects, /articles/** + /products{,/**} SPA rewrites, custom
-   404, and a no-redirect-loop guarantee for every public entry.
+   redirects, /articles/<slug> guide rewrites, custom 404 (unknown
+   /products/<slug> must 404 — a hub rewrite is a soft 404), and a
+   no-redirect-loop guarantee for every public entry.
 
    Run: node tools/wire_matrix.js   (expects repo root as cwd)
    ============================================================ */
@@ -42,9 +43,17 @@ isFile('/about', '/about.html', 'about');
 /* Search is a site-wide modal injected by assets/js/search.js — not a page. */
 isFile('/sitemap.xml', '/sitemap.xml', 'sitemap');
 
-/* --- products deep links (SPA rewrite) --- */
-isFile('/products/passphrase-book', '/products.html', 'product deep link');
-isFile('/products/passphrase-book/chapters', '/products.html', 'nested product path also rewrites (harmless)');
+/* --- products: real files win; unknown slugs are 404, not a hub rewrite --- */
+{
+  const r = resolve('/products/this-slug-is-not-a-real-product');
+  ok(r.type === 'notfound' && r.file === '/404.html',
+    'unknown product slug → custom 404 (got ' + r.type + ' ' + (r.file || r.location || '') + ')');
+}
+{
+  const r = resolve('/products/passphrase-book/chapters');
+  ok(r.type === 'notfound' && r.file === '/404.html',
+    'nested unknown product path → 404, not the hub (got ' + r.type + ' ' + (r.file || '') + ')');
+}
 
 /* --- cleanUrls + trailingSlash --- */
 isRedirect('/products.html', '/products', 'cleanUrls strips .html');
@@ -62,7 +71,11 @@ isRedirect('/guides/passkeys-explained', '/articles/passkeys-explained', 'legacy
 /* --- static guide pages via /articles/<slug> rewrites --- */
 isFile('/articles/passkeys-explained', '/guides/passkeys-explained.html', 'static guide at pretty URL');
 isFile('/articles/create-strong-password', '/guides/create-strong-password.html', 'static guide at pretty URL (2)');
-isFile('/articles/some-future-db-slug', '/articles.html', 'dynamic slug falls through to the SPA');
+{
+  const r = resolve('/articles/some-future-db-slug');
+  ok(r.type === 'notfound' && r.file === '/404.html',
+    'unknown article slug → custom 404, not the hub (got ' + r.type + ' ' + (r.file || '') + ')');
+}
 
 /* --- 404 --- */
 {

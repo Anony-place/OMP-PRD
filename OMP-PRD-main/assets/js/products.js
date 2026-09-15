@@ -2,8 +2,9 @@
    Public URL: /products (grid) and /products/<slug> (detail page).
    Internal implementation: this client-side app reading the Supabase
    `products` table (public read-only via publishable key, RLS-gated to
-   published rows). The Firebase rewrite "/products{,/**}" ->
-   /products.html makes every slug path deep-linkable and refresh-safe.
+   published rows). Product detail URLs are real files at
+   products/<slug>.html (written at deploy). Unknown slugs 404 —
+   they must not rewrite to the hub or Google reports a soft 404.
 
    Products are COMMERCIAL/featured resources (books, courses, templates…).
    Articles are editorial/educational — the two systems do not mix.

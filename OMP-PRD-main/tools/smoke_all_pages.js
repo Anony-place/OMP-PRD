@@ -18,8 +18,8 @@ const http = require('http');
 const createRouter = require('./hosting_router.js');
 const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
 /* Serve the site the way Firebase Hosting does: pretty URLs, 301s for
-   legacy .html forms, rewrites for /articles/** and /products/**, and the
-   custom 404 page for unknown paths. */
+   legacy .html forms, per-guide /articles/<slug> rewrites, and the
+   custom 404 page for unknown paths (including unknown product slugs). */
 const server = http.createServer((req, res) => {
   let p = req.url.split('?')[0];
   try { p = decodeURIComponent(p); } catch (e) { /* keep raw */ }
