@@ -545,8 +545,69 @@ function checkNoindexHeaders() {
   console.log('  HEADERS no noindex on sitemap or page responses');
 }
 
+function checkCrawlerFetch() {
+  const cfgPath = path.join(ROOT, 'firebase.json');
+  if (!fs.existsSync(cfgPath)) return fail('firebase.json: missing');
+  const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+  const hosting = cfg.hosting || {};
+
+  const catchAll = (hosting.rewrites || []).find((rule) =>
+    /products\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/products/**');
+  if (catchAll) {
+    fail('firebase.json: /products catch-all rewrite serves the hub at HTTP 200 for unknown slugs (Search Console soft 404)');
+  }
+
+  const sitemapRewrite = (hosting.rewrites || []).find((rule) =>
+    String(rule.source || '') === '/sitemap.xml' || String(rule.source || '').includes('sitemap.xml'));
+  if (sitemapRewrite) {
+    fail('firebase.json: /sitemap.xml is rewritten — CI deploys hosting only, so Google gets 404 / Couldn\'t fetch');
+  }
+
+  const blocks = hosting.headers || [];
+  const sitemapBlock = blocks.find((b) => /sitemap\.xml/.test(String(b.source || '')));
+  if (!sitemapBlock) {
+    fail('firebase.json: no header block covering sitemap.xml');
+  } else {
+    const headers = sitemapBlock.headers || [];
+    const val = (key) => {
+      const h = [...headers].reverse().find((x) => String(x.key) === key);
+      return h ? String(h.value) : '';
+    };
+    if (!val('Content-Type').includes('application/xml')) {
+      fail('firebase.json: sitemap Content-Type is not application/xml');
+    }
+    if (val('Cross-Origin-Resource-Policy') !== 'cross-origin') {
+      fail('firebase.json: sitemap CORP is not cross-origin (GSC reports Couldn\'t fetch when it is same-origin)');
+    }
+    if (val('Access-Control-Allow-Origin') !== '*') {
+      fail('firebase.json: sitemap missing Access-Control-Allow-Origin *');
+    }
+    if (/no-store/.test(val('Cache-Control'))) {
+      fail('firebase.json: sitemap Cache-Control no-store');
+    }
+  }
+
+  const robotsBlock = blocks.find((b) => String(b.source || '') === '/robots.txt');
+  if (!robotsBlock) {
+    fail('firebase.json: no header block for /robots.txt');
+  } else {
+    const corp = (robotsBlock.headers || []).find((h) => h.key === 'Cross-Origin-Resource-Policy');
+    if (!corp || corp.value !== 'cross-origin') {
+      fail('firebase.json: robots.txt CORP is not cross-origin');
+    }
+  }
+
+  const router = createRouter(ROOT, cfgPath);
+  const unknownProduct = router.resolve('/products/this-slug-does-not-exist-for-seo', 0);
+  if (unknownProduct.type !== 'notfound') {
+    fail(`/products/<unknown> resolves to ${unknownProduct.type} instead of 404 (soft 404)`);
+  }
+  console.log('  CRAWL   sitemap/robots crawler-open; unknown product slugs 404');
+}
+
 checkIndexNow();
 checkNoindexHeaders();
+checkCrawlerFetch();
 
 /* The 404 must behave like a 404. */
 const nf = path.join(ROOT, '404.html');

@@ -21,7 +21,7 @@ python3 tools/build.py            # every HTML page, robots.txt, manifest, sitem
 node scripts/build-static-seo.mjs # + live Supabase articles/products and their HTML
 node scripts/fix-site-origin.mjs  # safety net for stale origins
 cp sitemap.xml google-sitemap.xml # byte-identical alias
-node tools/test_sitemap.js        # sitemap generator + deployment wiring (23 assertions)
+node tools/test_sitemap.js        # sitemap generator + deployment wiring
 python3 tools/qa.py               # site-wide links, anchors, tags, SEO basics
 node scripts/verify-seo.mjs       # the gate
 ```
@@ -77,8 +77,15 @@ Then re-request URL Inspection in Search Console.
 
 ## Before requesting indexing
 
-1. Search Console property is `oopsmypassword.web.app` — the `.com` property
-   cannot be verified (no DNS record).
-2. `node scripts/verify-seo.mjs` passes locally.
-3. `curl -sI https://oopsmypassword.web.app/sitemap.xml` returns 200 with an
-   XML content type, and the `<loc>` values match the canonicals.
+1. Search Console property must be the **URL-prefix**
+   `https://oopsmypassword.web.app` — **not** `oopsmypassword.com`.
+   That apex has no DNS record, so Google reports **Couldn't fetch** for
+   every sitemap submitted on a `.com` property.
+2. Submit **exactly** `https://oopsmypassword.web.app/sitemap.xml`.
+   Remove any older submissions (`/google-sitemap.xml`, the Cloud Function
+   URL `…cloudfunctions.net/sitemap`, or any `http://` / `.com` variant).
+   Those 404 or never resolve, which is the "Couldn't fetch" error.
+3. `curl -sI -A 'Googlebot/2.1' https://oopsmypassword.web.app/sitemap.xml`
+   must return 200 with `Content-Type: application/xml`. Then use URL
+   Inspection on `/`, `/checker`, `/generator`, `/tools` and one guide
+   and click **Request indexing**.

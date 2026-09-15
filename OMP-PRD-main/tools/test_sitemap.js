@@ -363,6 +363,49 @@ function group(name) {
     assert(!/<link rel="canonical"/.test(html), '404.html carries a canonical');
   });
 
+  check('unknown /products/<slug> URLs 404 instead of serving the hub (no soft 404)', () => {
+    /* A catch-all rewrite to products.html returns HTTP 200 for junk
+       slugs. Google treats that as a soft 404 and distrusts the host. */
+    const createRouter = require(path.join(ROOT, 'tools', 'hosting_router.js'));
+    const router = createRouter(ROOT, FIREBASE_JSON);
+    const r = router.resolve('/products/this-slug-does-not-exist-for-seo', 0);
+    assert(r.type === 'notfound',
+      'unknown product URL resolved as ' + r.type + (r.file ? ' (' + r.file + ')' : '') +
+      ' — a 200 of products.html is a soft 404');
+    const cfg = JSON.parse(fs.readFileSync(FIREBASE_JSON, 'utf8'));
+    const catchAll = (cfg.hosting.rewrites || []).find((rule) =>
+      /products\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/products/**');
+    assert(!catchAll, '/products catch-all rewrite would 200 every fake slug');
+  });
+
+  check('sitemap.xml and robots.txt override CORP so Google can fetch them', () => {
+    /* The site-wide ** header sets Cross-Origin-Resource-Policy: same-origin.
+       GSC's sitemap fetcher then reports "Couldn't fetch". Later, more-specific
+       header blocks must win with cross-origin + XML content-type. */
+    const cfg = JSON.parse(fs.readFileSync(FIREBASE_JSON, 'utf8'));
+    const blocks = cfg.hosting.headers || [];
+    const sitemapBlock = blocks.find((b) => /sitemap\.xml/.test(String(b.source || '')));
+    assert(sitemapBlock, 'firebase.json has no header block covering sitemap.xml');
+    const headersOf = (block) => (block && block.headers) || [];
+    const has = (block, key, needle) => headersOf(block).some((h) =>
+      String(h.key) === key && String(h.value).indexOf(needle) !== -1);
+    assert(has(sitemapBlock, 'Content-Type', 'application/xml'),
+      'sitemap Content-Type is not application/xml');
+    assert(has(sitemapBlock, 'Cross-Origin-Resource-Policy', 'cross-origin'),
+      'sitemap CORP is not cross-origin — Search Console reports Couldn\'t fetch');
+    assert(has(sitemapBlock, 'Access-Control-Allow-Origin', '*'),
+      'sitemap missing Access-Control-Allow-Origin *');
+    const cc = headersOf(sitemapBlock).find((h) => h.key === 'Cache-Control');
+    assert(cc && !/no-store/.test(cc.value),
+      'sitemap Cache-Control no-store makes crawlers fail to keep the file');
+    const robotsBlock = blocks.find((b) => String(b.source || '') === '/robots.txt');
+    assert(robotsBlock, 'firebase.json has no header block for /robots.txt');
+    assert(has(robotsBlock, 'Content-Type', 'text/plain'),
+      'robots.txt Content-Type is not text/plain');
+    assert(has(robotsBlock, 'Cross-Origin-Resource-Policy', 'cross-origin'),
+      'robots.txt CORP is not cross-origin');
+  });
+
   console.log(`\n${pass} passed, ${fail} failed\n`);
   process.exit(fail ? 1 : 0);
 })().catch((e) => {

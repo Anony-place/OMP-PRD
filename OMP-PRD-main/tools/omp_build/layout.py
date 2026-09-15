@@ -411,7 +411,6 @@ def jsonld_webapp():
         "url": SITE + "/",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any (web browser)",
-        "browserRequirements": "Requires JavaScript",
         "isAccessibleForFree": True,
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
         "featureList": "Password strength checker, password generator, passphrase generator, entropy calculator, password health audit, breach-check demo",
