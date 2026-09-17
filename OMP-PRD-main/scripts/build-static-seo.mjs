@@ -53,19 +53,42 @@ function markdownToHtml(md) {
 function sanitizeHtml(input) {
   const source = String(input || '');
   if (!/<[a-z][\s\S]*>/i.test(source)) return markdownToHtml(source);
-  return source.replace(/<\/?(?:script|iframe|object|embed|form|style|link|meta|base)[^>]*>/gi, '')
+  return source
+    .replace(/<\/?(?:script|iframe|object|embed|form|style|link|meta|base)[^>]*>/gi, '')
     .replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
     .replace(/javascript\s*:/gi, '');
+}
+function slugifyHeading(text) {
+  return String(text || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&(?:amp|lt|gt|quot|#39|nbsp);/gi, ' ')
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 70) || 'section';
 }
 function normalizeInjected(html) {
   const source = String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
   const levels = [...source.matchAll(/<h([1-6])[\s>]/gi)].map((m) => Number(m[1]));
   const shift = levels.length ? Math.max(2 - Math.min(...levels), 0) : 0;
-  return shift ? source.replace(/<(\/?)h([1-6])(\s|>)/gi, (_, slash, level, tail) => `<${slash}h${Math.min(Number(level) + shift, 6)}${tail}`) : source;
+  const shifted = shift ? source.replace(/<(\/?)h([1-6])(\s|>)/gi, (_, slash, level, tail) => `<${slash}h${Math.min(Number(level) + shift, 6)}${tail}`) : source;
+  const used = new Map();
+  const toc = [];
+  const withAnchors = shifted.replace(/<h([2-6])>([\s\S]*?)<\/h\1>/gi, (_, level, inner) => {
+    const base = slugifyHeading(inner);
+    const count = used.get(base) || 0;
+    used.set(base, count + 1);
+    const id = count ? `${base}-${count + 1}` : base;
+    toc.push({ level: Number(level), id, text: inner.replace(/<[^>]*>/g, '').trim() });
+    return `<h${level} id="${esc(id)}">${inner}</h${level}>`;
+  });
+  return { html: withAnchors, toc };
 }
 async function fetchRows(table, fields) {
   const params = new URLSearchParams({ select: fields, status: 'eq.published', limit: '2000' });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`, Accept: 'application/json' } });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`, Accept: 'application/json' },
+  });
   if (!response.ok) throw new Error(`${table} query failed: HTTP ${response.status}`);
   const rows = await response.json();
   return Array.isArray(rows) ? rows : [];
@@ -74,57 +97,65 @@ async function fetchRows(table, fields) {
 const ICON_ARROW = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
 const ICON_BOOK = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg>';
 
-function siteHeader() {
-  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/generator">Generator</a><a href="/tools">Tools</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a><a href="/breach-check">Breach Check</a><a href="/about">About</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9l1.4 1.4"/><path d="M19.1 19.1l1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></button></div></div></header>`;
+function siteHeader(active = '') {
+  const nav = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['Breach Check','/breach-check'],['About','/about']];
+  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary">${nav.map(([name,url]) => `<a href="${url}"${active === url ? ' aria-current="page"' : ''}>${esc(name)}</a>`).join('')}</nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>`;
 }
-function siteMobileMenu() {
+function siteMobileMenu(active = '') {
   const items = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['Breach Check','/breach-check'],['About','/about'],['Password Health','/password-health'],['Security Checklist','/security-checklist'],['FAQ','/faq'],['Privacy Policy','/privacy'],['Contact','/contact']];
-  return `<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">${items.map(([name,url]) => `<a href="${url}">${esc(name)}${ICON_ARROW}</a>`).join('')}<a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>`;
+  return `<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">${items.map(([name,url]) => `<a href="${url}"${active === url ? ' aria-current="page"' : ''}>${esc(name)}${ICON_ARROW}</a>`).join('')}<a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>`;
 }
 function siteFooter() {
   return `<footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><p>Privacy-first password tools. Every check runs locally in your browser — no account, no servers, no storage, no tracking of what you type.</p><div class="tag-list mt-16"><span class="chip">Client-side</span><span class="chip">No account</span></div></div><div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div></div><div class="footer-bottom"><span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span><span class="flex gap-16 wrap"><a href="/security">Security</a><a href="/sitemap">Sitemap</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></span></div></div></footer>`;
 }
-
+function commonHead({ title, description, canonical, ogType, ogImage, jsonld = [], published, modified }) {
+  const cards = ogImage ? `<meta property="og:image" content="${esc(ogImage)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="${esc(ogImage)}">` : '';
+  return `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><meta name="theme-color" content="#050811"><meta name="color-scheme" content="dark light"><meta property="og:type" content="${esc(ogType || 'website')}"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(canonical)}">${cards}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script>${jsonld.map((x) => `<script type="application/ld+json">${escJson(x)}</script>`).join('')}${published ? `<meta property="article:published_time" content="${esc(published)}">` : ''}${modified ? `<meta property="article:modified_time" content="${esc(modified)}">` : ''}</head>`;
+}
 function articleHtml(article) {
   const title = String(article.title || 'Article').trim();
   const slug = String(article.slug || '').trim();
   const summary = String(article.summary || '').trim() || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
-  const published = article.published_at || article.created_at || new Date().toISOString();
+  const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
-  const content = normalizeInjected(sanitizeHtml(article.content || ''));
-  const image = article.featured_image ? String(article.featured_image) : '';
-  const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: summary, mainEntityOfPage: canonical, datePublished: published, dateModified: modified, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en' };
-  if (image) articleSchema.image = [image];
+  const normalized = normalizeInjected(sanitizeHtml(article.content || ''));
+  const content = normalized.html;
+  const image = /^https?:\/\//i.test(String(article.featured_image || '')) ? String(article.featured_image) : `${SITE}/assets/images/og-image.jpg`;
+  const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: summary, mainEntityOfPage: canonical, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en', image: [image] };
+  if (published) articleSchema.datePublished = published;
+  if (modified) articleSchema.dateModified = modified;
   const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE}/articles` }, { '@type': 'ListItem', position: 3, name: title, item: canonical }] };
-  const ogImage = image ? `<meta property="og:image" content="${esc(image)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">` : `<meta property="og:image" content="${SITE}/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
   const articleDate = new Date(published);
   const dateLabel = Number.isNaN(articleDate.getTime()) ? '' : articleDate.toISOString().slice(0, 10);
-  return `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | OopsMyPassword</title><meta name="description" content="${esc(summary)}"><meta name="theme-color" content="#050811"><meta name="color-scheme" content="dark light"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(summary)}"><meta property="og:url" content="${esc(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(summary)}"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumbSchema)}</script><meta property="article:published_time" content="${esc(published)}"><meta property="article:modified_time" content="${esc(modified)}"><meta property="article:section" content="Article"></head><body>${siteHeader()}${siteMobileMenu()}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight"><div class="container"><div class="article-layout"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  const toc = normalized.toc;
+  const tocHtml = toc.length ? `<aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul>${toc.map((item) => `<li><a href="#${esc(item.id)}">${esc(item.text)}</a></li>`).join('')}</ul></aside>` : '';
+  const body = toc.length
+    ? `<div class="container"><div class="article-layout">${tocHtml}<article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div>`
+    : `<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div>`;
+  const head = commonHead({ title: `${title} | OopsMyPassword`, description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
+  return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
-
 function productHtml(product) {
   const slug = String(product.slug || '').trim();
   const name = String(product.name || 'Product').trim();
   const summary = String(product.summary || '').trim() || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
-  const content = normalizeInjected(sanitizeHtml(product.description || ''));
-  const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : '';
+  const content = normalizeInjected(sanitizeHtml(product.description || '')).html;
+  const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : `${SITE}/assets/images/og-image.jpg`;
   const typeLabel = PRODUCT_TYPES[String(product.product_type || 'other')] || 'Resource';
-  const published = product.published_at || product.created_at || new Date().toISOString();
   const price = Number(product.price);
   const hasPrice = product.price != null && product.price !== '' && Number.isFinite(price);
   const currency = /^[A-Z]{3}$/.test(String(product.currency || '')) ? String(product.currency) : 'USD';
   const buyUrl = /^https?:\/\//i.test(String(product.external_url || '')) ? String(product.external_url) : '';
-  const productSchema = { '@context': 'https://schema.org', '@type': 'Product', name, description: summary, url: canonical };
-  if (image) productSchema.image = [image];
+  const productSchema = { '@context': 'https://schema.org', '@type': 'Product', name, description: summary, url: canonical, image: [image] };
   if (hasPrice) productSchema.offers = { '@type': 'Offer', price: String(price), priceCurrency: currency, url: buyUrl || canonical };
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Products', item: `${SITE}/products` }, { '@type': 'ListItem', position: 3, name, item: canonical }] };
   const cta = String(product.cta_label || '').trim() || (buyUrl ? 'Buy now' : 'Learn more');
   const ctaHtml = buyUrl ? `<p><a class="btn btn-primary" href="${esc(buyUrl)}" rel="noopener noreferrer">${esc(cta)} →</a></p>` : '';
-  return `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} — OopsMyPassword</title><meta name="description" content="${esc(summary)}"><link rel="canonical" href="${esc(canonical)}"><meta property="og:type" content="product"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(name)}"><meta property="og:description" content="${esc(summary)}"><meta property="og:url" content="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">${escJson(productSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script></head><body>${siteHeader()}${siteMobileMenu()}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  const head = commonHead({ title: `${name} — OopsMyPassword`, description: summary, canonical, ogType: 'product', ogImage: image, jsonld: [productSchema, breadcrumb] });
+  return `${head}<body>${siteHeader('/products')}${siteMobileMenu('/products')}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
-
 function dateOnly(value) { if (!value) return ''; const ms = Date.parse(value); return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 function sitemapXml({ articles, products }) {
   const urls = new Map();
@@ -136,7 +167,6 @@ function sitemapXml({ articles, products }) {
   const body = [...urls.entries()].map(([loc, meta]) => `<url><loc>${esc(loc)}</loc>${meta.lastmod ? `<lastmod>${meta.lastmod}</lastmod>` : ''}<priority>${meta.priority}</priority></url>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
 }
-
 async function main() {
   const [articles, products] = await Promise.all([
     fetchRows('articles', 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image'),
