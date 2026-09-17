@@ -1,8 +1,5 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-/* Single source of truth for the sitemap route list. Importing the shared
-   core means the deployed sitemap can never drift from the route set the
-   rest of the site (tools/build.py, the Edge Function) advertises. */
 import { STATIC_ROUTES, isValidSlug, priorityForRoute } from '../functions/sitemap-core.mjs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
@@ -11,25 +8,15 @@ const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').repla
 const ROOT = process.cwd();
 const ARTICLES_DIR = join(ROOT, 'articles');
 const PRODUCTS_DIR = join(ROOT, 'products');
-/* Fallback for a missing/undateable database timestamp: emit no lastmod
-   rather than a made-up one. */
-const UNKNOWN_LASTMOD = '';
 const PRODUCT_FIELDS = 'slug,name,summary,description,product_type,price,currency,cta_label,featured,featured_image,external_url,status,published_at,updated_at,created_at';
 const PRODUCT_TYPES = { book: 'Book', course: 'Course', tool: 'Tool', template: 'Template', resource: 'Resource', other: 'Resource' };
 
 function esc(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+  return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
-
 function escJson(value) {
   return JSON.stringify(value ?? '').replaceAll('<', '\\u003c').replaceAll('>', '\\u003e').replaceAll('&', '\\u0026');
 }
-
 function markdownInline(input) {
   let x = esc(input);
   x = x.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -39,128 +26,63 @@ function markdownInline(input) {
   x = x.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noopener noreferrer">$1</a>');
   return x;
 }
-
 function markdownToHtml(md) {
   const lines = String(md || '').replace(/\r/g, '').split('\n');
   const out = [];
   let paragraph = [];
   let list = null;
   let inCode = false;
-
-  const flushParagraph = () => {
-    if (paragraph.length) out.push(`<p>${markdownInline(paragraph.join(' '))}</p>`);
-    paragraph = [];
-  };
-  const flushList = () => {
-    if (!list) return;
-    out.push(`<${list.type}>${list.items.map((item) => `<li>${markdownInline(item)}</li>`).join('')}</${list.type}>`);
-    list = null;
-  };
-
+  const flushParagraph = () => { if (paragraph.length) out.push(`<p>${markdownInline(paragraph.join(' '))}</p>`); paragraph = []; };
+  const flushList = () => { if (!list) return; out.push(`<${list.type}>${list.items.map((x) => `<li>${markdownInline(x)}</li>`).join('')}</${list.type}>`); list = null; };
   for (const line of lines) {
-    if (/^```/.test(line)) {
-      flushParagraph();
-      flushList();
-      if (!inCode) {
-        out.push('<pre><code>');
-        inCode = true;
-      } else {
-        out.push('</code></pre>');
-        inCode = false;
-      }
-      continue;
-    }
-    if (inCode) {
-      out.push(esc(line) + '\n');
-      continue;
-    }
+    if (/^```/.test(line)) { flushParagraph(); flushList(); out.push(inCode ? '</code></pre>' : '<pre><code>'); inCode = !inCode; continue; }
+    if (inCode) { out.push(esc(line) + '\n'); continue; }
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
-    if (heading) {
-      flushParagraph();
-      flushList();
-      const level = heading[1].length;
-      out.push(`<h${level}>${markdownInline(heading[2])}</h${level}>`);
-      continue;
-    }
+    if (heading) { flushParagraph(); flushList(); out.push(`<h${heading[1].length}>${markdownInline(heading[2])}</h${heading[1].length}>`); continue; }
     const bullet = line.match(/^\s*[-*]\s+(.+)$/);
-    if (bullet) {
-      flushParagraph();
-      if (!list || list.type !== 'ul') {
-        flushList();
-        list = { type: 'ul', items: [] };
-      }
-      list.items.push(bullet[1]);
-      continue;
-    }
+    if (bullet) { flushParagraph(); if (!list || list.type !== 'ul') { flushList(); list = { type: 'ul', items: [] }; } list.items.push(bullet[1]); continue; }
     const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
-    if (ordered) {
-      flushParagraph();
-      if (!list || list.type !== 'ol') {
-        flushList();
-        list = { type: 'ol', items: [] };
-      }
-      list.items.push(ordered[1]);
-      continue;
-    }
-    if (!line.trim()) {
-      flushParagraph();
-      flushList();
-      continue;
-    }
+    if (ordered) { flushParagraph(); if (!list || list.type !== 'ol') { flushList(); list = { type: 'ol', items: [] }; } list.items.push(ordered[1]); continue; }
+    if (!line.trim()) { flushParagraph(); flushList(); continue; }
     paragraph.push(line.trim());
   }
   if (inCode) out.push('</code></pre>');
-  flushParagraph();
-  flushList();
+  flushParagraph(); flushList();
   return out.join('\n');
 }
-
 function sanitizeHtml(input) {
   const source = String(input || '');
   if (!/<[a-z][\s\S]*>/i.test(source)) return markdownToHtml(source);
-  return source
-    .replace(/<\/?(?:script|iframe|object|embed|form|style|link|meta|base)[^>]*>/gi, '')
+  return source.replace(/<\/?(?:script|iframe|object|embed|form|style|link|meta|base)[^>]*>/gi, '')
     .replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
     .replace(/javascript\s*:/gi, '');
 }
-
-/* Admin-authored article bodies are injected straight into the generated page,
-   so anything they carry becomes part of our markup. Two attributes/elements
-   can break the page rather than just look odd:
-
-   - `id`: a repeated id produces duplicate anchors and collides with the
-     in-page links every other page relies on.
-   - headings: the page template already owns the single h1, so any heading in
-     the body has to sit underneath it.
-
-   Strip ids, then shift every body heading so the shallowest one used becomes
-   an h2. A flat shift by one is not enough: these articles open with "##", so
-   a +1 shift lands them on h3 and leaves the page jumping h1 -> h3. Anchoring
-   on the content's own minimum keeps the article's relative outline intact and
-   always starts it directly under the page title. */
 function normalizeInjected(html) {
   const source = String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
   const levels = [...source.matchAll(/<h([1-6])[\s>]/gi)].map((m) => Number(m[1]));
   const shift = levels.length ? Math.max(2 - Math.min(...levels), 0) : 0;
-  if (!shift) return source;
-  return source.replace(/<(\/?)h([1-6])(\s|>)/gi, (m, slash, level, tail) => {
-    const shifted = Math.min(Number(level) + shift, 6);
-    return `<${slash}h${shifted}${tail}`;
-  });
+  return shift ? source.replace(/<(\/?)h([1-6])(\s|>)/gi, (_, slash, level, tail) => `<${slash}h${Math.min(Number(level) + shift, 6)}${tail}`) : source;
 }
-
 async function fetchRows(table, fields) {
   const params = new URLSearchParams({ select: fields, status: 'eq.published', limit: '2000' });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
-    headers: {
-      apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-      Accept: 'application/json',
-    },
-  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`, Accept: 'application/json' } });
   if (!response.ok) throw new Error(`${table} query failed: HTTP ${response.status}`);
   const rows = await response.json();
   return Array.isArray(rows) ? rows : [];
+}
+
+const ICON_ARROW = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+const ICON_BOOK = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg>';
+
+function siteHeader() {
+  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/generator">Generator</a><a href="/tools">Tools</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a><a href="/breach-check">Breach Check</a><a href="/about">About</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9l1.4 1.4"/><path d="M19.1 19.1l1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></button></div></div></header>`;
+}
+function siteMobileMenu() {
+  const items = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['Breach Check','/breach-check'],['About','/about'],['Password Health','/password-health'],['Security Checklist','/security-checklist'],['FAQ','/faq'],['Privacy Policy','/privacy'],['Contact','/contact']];
+  return `<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">${items.map(([name,url]) => `<a href="${url}">${esc(name)}${ICON_ARROW}</a>`).join('')}<a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>`;
+}
+function siteFooter() {
+  return `<footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><p>Privacy-first password tools. Every check runs locally in your browser — no account, no servers, no storage, no tracking of what you type.</p><div class="tag-list mt-16"><span class="chip">Client-side</span><span class="chip">No account</span></div></div><div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div></div><div class="footer-bottom"><span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span><span class="flex gap-16 wrap"><a href="/security">Security</a><a href="/sitemap">Sitemap</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></span></div></div></footer>`;
 }
 
 function articleHtml(article) {
@@ -172,206 +94,47 @@ function articleHtml(article) {
   const modified = article.updated_at || published;
   const content = normalizeInjected(sanitizeHtml(article.content || ''));
   const image = article.featured_image ? String(article.featured_image) : '';
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    description: summary,
-    mainEntityOfPage: canonical,
-    datePublished: published,
-    dateModified: modified,
-    author: { '@type': 'Organization', name: 'OopsMyPassword' },
-    publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE },
-  };
+  const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: summary, mainEntityOfPage: canonical, datePublished: published, dateModified: modified, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en' };
   if (image) articleSchema.image = [image];
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE}/articles` },
-      { '@type': 'ListItem', position: 3, name: title, item: canonical },
-    ],
-  };
-  const ogImage = image ? `<meta property="og:image" content="${esc(image)}">` : '';
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} | OopsMyPassword</title>
-<meta name="description" content="${esc(summary)}">
-<link rel="canonical" href="${esc(canonical)}">
-<meta property="og:type" content="article">
-<meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(summary)}">
-<meta property="og:url" content="${esc(canonical)}">
-${ogImage}
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${esc(title)}">
-<meta name="twitter:description" content="${esc(summary)}">
-<script type="application/ld+json">${escJson(articleSchema)}</script>
-<script type="application/ld+json">${escJson(breadcrumbSchema)}</script>
-<link rel="stylesheet" href="/assets/css/styles.css">
-</head>
-<body>
-<main class="container">
-<nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${esc(title)}</span></nav>
-<article>
-<header><h1>${esc(title)}</h1><p>${esc(summary)}</p><p><time datetime="${esc(published)}">${esc(new Date(published).toISOString().slice(0, 10))}</time></p></header>
-<div class="article-content">${content}</div>
-</article>
-</main>
-</body>
-</html>
-`;
+  const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE}/articles` }, { '@type': 'ListItem', position: 3, name: title, item: canonical }] };
+  const ogImage = image ? `<meta property="og:image" content="${esc(image)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">` : `<meta property="og:image" content="${SITE}/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
+  const articleDate = new Date(published);
+  const dateLabel = Number.isNaN(articleDate.getTime()) ? '' : articleDate.toISOString().slice(0, 10);
+  return `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | OopsMyPassword</title><meta name="description" content="${esc(summary)}"><meta name="theme-color" content="#050811"><meta name="color-scheme" content="dark light"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(summary)}"><meta property="og:url" content="${esc(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(summary)}"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumbSchema)}</script><meta property="article:published_time" content="${esc(published)}"><meta property="article:modified_time" content="${esc(modified)}"><meta property="article:section" content="Article"></head><body>${siteHeader()}${siteMobileMenu()}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight"><div class="container"><div class="article-layout"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 
-/* Server-rendered product detail page.
-
-   Hosting serves products/<slug>.html for /products/<slug> (cleanUrls).
-   Unknown slugs 404 — there is no catch-all rewrite to the hub, because a
-   200 of products.html on a junk URL is a soft 404 that keeps the site out
-   of the index. products.js still hydrates the same URL when the file exists. */
 function productHtml(product) {
   const slug = String(product.slug || '').trim();
   const name = String(product.name || 'Product').trim();
-  const summary = String(product.summary || '').trim()
-    || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+  const summary = String(product.summary || '').trim() || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
   const content = normalizeInjected(sanitizeHtml(product.description || ''));
   const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : '';
   const typeLabel = PRODUCT_TYPES[String(product.product_type || 'other')] || 'Resource';
   const published = product.published_at || product.created_at || new Date().toISOString();
-  const modified = product.updated_at || published;
-
-  /* Offers only when there is a real, numeric price — inventing one would be
-     fabricated structured data. */
   const price = Number(product.price);
   const hasPrice = product.price != null && product.price !== '' && Number.isFinite(price);
   const currency = /^[A-Z]{3}$/.test(String(product.currency || '')) ? String(product.currency) : 'USD';
   const buyUrl = /^https?:\/\//i.test(String(product.external_url || '')) ? String(product.external_url) : '';
-
-  const productSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name,
-    description: summary,
-    url: canonical,
-  };
+  const productSchema = { '@context': 'https://schema.org', '@type': 'Product', name, description: summary, url: canonical };
   if (image) productSchema.image = [image];
-  if (hasPrice) {
-    productSchema.offers = {
-      '@type': 'Offer',
-      price: String(price),
-      priceCurrency: currency,
-      url: buyUrl || canonical,
-    };
-    /* No availability. The products table has no stock field, so any value
-       here would be an unsupported claim about the catalogue. It is optional
-       in schema.org and not required for Google's Product snippets. */
-  }
-  const breadcrumb = {
-    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Products', item: `${SITE}/products` },
-      { '@type': 'ListItem', position: 3, name, item: canonical },
-    ],
-  };
-
-  const ogImage = image ? `<meta property="og:image" content="${esc(image)}">` : '';
+  if (hasPrice) productSchema.offers = { '@type': 'Offer', price: String(price), priceCurrency: currency, url: buyUrl || canonical };
+  const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Products', item: `${SITE}/products` }, { '@type': 'ListItem', position: 3, name, item: canonical }] };
   const cta = String(product.cta_label || '').trim() || (buyUrl ? 'Buy now' : 'Learn more');
-  const ctaHtml = buyUrl
-    ? `<p><a class="btn btn-primary" href="${esc(buyUrl)}" rel="noopener noreferrer">${esc(cta)} →</a></p>`
-    : '<p class="muted">Secure download delivered after purchase.</p>';
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(name)} — OopsMyPassword</title>
-<meta name="description" content="${esc(summary)}">
-<link rel="canonical" href="${esc(canonical)}">
-<meta property="og:type" content="product">
-<meta property="og:site_name" content="OopsMyPassword">
-<meta property="og:title" content="${esc(name)}">
-<meta property="og:description" content="${esc(summary)}">
-<meta property="og:url" content="${esc(canonical)}">
-${ogImage}
-<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">
-<meta name="twitter:title" content="${esc(name)}">
-<meta name="twitter:description" content="${esc(summary)}">
-<script type="application/ld+json">${escJson(productSchema)}</script>
-<script type="application/ld+json">${escJson(breadcrumb)}</script>
-<link rel="stylesheet" href="/assets/css/styles.css">
-</head>
-<body>
-<main class="container">
-<nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/products">Products</a> / <span>${esc(name)}</span></nav>
-<article>
-<header>
-<p class="product-meta"><span class="ptype">${esc(typeLabel)}</span></p>
-<h1>${esc(name)}</h1>
-<p class="lead">${esc(summary)}</p>
-<p><time datetime="${esc(published)}">${esc(new Date(published).toISOString().slice(0, 10))}</time></p>
-</header>
-${ctaHtml}
-<div class="product-content prose">${content}</div>
-</article>
-</main>
-</body>
-</html>
-`;
+  const ctaHtml = buyUrl ? `<p><a class="btn btn-primary" href="${esc(buyUrl)}" rel="noopener noreferrer">${esc(cta)} →</a></p>` : '';
+  return `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} — OopsMyPassword</title><meta name="description" content="${esc(summary)}"><link rel="canonical" href="${esc(canonical)}"><meta property="og:type" content="product"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(name)}"><meta property="og:description" content="${esc(summary)}"><meta property="og:url" content="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">${escJson(productSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script></head><body>${siteHeader()}${siteMobileMenu()}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 
+function dateOnly(value) { if (!value) return ''; const ms = Date.parse(value); return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 function sitemapXml({ articles, products }) {
   const urls = new Map();
-  /* The site root must keep its trailing slash: index.html canonicalises to
-     "<origin>/", so a <loc> of "<origin>" would not match its own canonical.
-     Every other route is trailing-slash free (trailingSlash: false). */
-  const urlFor = (route) => (route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`);
-  const add = (loc, lastmod, route) => {
-    if (urls.has(loc)) return;
-    urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') });
-  };
-
-  /* Every real public page, not just a hand-picked subset. Omitting the tool
-     pages here meant Google never learned /checker, /generator, /tools and
-     /breach-check existed — the site's primary pages. */
-  /* No lastmod for the static routes. There is no per-page modification date
-     to report: these pages are regenerated from tools/omp_build on every
-     build, so any constant here is invented, and git commit dates are no
-     better - an infrastructure change touches every generator at once and
-     would advertise content churn that never happened. <lastmod> is optional,
-     so it is omitted rather than guessed. Articles and products below carry
-     real database timestamps. */
-  for (const route of STATIC_ROUTES) {
-    add(urlFor(route), '', route);
-  }
-
-  for (const article of articles) {
-    if (!isValidSlug(article.slug)) continue;
-    const modified = article.updated_at || article.published_at || article.created_at;
-    add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(modified), `/articles/${article.slug}`);
-  }
-  for (const product of products) {
-    if (!isValidSlug(product.slug)) continue;
-    const modified = product.updated_at || product.published_at || product.created_at;
-    add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(modified), `/products/${product.slug}`);
-  }
-
-  const body = [...urls.entries()]
-    .map(([loc, { lastmod, priority }]) =>
-      `<url><loc>${esc(loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<priority>${priority}</priority></url>`)
-    .join('');
+  const urlFor = (route) => route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`;
+  const add = (loc, lastmod, route) => { if (!urls.has(loc)) urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') }); };
+  for (const route of STATIC_ROUTES) add(urlFor(route), '', route);
+  for (const article of articles) if (isValidSlug(article.slug)) add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(article.updated_at || article.published_at || article.created_at), `/articles/${article.slug}`);
+  for (const product of products) if (isValidSlug(product.slug)) add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(product.updated_at || product.published_at || product.created_at), `/products/${product.slug}`);
+  const body = [...urls.entries()].map(([loc, meta]) => `<url><loc>${esc(loc)}</loc>${meta.lastmod ? `<lastmod>${meta.lastmod}</lastmod>` : ''}<priority>${meta.priority}</priority></url>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
-}
-
-function dateOnly(value) {
-  if (!value) return UNKNOWN_LASTMOD;
-  const ms = Date.parse(value);
-  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : UNKNOWN_LASTMOD;
 }
 
 async function main() {
@@ -379,35 +142,17 @@ async function main() {
     fetchRows('articles', 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image'),
     fetchRows('products', PRODUCT_FIELDS),
   ]);
-
   await rm(ARTICLES_DIR, { recursive: true, force: true });
   await mkdir(ARTICLES_DIR, { recursive: true });
   let articlePages = 0;
-  for (const article of articles) {
-    if (!isValidSlug(article.slug)) continue;
-    await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article), 'utf8');
-    articlePages++;
-  }
-
+  for (const article of articles) if (isValidSlug(article.slug)) { await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article), 'utf8'); articlePages++; }
   await rm(PRODUCTS_DIR, { recursive: true, force: true });
   await mkdir(PRODUCTS_DIR, { recursive: true });
   let productPages = 0;
-  for (const product of products) {
-    if (!isValidSlug(product.slug)) continue;
-    await writeFile(join(PRODUCTS_DIR, `${product.slug}.html`), productHtml(product), 'utf8');
-    productPages++;
-  }
-
+  for (const product of products) if (isValidSlug(product.slug)) { await writeFile(join(PRODUCTS_DIR, `${product.slug}.html`), productHtml(product), 'utf8'); productPages++; }
   const xml = sitemapXml({ articles, products });
   await writeFile(join(ROOT, 'sitemap.xml'), xml, 'utf8');
-  /* Keep the legacy alias byte-identical so the two endpoints can never
-     disagree — robots.txt advertises /sitemap.xml only. */
   await writeFile(join(ROOT, 'google-sitemap.xml'), xml, 'utf8');
-  const urlCount = (xml.match(/<loc>/g) || []).length;
-  console.log(`Built ${articlePages} article pages and ${productPages} product pages; sitemap has ${urlCount} URLs at ${SITE}.`);
+  console.log(`Built ${articlePages} article pages and ${productPages} product pages; sitemap has ${(xml.match(/<loc>/g) || []).length} URLs at ${SITE}.`);
 }
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main().catch((error) => { console.error(error); process.exit(1); });
