@@ -445,6 +445,8 @@ function articleForm(host, categories, article) {
   const preview = document.querySelector('#article-preview');
   const docInput = document.querySelector(`#${id('doc')}`);
   const pdfStatus = document.querySelector(`#${id('pdf-status')}`);
+  let pendingPdfPages = [];
+  let pendingPdfObjectUrls = [];
 
   /* PDF upload is a content import, not merely a file attachment.
      Extract selectable PDF text in the browser and put it directly into the
@@ -495,6 +497,42 @@ function articleForm(host, categories, article) {
     pdfStatus.style.color = tone === 'error' ? 'var(--red)' : '';
   };
 
+  const clearPendingPdfPages = () => {
+    pendingPdfObjectUrls.forEach(url => URL.revokeObjectURL(url));
+    pendingPdfObjectUrls = [];
+    pendingPdfPages = [];
+  };
+
+  async function renderPdfPages(file) {
+    const pdfjs = await import('https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.mjs');
+    if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+      pdfjs.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.worker.mjs';
+    }
+    const data = new Uint8Array(await file.arrayBuffer());
+    const pdf = await pdfjs.getDocument({ data }).promise;
+    const pages = [];
+    try {
+      for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+        const page = await pdf.getPage(pageNo);
+        const viewport = page.getViewport({ scale: 1.35 });
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.ceil(viewport.width);
+        canvas.height = Math.ceil(viewport.height);
+        const ctx = canvas.getContext('2d', { alpha: false });
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const blob = await new Promise((resolve, reject) =>
+          canvas.toBlob(b => b ? resolve(b) : reject(new Error('Could not render PDF page as an image.')), 'image/jpeg', 0.86)
+        );
+        const objectUrl = URL.createObjectURL(blob);
+        pendingPdfObjectUrls.push(objectUrl);
+        pages.push({ pageNo, blob, objectUrl });
+      }
+    } finally {
+      try { await pdf.destroy(); } catch {}
+    }
+    return pages;
+  }
+
   const importPdfContent = async file => {
     if (!file || !file.size || !/\.pdf$/i.test(file.name)) return;
     setPdfStatus('Reading PDF content…');
@@ -504,10 +542,12 @@ function articleForm(host, categories, article) {
         setPdfStatus('PDF uploaded, but no selectable text was found. This may be a scanned/image-only PDF; enter the article content manually or add OCR.', 'error');
         return;
       }
+      clearPendingPdfPages();
+      pendingPdfPages = await renderPdfPages(file);
       ta.value = text;
       setDirty(form, true);
       queuePreview();
-      setPdfStatus(`Imported ${text.length.toLocaleString()} characters from the PDF into Content. You can edit it before saving.`);
+      setPdfStatus(`Imported ${text.length.toLocaleString()} characters and rendered ${pendingPdfPages.length} PDF page${pendingPdfPages.length === 1 ? '' : 's'} with images. They will be included when you save.`);
     } catch (err) {
       console.error('PDF text extraction failed:', err);
       setPdfStatus(`Could not extract PDF text automatically: ${err?.message || String(err)}. The PDF can still be attached; enter Content manually.`, 'error');
@@ -516,7 +556,10 @@ function articleForm(host, categories, article) {
 
   const paintPreview = () => {
     const title = titleInput.value.trim();
-    preview.innerHTML = (title ? `<h1 class="h-1" style="font-size:1.7rem">${esc(title)}</h1>` : '') + renderBody(ta.value);
+    const pdfVisuals = pendingPdfPages.length
+      ? `<div class="pdf-import-preview" style="margin-top:18px"><p class="tiny muted"><strong>PDF page visuals</strong> — images from the uploaded PDF</p>${pendingPdfPages.map(p => `<img src="${esc(p.objectUrl)}" alt="PDF page ${p.pageNo}" loading="lazy" style="display:block;width:100%;height:auto;margin:12px 0;border-radius:8px">`).join('')}</div>`
+      : '';
+    preview.innerHTML = (title ? `<h1 class="h-1" style="font-size:1.7rem">${esc(title)}</h1>` : '') + renderBody(ta.value) + pdfVisuals;
     /* Mirror /articles exactly: the title is the only <h1>, so a "#" heading
        in the body is demoted to <h2> here too. */
     if (window.OMPMarkdown?.demoteHeadings) window.OMPMarkdown.demoteHeadings(preview, 1);
@@ -542,7 +585,8 @@ function articleForm(host, categories, article) {
   form.querySelectorAll('[data-mk]').forEach(btn => btn.onclick = () => applyMarkup(ta, TOOLBAR[Number(btn.dataset.mk)]));
   docInput.addEventListener('change', async e => {
     const file = e.currentTarget.files?.[0];
-    if (!file) { setPdfStatus(''); return; }
+    clearPendingPdfPages();
+    if (!file) { setPdfStatus(''); queuePreview(); return; }
     if (/\.pdf$/i.test(file.name)) await importPdfContent(file);
     else setPdfStatus('Document attached. Automatic body import is available for PDF files; DOC/DOCX/MD/TXT can still be attached normally.');
   });
@@ -575,6 +619,7 @@ function articleForm(host, categories, article) {
          the newly uploaded object so a failed save can never leave an orphan. */
       let uploadedDocumentPath = null;
       let uploadedDocumentMeta = null;
+      const uploadedArticleAssetPaths = [];
       if (file && file.size) {
         /* Preflight the file before anything leaves the device: magic-byte
            signature must match the declared extension, and the exact
@@ -609,6 +654,7 @@ function articleForm(host, categories, article) {
           throw new Error('Upload succeeded but Supabase did not return a public URL.');
         }
         document_url = pub.publicUrl;
+        uploadedArticleAssetPaths.push(uploadedDocumentPath);
         uploadedDocumentMeta = {
           file_path: `articles/${uploadedDocumentPath}`,
           public_url: document_url,
@@ -633,7 +679,29 @@ function articleForm(host, categories, article) {
       /* updated_at is set explicitly: the table has no UPDATE trigger, so
          without this the admin list's "sort by updated_at" silently
          degrades to creation order and never reflects edits. */
-      const content = String(f.get('content') || '').trim();
+      let content = String(f.get('content') || '').trim();
+      /* A PDF is represented in the article as both selectable text and
+         rendered page images, so diagrams/photos/layouts are not silently
+         lost during import. Upload page images only when the article save
+         is actually being submitted. */
+      if (pendingPdfPages.length) {
+        const pageUrls = [];
+        const base = slug || slugify(f.get('title')) || 'article';
+        for (const page of pendingPdfPages) {
+          const imagePath = `pdf-pages/${base}/${Date.now()}-page-${page.pageNo}.jpg`;
+          const { error: imageErr } = await supabase.storage.from('articles').upload(imagePath, page.blob, {
+            cacheControl: '31536000',
+            upsert: false,
+            contentType: 'image/jpeg'
+          });
+          if (imageErr) throw new Error(`PDF page image upload failed: ${imageErr.message}`);
+          uploadedArticleAssetPaths.push(imagePath);
+          const { data: imagePublic } = supabase.storage.from('articles').getPublicUrl(imagePath);
+          if (!imagePublic?.publicUrl) throw new Error('PDF page image uploaded but no public URL was returned.');
+          pageUrls.push(imagePublic.publicUrl);
+        }
+        content += '\n\n' + pageUrls.map((url, i) => `![PDF page ${i + 1}](${url})`).join('\n\n');
+      }
       if (!content) {
         throw new Error(file && file.size
           ? 'PDF/document attached, but no article text was extracted. If this is a scanned/image-only PDF, enter the article content manually.'
@@ -642,12 +710,7 @@ function articleForm(host, categories, article) {
       const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content,category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
       if (result.error) {
-        if (uploadedDocumentPath) {
-          await removeStorageObjects([{
-            bucket: 'articles',
-            path: uploadedDocumentPath
-          }]);
-        }
+        await removeStorageObjects(uploadedArticleAssetPaths.map(path => ({ bucket: 'articles', path })));
         throw result.error;
       }
 
@@ -662,7 +725,15 @@ function articleForm(host, categories, article) {
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
       }
 
-      await removeStorageObjects([oldDoc]);
+      const oldPdfImages = [];
+      const oldContent = String(a.content || '');
+      const imageUrlPattern = /https?:\/\/[^\\s)"]+\/storage\/v1\/object\/public\/articles\/pdf-pages\/[^\\s)"]+/gi;
+      for (const match of oldContent.matchAll(imageUrlPattern)) {
+        const loc = bucketPathFromUrl(match[0]);
+        if (loc && loc.bucket === 'articles' && loc.path.startsWith('pdf-pages/')) oldPdfImages.push(loc);
+      }
+      await removeStorageObjects([oldDoc, ...oldPdfImages]);
+      clearPendingPdfPages();
       clearDirty(form);
       loadTab('articles');
     } catch (err) {
