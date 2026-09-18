@@ -6,6 +6,10 @@ name: Deploy Firebase Hosting Static SEO
 # regeneration) never ran and the site shipped with truncated sitemaps and
 # canonicals pointing at a dead domain. Keep this file the single workflow.
 
+concurrency:
+  group: firebase-hosting-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
