@@ -23,6 +23,10 @@ function markdownInline(input) {
   x = x.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   x = x.replace(/__([^_]+)__/g, '<strong>$1</strong>');
   x = x.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  /* Render Markdown images before links. PDF imports use this form for
+     generated page visuals; without this rule `![page](url)` degrades into
+     a broken `!<a ...>` link in the deployed static article. */
+  x = x.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
   x = x.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noopener noreferrer">$1</a>');
   return x;
 }
