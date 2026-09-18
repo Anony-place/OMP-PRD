@@ -599,6 +599,7 @@ function articleForm(host, categories, article) {
 
   const cancel = () => {
     if (isDirty(form) && !confirm('Discard unsaved changes to this article?')) return;
+    clearPendingPdfPages();
     dirtyForms.delete(form);
     host.innerHTML = '';
   };
@@ -612,14 +613,14 @@ function articleForm(host, categories, article) {
     const file = f.get('document');
     let document_url = a.document_url || null;
     if (f.get('remove_document') === 'on') document_url = null;
+    let uploadedDocumentPath = null;
+    const uploadedArticleAssetPaths = [];
     submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
     try {
       /* Upload first, but do not create bookkeeping rows until the article
          itself has been persisted. If the DB write fails, immediately remove
          the newly uploaded object so a failed save can never leave an orphan. */
-      let uploadedDocumentPath = null;
       let uploadedDocumentMeta = null;
-      const uploadedArticleAssetPaths = [];
       if (file && file.size) {
         /* Preflight the file before anything leaves the device: magic-byte
            signature must match the declared extension, and the exact
@@ -720,7 +721,8 @@ function articleForm(host, categories, article) {
         const { data: { user } } = await supabase.auth.getUser();
         const { error: mediaErr } = await supabase.from('media').insert({
           ...uploadedDocumentMeta,
-          uploaded_by: user?.id || null
+          uploaded_by: user?.id || null,
+          article_id: article?.id || result.data?.[0]?.id || null
         });
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
       }
@@ -737,6 +739,10 @@ function articleForm(host, categories, article) {
       clearDirty(form);
       loadTab('articles');
     } catch (err) {
+      if (uploadedArticleAssetPaths.length) {
+        await removeStorageObjects(uploadedArticleAssetPaths.map(path => ({ bucket: 'articles', path })));
+        uploadedArticleAssetPaths.length = 0;
+      }
       submitBtn.disabled = false; submitBtn.textContent = 'Save article';
       flash(form, err?.message || String(err));
     }
