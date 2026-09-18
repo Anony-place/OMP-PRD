@@ -493,12 +493,17 @@ function articleForm(host, categories, article) {
     if (f.get('remove_document') === 'on') document_url = null;
     submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
     try {
+      /* Upload first, but do not create bookkeeping rows until the article
+         itself has been persisted. If the DB write fails, immediately remove
+         the newly uploaded object so a failed save can never leave an orphan. */
+      let uploadedDocumentPath = null;
+      let uploadedDocumentMeta = null;
       if (file && file.size) {
         /* Preflight the file before anything leaves the device: magic-byte
            signature must match the declared extension, and the exact
            Content-Type is forced on upload so the object can never be
-           sniffed as text/html. (Server-side storage policies remain the
-           real gate — see supabase/00_schema_migrations.sql.) */
+           sniffed as text/html. Server-side Storage policies remain the
+           authoritative gate. */
         const v = window.OMPFileValidate
           ? await window.OMPFileValidate.validateFile(file)
           : (() => {
@@ -510,15 +515,29 @@ function articleForm(host, categories, article) {
             })();
         if (!v || !v.ok) throw new Error((v && v.error) || 'File validation failed.');
         const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
-        const path = `${Date.now()}-${safeName}`;
-        const { error: upErr } = await supabase.storage.from('articles').upload(path, file, { cacheControl: '3600', upsert: false, contentType: v.contentType || undefined });
-        if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
-        const { data: pub } = supabase.storage.from('articles').getPublicUrl(path);
+        uploadedDocumentPath = `${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage.from('articles').upload(uploadedDocumentPath, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: v.contentType || undefined
+        });
+        if (upErr) {
+          uploadedDocumentPath = null;
+          throw new Error(`Upload failed: ${upErr.message}`);
+        }
+        const { data: pub } = supabase.storage.from('articles').getPublicUrl(uploadedDocumentPath);
+        if (!pub?.publicUrl) {
+          await removeStorageObjects([bucketPathFromUrl(`${SUPABASE_URL}/storage/v1/object/public/articles/${uploadedDocumentPath}`)]).catch(() => {});
+          uploadedDocumentPath = null;
+          throw new Error('Upload succeeded but Supabase did not return a public URL.');
+        }
         document_url = pub.publicUrl;
-        /* Best-effort bookkeeping: a failed media row must not block publishing. */
-        const { data: { user } } = await supabase.auth.getUser();
-        const { error: mediaErr } = await supabase.from('media').insert({ file_path: `articles/${path}`, public_url: document_url, mime_type: (v.contentType || file.type || null), size_bytes: file.size, uploaded_by: user?.id || null });
-        if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
+        uploadedDocumentMeta = {
+          file_path: `articles/${uploadedDocumentPath}`,
+          public_url: document_url,
+          mime_type: v.contentType || file.type || null,
+          size_bytes: file.size
+        };
       }
       const slug = slugify(f.get('slug')) || slugify(f.get('title'));
       if (!slug) throw new Error('A slug is required — add a title or type one in.');
@@ -539,7 +558,27 @@ function articleForm(host, categories, article) {
          degrades to creation order and never reflects edits. */
       const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
-      if (result.error) throw result.error;
+      if (result.error) {
+        if (uploadedDocumentPath) {
+          await removeStorageObjects([{
+            bucket: 'articles',
+            path: uploadedDocumentPath
+          }]);
+        }
+        throw result.error;
+      }
+
+      /* Bookkeeping is intentionally after the article write. A media-row
+         failure must not make a successful article save look failed. */
+      if (uploadedDocumentMeta) {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { error: mediaErr } = await supabase.from('media').insert({
+          ...uploadedDocumentMeta,
+          uploaded_by: user?.id || null
+        });
+        if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
+      }
+
       await removeStorageObjects([oldDoc]);
       clearDirty(form);
       loadTab('articles');
