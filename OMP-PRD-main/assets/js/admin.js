@@ -453,8 +453,13 @@ function articleForm(host, categories, article) {
      panel free of a separate worker asset. */
   async function extractPdfText(file) {
     const pdfjs = await import('https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.mjs');
+    /* PDF.js 5.x requires an explicit worker source in browser builds.
+       Pin the worker to the exact same version as the API module. */
+    if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+      pdfjs.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.worker.mjs';
+    }
     const data = new Uint8Array(await file.arrayBuffer());
-    const pdf = await pdfjs.getDocument({ data, disableWorker: true }).promise;
+    const pdf = await pdfjs.getDocument({ data }).promise;
     const pages = [];
     try {
       for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
