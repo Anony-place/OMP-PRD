@@ -80,10 +80,10 @@ folder) and kept in sync with any schema change.
   `00_schema_migrations.sql` (§6) for the options (Postgres trigger, Edge
   Function + CAPTCHA, or an aggregate RLS check). This document flags it as
   **NOT** verified rather than pretending it exists.
-- **Storage object deletion on article delete/replace** isn't wired in
-  `admin.js` (orphaned files remain after deleting an article or swapping the
-  document). A cleanup job or an `on delete` hook in an Edge Function is a
-  follow-up; the bucket policy above still prevents unauthorized writes.
+- **Storage object deletion on article delete/replace** is now handled in
+  `admin.js` after successful DB writes, with rollback cleanup for failed saves.
+  A periodic reconciliation job is still useful for legacy orphan objects
+  created before this fix.
 - These policies must be **applied to the live project**. This repo cannot set
   them from the client, and the live site has not been re-verified against a
   deployment of these statements in this session.
