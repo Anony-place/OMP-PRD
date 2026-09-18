@@ -419,6 +419,7 @@ function articleForm(host, categories, article) {
     <div class="form-field">
       <label for="${id('doc')}">Attach document (PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
       <input id="${id('doc')}" name="document" type="file" accept=".pdf,.doc,.docx,.md,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" style="padding:10px">
+      <p id="${id('pdf-status')}" class="tiny muted" style="margin-top:6px" aria-live="polite"></p>
       ${documentHref(a.document_url) ? `<p class="tiny" style="margin-top:6px">Attached: <a href="${esc(documentHref(a.document_url))}" target="_blank" rel="noopener noreferrer">view current document</a> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label></p>`
         : (a.document_url ? `<p class="tiny" style="margin-top:6px;color:var(--red)">This article has an attachment with an unsafe URL (${esc(a.document_url)}). It is not shown to readers — save with “remove attachment” to clear it.</p><label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label>` : '<p class="tiny muted" style="margin-top:6px">Optional — readers get a “Download document” button on the article page.</p>')}
     </div>
@@ -426,7 +427,7 @@ function articleForm(host, categories, article) {
       <div class="editor-fields">
         <label for="${id('content')}">Content</label>
         <div class="toolbar" role="toolbar" aria-label="Formatting" aria-controls="${id('content')}">${TOOLBAR.map((t,i)=>`<button type="button" data-mk="${i}" title="${esc(t.title)}" aria-label="${esc(t.title)}">${esc(t.label)}</button>`).join('')}</div>
-        <textarea id="${id('content')}" name="content" class="body-editor" rows="18" required spellcheck="true" aria-describedby="${id('hint')}">${esc(a.content)}</textarea>
+        <textarea id="${id('content')}" name="content" class="body-editor" rows="18" spellcheck="true" aria-describedby="${id('hint')}">${esc(a.content)}</textarea>
         <p class="tiny muted" id="${id('hint')}">Write Markdown (<code>## heading</code>, <code>**bold**</code>, <code>* item</code>, <code>| table |</code>, fenced code) — existing HTML bodies are detected and kept as-is. Everything is re-sanitized before it reaches readers.</p>
       </div>
       <div>
@@ -442,6 +443,71 @@ function articleForm(host, categories, article) {
   const titleInput = document.querySelector(`#${id('title')}`);
   const slugInput = document.querySelector(`#${id('slug')}`);
   const preview = document.querySelector('#article-preview');
+  const docInput = document.querySelector(`#${id('doc')}`);
+  const pdfStatus = document.querySelector(`#${id('pdf-status')}`);
+
+  /* PDF upload is a content import, not merely a file attachment.
+     Extract selectable PDF text in the browser and put it directly into the
+     article body so authors do not have to manually copy/paste a document.
+     PDF.js is pinned; workerless extraction keeps this standalone admin
+     panel free of a separate worker asset. */
+  async function extractPdfText(file) {
+    const pdfjs = await import('https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.mjs');
+    const data = new Uint8Array(await file.arrayBuffer());
+    const pdf = await pdfjs.getDocument({ data, disableWorker: true }).promise;
+    const pages = [];
+    try {
+      for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+        const page = await pdf.getPage(pageNo);
+        const content = await page.getTextContent();
+        const lines = [];
+        let line = [];
+        let lastY = null;
+        for (const item of content.items || []) {
+          const text = String(item.str || '');
+          if (!text) continue;
+          const y = Array.isArray(item.transform) ? item.transform[5] : null;
+          if (lastY !== null && y !== null && Math.abs(y - lastY) > 3 && line.length) {
+            lines.push(line.join(' ').replace(/\s+/g, ' ').trim());
+            line = [];
+          }
+          line.push(text);
+          if (y !== null) lastY = y;
+        }
+        if (line.length) lines.push(line.join(' ').replace(/\s+/g, ' ').trim());
+        const pageText = lines.filter(Boolean).join('\n').trim();
+        if (pageText) pages.push(pageText);
+      }
+    } finally {
+      try { await pdf.destroy(); } catch {}
+    }
+    return pages.join('\n\n').trim();
+  }
+
+  const setPdfStatus = (message, tone = 'muted') => {
+    if (!pdfStatus) return;
+    pdfStatus.textContent = message;
+    pdfStatus.style.color = tone === 'error' ? 'var(--red)' : '';
+  };
+
+  const importPdfContent = async file => {
+    if (!file || !file.size || !/\.pdf$/i.test(file.name)) return;
+    setPdfStatus('Reading PDF content…');
+    try {
+      const text = await extractPdfText(file);
+      if (!text) {
+        setPdfStatus('PDF uploaded, but no selectable text was found. This may be a scanned/image-only PDF; enter the article content manually or add OCR.', 'error');
+        return;
+      }
+      ta.value = text;
+      setDirty(form, true);
+      queuePreview();
+      setPdfStatus(`Imported ${text.length.toLocaleString()} characters from the PDF into Content. You can edit it before saving.`);
+    } catch (err) {
+      console.error('PDF text extraction failed:', err);
+      setPdfStatus(`Could not extract PDF text automatically: ${err?.message || String(err)}. The PDF can still be attached; enter Content manually.`, 'error');
+    }
+  };
 
   const paintPreview = () => {
     const title = titleInput.value.trim();
@@ -469,6 +535,12 @@ function articleForm(host, categories, article) {
   });
 
   form.querySelectorAll('[data-mk]').forEach(btn => btn.onclick = () => applyMarkup(ta, TOOLBAR[Number(btn.dataset.mk)]));
+  docInput.addEventListener('change', async e => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) { setPdfStatus(''); return; }
+    if (/\.pdf$/i.test(file.name)) await importPdfContent(file);
+    else setPdfStatus('Document attached. Automatic body import is available for PDF files; DOC/DOCX/MD/TXT can still be attached normally.');
+  });
   ta.addEventListener('keydown', e => {
     if (!(e.ctrlKey || e.metaKey)) return;
     const k = e.key.toLowerCase();
@@ -556,7 +628,13 @@ function articleForm(host, categories, article) {
       /* updated_at is set explicitly: the table has no UPDATE trigger, so
          without this the admin list's "sort by updated_at" silently
          degrades to creation order and never reflects edits. */
-      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content:f.get('content'),category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+      const content = String(f.get('content') || '').trim();
+      if (!content) {
+        throw new Error(file && file.size
+          ? 'PDF/document attached, but no article text was extracted. If this is a scanned/image-only PDF, enter the article content manually.'
+          : 'Article content is required.');
+      }
+      const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content,category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
       if (result.error) {
         if (uploadedDocumentPath) {
