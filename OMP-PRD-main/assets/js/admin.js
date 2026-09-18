@@ -709,7 +709,9 @@ function articleForm(host, categories, article) {
           : 'Article content is required.');
       }
       const payload = {title:f.get('title').trim(),slug,summary:f.get('summary'),content,category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
-      const result = article ? await supabase.from('articles').update(payload).eq('id',article.id) : await supabase.from('articles').insert(payload);
+      const result = article
+        ? await supabase.from('articles').update(payload).eq('id',article.id)
+        : await supabase.from('articles').insert(payload).select('id').single();
       if (result.error) {
         await removeStorageObjects(uploadedArticleAssetPaths.map(path => ({ bucket: 'articles', path })));
         throw result.error;
@@ -722,7 +724,7 @@ function articleForm(host, categories, article) {
         const { error: mediaErr } = await supabase.from('media').insert({
           ...uploadedDocumentMeta,
           uploaded_by: user?.id || null,
-          article_id: article?.id || result.data?.[0]?.id || null
+          article_id: article?.id || result.data?.id || null
         });
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
       }
