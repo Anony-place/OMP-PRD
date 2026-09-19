@@ -408,7 +408,6 @@ async function loadTab(tab) {
     document.querySelector('#message-status').addEventListener('change', e => paintMessages(document.querySelector('#message-search').value, e.target.value));
     paintMessages('', 'all');
   }
-  }
 }
 
 /* ---------- Markdown toolbar ---------- */
