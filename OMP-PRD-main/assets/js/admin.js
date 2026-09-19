@@ -101,16 +101,53 @@ function markActiveTab() {
   });
 }
 
+async function refreshAdminStats() {
+  const host = document.querySelector('#admin-kpis');
+  if (!host) return;
+  host.innerHTML = '<div class="admin-kpi-skeleton" aria-hidden="true"></div>'.repeat(4);
+  const count = async (table, column, value) => {
+    const q = supabase.from(table).select('id', { count: 'exact', head: true });
+    const { count: total } = value === undefined ? await q : await q.eq(column, value);
+    return Number(total || 0);
+  };
+  try {
+    const [publishedArticles, drafts, publishedProducts, newMessages, activeTools] = await Promise.all([
+      count('articles', 'status', 'published'),
+      count('articles', 'status', 'draft'),
+      count('products', 'status', 'published'),
+      count('contact_messages', 'status', 'new'),
+      count('tools', 'is_active', true)
+    ]);
+    host.innerHTML = [
+      ['Published', publishedArticles, 'Articles live'],
+      ['Drafts', drafts, 'Articles waiting'],
+      ['Unread', newMessages, 'New messages'],
+      ['Active tools', activeTools, 'Registry tools']
+    ].map(([label, value, sub]) =>
+      '<div class="admin-kpi"><div class="admin-kpi-label">' + esc(label) +
+      '</div><div class="admin-kpi-value">' + esc(value) +
+      '</div><div class="admin-kpi-sub">' + esc(sub) + '</div></div>'
+    ).join('');
+  } catch (e) {
+    host.innerHTML = '<div class="admin-kpi admin-kpi-error"><div class="admin-kpi-label">Admin data</div><div class="admin-kpi-sub">Stats unavailable right now.</div></div>';
+  }
+}
+
 async function dashboard() {
   authUi = 'dashboard';
   shell(`<div class="card card-pad">
-    <div class="flex justify-between items-center wrap gap-12"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Supabase-backed content management.</p></div><button id="logout" class="btn btn-ghost">Sign out</button></div>
-    <div class="admin-actions" style="margin-top:28px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
-    <section id="panel" style="margin-top:24px" aria-live="polite"></section>
+    <div class="admin-topbar"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Content, products, tools and support in one place.</p></div><div class="admin-top-actions"><span class="tiny muted" id="admin-session-label">Signed in</span><button id="logout" class="btn btn-ghost">Sign out</button></div></div>
+    <div id="admin-kpis" class="admin-kpis" aria-label="Admin overview"></div>
+    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
+    <section id="panel" class="admin-panel" aria-live="polite"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
+  const sessionLabel = document.querySelector('#admin-session-label');
+  const { data: { user: sessionUser } } = await supabase.auth.getUser();
+  if (sessionLabel) sessionLabel.textContent = sessionUser?.email || 'Signed in';
   document.querySelectorAll('[data-tab]').forEach(btn => btn.onclick = () => loadTab(btn.dataset.tab));
   markActiveTab();
+  refreshAdminStats();
   await loadTab(activeTab);
 }
 
@@ -167,6 +204,7 @@ async function loadTab(tab) {
         const { error: e2 } = await supabase.from('articles').delete().eq('id',btn.dataset.deleteArticle);
         if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
         await removeStorageObjects([bucketPathFromUrl(row && row.document_url)]);
+        await refreshAdminStats();
         loadTab('articles');
       });
     };
@@ -195,6 +233,7 @@ async function loadTab(tab) {
       btn.disabled = true;
       const { error: e2 } = await supabase.from('tools').delete().eq('id',btn.dataset.deleteTool);
       if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+      await refreshAdminStats();
       loadTab('tools');
     });
   } else if (tab === 'products') {
@@ -221,6 +260,7 @@ async function loadTab(tab) {
         btn.disabled = true;
         const { error: e2 } = await supabase.from('products').update(set).eq('id', id);
         if (e2) { btn.disabled = false; return flash(panel, `Update failed: ${e2.message}`); }
+        await refreshAdminStats();
         loadTab('products');
       };
       listEl.querySelectorAll('[data-publish-product]').forEach(btn => btn.onclick = () => {
@@ -248,6 +288,7 @@ async function loadTab(tab) {
           bucketPathFromFilePath(row && row.file_path),
           bucketPathFromUrl(row && row.featured_image)
         ]);
+        await refreshAdminStats();
         loadTab('products');
       });
     };
@@ -255,26 +296,118 @@ async function loadTab(tab) {
     document.querySelector('#product-filter').addEventListener('input', e => paintList(e.target.value));
     document.querySelector('#new-product').onclick = () => { productForm(editor, null); editor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   } else {
-    const { data: msgs, error } = await supabase.from('contact_messages').select('id,name,email,message,status,created_at').order('created_at',{ascending:false}).limit(200);
+    const [{ data: msgs, error }, { data: profiles, error: profileError }] = await Promise.all([
+      supabase.from('contact_messages').select('id,name,email,message,status,created_at,read_at,sender_user_id').order('created_at',{ascending:false}).limit(300),
+      supabase.from('profiles').select('id,display_name,email').order('display_name')
+    ]);
     if (stale()) return;
     if (error) return panel.innerHTML = notice(error.message);
-    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Contact messages</h2><button id="refresh-messages" type="button" class="btn btn-secondary btn-sm">Refresh</button></div><div class="admin-list" style="margin-top:18px">${(msgs||[]).map(m => `<div class="admin-row" style="align-items:flex-start"><div class="grow"><div class="ttl">${esc(m.name)} <span class="tiny muted">&lt;${esc(m.email)}&gt;</span></div><div class="meta">${esc(new Date(m.created_at).toLocaleString())} · ${esc(m.status)}${m.status==='new' ? ' · NEW' : ''}</div><p style="margin-top:8px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(m.message)}</p></div><div class="row-btns">${m.status==='new' ? `<button type="button" class="btn btn-secondary btn-sm" data-msg-read="${esc(m.id)}">Mark read</button>` : ''}${m.status!=='archived' ? `<button type="button" class="btn btn-ghost btn-sm" data-msg-archive="${esc(m.id)}">Archive</button>` : ''}<button type="button" class="btn btn-ghost btn-sm" data-msg-delete="${esc(m.id)}" style="color:var(--red)">Delete</button></div></div>`).join('') || '<div class="admin-empty"><p class="muted">No messages yet.</p></div>'}</div>`;
-    const setStatus = async (btn, id, patch) => {
+    const rows = msgs || [];
+    const profileMap = new Map((profileError ? [] : (profiles || [])).map(p => [p.id, p]));
+    const composeMail = (email, name, message) => {
+      const subject = encodeURIComponent('Re: OopsMyPassword — ' + String(name || 'contact').slice(0, 70));
+      const body = encodeURIComponent('Hi ' + String(name || 'there').trim() + ',\n\nThanks for contacting OopsMyPassword.\n\n--- Original message ---\n' + String(message || '') + '\n\n');
+      return 'mailto:' + encodeURIComponent(String(email || '').trim()) + '?subject=' + subject + '&body=' + body;
+    };
+    const copyText = async (text) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const applyMessageStatus = async (btn, id, status) => {
       btn.disabled = true;
+      const patch = { status };
+      if (status !== 'new') patch.read_at = new Date().toISOString();
       const { error: e2 } = await supabase.from('contact_messages').update(patch).eq('id', id);
-      if (e2) { btn.disabled = false; return flash(panel, `Update failed: ${e2.message}`); }
+      if (e2) {
+        btn.disabled = false;
+        return flash(panel, 'Update failed: ' + e2.message);
+      }
+      await refreshAdminStats();
       loadTab('messages');
     };
+
+    const paintMessages = (filterText, filterStatus) => {
+      const q = String(filterText || '').trim().toLowerCase();
+      const status = filterStatus || 'all';
+      const filtered = rows.filter(m => {
+        const profile = m.sender_user_id ? profileMap.get(m.sender_user_id) : null;
+        const displayName = profile?.display_name || m.name || '';
+        const displayEmail = profile?.email || m.email || '';
+        const hay = [displayName, displayEmail, m.name, m.email, m.message].join(' ').toLowerCase();
+        return (!q || hay.includes(q)) && (status === 'all' || m.status === status);
+      });
+      const newCount = rows.filter(m => m.status === 'new').length;
+      const linkedCount = rows.filter(m => m.sender_user_id).length;
+      document.querySelector('#message-summary').textContent =
+        newCount + ' unread · ' + rows.length + ' total · ' + linkedCount + ' linked account' + (linkedCount === 1 ? '' : 's');
+      listEl.innerHTML = filtered.map(m => {
+        const profile = m.sender_user_id ? profileMap.get(m.sender_user_id) : null;
+        const displayName = profile?.display_name || m.name || 'Unknown sender';
+        const displayEmail = profile?.email || m.email || '';
+        const linked = !!profile;
+        const mail = composeMail(displayEmail, displayName, m.message);
+        const initials = String(displayName).trim().split(/\s+/).slice(0, 2).map(x => x[0]?.toUpperCase() || '').join('') || '?';
+        return `<article class="admin-message-row ${m.status === 'new' ? 'is-unread' : ''}">
+          <div class="admin-message-avatar" aria-hidden="true">${esc(initials)}</div>
+          <div class="admin-message-main">
+            <div class="admin-message-head">
+              <div class="admin-message-sender">
+                <div class="ttl">${esc(displayName)}</div>
+                <a class="admin-email-link" href="${esc(mail)}" title="Reply by email">${esc(displayEmail)}</a>
+              </div>
+              <div class="admin-message-meta"><span class="admin-chip ${m.status === 'new' ? 'is-new' : ''}">${esc(m.status)}</span><span class="tiny muted">${esc(new Date(m.created_at).toLocaleString())}</span></div>
+            </div>
+            <div class="admin-message-badges"><span class="admin-chip">${linked ? 'Account' : 'Guest'}</span>${m.sender_user_id && !profile ? '<span class="admin-chip is-warning">Account record unavailable</span>' : ''}${m.status === 'new' ? '<span class="admin-chip is-new">Unread</span>' : ''}</div>
+            <p class="admin-message-body">${esc(m.message)}</p>
+            <div class="admin-message-actions">
+              <a class="btn btn-primary btn-sm" href="${esc(mail)}">Reply by email</a>
+              <button type="button" class="btn btn-secondary btn-sm" data-copy-email="${esc(displayEmail)}">Copy email</button>
+              ${m.status === 'new' ? `<button type="button" class="btn btn-secondary btn-sm" data-msg-read="${esc(m.id)}">Mark read</button>` : ''}
+              ${m.status !== 'archived' ? `<button type="button" class="btn btn-ghost btn-sm" data-msg-archive="${esc(m.id)}">Archive</button>` : ''}
+              <button type="button" class="btn btn-ghost btn-sm" data-msg-delete="${esc(m.id)}" style="color:var(--red)">Delete</button>
+            </div>
+          </div>
+        </article>`;
+      }).join('') || `<div class="admin-empty"><p class="muted">${rows.length ? 'No messages match your filters.' : 'Inbox is clear — no contact messages yet.'}</p></div>`;
+
+      listEl.querySelectorAll('[data-copy-email]').forEach(btn => btn.onclick = async () => {
+        const ok = await copyText(btn.dataset.copyEmail || '');
+        flash(panel, ok ? 'Email copied.' : 'Could not copy automatically — select the email address instead.');
+      });
+      listEl.querySelectorAll('[data-msg-read]').forEach(btn => btn.onclick = () => applyMessageStatus(btn, btn.dataset.msgRead, 'read'));
+      listEl.querySelectorAll('[data-msg-archive]').forEach(btn => btn.onclick = () => applyMessageStatus(btn, btn.dataset.msgArchive, 'archived'));
+      listEl.querySelectorAll('[data-msg-delete]').forEach(btn => btn.onclick = async () => {
+        if (!confirm('Delete this message permanently?')) return;
+        btn.disabled = true;
+        const { error: e2 } = await supabase.from('contact_messages').delete().eq('id', btn.dataset.msgDelete);
+        if (e2) {
+          btn.disabled = false;
+          return flash(panel, 'Delete failed: ' + e2.message);
+        }
+        await refreshAdminStats();
+        loadTab('messages');
+      });
+    };
+
+    panel.innerHTML = `<div class="admin-section-head">
+        <div><h2 class="h-3">Messages</h2><p class="tiny muted" id="message-summary">Loading inbox…</p></div>
+        <button id="refresh-messages" type="button" class="btn btn-secondary btn-sm">Refresh</button>
+      </div>
+      <div class="admin-message-toolbar">
+        <label class="admin-search"><span class="sr-only">Search messages</span><input id="message-search" type="search" placeholder="Search name, email or message…" autocomplete="off"></label>
+        <label class="admin-status-filter"><span class="sr-only">Filter by status</span><select id="message-status"><option value="all">All messages</option><option value="new">Unread</option><option value="read">Read</option><option value="archived">Archived</option></select></label>
+      </div>
+      <div class="admin-list admin-message-list" id="message-list" style="margin-top:16px"></div>`;
+    const listEl = document.querySelector('#message-list');
     document.querySelector('#refresh-messages').onclick = () => loadTab('messages');
-    document.querySelectorAll('[data-msg-read]').forEach(btn => btn.onclick = () => setStatus(btn, btn.dataset.msgRead, { status: 'read' }));
-    document.querySelectorAll('[data-msg-archive]').forEach(btn => btn.onclick = () => setStatus(btn, btn.dataset.msgArchive, { status: 'archived' }));
-    document.querySelectorAll('[data-msg-delete]').forEach(btn => btn.onclick = async () => {
-      if (!confirm('Delete this message permanently?')) return;
-      btn.disabled = true;
-      const { error: e2 } = await supabase.from('contact_messages').delete().eq('id',btn.dataset.msgDelete);
-      if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
-      loadTab('messages');
-    });
+    document.querySelector('#message-search').addEventListener('input', e => paintMessages(e.target.value, document.querySelector('#message-status').value));
+    document.querySelector('#message-status').addEventListener('change', e => paintMessages(document.querySelector('#message-search').value, e.target.value));
+    paintMessages('', 'all');
+  }
   }
 }
 
@@ -739,6 +872,7 @@ function articleForm(host, categories, article) {
       await removeStorageObjects([oldDoc, ...oldPdfImages]);
       clearPendingPdfPages();
       clearDirty(form);
+      await refreshAdminStats();
       loadTab('articles');
     } catch (err) {
       if (uploadedArticleAssetPaths.length) {
@@ -870,6 +1004,8 @@ function productForm(host, product) {
   form.querySelectorAll('[data-mk]').forEach(btn => btn.onclick = () => applyMarkup(ta, TOOLBAR[Number(btn.dataset.mk)]));
 
   /* Cover upload → public products bucket → fills the URL field. */
+  let uploadedCoverPath = null;
+  let uploadedDeliverablePath = null;
   document.querySelector(`#${id('cover-file')}`).addEventListener('change', async e => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -888,6 +1024,7 @@ function productForm(host, product) {
         cacheControl: '3600', upsert: false, contentType: v.contentType || file.type
       });
       if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+      uploadedCoverPath = path;
       const { data: pub } = supabase.storage.from('products').getPublicUrl(path);
       if (!pub?.publicUrl) throw new Error('Upload succeeded but no public URL was returned. Check that the products storage bucket is public.');
       coverInput.value = pub.publicUrl;
@@ -940,11 +1077,10 @@ function productForm(host, product) {
       const currency = price == null ? null : String(f.get('currency') || '').trim().toUpperCase();
       if (price != null && !/^[A-Z]{3}$/.test(currency || '')) throw new Error('Currency must be a 3-letter ISO 4217 code (USD, EUR, INR…).');
 
-      /* Private deliverable upload: magic-byte preflight, forced
-         Content-Type, PRIVATE bucket — no public URL is ever derived. */
-      /* Objects this save is about to stop referencing. Collected now,
-         deleted only after the row write succeeds. */
+      /* Track newly-created Storage objects so a failed DB save never
+         leaves an orphan behind. */
       const orphans = [];
+      const uploadedObjects = [];
       const previousFile = bucketPathFromFilePath(p.file_path);
       const previousCover = bucketPathFromUrl(p.featured_image);
       if (previousCover && previousCover.bucket === 'products') orphans.push(previousCover);
@@ -959,6 +1095,7 @@ function productForm(host, product) {
         const path = `${slug}/${Date.now()}-${safeName}`;
         const { error: upErr } = await supabase.storage.from('product-files').upload(path, file, { cacheControl: '3600', upsert: false, contentType: v.contentType || undefined });
         if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+        uploadedDeliverablePath = path;
         filePath = `product-files/${path}`;
       }
 
@@ -994,8 +1131,13 @@ function productForm(host, product) {
       }
       await removeStorageObjects(orphans);
       clearDirty(form);
+      await refreshAdminStats();
       loadTab('products');
     } catch (err) {
+      const cleanup = [];
+      if (uploadedCoverPath) cleanup.push({ bucket: 'products', path: uploadedCoverPath });
+      if (uploadedDeliverablePath) cleanup.push({ bucket: 'product-files', path: uploadedDeliverablePath });
+      if (cleanup.length) await removeStorageObjects(cleanup);
       submitBtn.disabled = false; submitBtn.textContent = product ? 'Save product' : 'Create product';
       flash(form, err?.message || String(err));
     }
@@ -1008,6 +1150,10 @@ function toolForm(host, categories, tool) {
   const id = n => `tf-${uid}-${n}`;
   host.innerHTML = `<form id="tool-form" class="card card-pad" style="margin-top:18px"><h3 class="h-3">${tool ? 'Edit tool' : 'New tool'}</h3><div class="editor-row-2" style="margin-top:16px"><div class="form-field"><label for="${id('name')}">Name</label><input id="${id('name')}" name="name" required value="${esc(t.name)}"></div><div class="form-field"><label for="${id('slug')}">Slug</label><input id="${id('slug')}" name="slug" required value="${esc(t.slug)}"></div></div><div class="form-field"><label for="${id('desc')}">Description</label><textarea id="${id('desc')}" name="description" rows="3">${esc(t.description || '')}</textarea></div><div class="editor-row-3"><div class="form-field"><label for="${id('cat')}">Category</label><select id="${id('cat')}" name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${esc(c.id)}" ${c.id===t.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="form-field"><label for="${id('route')}">Route</label><input id="${id('route')}" name="route" placeholder="/checker" value="${esc(t.route || '')}"></div><div class="form-field"><label for="${id('icon')}">Icon</label><input id="${id('icon')}" name="icon" value="${esc(t.icon || '')}"></div></div><div class="editor-row-2"><div class="form-field"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(t.sort_order)||0}"></div><div class="opt-row"><div><div class="opt-name">Active</div><div class="opt-desc">Show this tool on the public registry.</div></div><span class="switch"><input name="is_active" type="checkbox" aria-label="Active" ${t.is_active?'checked':''}><span class="track"></span></span></div></div><div class="form-field"><label for="${id('meta')}">Metadata JSON</label><textarea id="${id('meta')}" name="metadata" rows="6">${esc(JSON.stringify(t.metadata || {}, null, 2))}</textarea></div><p class="tiny muted" style="margin-top:6px">Route must be a path on this site (for example <code>/checker</code>). Off-site or <code>javascript:</code> routes are rejected by the public search.</p><div class="flex gap-8" style="margin-top:14px"><button class="btn btn-primary" type="submit">Save tool</button><button class="btn btn-ghost" type="button" id="cancel-tool">Cancel</button></div></form>`;
   const form = document.querySelector('#tool-form');
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('input', () => setDirty(form, true)));
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
+  const unsavedHeader = form.querySelector('h3');
+  if (unsavedHeader) unsavedHeader.innerHTML += ' <span class="unsaved-dot" data-unsaved title="Unsaved changes" hidden></span>';
   document.querySelector('#cancel-tool').onclick = () => {
     if (isDirty(form) && !confirm('Discard unsaved changes to this tool?')) return;
     dirtyForms.delete(form);
@@ -1026,6 +1172,8 @@ function toolForm(host, categories, tool) {
       const payload={name:f.get('name').trim(),slug:slugify(f.get('slug')),description:f.get('description'),category_id:f.get('category_id')||null,route,icon:f.get('icon'),sort_order:Number(f.get('sort_order'))||0,is_active:f.get('is_active')==='on',metadata};
       const result=tool?await supabase.from('tools').update(payload).eq('id',tool.id):await supabase.from('tools').insert(payload);
       if(result.error) throw result.error;
+      clearDirty(form);
+      await refreshAdminStats();
       loadTab('tools');
     } catch (err) {
       submitBtn.disabled = false; submitBtn.textContent = 'Save tool';
