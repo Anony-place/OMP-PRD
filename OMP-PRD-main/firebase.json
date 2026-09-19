@@ -13,42 +13,131 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "redirects": [
-      { "source": "/blog.html", "destination": "/articles", "type": 301 },
-      { "source": "/blog", "destination": "/articles", "type": 301 },
-      { "source": "/guides.html", "destination": "/articles", "type": 301 },
-      { "source": "/guides", "destination": "/articles", "type": 301 },
-      { "regex": "/guides/(.*)\\.html", "destination": "/articles/:1", "type": 301 },
-      { "regex": "/guides/(.+)", "destination": "/articles/:1", "type": 301 }
+      {
+        "source": "/blog.html",
+        "destination": "/articles",
+        "type": 301
+      },
+      {
+        "source": "/blog",
+        "destination": "/articles",
+        "type": 301
+      },
+      {
+        "source": "/guides.html",
+        "destination": "/articles",
+        "type": 301
+      },
+      {
+        "source": "/guides",
+        "destination": "/articles",
+        "type": 301
+      },
+      {
+        "regex": "/guides/(.*)\\.html",
+        "destination": "/articles/:1",
+        "type": 301
+      },
+      {
+        "regex": "/guides/(.+)",
+        "destination": "/articles/:1",
+        "type": 301
+      }
     ],
     "rewrites": [
-      { "source": "/articles/create-strong-password", "destination": "/guides/create-strong-password.html" },
-      { "source": "/articles/password-best-practices", "destination": "/guides/password-best-practices.html" },
-      { "source": "/articles/common-password-mistakes", "destination": "/guides/common-password-mistakes.html" },
-      { "source": "/articles/how-long-should-a-password-be", "destination": "/guides/how-long-should-a-password-be.html" },
-      { "source": "/articles/password-vs-passphrase", "destination": "/guides/password-vs-passphrase.html" },
-      { "source": "/articles/password-manager-benefits", "destination": "/guides/password-manager-benefits.html" },
-      { "source": "/articles/are-password-managers-safe", "destination": "/guides/are-password-managers-safe.html" },
-      { "source": "/articles/two-factor-authentication", "destination": "/guides/two-factor-authentication.html" },
-      { "source": "/articles/passkeys-explained", "destination": "/guides/passkeys-explained.html" },
-      { "source": "/articles/password-vs-passkey", "destination": "/guides/password-vs-passkey.html" },
-      { "source": "/articles/after-a-data-breach", "destination": "/guides/after-a-data-breach.html" },
-      { "source": "/articles/check-if-password-was-leaked", "destination": "/guides/check-if-password-was-leaked.html" },
-      { "source": "/articles/phishing-attacks", "destination": "/guides/phishing-attacks.html" },
-      { "source": "/articles/password-entropy", "destination": "/guides/password-entropy.html" },
-      { "source": "/articles/password-cracking-time-table", "destination": "/guides/password-cracking-time-table.html" }
+      {
+        "source": "/articles/create-strong-password",
+        "destination": "/guides/create-strong-password.html"
+      },
+      {
+        "source": "/articles/password-best-practices",
+        "destination": "/guides/password-best-practices.html"
+      },
+      {
+        "source": "/articles/common-password-mistakes",
+        "destination": "/guides/common-password-mistakes.html"
+      },
+      {
+        "source": "/articles/how-long-should-a-password-be",
+        "destination": "/guides/how-long-should-a-password-be.html"
+      },
+      {
+        "source": "/articles/password-vs-passphrase",
+        "destination": "/guides/password-vs-passphrase.html"
+      },
+      {
+        "source": "/articles/password-manager-benefits",
+        "destination": "/guides/password-manager-benefits.html"
+      },
+      {
+        "source": "/articles/are-password-managers-safe",
+        "destination": "/guides/are-password-managers-safe.html"
+      },
+      {
+        "source": "/articles/two-factor-authentication",
+        "destination": "/guides/two-factor-authentication.html"
+      },
+      {
+        "source": "/articles/passkeys-explained",
+        "destination": "/guides/passkeys-explained.html"
+      },
+      {
+        "source": "/articles/password-vs-passkey",
+        "destination": "/guides/password-vs-passkey.html"
+      },
+      {
+        "source": "/articles/after-a-data-breach",
+        "destination": "/guides/after-a-data-breach.html"
+      },
+      {
+        "source": "/articles/check-if-password-was-leaked",
+        "destination": "/guides/check-if-password-was-leaked.html"
+      },
+      {
+        "source": "/articles/phishing-attacks",
+        "destination": "/guides/phishing-attacks.html"
+      },
+      {
+        "source": "/articles/password-entropy",
+        "destination": "/guides/password-entropy.html"
+      },
+      {
+        "source": "/articles/password-cracking-time-table",
+        "destination": "/guides/password-cracking-time-table.html"
+      }
     ],
     "headers": [
       {
         "source": "**",
         "headers": [
-          { "key": "X-Content-Type-Options", "value": "nosniff" },
-          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-          { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-          { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
-          { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
-          { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
-          { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
-          { "key": "X-Permitted-Cross-Domain-Policies", "value": "none" },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+          },
+          {
+            "key": "Strict-Transport-Security",
+            "value": "max-age=31536000; includeSubDomains; preload"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin"
+          },
+          {
+            "key": "X-Permitted-Cross-Domain-Policies",
+            "value": "none"
+          },
           {
             "key": "Content-Security-Policy",
             "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
@@ -58,48 +147,106 @@
       {
         "source": "/@(sitemap.xml|google-sitemap.xml)",
         "headers": [
-          { "key": "Content-Type", "value": "application/xml; charset=UTF-8" },
-          { "key": "Cache-Control", "value": "public, max-age=300" },
-          { "key": "Access-Control-Allow-Origin", "value": "*" },
-          { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
-          { "key": "Cross-Origin-Opener-Policy", "value": "unsafe-none" },
-          { "key": "Content-Security-Policy", "value": "default-src 'none'" }
+          {
+            "key": "Content-Type",
+            "value": "application/xml; charset=UTF-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Cross-Origin-Resource-Policy",
+            "value": "cross-origin"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "unsafe-none"
+          }
         ]
       },
       {
         "source": "/robots.txt",
         "headers": [
-          { "key": "Content-Type", "value": "text/plain; charset=UTF-8" },
-          { "key": "Cache-Control", "value": "public, max-age=300" },
-          { "key": "Access-Control-Allow-Origin", "value": "*" },
-          { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
-          { "key": "Cross-Origin-Opener-Policy", "value": "unsafe-none" },
-          { "key": "Content-Security-Policy", "value": "default-src 'none'" }
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=UTF-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Cross-Origin-Resource-Policy",
+            "value": "cross-origin"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "unsafe-none"
+          }
         ]
       },
       {
         "source": "/assets/**",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       },
       {
         "source": "**/*.html",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       },
       {
         "source": "/",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       },
       {
         "source": "/@(checker|generator|tools|articles|products|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       },
       {
         "source": "/articles/**",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       },
       {
         "source": "/products{,/**}",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ]
   }
