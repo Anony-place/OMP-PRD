@@ -12,3 +12,6 @@ functions/.env
 supabase/functions/.env.local
 supabase/.branches
 supabase/.temp
+
+# Generated in CI by the content-sync fingerprint step
+content-fingerprint.txt

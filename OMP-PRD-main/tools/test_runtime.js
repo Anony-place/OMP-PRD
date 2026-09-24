@@ -1198,7 +1198,7 @@ const $ = (d, s) => d.querySelector(s);
 
     ok(/bucketPathFromUrl/.test(src) && /bucketPathFromFilePath/.test(src) && /removeStorageObjects/.test(src),
        'deleting/replacing content cleans up its Storage object');
-    ok(/removeStorageObjects\(\[bucketPathFromUrl\(row && row\.document_url\)\]\)/.test(src), 'article delete removes the attached document');
+    ok(/removeStorageObjects\(\[bucketPathFromUrl\(row && row\.document_url\)/.test(src), 'article delete removes the attached document');
 
     /* Edit buttons stayed disabled after a cancelled edit. */
     const editHandler = src.slice(src.indexOf("[data-edit-article]"), src.indexOf("[data-delete-article]"));

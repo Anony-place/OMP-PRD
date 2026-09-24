@@ -25,6 +25,9 @@ function makeClient() {
   return {
     auth: {
       getUser: async () => ({ data: { user: { id: 'u1' } }, error: null }),
+      getSession: async () => ({ data: { session: { user: { id: 'u1' } } }, error: null }),
+      resetPasswordForEmail: async () => ({ error: null }),
+      updateUser: async () => ({ error: null }),
       signOut: async () => ({ error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } })
     },
@@ -34,6 +37,7 @@ function makeClient() {
         select() { return b; },
         eq(col, v) { (b._eqs = b._eqs || []).push([col, v]); return b; },
         order() { return b; },
+        limit() { return b; },
         maybeSingle: async () => {
           if (table === 'profiles') return { data: { id: 'u1', email: 'a@b.c', is_admin: true }, error: null };
           return { data: null, error: { message: 'unexpected maybeSingle ' + table } };
@@ -66,6 +70,7 @@ function makeClient() {
     storage: {
       from(bucket) {
         return {
+          remove: async paths => { (calls.removes = calls.removes || []).push({ bucket, paths }); return { error: null }; },
           upload: async (path, file, opts) => {
             calls.uploads.push({ bucket, path, file, opts });
             return { data: { path }, error: null };
@@ -83,6 +88,17 @@ async function boot() {
   const w = dom.window;
   w.matchMedia = w.matchMedia || (q => ({ matches: false, media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} }));
   w.Element.prototype.scrollIntoView = w.Element.prototype.scrollIntoView || function () {};
+  /* jsdom's Blob has no arrayBuffer(); the magic-byte validator needs it. */
+  if (!w.Blob.prototype.arrayBuffer) {
+    w.Blob.prototype.arrayBuffer = function () {
+      return new Promise((resolve, reject) => {
+        const r = new w.FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+        r.readAsArrayBuffer(this);
+      });
+    };
+  }
   /* jsdom FormData reads the internal file slot, not .files — inject the
      harness-selected file into the entry list after construction. */
   const OrigFormData = w.FormData;
@@ -232,7 +248,7 @@ function setFile(w, input, name, type, bytes) {
   w.document.querySelector('#new-product').click();
   await sleep(20);
   const nf2 = w.document.querySelector('#product-form');
-  setFile(w, nf2.querySelector('#' + nf2.querySelector('input[type="file"][accept^="image"]').id), 'cover.png', 'image/png', new Uint8Array([0x89, 0x50, 0x4e, 0x47]));
+  setFile(w, nf2.querySelector('#' + nf2.querySelector('input[type="file"][accept^="image"]').id), 'cover.png', 'image/png', new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x49, 0x48, 0x44, 0x52]));
   await sleep(60);
   ok(calls.uploads.some(u => u.bucket === 'products'), 'cover uploaded to the PUBLIC covers bucket');
   ok(calls.publicUrls.some(u => u.bucket === 'products'), 'cover gets a public URL');

@@ -8,7 +8,9 @@ name: Deploy Firebase Hosting Static SEO
 
 concurrency:
   group: firebase-hosting-${{ github.ref }}
-  cancel-in-progress: true
+  # Queue, never cancel, on main: a scheduled content sync must not kill a
+  # code deploy that is already running (and vice versa). PRs still cancel.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 on:
   push:
@@ -18,6 +20,13 @@ on:
     branches:
       - main
   workflow_dispatch:
+  # Content published from the admin panel lives in Supabase, but the public
+  # /articles/<slug> and /products/<slug> pages and sitemap.xml are generated
+  # at build time. Without this schedule a newly published article stays 404
+  # until someone pushes code. The deploy job skips the release when the
+  # generated content is identical to what is already live.
+  schedule:
+    - cron: '*/15 * * * *'
 
 env:
   SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
@@ -87,6 +96,17 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: Admin panel behavioral tests
+        working-directory: OMP-PRD-main
+        # jsdom + a scripted Supabase mock: list actions, editors, uploads,
+        # storage cleanup, password reset. Installed outside the site root so
+        # node_modules can never end up in the Hosting artifact.
+        run: |
+          npm install --prefix /tmp/admin-test --no-save --silent jsdom@24
+          export NODE_PATH=/tmp/admin-test/node_modules
+          node tools/admin_products_harness.js
+          node tools/admin_articles_harness.js
+
       - name: Site-wide link, anchor and SEO sweep
         working-directory: OMP-PRD-main
         run: python3 tools/qa.py
@@ -129,7 +149,28 @@ jobs:
         working-directory: OMP-PRD-main
         run: cp sitemap.xml google-sitemap.xml
 
+      - name: Fingerprint Supabase-generated content
+        id: content
+        working-directory: OMP-PRD-main
+        # The fingerprint covers exactly what admin-panel content changes:
+        # generated article/product pages and the sitemap. It is deployed as
+        # /content-fingerprint.txt so the next scheduled run can compare.
+        # Pushes and manual runs always deploy (code may have changed).
+        run: |
+          set -euo pipefail
+          FP=$( { find articles products -type f -name '*.html' 2>/dev/null | LC_ALL=C sort | xargs -r sha256sum; sha256sum sitemap.xml; } | sha256sum | cut -d' ' -f1)
+          echo "$FP" > content-fingerprint.txt
+          LIVE=$(curl -fsS --max-time 20 "${SITE_ORIGIN}/content-fingerprint.txt" 2>/dev/null | tr -d '[:space:]' || true)
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$FP" = "$LIVE" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Content sync::No admin content changes since the last release; skipping deploy."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Content sync::Deploying (event=${{ github.event_name }}, live=${LIVE:-none}, new=$FP)"
+          fi
+
       - name: Re-run the full gate on the artifact being deployed
+        if: steps.content.outputs.changed == 'true'
         working-directory: OMP-PRD-main
         # seo-check ran the same gate, but on its own checkout and its own
         # Supabase query. This job rebuilds from scratch, so the database may
@@ -141,12 +182,14 @@ jobs:
           node scripts/verify-seo.mjs
 
       - name: Deploy Hosting only
+        if: steps.content.outputs.changed == 'true'
         working-directory: OMP-PRD-main
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
 
       - name: Prove Googlebot can fetch the live sitemap
+        if: steps.content.outputs.changed == 'true'
         # Search Console "Couldn't fetch" is this check failing in production.
         # Hosting can take a few seconds to propagate, so retry briefly.
         working-directory: OMP-PRD-main
@@ -172,6 +215,7 @@ jobs:
           exit 1
 
       - name: Submit URLs to IndexNow (Bing / Yandex)
+        if: steps.content.outputs.changed == 'true'
         working-directory: OMP-PRD-main
         # Best-effort. IndexNow needs no secret: ownership is proven by the
         # public /<key>.txt that the previous step just deployed. Never fails
