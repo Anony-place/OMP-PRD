@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          exec > >(tee /tmp/out.txt) 2>&1
           sudo apt-get install -y libxml2-utils >/dev/null 2>&1 || true
           UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
           for p in sitemap.xml robots.txt; do
@@ -19,3 +20,10 @@ jobs:
           echo "===== non-ascii / control chars"; grep -nP '[^\x09\x0A\x0D\x20-\x7E]' /tmp/sitemap.xml || echo none
           echo "===== each loc status"
           grep -o '<loc>[^<]*' /tmp/sitemap.xml | sed 's/<loc>//' | while read u; do echo "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -A "$UA" "$u") $u"; done
+      - if: always()
+        run: |
+          split -l 25 /tmp/out.txt /tmp/part_
+          for f in /tmp/part_*; do
+            msg=$(sed 's/%/%25/g' "$f" | sed ':a;N;$!ba;s/\r//g;s/\n/%0A/g')
+            echo "::notice title=$(basename $f)::$msg"
+          done
