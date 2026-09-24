@@ -1,0 +1,28 @@
+name: admin-diag
+on:
+  push:
+    branches: [arena/01a0d2fe-omp-prd]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          exec > >(tee /tmp/out.txt) 2>&1
+          U=https://aeehfulikupskyrvcpzb.supabase.co; K=sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
+          H=(-H "apikey: $K" -H "Authorization: Bearer $K")
+          p(){ echo "== $1"; curl -s -m 15 -w " [HTTP %{http_code}]" "${H[@]}" "${@:2}" | head -c 600; echo; }
+          p auth-settings $U/auth/v1/settings
+          for t in profiles contact_messages media articles products tools article_categories; do p "anon select $t (non-published)" "$U/rest/v1/$t?select=*&limit=2"; done
+          p "articles drafts" "$U/rest/v1/articles?select=slug,status&status=neq.published&limit=5"
+          p "products drafts / file_path" "$U/rest/v1/products?select=slug,status,file_path&limit=5"
+          p "rpc is_admin" -X POST -H 'Content-Type: application/json' -d '{}' $U/rest/v1/rpc/is_admin
+          for b in articles products product-files; do p "storage list $b" -X POST -H 'Content-Type: application/json' -d '{"prefix":"","limit":5}' $U/storage/v1/object/list/$b; done
+          p "bucket list" $U/storage/v1/bucket
+          p "openapi exposure" "$U/rest/v1/" 
+          echo "== admin page headers"; curl -sI https://oopsmypassword.web.app/admin/ | grep -iE 'HTTP|cache|content-security|x-robots'
+          echo "== tools list md"; curl -s -o /dev/null -w "%{http_code}\n" "https://oopsmypassword.web.app/admin/tools%20list.md"
+          echo "== signup probe (dry: invalid email)"; curl -s -m 15 "${H[@]}" -H 'Content-Type: application/json' -d '{"email":"not-an-email","password":"x"}' $U/auth/v1/signup | head -c 300; echo
+      - if: always()
+        run: |
+          split -l 12 /tmp/out.txt /tmp/part_
+          for f in /tmp/part_*; do msg=$(sed 's/%/%25/g' "$f" | sed ':a;N;$!ba;s/\r//g;s/\n/%0A/g'); echo "::notice title=$(basename $f)::$msg"; done
