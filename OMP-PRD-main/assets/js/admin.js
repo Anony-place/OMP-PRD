@@ -614,7 +614,7 @@ function bucketPathFromFilePath(filePath) {
 
 /* PDF page visuals are stored under articles/pdf-pages/ and referenced from
    the article body as Markdown images. Returns every such object found in a
-   body. (The previous inline regex used "[^\\\\s)]" — a class that excluded
+   body. (The previous inline regex had a character class that excluded
    the letter "s", so it never matched a real URL and page images leaked.) */
 const PDF_PAGE_URL_RE = /https?:\/\/[^\s)"'<>]+\/storage\/v1\/object\/public\/articles\/pdf-pages\/[^\s)"'<>]+/gi;
 function pdfPageObjects(body) {
