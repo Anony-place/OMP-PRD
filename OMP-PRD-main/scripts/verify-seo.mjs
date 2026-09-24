@@ -557,6 +557,14 @@ function checkCrawlerFetch() {
     fail('firebase.json: /products catch-all rewrite serves the hub at HTTP 200 for unknown slugs (Search Console soft 404)');
   }
 
+  /* Internal docs (AUDIT*.md, SEO notes) and build scripts were publicly
+     downloadable from the site root. Keep them out of the Hosting artifact. */
+  for (const glob of ['**/*.md', 'scripts/**']) {
+    if (!(hosting.ignore || []).includes(glob)) {
+      fail(`firebase.json: ignore is missing "${glob}" — internal files would be publicly served`);
+    }
+  }
+
   const sitemapRewrite = (hosting.rewrites || []).find((rule) =>
     String(rule.source || '') === '/sitemap.xml' || String(rule.source || '').includes('sitemap.xml'));
   if (sitemapRewrite) {
