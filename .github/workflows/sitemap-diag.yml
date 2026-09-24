@@ -16,7 +16,7 @@ jobs:
             echo "--- first bytes (hex)"; head -c 64 /tmp/$p | xxd
             echo "--- body"; cat /tmp/$p; echo
           done
-          echo "===== xmllint"; xmllint --noout /tmp/sitemap.xml && echo WELL-FORMED
+          echo "===== parse"; python3 -c "import xml.etree.ElementTree as E;r=E.parse(\"/tmp/sitemap.xml\").getroot();n=\"{http://www.sitemaps.org/schemas/sitemap/0.9}\";l=[u.find(n+\"loc\").text for u in r];print(\"WELL-FORMED root=\",r.tag,\"urls=\",len(l),\"unique=\",len(set(l)))"
           echo "===== non-ascii / control chars"; grep -nP '[^\x09\x0A\x0D\x20-\x7E]' /tmp/sitemap.xml || echo none
           echo "===== each loc status"
           grep -o '<loc>[^<]*' /tmp/sitemap.xml | sed 's/<loc>//' | while read u; do echo "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -A "$UA" "$u") $u"; done
