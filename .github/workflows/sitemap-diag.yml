@@ -1,0 +1,21 @@
+name: sitemap-diag
+on:
+  push:
+    branches: [arena/01a0d2fe-omp-prd]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sudo apt-get install -y libxml2-utils >/dev/null 2>&1 || true
+          UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+          for p in sitemap.xml robots.txt; do
+            echo "===== $p"
+            curl -sS -D - -o /tmp/$p -A "$UA" --compressed "https://oopsmypassword.web.app/$p"
+            echo "--- first bytes (hex)"; head -c 64 /tmp/$p | xxd
+            echo "--- body"; cat /tmp/$p; echo
+          done
+          echo "===== xmllint"; xmllint --noout /tmp/sitemap.xml && echo WELL-FORMED
+          echo "===== non-ascii / control chars"; grep -nP '[^\x09\x0A\x0D\x20-\x7E]' /tmp/sitemap.xml || echo none
+          echo "===== each loc status"
+          grep -o '<loc>[^<]*' /tmp/sitemap.xml | sed 's/<loc>//' | while read u; do echo "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -A "$UA" "$u") $u"; done
