@@ -50,6 +50,9 @@ jobs:
         run: |
           python3 tools/build.py
           node scripts/build-static-seo.mjs
+          # The Supabase article build intentionally produces /articles/<slug>.html.
+          # With Firebase cleanUrls enabled, the HTML files map to /articles/<slug>.
+          test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
 
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
@@ -120,6 +123,7 @@ jobs:
         run: |
           python3 tools/build.py
           node scripts/build-static-seo.mjs
+          test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
 
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
