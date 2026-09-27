@@ -46,6 +46,10 @@
     ],
     "rewrites": [
       {
+        "source": "/certificate",
+        "destination": "/learning.html"
+      },
+      {
         "source": "/learning",
         "destination": "/learning.html"
       },
@@ -230,7 +234,7 @@
         ]
       },
       {
-        "source": "/@(checker|generator|tools|articles|products|learning|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
+        "source": "/@(checker|generator|tools|articles|products|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
         "headers": [
           {
             "key": "Cache-Control",
