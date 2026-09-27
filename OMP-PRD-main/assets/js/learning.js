@@ -109,11 +109,24 @@ function authPanel(user) {
   return '<div class="academy-auth card card-pad"><div><strong>Save your Academy progress</strong><p class="muted small">Sign in with email to save labs, quiz results and certificates across sessions.</p></div><form id="academy-auth-form" class="flex gap-8 wrap"><input class="input" id="academy-email" type="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address"><button class="btn btn-primary btn-sm" type="submit">Send sign-in link</button></form><p id="academy-auth-note" class="small muted"></p></div>';
 }
 
+function bindAuth() {
+  const authForm=document.querySelector('#academy-auth-form');
+  if(authForm) authForm.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const note=document.querySelector('#academy-auth-note');
+    try { await signInWithEmail(document.querySelector('#academy-email').value.trim()); note.textContent='Sign-in link sent. Check your email, then return here.'; }
+    catch(err){ note.textContent=err.message||'Could not send sign-in link.'; }
+  });
+  const signout=document.querySelector('#academy-signout');
+  if(signout) signout.addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
+}
+
 function renderHub(data,pmap) {
   const done=[...pmap.values()].filter(p => p.passed).length;
   const pct=data.topics.length ? Math.round(done/data.topics.length*100) : 0;
   app.innerHTML=authPanel(await getUser())+'<div class="learning-summary card card-pad"><div><span class="eyebrow">Security Academy</span><h2 class="h-2">Your learning progress</h2><p class="muted">Overall completion across the academy.</p></div><div class="learning-summary-stat"><strong>'+pct+'%</strong><span>complete</span></div></div>'+
     '<div class="grid grid-3 mt-24">'+data.categories.map(c=>categoryCard(c,pmap)).join('')+'</div>';
+  bindAuth();
 }
 
 function renderCategory(data,cat,pmap) {
@@ -122,6 +135,7 @@ function renderCategory(data,cat,pmap) {
     '<div class="page-hero compact"><div><span class="chip chip-accent">Category</span><h1 class="h-1 mt-16">'+esc(cat.name)+'</h1><p class="lead">'+esc(cat.description||'')+'</p></div>'+
     '<div class="category-progress card card-pad"><strong>'+done+'/'+total+'</strong><span>completed</span><div class="progress-track"><span style="width:'+pct+'%"></span></div><small>'+pct+'%</small></div></div>'+
     '<div class="learning-list mt-24">'+cat.topics.map((t,i)=>topicCard(t,pmap.get(t.id),i+1)).join('')+'</div>';
+  bindAuth();
 }
 
 function lessonContent(topic) {
@@ -176,15 +190,7 @@ async function renderTopic(data,cat,topic,p) {
     '<div class="lesson-layout mt-24"><aside class="toc card card-pad"><div class="subhead-sm">Lesson</div><ul role="list">'+sections.map(s=>'<li><a href="#s-'+s[0]+'">'+s[0]+' — '+esc(s[1])+'</a></li>').join('')+'</ul></aside>'+
     '<article class="prose learning-prose">'+sections.map(s=>'<section id="s-'+s[0]+'"><h2>'+esc(s[1])+'</h2>'+s[2]+'</section>').join('')+'</article></div>';
   
-  const authForm=document.querySelector('#academy-auth-form');
-  if(authForm) authForm.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const note=document.querySelector('#academy-auth-note');
-    try { await signInWithEmail(document.querySelector('#academy-email').value.trim()); note.textContent='Sign-in link sent. Check your email, then return here.'; }
-    catch(err){ note.textContent=err.message||'Could not send sign-in link.'; }
-  });
-  const signout=document.querySelector('#academy-signout');
-  if(signout) signout.addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
+  bindAuth();
 
   if(user && !p.lesson_started) {
     try { await mutateProgress(topic,'start_lesson'); } catch(e) {}
