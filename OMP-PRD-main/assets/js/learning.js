@@ -170,9 +170,9 @@ async function renderTopic(data,cat,topic,p) {
     ['08','Knowledge Quiz',quizView(quiz,p)]
   ];
   const st=state(p);
-  app.innerHTML='<div class="learning-breadcrumb"><a href="/learning">Learning</a><span>/</span><a href="/learning/'+esc(cat.slug)+'">'+esc(cat.name)+'</a><span>/</span><strong>'+esc(topic.name)+'</strong></div>'+
+  app.innerHTML=authPanel(user)+'<div class="learning-breadcrumb"><a href="/learning">Learning</a><span>/</span><a href="/learning/'+esc(cat.slug)+'">'+esc(cat.name)+'</a><span>/</span><strong>'+esc(topic.name)+'</strong></div>'+
     '<div class="page-hero compact"><div><span class="chip chip-accent">'+esc(topic.difficulty)+' · '+topic.estimated_minutes+' min</span><h1 class="h-1 mt-16">'+esc(topic.name)+'</h1><p class="lead">'+esc(topic.description||'')+'</p></div>'+
-    '<div class="card card-pad topic-state-panel"><span class="subhead-sm">Current state</span><strong>'+esc(st.replaceAll('_',' '))+'</strong><span class="muted">Sign in to persist progress.</span></div></div>'+
+    '<div class="card card-pad topic-state-panel"><span class="subhead-sm">Current state</span><strong>'+esc(st.replaceAll('_',' '))+'</strong><span class="muted">'+(user?'Progress is saved to your Academy account.':'Sign in above to persist progress.')+'</span></div></div>'+
     '<div class="lesson-layout mt-24"><aside class="toc card card-pad"><div class="subhead-sm">Lesson</div><ul role="list">'+sections.map(s=>'<li><a href="#s-'+s[0]+'">'+s[0]+' — '+esc(s[1])+'</a></li>').join('')+'</ul></aside>'+
     '<article class="prose learning-prose">'+sections.map(s=>'<section id="s-'+s[0]+'"><h2>'+esc(s[1])+'</h2>'+s[2]+'</section>').join('')+'</article></div>';
   
@@ -195,8 +195,15 @@ async function renderTopic(data,cat,topic,p) {
       const u=await getUser();
       if(!u) { app.querySelector('.topic-state-panel .muted').textContent='Sign in to persist progress.'; return; }
       btn.disabled=true;
-      try { await mutateProgress(topic,'complete_lab'); btn.textContent='Lab completed ✓'; }
-      catch(e) { btn.disabled=false; if(window.ompToast) window.ompToast('Could not save progress'); }
+      try {
+        const result=await mutateProgress(topic,'complete_lab');
+        p=Object.assign(p,result.progress||{}, {lab_completed:true});
+        btn.textContent='Lab completed ✓';
+        const quizSection=document.querySelector('#s-08');
+        if(quizSection) quizSection.innerHTML='<h2>Knowledge Quiz</h2>'+quizView(quiz,p);
+        const refreshedForm=document.querySelector('#academy-quiz');
+        if(refreshedForm && quiz) bindQuizForm(refreshedForm,quiz,topic,cat,p);
+      } catch(e) { btn.disabled=false; if(window.ompToast) window.ompToast('Could not save progress'); }
     });
   });
 
