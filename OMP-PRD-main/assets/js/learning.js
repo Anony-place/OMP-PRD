@@ -9,7 +9,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
 const app = document.querySelector('#learning-app');
 const registry = window.OMPLearningData || { categories: [], defaultLessonSections: [] };
 const esc = (v='') => String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const parts = () => location.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+const parts = () => location.pathname.split('/').filter(Boolean).map(x => { try { return decodeURIComponent(x); } catch (_) { return x; } });
+const safeHttpUrl = (value) => { try { const u = new URL(value, location.origin); return u.protocol === 'https:' ? u.href : ''; } catch (_) { return ''; } };
 
 function registryCategory(slug) { return registry.categories.find(c => c.slug === slug); }
 function registryTopic(categorySlug, topicSlug) {
@@ -179,7 +180,7 @@ async function renderTopic(data,cat,topic,p) {
     ['01','Overview',c.overview],['02','How It Works',c.how],['03','History / Background',c.history],
     ['04','Real-World Examples',c.real],['05','What To Look For',c.look],['06','Defensive Perspective',c.defensive],
     ['07','Legal Practice Labs',c.labs+'<div class="labs-grid mt-16">'+
-      (labs.length?labs.map(l=>'<div class="card card-pad"><div class="flex justify-between gap-12"><strong>'+esc(l.title)+'</strong><span class="badge badge-live">'+esc(l.provider)+'</span></div><p class="mt-8">'+esc(l.description||'')+'</p><a class="btn btn-secondary btn-sm mt-16" href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer">Open Lab ↗</a><button class="btn btn-primary btn-sm mt-16" data-lab-complete>Mark lab complete</button></div>').join(''):'<div class="notice-band"><p>No authorized lab resources published yet for this topic.</p></div>')+
+      (labs.length?labs.map(l=>'<div class="card card-pad"><div class="flex justify-between gap-12"><strong>'+esc(l.title)+'</strong><span class="badge badge-live">'+esc(l.provider)+'</span></div><p class="mt-8">'+esc(l.description||'')+'</p><a class="btn btn-secondary btn-sm mt-16" href="'+esc(safeHttpUrl(l.url))+'" target="_blank" rel="noopener noreferrer">Open Lab ↗</a><button class="btn btn-primary btn-sm mt-16" data-lab-complete>Mark lab complete</button></div>').join(''):'<div class="notice-band"><p>No authorized lab resources published yet for this topic.</p></div>')+
       '</div>'],
     ['08','Knowledge Quiz',quizView(quiz,p)]
   ];
