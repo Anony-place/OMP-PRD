@@ -127,13 +127,13 @@ Deno.serve(async (req: Request) => {
       const metadata = user.user_metadata ?? {};
       const recipientName =
         String(metadata.full_name || metadata.name || '').trim() ||
-        String(user.email || 'OMP Learner').split('@')[0];
+        'OMP Learner';
       const { data: category } = await admin
         .from('learning_categories')
         .select('name')
         .eq('id', topic.category_id)
         .maybeSingle();
-      const certificateId = 'OMP-' + crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase();
+      const certificateId = 'OMP-' + crypto.randomUUID().replaceAll('-', '').slice(0, 24).toUpperCase();
       const { data: existingCertificate } = await admin
         .from('learning_certificates')
         .select('*')
