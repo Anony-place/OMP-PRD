@@ -112,13 +112,18 @@ function renderCategory(data,cat,pmap) {
 }
 
 function lessonContent(topic) {
+  const db = topic.content || {};
+  const renderBlock = (value, fallback) => {
+    if (Array.isArray(value)) return '<ul>' + value.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    return value ? '<p>' + esc(value) + '</p>' : fallback;
+  };
   const base = {
-    overview:'<p>'+esc(topic.name)+' is a focused security concept. Start by identifying the trust boundary, attacker-controlled input or action, and the component that makes the security decision.</p>',
-    how:'<p>A useful mental model is <strong>input → interpretation → security decision → impact</strong>. The exact mechanics vary by technology, but the defensive goal is to keep untrusted data from changing privileged behavior.</p>',
-    history:'<p>'+esc(topic.name)+' sits within the broader evolution of application and infrastructure security. Modern guidance emphasizes secure defaults, explicit trust boundaries, least privilege and verification at the point of use.</p>',
-    real:'<p>Study public incident reports and vendor advisories for context: what happened, root cause, impact, discovery context, and the defensive change. OMP intentionally avoids unauthorized exploitation recipes.</p>',
-    look:'<ul><li>Identify user-controlled inputs and security-sensitive operations.</li><li>Check whether validation or authorization happens at the real trust boundary.</li><li>Look for differences between client-side restrictions and server-side enforcement.</li></ul>',
-    defensive:'<ul><li>Enforce validation and authorization on the server at the point of use.</li><li>Prefer allowlists and secure-by-default configuration.</li><li>Log meaningful security events without collecting unnecessary sensitive data.</li></ul>'
+    overview: renderBlock(db.overview, ''),
+    how: renderBlock(db.how_it_works, ''),
+    history: renderBlock(db.history, ''),
+    real: renderBlock(db.real_world, ''),
+    look: renderBlock(db.what_to_look_for, ''),
+    defensive: renderBlock(db.defensive, ''),
   };
   return {...base, labs:'<p>Practice only on systems you own or are explicitly authorized to test.</p>'};
 }
