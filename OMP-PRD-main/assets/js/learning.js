@@ -191,7 +191,21 @@ async function renderTopic(data,cat,topic,p) {
       if(fnError) throw fnError;
       form.querySelector('button[type="submit"]').disabled=true;
       if(result.status==='PASSED') {
-        document.querySelector('#quiz-result').innerHTML='<div class="notice-band callout-tip"><p><strong>Score: '+result.score+' / 20 — PASSED ✓</strong></p><p class="mt-8">Topic completed. Next topic is now available.</p><p class="mt-16"><a class="btn btn-primary btn-sm" href="/learning/'+esc(cat.slug)+'">Back to category</a></p></div>';
+        const cert=result.certificate;
+        const certUrl=cert ? '/certificate?id='+encodeURIComponent(cert.certificate_id) : '';
+        document.querySelector('#quiz-result').innerHTML='<div class="notice-band callout-tip"><p><strong>Score: '+result.score+' / 20 — PASSED ✓</strong></p><p class="mt-8">Topic completed. Your OMP Security Academy certificate is ready.</p><div class="flex gap-8 wrap mt-16">'+
+          (cert ? '<a class="btn btn-primary btn-sm" href="'+esc(certUrl)+'">View Certificate</a><button class="btn btn-secondary btn-sm" type="button" id="share-certificate" data-cert-url="'+esc(certUrl)+'">Share Achievement</button>' : '')+
+          '<a class="btn btn-secondary btn-sm" href="/learning/'+esc(cat.slug)+'">Back to category</a></div>'+
+          '<div id="share-note" class="small muted mt-8"></div></div>';
+        const shareBtn=document.querySelector('#share-certificate');
+        if(shareBtn) shareBtn.addEventListener('click',async()=>{
+          const url=new URL(shareBtn.dataset.certUrl,location.origin).href;
+          const shareData={title:'OMP Security Academy Certificate',text:'I completed '+topic.name+' on OopsMyPassword Security Academy.',url};
+          try{
+            if(navigator.share) await navigator.share(shareData);
+            else { await navigator.clipboard.writeText(url); document.querySelector('#share-note').textContent='Certificate link copied to clipboard.'; }
+          }catch(_){}
+        });
       } else if(result.status==='RETRY_LOCKED') {
         document.querySelector('#quiz-result').innerHTML='<div class="notice-band callout-warn"><p><strong>Score: '+result.score+' / 20 — NOT PASSED</strong></p><p class="mt-8">Minimum passing score is 15/20.</p><p class="mt-8">Retry available tomorrow.</p></div>';
         form.querySelector('button[type="submit"]').disabled=true;
