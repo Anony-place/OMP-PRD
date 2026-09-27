@@ -67,7 +67,12 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
     if (progressError) throw progressError;
 
-    if (current?.passed) return json({ status: 'PASSED', score: current.highest_score, progress: current });
+    if (current?.passed) {
+      const { data: existingCertificate } = await admin.from('learning_certificates')
+        .select('*').eq('user_id', user.id).eq('topic_id', topicId).maybeSingle();
+      return json({ status: 'PASSED', score: current.highest_score, progress: current, certificate: existingCertificate });
+    }
+    if (!current?.lab_completed) return json({ error: 'Complete the authorized practice lab before taking the quiz.' }, 409);
 
     if (current?.next_retry_at && new Date(current.next_retry_at) > new Date()) {
       return json({
