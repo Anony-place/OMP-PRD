@@ -46,7 +46,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}));
     const topicId = typeof body.topic_id === 'string' ? body.topic_id : '';
     const answers = Array.isArray(body.answers) ? body.answers.map(Number) : [];
-    if (!topicId || answers.length !== 4 || answers.some((x: number) => !Number.isInteger(x) || x < 0 || x > 9)) {
+    if (!topicId || answers.length !== 4 || answers.some((x: number) => !Number.isInteger(x) || x < 0 || x > 3)) {
       return json({ error: 'Invalid quiz submission.' }, 400);
     }
 
@@ -58,6 +58,8 @@ Deno.serve(async (req: Request) => {
     ]);
     if (topicError || quizError) throw topicError || quizError;
     if (!topic || topic.status !== 'published' || !quiz) return json({ error: 'Quiz not available.' }, 404);
+    const quizQuestions = Array.isArray(quiz.questions) ? quiz.questions : [];
+    if (quizQuestions.length !== 4 || quizQuestions.some((q: any) => !Array.isArray(q?.options) || q.options.length !== 4)) return json({ error: 'Quiz configuration is invalid.' }, 500);
 
     const { data: current, error: progressError } = await admin
       .from('learning_progress')
