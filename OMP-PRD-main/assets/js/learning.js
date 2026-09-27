@@ -287,7 +287,7 @@ async function renderCertificate(certificateId) {
 
 async function init() {
   const certId=new URLSearchParams(location.search).get('id');
-  if(location.pathname==='/certificate' && certId) return renderCertificate(certId);
+  if(location.pathname==='/certificate') { if(certId) return renderCertificate(certId); app.innerHTML='<div class="notice-band"><p><strong>Certificate ID required.</strong></p><p class="muted mt-8">Open a certificate using its verification link or enter a valid Certificate ID.</p><p class="mt-16"><a class="btn btn-secondary btn-sm" href="/learning">Back to Academy</a></p></div>'; return; }
   try {
     const data=await catalogue();
     const p=parts();
