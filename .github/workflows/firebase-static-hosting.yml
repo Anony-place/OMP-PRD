@@ -86,6 +86,10 @@ jobs:
           # the check-runs API, which is what tooling can actually verify.
           echo "::notice title=Build inventory::static=$(find . -maxdepth 1 -name '*.html' | wc -l | tr -d ' ') guides=$(ls guides/*.html 2>/dev/null | wc -l | tr -d ' ') articles=$(ls articles/*.html 2>/dev/null | wc -l | tr -d ' ') products=$(ls products/*.html 2>/dev/null | wc -l | tr -d ' ') sitemap_urls=$(grep -o '<loc>' sitemap.xml | wc -l | tr -d ' ')"
 
+      - name: Syntax-check Academy JavaScript
+        working-directory: OMP-PRD-main
+        run: node --check assets/js/learning.js
+
       - name: Sitemap generator and wiring tests
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
