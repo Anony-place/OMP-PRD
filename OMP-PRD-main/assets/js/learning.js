@@ -95,10 +95,10 @@ function categoryCard(c, pmap) {
     '<span class="btn btn-secondary btn-sm mt-16">'+(next?'Continue':'Review')+' →</span></a>';
 }
 
-function topicCard(t,p,index) {
+function topicCard(t,p,index,category) {
   const s=state(p), labels={NOT_STARTED:'Not Started',IN_PROGRESS:'In Progress',LAB_PENDING:'Lab Pending',QUIZ_AVAILABLE:'Quiz Available',PASSED:'Completed',RETRY_LOCKED:'Retry Locked'};
   const c=topicRegistryCategory(t);
-  return '<a class="card card-pad learning-topic state-'+s.toLowerCase()+'" href="/learning/'+esc(c?.slug||'')+'/'+esc(t.slug)+'">'+
+  return '<a class="card card-pad learning-topic state-'+s.toLowerCase()+'" href="/learning/'+esc(category?.slug||c?.slug||'')+'/'+esc(t.slug)+'">'+
     '<div class="topic-index">'+String(index).padStart(2,'0')+'</div>'+
     '<div class="topic-body"><div class="flex justify-between gap-12 wrap"><h2>'+esc(t.name)+'</h2><span class="badge '+(s==='PASSED'?'badge-live':'badge-demo')+'">'+labels[s]+'</span></div>'+
     '<p>'+esc(t.description||'')+'</p><div class="topic-meta"><span>'+esc(t.difficulty)+'</span><span>•</span><span>'+t.estimated_minutes+' min</span></div></div>'+
@@ -135,7 +135,7 @@ async function renderCategory(data,cat,pmap) {
   app.innerHTML=authPanel(await getUser())+'<div class="learning-breadcrumb"><a href="/learning">Learning</a><span>/</span><strong>'+esc(cat.name)+'</strong></div>'+
     '<div class="page-hero compact"><div><span class="chip chip-accent">Category</span><h1 class="h-1 mt-16">'+esc(cat.name)+'</h1><p class="lead">'+esc(cat.description||'')+'</p></div>'+
     '<div class="category-progress card card-pad"><strong>'+done+'/'+total+'</strong><span>completed</span><div class="progress-track"><span style="width:'+pct+'%"></span></div><small>'+pct+'%</small></div></div>'+
-    '<div class="learning-list mt-24">'+cat.topics.map((t,i)=>topicCard(t,pmap.get(t.id),i+1)).join('')+'</div>';
+    '<div class="learning-list mt-24">'+cat.topics.map((t,i)=>topicCard(t,pmap.get(t.id),i+1,cat)).join('')+'</div>';
   bindAuth();
 }
 
