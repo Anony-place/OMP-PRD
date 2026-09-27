@@ -117,11 +117,52 @@ Deno.serve(async (req: Request) => {
       .single();
     if (saveError) throw saveError;
 
+    let certificate = null;
+    if (passed) {
+      const metadata = user.user_metadata ?? {};
+      const recipientName =
+        String(metadata.full_name || metadata.name || '').trim() ||
+        String(user.email || 'OMP Learner').split('@')[0];
+      const { data: category } = await admin
+        .from('learning_categories')
+        .select('name')
+        .eq('id', topic.category_id)
+        .maybeSingle();
+      const certificateId = 'OMP-' + crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase();
+      const { data: existingCertificate } = await admin
+        .from('learning_certificates')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('topic_id', topicId)
+        .maybeSingle();
+      if (existingCertificate) {
+        certificate = existingCertificate;
+      } else {
+        const { data: createdCertificate, error: certificateError } = await admin
+          .from('learning_certificates')
+          .insert({
+            certificate_id: certificateId,
+            user_id: user.id,
+            topic_id: topicId,
+            category_id: topic.category_id,
+            recipient_name: recipientName,
+            topic_name: topic.name,
+            category_name: category?.name ?? 'Security Academy',
+            score,
+          })
+          .select('*')
+          .single();
+        if (certificateError) throw certificateError;
+        certificate = createdCertificate;
+      }
+    }
+
     return json({
       status: passed ? 'PASSED' : 'RETRY_LOCKED',
       score,
       nextRetryAt,
-      progress
+      progress,
+      certificate
     });
   } catch (error) {
     console.error('learning-quiz-submit', error);
