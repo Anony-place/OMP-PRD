@@ -44,6 +44,19 @@
     });
   }
 
+  /* ---------- Learning navigation ---------- */
+  function ensureLearningLink(nav) {
+    if (!nav || nav.querySelector('a[href="/learning"]')) return;
+    var link = document.createElement('a');
+    link.href = '/learning';
+    link.textContent = 'Learning';
+    var products = nav.querySelector('a[href="/products"]');
+    if (products && products.parentNode) products.parentNode.insertBefore(link, products.nextSibling);
+    else nav.appendChild(link);
+  }
+  ensureLearningLink(document.querySelector('.nav-links'));
+  ensureLearningLink(document.querySelector('.mobile-menu'));
+
   /* ---------- Footer year ---------- */
   document.querySelectorAll('[data-year]').forEach(function (el) {
     el.textContent = String(new Date().getFullYear());
