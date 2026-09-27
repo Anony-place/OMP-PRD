@@ -139,6 +139,26 @@ async function renderCategory(data,cat,pmap) {
   bindAuth();
 }
 
+function updateSeo(topic) {
+  const db = topic.content || {};
+  const title = db.seo_title || (topic.name + ' — OopsMyPassword Security Academy');
+  const description = db.seo_description || topic.description || 'Web application security lessons from OopsMyPassword Security Academy.';
+  document.title = title;
+  const setMeta = (name, content, attr='name') => {
+    let el = document.head.querySelector('meta['+attr+'="'+name+'"]');
+    if (!el) { el = document.createElement('meta'); el.setAttribute(attr,name); document.head.appendChild(el); }
+    el.setAttribute('content', content);
+  };
+  setMeta('description', description);
+  setMeta('og:title', title, 'property');
+  setMeta('og:description', description, 'property');
+  setMeta('og:url', location.href, 'property');
+  setMeta('twitter:title', title);
+  setMeta('twitter:description', description);
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) { canonical=document.createElement('link'); canonical.rel='canonical'; document.head.appendChild(canonical); }
+  canonical.href = location.href.split('#')[0];
+}
 function lessonContent(topic) {
   const db = topic.content || {};
   const renderBlock = (value, fallback) => {
@@ -173,6 +193,7 @@ function quizView(quiz,p) {
 function nextDay(){ return new Date(Date.now()+24*60*60*1000).toISOString(); }
 
 async function renderTopic(data,cat,topic,p) {
+  updateSeo(topic);
   const user=await getUser();
   p=p ? {...p} : localProgress(topic);
   const labs=data.labs.filter(x=>x.topic_id===topic.id), quiz=data.quizzes.find(x=>x.topic_id===topic.id), c=lessonContent(topic);
