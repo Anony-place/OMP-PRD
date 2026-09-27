@@ -66,15 +66,12 @@ function localProgress(topic) {
     quiz_attempts:0, highest_score:0, passed:false, state:'NOT_STARTED', completed_at:null, next_retry_at:null, last_attempt_at:null};
 }
 
-async function upsertProgress(topic, patch) {
+async function mutateProgress(topic, action) {
   const user = await getUser();
   if (!user) return {user:null, progress:null};
-  const {data:current,error:getErr} = await supabase.from('learning_progress').select('*').eq('user_id',user.id).eq('topic_id',topic.id).maybeSingle();
-  if (getErr) throw getErr;
-  const next = {...localProgress(topic), ...(current||{}), ...patch, user_id:user.id, category_id:topic.category_id, topic_id:topic.id};
-  const {data,error} = await supabase.from('learning_progress').upsert(next,{onConflict:'user_id,topic_id'}).select('*').single();
+  const {data,error} = await supabase.functions.invoke('learning-progress', { body:{action, topic_id:topic.id} });
   if (error) throw error;
-  return {user, progress:data};
+  return {user, progress:data.progress || null};
 }
 
 function categoryCard(c, pmap) {
@@ -161,7 +158,7 @@ async function renderTopic(data,cat,topic,p) {
     '<article class="prose learning-prose">'+sections.map(s=>'<section id="s-'+s[0]+'"><h2>'+esc(s[1])+'</h2>'+s[2]+'</section>').join('')+'</article></div>';
   
   if(user && !p.lesson_started) {
-    try { await upsertProgress(topic,{lesson_started:true,state:'IN_PROGRESS'}); } catch(e) {}
+    try { await mutateProgress(topic,'start_lesson'); } catch(e) {}
   }
   
   document.querySelectorAll('[data-lab-complete]').forEach(btn => {
@@ -169,7 +166,7 @@ async function renderTopic(data,cat,topic,p) {
       const u=await getUser();
       if(!u) { app.querySelector('.topic-state-panel .muted').textContent='Sign in to persist progress.'; return; }
       btn.disabled=true;
-      try { await upsertProgress(topic,{lesson_started:true,lesson_completed:true,lab_completed:true,state:'QUIZ_AVAILABLE'}); btn.textContent='Lab completed ✓'; }
+      try { await mutateProgress(topic,'complete_lab'); btn.textContent='Lab completed ✓'; }
       catch(e) { btn.disabled=false; if(window.ompToast) window.ompToast('Could not save progress'); }
     });
   });
@@ -180,27 +177,23 @@ async function renderTopic(data,cat,topic,p) {
     const u=await getUser();
     if(!u) { document.querySelector('#quiz-result').innerHTML='<div class="notice-band"><p>Sign in to save quiz results and unlock completion.</p></div>'; return; }
     if(p.next_retry_at && new Date(p.next_retry_at)>new Date() && !p.passed) return;
-    const qs=quiz.questions.slice(0,4);
-    let score=0;
-    qs.forEach((q,i)=>{ const answer=form.querySelector('input[name="q'+i+'"]:checked'); if(answer && Number(answer.value)===Number(q.answer)) score += 5; });
-    const passed=score>=15;
-    const patch={
-      lesson_started:true,lesson_completed:true,lab_completed:true,
-      quiz_attempts:Number(p.quiz_attempts||0)+1,
-      highest_score:Math.max(Number(p.highest_score||0),score),
-      passed,state:passed?'PASSED':'RETRY_LOCKED',
-      completed_at:passed?new Date().toISOString():null,
-      next_retry_at:passed?null:nextDay(),
-      last_attempt_at:new Date().toISOString()
-    };
+    const answers=quiz.questions.slice(0,4).map((_,i)=>{
+      const input=form.querySelector('input[name="q'+i+'"]:checked');
+      return input ? Number(input.value) : -1;
+    });
     try {
-      await upsertProgress(topic,patch);
+      const {data:result,error:fnError}=await supabase.functions.invoke('learning-quiz-submit',{body:{topic_id:topic.id,answers}});
+      if(fnError) throw fnError;
       form.querySelector('button[type="submit"]').disabled=true;
-      document.querySelector('#quiz-result').innerHTML=passed
-        ? '<div class="notice-band callout-tip"><p><strong>Score: '+score+' / 20 — PASSED ✓</strong></p><p class="mt-8">Topic completed. Next topic is now available.</p><p class="mt-16"><a class="btn btn-primary btn-sm" href="/learning/'+esc(cat.slug)+'">Back to category</a></p></div>'
-        : '<div class="notice-band callout-warn"><p><strong>Score: '+score+' / 20 — NOT PASSED</strong></p><p class="mt-8">Minimum passing score is 15/20.</p><p class="mt-8">Retry available tomorrow.</p></div>';
+      if(result.status==='PASSED') {
+        document.querySelector('#quiz-result').innerHTML='<div class="notice-band callout-tip"><p><strong>Score: '+result.score+' / 20 — PASSED ✓</strong></p><p class="mt-8">Topic completed. Next topic is now available.</p><p class="mt-16"><a class="btn btn-primary btn-sm" href="/learning/'+esc(cat.slug)+'">Back to category</a></p></div>';
+      } else if(result.status==='RETRY_LOCKED') {
+        document.querySelector('#quiz-result').innerHTML='<div class="notice-band callout-warn"><p><strong>Score: '+result.score+' / 20 — NOT PASSED</strong></p><p class="mt-8">Minimum passing score is 15/20.</p><p class="mt-8">Retry available tomorrow.</p></div>';
+        form.querySelector('button[type="submit"]').disabled=true;
+      }
     } catch(err) {
-      document.querySelector('#quiz-result').innerHTML='<div class="notice-band"><p>Could not save quiz result.</p></div>';
+      document.querySelector('#quiz-result').innerHTML='<div class="notice-band"><p>Could not submit quiz. Please try again.</p></div>';
+      form.querySelector('button[type="submit"]').disabled=false;
     }
   });
 }
