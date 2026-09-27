@@ -130,6 +130,7 @@ function lessonContent(topic) {
 
 function quizView(quiz,p) {
   if (!quiz) return '<p>Quiz is being prepared.</p>';
+  if (!p.lab_completed && !p.passed) return '<div class="notice-band callout-warn"><p><strong>Practice lab required first.</strong></p><p class="muted mt-8">Open the authorized resource above, then mark the lab complete to unlock this quiz.</p></div>';
   if (p.next_retry_at && new Date(p.next_retry_at)>new Date() && !p.passed) {
     return '<div class="notice-band"><p><strong>NOT PASSED</strong></p><p class="muted mt-8">Minimum passing score is 15/20.</p><p class="mt-8">Retry available '+esc(new Date(p.next_retry_at).toLocaleString())+'.</p></div>';
   }
@@ -245,7 +246,7 @@ async function renderCertificate(certificateId) {
 }
 
 async function init() {
-  const certId=new URLSearchParams(location.search).get('certificate');
+  const certId=new URLSearchParams(location.search).get('id');
   if(location.pathname==='/certificate' && certId) return renderCertificate(certId);
   try {
     const data=await catalogue();
