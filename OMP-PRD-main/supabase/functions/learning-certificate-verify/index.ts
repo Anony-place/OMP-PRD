@@ -6,7 +6,7 @@ Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS') return new Response('ok',{headers:corsHeaders});
   try{
     const id=new URL(req.url).searchParams.get('certificate_id')?.trim()||'';
-    if(!/^OMP-[A-Z0-9]{12}$/.test(id)) return json({error:'Invalid certificate ID.'},400);
+    if(!/^OMP-[A-Z0-9]{24}$/.test(id)) return json({error:'Invalid certificate ID.'},400);
     const url=Deno.env.get('SUPABASE_URL')||'';
     const secret=Deno.env.get('SUPABASE_SECRET_KEYS') ? JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS')!).default : (Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'');
     const admin=createClient(url,secret,{auth:{autoRefreshToken:false,persistSession:false}});
