@@ -121,7 +121,7 @@ function bindAuth() {
   if(signout) signout.addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
 }
 
-function renderHub(data,pmap) {
+async function renderHub(data,pmap) {
   const done=[...pmap.values()].filter(p => p.passed).length;
   const pct=data.topics.length ? Math.round(done/data.topics.length*100) : 0;
   app.innerHTML=authPanel(await getUser())+'<div class="learning-summary card card-pad"><div><span class="eyebrow">Security Academy</span><h2 class="h-2">Your learning progress</h2><p class="muted">Overall completion across the academy.</p></div><div class="learning-summary-stat"><strong>'+pct+'%</strong><span>complete</span></div></div>'+
@@ -129,7 +129,7 @@ function renderHub(data,pmap) {
   bindAuth();
 }
 
-function renderCategory(data,cat,pmap) {
+async function renderCategory(data,cat,pmap) {
   const total=cat.topics.length, done=cat.topics.filter(t=>state(pmap.get(t.id))==='PASSED').length, pct=total?Math.round(done/total*100):0;
   app.innerHTML=authPanel(await getUser())+'<div class="learning-breadcrumb"><a href="/learning">Learning</a><span>/</span><strong>'+esc(cat.name)+'</strong></div>'+
     '<div class="page-hero compact"><div><span class="chip chip-accent">Category</span><h1 class="h-1 mt-16">'+esc(cat.name)+'</h1><p class="lead">'+esc(cat.description||'')+'</p></div>'+
