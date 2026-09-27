@@ -217,7 +217,36 @@ async function renderTopic(data,cat,topic,p) {
   });
 }
 
+async function renderCertificate(certificateId) {
+  app.innerHTML='<div class="certificate-shell card card-pad"><span class="chip chip-accent">OMP Security Academy</span><h1 class="h-1 mt-16">Certificate of Completion</h1><p class="lead">Verifiable learning achievement</p><div id="certificate-content" class="mt-24"><p class="muted">Verifying certificate…</p></div></div>';
+  try {
+    const endpoint=SUPABASE_URL+'/functions/v1/learning-certificate-verify?certificate_id='+encodeURIComponent(certificateId);
+    const response=await fetch(endpoint,{headers:{'apikey':SUPABASE_PUBLISHABLE_KEY}});
+    const result=await response.json();
+    if(!response.ok || !result.valid) throw new Error(result.error||'Certificate not found.');
+    const c=result.certificate;
+    const url=location.href;
+    document.title='Certificate — '+c.topic_name+' — OopsMyPassword';
+    document.querySelector('#certificate-content').innerHTML=
+      '<div class="certificate-seal">✓</div><div class="certificate-name">'+esc(c.recipient_name)+'</div>'+
+      '<p class="muted mt-8">has successfully completed</p><h2 class="h-2 mt-8">'+esc(c.topic_name)+'</h2>'+
+      '<p class="muted mt-8">'+esc(c.category_name)+' · Score '+esc(c.score)+' / 20</p>'+
+      '<div class="certificate-meta mt-24"><span>Certificate ID <strong class="mono">'+esc(c.certificate_id)+'</strong></span><span>Issued '+esc(new Date(c.issued_at).toLocaleDateString())+'</span></div>'+
+      '<div class="flex gap-8 wrap mt-24"><button class="btn btn-primary btn-sm" id="share-cert">Share Certificate</button><a class="btn btn-secondary btn-sm" href="/learning">Back to Academy</a></div><p id="cert-share-note" class="small muted mt-8"></p>';
+    document.querySelector('#share-cert').addEventListener('click',async()=>{
+      try {
+        if(navigator.share) await navigator.share({title:'OMP Security Academy Certificate',text:c.recipient_name+' completed '+c.topic_name,url});
+        else {await navigator.clipboard.writeText(url);document.querySelector('#cert-share-note').textContent='Certificate link copied.';}
+      } catch(_){}
+    });
+  } catch(e) {
+    app.innerHTML='<div class="notice-band"><p><strong>Certificate not found.</strong></p><p class="muted mt-8">'+esc(e.message||'Unable to verify certificate')+'</p><p class="mt-16"><a class="btn btn-secondary btn-sm" href="/learning">Back to Academy</a></p></div>';
+  }
+}
+
 async function init() {
+  const certId=new URLSearchParams(location.search).get('certificate');
+  if(location.pathname==='/certificate' && certId) return renderCertificate(certId);
   try {
     const data=await catalogue();
     const p=parts();
