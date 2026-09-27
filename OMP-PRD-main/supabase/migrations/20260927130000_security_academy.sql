@@ -19,3 +19,23 @@ drop policy if exists learning_quizzes_public_select on public.learning_quizzes;
 drop policy if exists learning_progress_select_own on public.learning_progress; create policy learning_progress_select_own on public.learning_progress for select to authenticated using ((select auth.uid())=user_id);
 drop policy if exists learning_quiz_answers_deny_all on public.learning_quiz_answers; create policy learning_quiz_answers_deny_all on public.learning_quiz_answers for all to anon,authenticated using (false) with check (false);
 drop policy if exists learning_certificates_deny_all on public.learning_certificates; create policy learning_certificates_deny_all on public.learning_certificates for all to anon,authenticated using (false) with check (false);
+
+-- Rebalance answer positions so quizzes cannot be passed by always choosing option 1.
+DO $$
+DECLARE q record; item jsonb; opts jsonb; arr jsonb; idx int; shift int; newq jsonb; newqs jsonb;
+BEGIN
+  FOR q IN SELECT id, questions FROM public.learning_quizzes LOOP
+    newqs := '[]'::jsonb; idx := 0;
+    FOR item IN SELECT value FROM jsonb_array_elements(q.questions) LOOP
+      opts := item->'options';
+      IF jsonb_array_length(opts) <> 4 THEN RAISE EXCEPTION 'Quiz % question % must have 4 options', q.id, idx; END IF;
+      shift := CASE idx WHEN 0 THEN 1 WHEN 1 THEN 2 WHEN 2 THEN 3 ELSE 0 END;
+      arr := jsonb_build_array(opts->((0+shift)%4),opts->((1+shift)%4),opts->((2+shift)%4),opts->((3+shift)%4));
+      newq := jsonb_set(item,'{options}',arr); newqs := newqs || jsonb_build_array(newq);
+      UPDATE public.learning_quiz_answers SET answer_index=(answer_index+shift)%4 WHERE quiz_id=q.id AND question_index=idx;
+      idx := idx + 1;
+    END LOOP;
+    IF idx <> 4 THEN RAISE EXCEPTION 'Quiz % must have exactly 4 questions', q.id; END IF;
+    UPDATE public.learning_quizzes SET questions=newqs,updated_at=now() WHERE id=q.id;
+  END LOOP;
+END $$;
