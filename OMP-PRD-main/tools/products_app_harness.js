@@ -64,7 +64,7 @@ async function boot(pathname, cfg) {
   /* jsdom can't run dynamic import(); hand the app a closure that uses
      Node's native loader (data: URLs are importable from CJS). */
   w.__dynamicImport = url => import(url);
-  w.eval(APP.replace("import('https://esm.sh/@supabase/supabase-js@2')",
+  w.eval(APP.replace(/import\('https:\/\/esm\.sh\/@supabase\/supabase-js@[^']+'\)/,
     'window.__dynamicImport(' + JSON.stringify(dataUrl) + ')'));
   await sleep(cfg.delayMs ? cfg.delayMs + 60 : 80);
   return { dom, w };

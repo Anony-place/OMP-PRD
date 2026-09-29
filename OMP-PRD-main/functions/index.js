@@ -7,7 +7,9 @@
    structured data in the initial response instead of relying on the SPA.
    ============================================================ */
 
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v1');
+const safeArticleHTML = require('./safe-article-html.cjs');
+const sharedFooter = require('node:fs').readFileSync(require('node:path').join(__dirname, 'site-footer.fragment'), 'utf8');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
@@ -58,7 +60,8 @@ async function fromEdgeFunction() {
 async function rowsFromRest(table, fields) {
   const url = `${SUPABASE_URL}/rest/v1/${table}?select=${encodeURIComponent(fields)}&status=eq.published&limit=${ROW_LIMIT}`;
   const res = await fetch(url, {
-    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`, Accept: 'application/json' }
+    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: 'application/json' },
+    signal: AbortSignal.timeout(8000)
   });
   if (!res.ok) throw new Error(`${table} query failed: HTTP ${res.status}`);
   const rows = await res.json();
@@ -100,12 +103,8 @@ function escJson(value) {
 /* The article editor stores trusted admin-authored HTML or Markdown. Strip
    executable/resource-bearing constructs before sending it as crawler HTML. */
 function sanitizeArticleHtml(input) {
-  let html = String(input || '');
-  if (!/<[a-z][\s\S]*>/i.test(html)) return markdownToHtml(html);
-  html = html.replace(/<\/?(?:script|iframe|object|embed|form|style|link|meta|base)[^>]*>/gi, '');
-  html = html.replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-  html = html.replace(/javascript\s*:/gi, '');
-  return html;
+  const source = String(input || '');
+  return safeArticleHTML(/<[a-z][\s\S]*>/i.test(source) ? source : markdownToHtml(source));
 }
 
 function markdownInline(s) {
@@ -145,7 +144,7 @@ function markdownToHtml(md) {
 
 async function fetchPublishedArticle(slug) {
   const url = `${SUPABASE_URL}/rest/v1/articles?select=slug,title,summary,content,status,published_at,updated_at,created_at,featured_image&slug=eq.${encodeURIComponent(slug)}&status=eq.published&limit=1`;
-  const response = await fetch(url, { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`, Accept: 'application/json' } });
+  const response = await fetch(url, { headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: 'application/json' }, signal: AbortSignal.timeout(8000) });
   if (!response.ok) throw new Error(`article query failed: HTTP ${response.status}`);
   const rows = await response.json();
   return Array.isArray(rows) && rows[0] ? rows[0] : null;
@@ -157,13 +156,13 @@ function articleDocument(article) {
   const slug = String(article.slug || '').trim();
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const content = sanitizeArticleHtml(article.content || '');
-  const published = article.published_at || article.created_at || new Date().toISOString();
+  const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
   const image = article.featured_image ? String(article.featured_image) : '';
   const articleSchema = {
     '@context': 'https://schema.org', '@type': 'Article', headline: title,
-    description: summary, mainEntityOfPage: canonical, datePublished: published,
-    dateModified: modified, author: { '@type': 'Organization', name: 'OopsMyPassword' },
+    description: summary, mainEntityOfPage: canonical, ...(published && Number.isFinite(Date.parse(published)) ? {datePublished:published} : {}),
+    ...(modified && Number.isFinite(Date.parse(modified)) ? {dateModified:modified} : {}), author: { '@type': 'Organization', name: 'OopsMyPassword' },
     publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }
   };
   if (image) articleSchema.image = [image];
@@ -173,12 +172,12 @@ function articleDocument(article) {
     { '@type': 'ListItem', position: 3, name: title, item: canonical }
   ]};
   const ogImage = image ? `<meta property="og:image" content="${escHtml(image)}">` : '';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)} | OopsMyPassword</title><meta name="description" content="${escHtml(summary)}"><link rel="canonical" href="${escHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:title" content="${escHtml(title)}"><meta property="og:description" content="${escHtml(summary)}"><meta property="og:url" content="${escHtml(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escHtml(title)}"><meta name="twitter:description" content="${escHtml(summary)}"><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script><link rel="stylesheet" href="/assets/css/styles.css"></head><body><main><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${escHtml(title)}</span></nav><article><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p><p><time datetime="${escHtml(published)}">${escHtml(new Date(published).toISOString().slice(0,10))}</time></p><div class="article-content">${content}</div></article></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)} | OopsMyPassword</title><meta name="description" content="${escHtml(summary)}"><link rel="canonical" href="${escHtml(canonical)}"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:type" content="article"><meta property="og:title" content="${escHtml(title)}"><meta property="og:description" content="${escHtml(summary)}"><meta property="og:url" content="${escHtml(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escHtml(title)}"><meta name="twitter:description" content="${escHtml(summary)}"><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script><link rel="stylesheet" href="/assets/css/styles.css"></head><body><main class="container container-narrow"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${escHtml(title)}</span></nav><article><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p>${published && Number.isFinite(Date.parse(published)) ? `<p><time datetime="${escHtml(published)}">${escHtml(new Date(published).toISOString().slice(0,10))}</time></p>` : ""}<div class="article-content">${content}</div></article></main>${sharedFooter}</body></html>`;
 }
 
 function article404(slug) {
   const safe = escHtml(slug);
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Article not found | OopsMyPassword</title><link rel="canonical" href="${escHtml(SITE + '/articles/' + safe)}"></head><body><main><h1>Article not found</h1><p>The requested article does not exist.</p><a href="/articles">Browse articles</a></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Article not found | OopsMyPassword</title></head><body><main><h1>Article not found</h1><p>The requested article does not exist.</p><a href="/articles">Browse articles</a></main></body></html>`;
 }
 
 exports.article = functions.runWith({ timeoutSeconds: 30, memory: '256MB' }).https.onRequest(async (req, res) => {

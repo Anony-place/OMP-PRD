@@ -9,7 +9,7 @@ FAQ_ITEMS = [
     ("Does OMP store my password?",
      "No. Passwords you type are analyzed in memory, in your browser tab only. They are never transmitted, written to storage, placed in URLs, or included in any logs or analytics. Closing the tab erases everything."),
     ("Does OMP require an account?",
-     "No. There is deliberately no sign-up, no login, and no user profile. Open the site and use the tools."),
+     "No learner login is needed. Academy progress and an optional name stay in your browser. Email is requested only if you choose article updates, not to unlock lessons."),
     ("How is password strength calculated?",
      "A heuristic score combines length, character variety and bonuses, then subtracts penalties for common passwords, dictionary words, repeated and sequential characters, keyboard walks and dates. An adjusted entropy estimate and an indicative offline crack time are derived from the result."),
     ("Is the strength score guaranteed?",
@@ -173,8 +173,8 @@ def home_body(guides):
       <h3 class="h-3">The OMP privacy contract</h3>
       <ul class="list-plain mt-16">
         <li>{icon("lock","icon-18")}<span><strong>Passwords never leave your device</strong> — analysis is 100% client-side JavaScript</span></li>
-        <li>{icon("lock","icon-18")}<span><strong>No accounts, no profiles</strong> — no identity to collect in the first place</span></li>
-        <li>{icon("lock","icon-18")}<span><strong>Nothing in URLs, storage, or logs</strong> — close the tab and it's gone</span></li>
+        <li>{icon("lock","icon-18")}<span><strong>No learner login</strong> — Academy progress stays on your device</span></li>
+        <li>{icon("lock","icon-18")}<span><strong>No password history</strong> — password inputs are never written to URLs, storage or logs</span></li>
         <li>{icon("lock","icon-18")}<span><strong>CSPRNG only</strong> — generation uses <span class="mono">crypto.getRandomValues()</span></span></li>
         <li>{icon("lock","icon-18")}<span><strong>No fake claims</strong> — demos are labeled demos; estimates are labeled estimates</span></li>
       </ul>
@@ -265,7 +265,7 @@ def generator_body():
         c = " checked" if checked else ""
         return f"""<div class="opt-row">
   <div><div class="opt-name">{name}</div><div class="opt-desc">{desc}</div></div>
-  <span class="switch"><input type="checkbox" data-opt="{opt}"{c}><span class="track"></span></span>
+  <span class="switch"><input type="checkbox" data-opt="{opt}" aria-label="{name}"{c}><span class="track"></span></span>
 </div>"""
     return f"""
 <section class="page-hero">
@@ -468,7 +468,7 @@ def health_body():
 </section>
 <section class="section" style="padding-top:0">
   <div class="container container-narrow">
-    <div class="notice-band">{icon("info","icon-20")}<p><strong>About reuse checks.</strong> Because OMP stores nothing and has no accounts, it genuinely cannot know where else a password is used — and we won't pretend otherwise. The reuse reminder is advice; enforcing uniqueness is a password manager's job. See <a href="/articles/password-manager-benefits" style="color:var(--purple)">Password Manager Benefits</a>.</p></div>
+    <div class="notice-band">{icon("info","icon-20")}<p><strong>About reuse checks.</strong> Because OMP stores no password history, it genuinely cannot know where else a password is used — and we won't pretend otherwise. The reuse reminder is advice; enforcing uniqueness is a password manager's job. See <a href="/articles/password-manager-benefits" style="color:var(--purple)">Password Manager Benefits</a>.</p></div>
   </div>
 </section>
 """
@@ -509,10 +509,10 @@ def entropy_body():
     <div class="grid" style="align-content:start">
       <div class="card card-pad">
         <h2 class="h-3">Average time to crack, by attacker model</h2>
-        <table class="crack-table mt-16">
+        <div class="table-scroll mt-16"><table class="crack-table">
           <thead><tr><th>Attacker</th><th>Guesses/s</th><th>Avg. time</th></tr></thead>
           <tbody data-ec-table></tbody>
-        </table>
+        </table></div>
         <p class="tiny muted mt-8">Average = half the search space. Real resistance also depends on hashing, rate limits and 2FA.</p>
       </div>
       <div class="card card-pad">
@@ -577,11 +577,11 @@ def passphrase_body():
         </div>
         <div class="opt-row">
           <div><div class="opt-name">Capitalize words</div><div class="opt-desc">Easier to read on paper; doesn't change the entropy we display</div></div>
-          <span class="switch"><input type="checkbox" data-pp-caps><span class="track"></span></span>
+          <span class="switch"><input type="checkbox" data-pp-caps aria-label="Capitalize words"><span class="track"></span></span>
         </div>
         <div class="opt-row">
           <div><div class="opt-name">Append a number</div><div class="opt-desc">Adds ~6.6 bits (0–99) — handy for sites with digit requirements</div></div>
-          <span class="switch"><input type="checkbox" data-pp-number><span class="track"></span></span>
+          <span class="switch"><input type="checkbox" data-pp-number aria-label="Append a number"><span class="track"></span></span>
         </div>
       </div>
 

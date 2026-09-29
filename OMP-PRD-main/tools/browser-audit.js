@@ -16,6 +16,7 @@
    ============================================================ */
 const { chromium } = require('playwright');
 const path = require('path');
+const { default: AxeBuilder } = require('@axe-core/playwright');
 
 const BASE_URL = process.env.OMP_AUDIT_URL || 'http://127.0.0.1:8765';
 const PAGES = [
@@ -40,6 +41,9 @@ const PAGES = [
   '/sitemap',
   '/terms',
   '/404',
+  '/learning',
+  '/learning/roadmap',
+  '/learning/web-application-security/foundations',
 ];
 
 const TOOLS = [
@@ -123,7 +127,7 @@ async function testPage(browser, page, url) {
       return { pageErrors, consoleErrors, failedResources };
     }
 
-    if (response.status() === 404) {
+    if (response.status() === 404 && url !== '/404') {
       addIssue('P0', 'Navigation', url, 'page', 'Page returns 404', 'Page loads successfully', 'HTTP 404', [`Navigate to ${url}`]);
       return { pageErrors, consoleErrors, failedResources };
     }
@@ -150,7 +154,7 @@ async function testPage(browser, page, url) {
 
     // Check canonical
     const canonical = await page.$eval('link[rel="canonical"]', el => el.getAttribute('href')).catch(() => null);
-    if (!canonical) {
+    if (!canonical && url !== '/404') {
       addIssue('P2', 'SEO', url, 'link[rel="canonical"]', 'Missing canonical URL', 'Canonical present', 'Missing', [`Navigate to ${url}`]);
     }
 
@@ -186,23 +190,9 @@ async function testPage(browser, page, url) {
       addIssue('P2', 'CSS', url, 'body', 'Horizontal overflow detected', 'No horizontal scroll', 'scrollWidth > clientWidth', [`Navigate to ${url}`, 'Resize viewport']);
     }
 
-    // Check color contrast issues (basic)
-    const lowContrast = await page.evaluate(() => {
-      const elements = document.querySelectorAll('p, span, a, h1, h2, h3, h4, li');
-      const issues = [];
-      for (const el of elements) {
-        const style = window.getComputedStyle(el);
-        const color = style.color;
-        const bg = window.getComputedStyle(el.parentElement || el).backgroundColor;
-        if (color === bg || color === 'rgb(0, 0, 0)' && bg === 'rgb(0, 0, 0)') {
-          issues.push(el.tagName);
-        }
-      }
-      return issues.slice(0, 5);
-    });
-    if (lowContrast.length > 0) {
-      addIssue('P3', 'Accessibility', url, 'text', `Potential low contrast (${lowContrast.length} elements)`, 'Adequate contrast', 'Possible contrast issues', [`Navigate to ${url}`]);
-    }
+    // Gradient text and hidden search content fooled the old color-equality heuristic.
+    const contrast = await new AxeBuilder({page}).withRules(['color-contrast']).analyze();
+    for (const v of contrast.violations) addIssue('P2','Accessibility',url,v.nodes.map(n=>n.target.join(' ')).join(', '),v.help,'WCAG color contrast',v.id,[`Navigate to ${url}`]);
 
     // Check focus visible on buttons
     const buttons = await page.$$('button');
@@ -249,6 +239,8 @@ async function testPage(browser, page, url) {
     addIssue('P1', 'Resources', url, res.url, `Resource failed: ${res.failure}`, 'All resources load', `${res.url}: ${res.failure}`, [`Navigate to ${url}`]);
   }
 
+  page.removeAllListeners('console');
+  page.removeAllListeners('requestfailed');
   return { pageErrors, consoleErrors, failedResources };
 }
 
@@ -259,7 +251,7 @@ async function testTool(page, url, toolName) {
     await page.goto(BASE_URL + url, { waitUntil: 'networkidle', timeout: 15000 });
 
     // Test basic interaction
-    const inputs = await page.$$('input');
+    const inputs = await page.$$('main input:visible');
     const buttons = await page.$$('button');
 
     console.log(`  Inputs: ${inputs.length}, Buttons: ${buttons.length}`);
@@ -358,7 +350,8 @@ async function runAudit() {
 
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    ...(process.env.OMP_CHROMIUM_PATH ? {executablePath:process.env.OMP_CHROMIUM_PATH}: {})
   });
 
   const context = await browser.newContext({
@@ -366,6 +359,12 @@ async function runAudit() {
     locale: 'en-US',
   });
 
+  // Deterministic public-read fixtures isolate local rendering from sandbox egress.
+  // Run without this flag separately to audit real service connectivity.
+  if (process.env.OMP_OFFLINE_FIXTURES === '1') {
+    await context.route('https://esm.sh/**', r => r.fulfill({contentType:'text/javascript',body:`export function createClient(){return {from(){const q={select(){return q},eq(){return q},order(){return q},limit(){return q},range(){return q},then(resolve,reject){return Promise.resolve({data:[],error:null,count:0}).then(resolve,reject)}};return q}};}` }));
+    await context.route('**/functions/v1/sitemap?format=json',r=>r.fulfill({json:{urls:[]}}));
+  }
   const page = await context.newPage();
 
   // Test all pages
@@ -441,4 +440,4 @@ async function runAudit() {
   return totalIssues;
 }
 
-runAudit().catch(console.error);
+runAudit().then(issues=>{if(issues.some(i=>['P0','P1','P2'].includes(i.severity)))process.exitCode=1;}).catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,3 +1,5 @@
+/* Database and Storage authorization policies: supabase/00_schema_migrations.sql.
+   UI validation is not a replacement for those server-side policies. */
 /* The SDK is loaded from esm.sh at runtime (the site ships no bundler and
    no third-party scripts on public pages). The version is PINNED: a
    floating "@2" means a new minor release — or a compromised publish —
@@ -583,8 +585,8 @@ function articleForm(host, categories, article) {
   /* PDF upload is a content import, not merely a file attachment.
      Extract selectable PDF text in the browser and put it directly into the
      article body so authors do not have to manually copy/paste a document.
-     PDF.js is pinned; workerless extraction keeps this standalone admin
-     panel free of a separate worker asset. */
+     PDF.js and its worker are pinned; the admin-only CSP permits blob
+     workers and local page-image previews, without enabling unsafe-eval. */
   async function extractPdfText(file) {
     const pdfjs = await import('https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.mjs');
     /* PDF.js 5.x requires an explicit worker source in browser builds.
@@ -593,7 +595,7 @@ function articleForm(host, categories, article) {
       pdfjs.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.worker.mjs';
     }
     const data = new Uint8Array(await file.arrayBuffer());
-    const pdf = await pdfjs.getDocument({ data }).promise;
+    const pdf = await pdfjs.getDocument({ data, isEvalSupported: false }).promise;
     const pages = [];
     try {
       for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
@@ -641,7 +643,7 @@ function articleForm(host, categories, article) {
       pdfjs.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@5.4.624/legacy/build/pdf.worker.mjs';
     }
     const data = new Uint8Array(await file.arrayBuffer());
-    const pdf = await pdfjs.getDocument({ data }).promise;
+    const pdf = await pdfjs.getDocument({ data, isEvalSupported: false }).promise;
     const pages = [];
     try {
       for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {

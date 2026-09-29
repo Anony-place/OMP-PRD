@@ -20,30 +20,6 @@
 
 
 -- ---------------------------------------------------------------------------
--- 0. Helper: is the current authenticated user an admin?
--- ---------------------------------------------------------------------------
--- We resolve the admin role server-side from the profiles table so policies
--- never trust a client-supplied flag. SECURITY DEFINER + sealed search_path
--- keeps this from being hijacked by a malicious function in public.
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1
-    from public.profiles p
-    where p.id = auth.uid() and p.is_admin = true
-  );
-$$;
-
-revoke execute on function public.is_admin() from public;
-grant execute on function public.is_admin() to authenticated;
-
-
--- ---------------------------------------------------------------------------
 -- 1. profiles
 -- ---------------------------------------------------------------------------
 -- Public admin-role lookup. A user may only read their own row. Only the
@@ -67,6 +43,31 @@ create policy "profiles_select_own" on public.profiles
 -- Only service_role writes profiles (manual setup / triggers). No anon path.
 revoke all on public.profiles from anon, authenticated;
 grant select on public.profiles to authenticated;
+
+
+
+-- ---------------------------------------------------------------------------
+-- 0. Helper: is the current authenticated user an admin?
+-- ---------------------------------------------------------------------------
+-- We resolve the admin role server-side from the profiles table so policies
+-- never trust a client-supplied flag. SECURITY DEFINER + sealed search_path
+-- keeps this from being hijacked by a malicious function in public.
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles p
+    where p.id = auth.uid() and p.is_admin = true
+  );
+$$;
+
+revoke execute on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated;
 
 
 -- ---------------------------------------------------------------------------
@@ -174,7 +175,7 @@ create table if not exists public.tools (
 alter table public.tools enable row level security;
 drop policy if exists "tools_select_active" on public.tools;
 create policy "tools_select_active" on public.tools
-  for select to anon using (is_active = true);
+  for select to anon, authenticated using (is_active = true);
 
 -- Admins must be able to see INACTIVE rows too, otherwise the Tools tab
 -- cannot list or edit a tool that was switched off.
@@ -321,88 +322,6 @@ create policy "articles_bucket_admin_delete" on storage.objects
 
 
 -- ---------------------------------------------------------------------------
--- 8. Keep anon away from anything it should not touch
--- ---------------------------------------------------------------------------
--- The publishable key is public by design. Revoke any blanket privileges that
--- could let it read drafts, profiles, media, or mutate any table.
--- Anon (the publishable key) — read the public catalogue only.
-revoke all on public.articles, public.article_categories, public.tools,
-          public.tool_categories, public.media, public.contact_messages,
-          public.profiles from anon;
-grant select on public.articles to anon;                 -- published only (RLS)
-grant select on public.article_categories to anon;
-grant select on public.tools to anon;                    -- active only (RLS)
-grant select on public.tool_categories to anon;
-grant select on public.products to anon;                 -- published only (RLS)
-grant insert on public.contact_messages to anon;         -- public form only
--- NOTE: profiles is NOT granted to anon. Only authenticated (signed-in) users,
--- and only their own row, per the policy above.
-
--- Authenticated non-admins. `articles` / `products` used to expose published
--- rows to anon and *all* rows to admins, with nothing in between — so a
--- signed-in non-admin reading the public catalogue got "permission denied".
--- Widening the existing published-only policies to `authenticated` fixes that
--- without leaking drafts: RLS still restricts the rows.
-drop policy if exists "articles_select_published" on public.articles;
-create policy "articles_select_published" on public.articles
-  for select to anon, authenticated using (status = 'published');
-
--- media / contact_messages stay admin-only; they are never granted to anon.
--- (The published-only products policy is widened to authenticated in the
--- products section below.)
-
-
--- ---------------------------------------------------------------------------
--- 8b. updated_at maintenance
--- ---------------------------------------------------------------------------
--- Both tables declare `updated_at timestamptz not null default now()` but
--- nothing ever advanced it, so:
---   * the admin list's "sort by updated_at" was really creation order, and
---   * the sitemap's <lastmod> never moved when an article was edited,
---     which is the single biggest signal crawlers take from a sitemap.
--- admin.js now sets updated_at explicitly on save; this trigger keeps it
--- correct for edits made from the SQL editor or any other client.
-create or replace function public.touch_updated_at()
-returns trigger
-language plpgsql
-as $$
-begin
-  new.updated_at := now();
-  return new;
-end;
-$$;
-
-drop trigger if exists articles_touch_updated_at on public.articles;
-create trigger articles_touch_updated_at
-  before update on public.articles
-  for each row execute function public.touch_updated_at();
-
-drop trigger if exists products_touch_updated_at on public.products;
-create trigger products_touch_updated_at
-  before update on public.products
-  for each row execute function public.touch_updated_at();
-
-
--- ---------------------------------------------------------------------------
--- 9. Seed the canonical article categories
--- ---------------------------------------------------------------------------
--- Articles (blog.html) is the single content hub. Every piece of content —
--- news, analysis, how-tos and the legacy static guides — is classified with
--- one of these categories. "guides" is the category that classifies the
--- fifteen static /guides/*.html pages inside the hub; it is NOT a separate
--- top-level destination anymore. Idempotent: safe to re-run.
-insert into public.article_categories (name, slug, sort_order) values
-  ('News',       'news',       1),
-  ('Security',   'security',   2),
-  ('Deep Dives', 'deep-dives', 3),
-  ('How-To',     'how-to',     4),
-  ('Guides',     'guides',     5)
-on conflict (slug) do update
-  set name      = excluded.name,
-      sort_order = excluded.sort_order;
-
-
--- ---------------------------------------------------------------------------
 -- 10. products (public catalog served at /products and /products/<slug>)
 -- ---------------------------------------------------------------------------
 -- Products are COMMERCIAL/featured resources (books, courses, templates…).
@@ -484,6 +403,89 @@ revoke all on public.products from anon;
 grant select on public.products to anon;      -- published only (RLS)
 
 
+
+-- ---------------------------------------------------------------------------
+-- 8. Keep anon away from anything it should not touch
+-- ---------------------------------------------------------------------------
+-- The publishable key is public by design. Revoke any blanket privileges that
+-- could let it read drafts, profiles, media, or mutate any table.
+-- Anon (the publishable key) — read the public catalogue only.
+revoke all on public.articles, public.article_categories, public.tools,
+          public.tool_categories, public.media, public.contact_messages,
+          public.profiles from anon;
+grant select on public.articles to anon;                 -- published only (RLS)
+grant select on public.article_categories to anon;
+grant select on public.tools to anon;                    -- active only (RLS)
+grant select on public.tool_categories to anon;
+grant select on public.products to anon;                 -- published only (RLS)
+grant insert (name, email, message) on public.contact_messages to anon; -- public form only
+-- NOTE: profiles is NOT granted to anon. Only authenticated (signed-in) users,
+-- and only their own row, per the policy above.
+
+-- Authenticated non-admins. `articles` / `products` used to expose published
+-- rows to anon and *all* rows to admins, with nothing in between — so a
+-- signed-in non-admin reading the public catalogue got "permission denied".
+-- Widening the existing published-only policies to `authenticated` fixes that
+-- without leaking drafts: RLS still restricts the rows.
+drop policy if exists "articles_select_published" on public.articles;
+create policy "articles_select_published" on public.articles
+  for select to anon, authenticated using (status = 'published');
+
+-- media / contact_messages stay admin-only; they are never granted to anon.
+-- (The published-only products policy is widened to authenticated in the
+-- products section below.)
+
+
+-- ---------------------------------------------------------------------------
+-- 8b. updated_at maintenance
+-- ---------------------------------------------------------------------------
+-- Both tables declare `updated_at timestamptz not null default now()` but
+-- nothing ever advanced it, so:
+--   * the admin list's "sort by updated_at" was really creation order, and
+--   * the sitemap's <lastmod> never moved when an article was edited,
+--     which is the single biggest signal crawlers take from a sitemap.
+-- admin.js now sets updated_at explicitly on save; this trigger keeps it
+-- correct for edits made from the SQL editor or any other client.
+create or replace function public.touch_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists articles_touch_updated_at on public.articles;
+create trigger articles_touch_updated_at
+  before update on public.articles
+  for each row execute function public.touch_updated_at();
+
+drop trigger if exists products_touch_updated_at on public.products;
+create trigger products_touch_updated_at
+  before update on public.products
+  for each row execute function public.touch_updated_at();
+
+
+-- ---------------------------------------------------------------------------
+-- 9. Seed the canonical article categories
+-- ---------------------------------------------------------------------------
+-- Articles (blog.html) is the single content hub. Every piece of content —
+-- news, analysis, how-tos and the legacy static guides — is classified with
+-- one of these categories. "guides" is the category that classifies the
+-- fifteen static /guides/*.html pages inside the hub; it is NOT a separate
+-- top-level destination anymore. Idempotent: safe to re-run.
+insert into public.article_categories (name, slug, sort_order) values
+  ('News',       'news',       1),
+  ('Security',   'security',   2),
+  ('Deep Dives', 'deep-dives', 3),
+  ('How-To',     'how-to',     4),
+  ('Guides',     'guides',     5)
+on conflict (slug) do update
+  set name      = excluded.name,
+      sort_order = excluded.sort_order;
+
+
 -- ---------------------------------------------------------------------------
 -- 10b. Storage for products
 -- ---------------------------------------------------------------------------
@@ -498,6 +500,7 @@ create policy "products_bucket_public_read" on storage.objects
   using (bucket_id = 'products');
 
 drop policy if exists "products_bucket_admin_write" on storage.objects;
+drop policy if exists "products_bucket_admin_insert" on storage.objects;
 create policy "products_bucket_admin_insert" on storage.objects
   for insert to authenticated with check (bucket_id = 'products' and public.is_admin());
 drop policy if exists "products_bucket_admin_update" on storage.objects;

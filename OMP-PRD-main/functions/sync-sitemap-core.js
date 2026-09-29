@@ -25,3 +25,5 @@ if (!fs.existsSync(from)) {
 
 fs.copyFileSync(from, to);
 console.log(`sync-sitemap-core: ${path.relative(process.cwd(), to)} updated from ${path.relative(process.cwd(), from)}`);
+
+fs.copyFileSync(path.join(path.dirname(from), 'academy-routes.mjs'), path.join(path.dirname(to), 'academy-routes.mjs'));

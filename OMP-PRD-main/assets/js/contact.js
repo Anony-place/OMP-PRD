@@ -1,14 +1,13 @@
 /* ============================================================
    OopsMyPassword — contact form → Supabase (contact_messages).
-   Submissions land in the admin panel's Messages tab. The mailto
-   link stays as a fallback if the network request fails.
+   Submissions land in the admin panel's Messages tab. Failed requests
+   retain the message for retry; no unverified support mailbox is advertised.
    ============================================================ */
 (function () {
   'use strict';
   var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
   var API_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
   var ENDPOINT = SUPABASE_URL + '/rest/v1/contact_messages';
-  var MAILTO = 'hello@oopsmypassword.com';
 
   var form = document.querySelector('[data-contact-form]');
   if (!form) return;
@@ -41,17 +40,9 @@
     note.focus({ preventScroll: false });
   }
 
-  function setMailto(name, email, msg) {
-    if (!note) return;
-    var link = note.querySelector('a[data-mailto]');
-    if (!link) return;
-    var subject = encodeURIComponent('OMP contact — ' + name.slice(0, 60));
-    var body = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
-    link.href = 'mailto:' + MAILTO + '?subject=' + subject + '&body=' + body;
-  }
-
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (btn && btn.disabled) return;
     var nameEl = form.querySelector('#contact-name');
     var emailEl = form.querySelector('#contact-email');
     var msgEl = form.querySelector('#contact-message');
@@ -92,13 +83,16 @@
     /* Honeypot: real visitors never fill this hidden field. Fake success silently. */
     if (hp && hp.value) {
       form.reset();
-      showNote('<strong>Message sent.</strong> Thanks — a human reads every submission and we\u2019ll reply to <span class="mono">' + esc(email) + '</span> soon.');
+      showNote('<strong>Message sent.</strong> Your message was received. Follow-up, if needed, uses <span class="mono">' + esc(email) + '</span>.');
       return;
     }
 
     if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
 
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 15000);
     fetch(ENDPOINT, {
+      signal: controller.signal,
       method: 'POST',
       headers: {
         'apikey': API_KEY,
@@ -110,12 +104,12 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       form.reset();
       try { sessionStorage.setItem(LAST_SUBMIT_KEY, String(Date.now())); } catch (e) { /* ignore */ }
-      showNote('<strong>Message sent.</strong> Thanks — a human reads every submission and we\u2019ll reply to <span class="mono">' + esc(email) + '</span> soon. Didn\u2019t reach us? <a data-mailto href="mailto:' + MAILTO + '">Email us directly</a>.');
+      showNote('<strong>Message sent.</strong> Your message was received. Follow-up, if needed, uses <span class="mono">' + esc(email) + '</span>. Response times are not guaranteed.');
       window.ompToast('Message sent — thank you!');
     }).catch(function () {
-      showNote('<strong>Could not send right now.</strong> Your message is still here — <a data-mailto href="mailto:' + MAILTO + '">open your email app with it pre-filled</a>, or try again in a moment.');
-      setMailto(name, email, msg);
+      showNote('<strong>Could not send right now.</strong> Your message is still here. Copy it somewhere safe and retry later. If the request timed out, it may already have reached the inbox.');
     }).finally(function () {
+      clearTimeout(timer);
       if (btn) { btn.disabled = false; btn.innerHTML = btnHTML; }
     });
   });

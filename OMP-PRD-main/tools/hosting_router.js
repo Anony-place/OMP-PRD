@@ -33,7 +33,7 @@ function globToRegex(glob) {
   while (i < glob.length) {
     const c = glob[i];
     if (c === '{' && glob.slice(i, i + 5) === '{,/**') { re += '(?:/.*)?'; i += 6; continue; }
-    if (c === '@(') {
+    if (c === '@' && glob[i + 1] === '(') {
       const end = glob.indexOf(')', i);
       re += '(?:' + glob.slice(i + 2, end).replace(/\|/g, '|') + ')';
       i = end + 1; continue;
@@ -91,7 +91,12 @@ function createRouter(rootDir, configPath) {
 
   function resolve(pathname, depth) {
     if (depth > 10) return { type: 'loop', location: pathname };
-    let p = pathname.split('?')[0];
+    let p = pathname.split('?')[0] || '/';
+    // Do not let raw/decoded dot segments bypass Hosting's ignore rules in
+    // local previews. Browser-normalized requests already arrive canonical.
+    if (!p.startsWith('/') || p.includes('\\') || p.includes('\0') ||
+        p.split('/').some(segment => segment === '.' || segment === '..'))
+      return { type: 'notfound', file: '/404.html' };
 
     // 1. Configured redirects (evaluated before any filesystem check)
     for (const r of redirects) {
@@ -167,7 +172,17 @@ function createRouter(rootDir, configPath) {
     return { end: { type: 'loop', location: current }, hops };
   }
 
-  return { resolve, follow };
+  // Apply matching header groups in order, with later values overriding by key.
+  // Used only by regression browsers; normal preview remains iframe-embeddable.
+  function headersFor(pathname) {
+    const result = {};
+    for (const group of cfg.headers || []) {
+      if (globToRegex(group.source).test(pathname))
+        for (const header of group.headers) result[header.key.toLowerCase()] = header.value;
+    }
+    return result;
+  }
+  return { resolve, follow, headersFor };
 }
 
 module.exports = createRouter;

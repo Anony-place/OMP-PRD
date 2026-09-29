@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from omp_build.layout import (  # noqa: E402
     DATE, SITE, footer, guide_card, head, header, icon,
     jsonld_article, jsonld_breadcrumb, jsonld_faq, jsonld_webapp,
-    jsonld_website, page, scripts,
+    jsonld_website, jsonld_organization, page, scripts,
 )
 from omp_build.guides1 import GUIDES_1  # noqa: E402
 from omp_build.guides2 import GUIDES_2  # noqa: E402
@@ -31,7 +31,7 @@ from omp_build.pages_core import (  # noqa: E402
 from omp_build.pages_blog import articles_body, products_body  # noqa: E402
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
-    security_body, sitemap_body, terms_body,
+    security_body, sitemap_body, terms_body, email_preferences_body,
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,6 +57,17 @@ def load_sitemap_core():
     routes = re.findall(r"'([^']+)'", block.group(1))
     if not routes:
         raise SystemExit("sitemap-core.mjs: STATIC_ROUTES is empty")
+    if "...ACADEMY_ROUTES" in block.group(1):
+        manifest_path = os.path.join(os.path.dirname(SITEMAP_CORE), "academy-routes.mjs")
+        with open(manifest_path, encoding="utf-8") as fh:
+            manifest = re.search(r"export const ACADEMY_ROUTES = (\[.*?\]);", fh.read(), re.S)
+        if not manifest:
+            raise SystemExit("academy-routes.mjs: ACADEMY_ROUTES not found")
+        academy_routes = json.loads(manifest.group(1))
+        if not isinstance(academy_routes, list) or any(not isinstance(route, str) or not route.startswith("/learning") for route in academy_routes):
+            raise SystemExit("academy-routes.mjs: invalid published routes")
+        routes = list(dict.fromkeys(academy_routes + routes))
+
 
     # The value is deliberately allowed to be empty: no lastmod is asserted for
     # generated pages. [^']* (not [^']+) so an empty stamp still parses.
@@ -129,7 +140,7 @@ def guide_page(g):
         jsonld.append(jsonld_faq(g["faq"]))
     return page(
         path=f"/articles/{g['slug']}", active="/articles",
-        title=f"{g['title']} | OopsMyPassword", desc=g["desc"],
+        title=f"{g.get('seo_title', g['title'])} | OopsMyPassword", desc=g["desc"],
         body=body, og_type="article", jsonld=jsonld,
         head_extra=(
             f'<meta property="article:published_time" content="{DATE}">\n'
@@ -176,19 +187,21 @@ GUIDES_REDIRECT_STUB = f"""<!DOCTYPE html>
 
 # ------------------------------------------------------------------ main
 def main():
+    write("tools/site-footer.html", footer())
+    write("functions/site-footer.fragment", footer())
     write("index.html", page(
         path="/", active="/",
-        title="OopsMyPassword — Test, Generate & Learn Password Security (No Account)",
+        title="OopsMyPassword | Private Password Tools & Academy",
         desc="Free, privacy-first password tools that run entirely in your browser: strength checker, CSPRNG generator, passphrase builder and plain-language security guides.",
         body=home_body(GUIDES),
-        jsonld=[jsonld_website(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
+        jsonld=[jsonld_website(), jsonld_organization(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
         # articles.js is intentionally NOT loaded here: the homepage body has no
         # [data-articles] mount point. The article feed lives on /articles.
         scripts_=["security.js", "wordlist.js", "checker.js", "generator.js"],
     ))
     write("checker.html", page(
         path="/checker", active="/checker",
-        title="Password Strength Checker — Free, Private, Client-Side | OopsMyPassword",
+        title="Password Strength Checker — Private & Free | OopsMyPassword",
         desc="Test password strength in real time with pattern detection, entropy estimates and crack-time indication. 100% client-side: your password never leaves your browser.",
         body=checker_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Checker", "/checker")]),
@@ -196,7 +209,7 @@ def main():
     ))
     write("generator.html", page(
         path="/generator", active="/generator",
-        title="Password Generator — Secure CSPRNG, 20-Char Default | OopsMyPassword",
+        title="Secure Random Password Generator | OopsMyPassword",
         desc="Generate cryptographically secure passwords locally with crypto.getRandomValues(). Length slider, character options, ambiguous-character filter. No Math.random(), ever.",
         body=generator_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Generator", "/generator")]),
@@ -211,7 +224,7 @@ def main():
     ))
     write("breach-check.html", page(
         path="/breach-check", active="/breach-check",
-        title="Breach Check — How k-Anonymity Works + Local Demo | OopsMyPassword",
+        title="Password Breach Check — Local Demo | OopsMyPassword",
         desc="Learn why password reuse is dangerous and how privacy-preserving breach lookup works. Includes a clearly-labeled local demo — no live database, no false claims.",
         body=breach_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Breach Check", "/breach-check")]),
@@ -227,7 +240,7 @@ def main():
     ))
     write("entropy.html", page(
         path="/entropy", active="/tools",
-        title="Password Entropy Calculator — Bits, Pools & Crack Times | OopsMyPassword",
+        title="Password Entropy Calculator | OopsMyPassword",
         desc="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.",
         body=entropy_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Entropy Calculator", "/entropy")]),
@@ -235,7 +248,7 @@ def main():
     ))
     write("passphrase.html", page(
         path="/passphrase", active="/tools",
-        title="Passphrase Generator — Diceware-Style, 1296-Word List | OopsMyPassword",
+        title="Random Passphrase Generator | OopsMyPassword",
         desc="Generate memorable passphrases from the EFF short wordlist using a CSPRNG. Adjustable word count, separators, capitalization; honest entropy display.",
         body=passphrase_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Passphrase Generator", "/passphrase")]),
@@ -243,7 +256,7 @@ def main():
     ))
     write("random-string.html", page(
         path="/random-string", active="/tools",
-        title="Random String Generator — Hex, Base64URL, Alphanumeric | OopsMyPassword",
+        title="Random String Generator — Hex & Base64 | OopsMyPassword",
         desc="Generate random strings, tokens and IDs locally with a CSPRNG. Choose charset, length and batch size; copy with one click.",
         body=random_string_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Random String Generator", "/random-string")]),
@@ -251,7 +264,7 @@ def main():
     ))
     write("security-checklist.html", page(
         path="/security-checklist", active="/tools",
-        title="Security Checklist — 16 Habits for Safer Accounts | OopsMyPassword",
+        title="Account Security Checklist — 16 Habits | OopsMyPassword",
         desc="A practical account-security checklist covering passwords, 2FA, devices and habits. Progress is stored on your device only.",
         body=checklist_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Security Checklist", "/security-checklist")]),
@@ -266,7 +279,7 @@ def main():
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/articles")]),
         # Order matters: sanitize.js and markdown.js expose the window globals
         # that articles.js renders article bodies with (Markdown or HTML input).
-        scripts_=["sanitize.js", "markdown.js", "articles.js"],
+        scripts_=["sanitize.js", "markdown.js", "articles.js", "newsletter.js"],
     ))
     write("products.html", page(
         path="/products", active="/products",
@@ -291,7 +304,7 @@ def main():
     write("privacy.html", page(
         path="/privacy", active="/about",
         title="Privacy Policy — OopsMyPassword",
-        desc="Passwords are processed locally and never stored, logged, or sent anywhere. No accounts, no trackers, no third-party fonts or CDNs. Read the plain-language policy.",
+        desc="How OMP handles local password tools, device-only Academy progress, optional article emails and contact messages. Read our plain-language privacy policy.",
         body=privacy_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Privacy Policy", "/privacy")]),
     ))
@@ -327,7 +340,7 @@ def main():
     write("security.html", page(
         path="/security", active="/about",
         title="Security & Responsible Disclosure — OopsMyPassword",
-        desc="OMP's own security posture — static architecture, no password endpoints, textContent-only DOM handling, CSPRNG generation — plus how to report a vulnerability.",
+        desc="How OopsMyPassword protects local password inputs, sanitizes published content and restricts admin access, plus how to report a vulnerability safely.",
         body=security_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Security", "/security")]),
     ))
@@ -337,6 +350,14 @@ def main():
         desc="Every page on OopsMyPassword: tools, guides, and site information.",
         body=sitemap_body(GUIDES),
         scripts_=["sitemap.js"],
+    ))
+    write("email-preferences.html", page(
+        path="/email-preferences", active="/articles",
+        title="Article Email Preferences — OopsMyPassword",
+        desc="Confirm or stop article updates. No account or Academy progress changes.",
+        body=email_preferences_body(), robots="noindex, nofollow",
+        head_extra='<meta name="referrer" content="no-referrer">',
+        scripts_=["email-preferences.js"],
     ))
     write_404()
 

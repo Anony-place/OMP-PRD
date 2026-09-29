@@ -216,6 +216,7 @@ A3 = {
 
 A4 = {
     "slug": "check-if-password-was-leaked",
+    "seo_title": "Check If Your Password Was Leaked",
     "title": "How to Check If Your Password Has Been Leaked (Safely)",
     "desc": "How k-anonymity lets you check a password against billions of breached records without ever revealing it — plus what to do in the first hour if yours shows up.",
     "category": "Incident Response",

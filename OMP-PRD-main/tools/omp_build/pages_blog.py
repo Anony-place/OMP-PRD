@@ -40,6 +40,26 @@ def articles_body(guides):
     </noscript>
   </div>
 </section>
+
+<section class="section-tight" id="newsletter" aria-labelledby="newsletter-title">
+  <div class="container container-narrow card card-pad">
+    <span class="eyebrow">Optional · Article emails only</span>
+    <h2 class="h-2" id="newsletter-title">New articles, straight to your inbox</h2>
+    <p>Subscribe for new OopsMyPassword articles. This is not a login. Your Academy name and progress stay on your device and are never attached to this email.</p>
+    <form data-newsletter-form>
+      <fieldset disabled><legend class="sr-only">Subscribe to article updates</legend>
+        <label for="newsletter-email">Email address</label>
+        <input class="input" id="newsletter-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required>
+        <label class="newsletter-consent"><input name="consent" type="checkbox" required>Send me new article updates. I understand I must confirm my email and can unsubscribe from any update.</label>
+        <div data-newsletter-challenge></div>
+        <button class="btn btn-primary" type="submit" disabled>Subscribe to article updates</button>
+      </fieldset>
+      <p class="small muted" data-newsletter-note role="status">Email updates are optional. JavaScript must load before this form can be enabled.</p>
+      <p class="small muted">When enabled, Resend delivers these emails and Cloudflare Turnstile protects this form. <a href="/privacy#newsletter">How your email is used →</a></p>
+    </form>
+    <noscript><p>JavaScript is required for email subscription, but not for reading Academy lessons and published article pages.</p></noscript>
+  </div>
+</section>
 """
 
 

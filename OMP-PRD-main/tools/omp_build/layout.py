@@ -2,6 +2,7 @@
 """Shared layout: head, header, footer, icons, reusable components."""
 
 import os
+from urllib.parse import urlparse
 
 # Canonical production origin. Every <link rel="canonical">, og:url, og:image
 # and JSON-LD url on the site is derived from this, so it MUST be an origin
@@ -97,8 +98,8 @@ NAV_LINKS = [
     ("Tools", "/tools"),
     ("Articles", "/articles"),
     ("Products", "/products"),
+    ("Academy", "/learning"),
     ("Breach Check", "/breach-check"),
-    ("About", "/about"),
 ]
 
 
@@ -144,6 +145,7 @@ def head(*, title, desc, path, og_type="website", jsonld=None, extra="", robots=
   <title>{title}</title>
   <meta name="description" content="{desc}">{robots_html}
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />{canonical_html}
+  <meta name="application-name" content="{BRAND}">
   <meta name="theme-color" content="#050811">
   <meta name="color-scheme" content="dark light">{social_html}
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
@@ -218,6 +220,13 @@ def footer():
             ("FAQ", "/faq"),
             ("Glossary", "/glossary"),
         ]),
+        ("Academy", [
+            ("Academy home", "/learning"),
+            ("Subjects & courses", "/learning#categories"),
+            ("Choose your roadmap", "/learning/roadmap"),
+            ("How learning works", "/learning/roadmap#how-it-works"),
+            ("Article email updates", "/articles#newsletter"),
+        ]),
         ("Company", [
             ("About", "/about"),
             ("Privacy", "/privacy"),
@@ -234,7 +243,7 @@ def footer():
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="/" aria-label="{BRAND} — home">{logo_svg("f")}<span>Oops<span class="grad-text">MyPassword</span></span></a>
-        <p>Privacy-first password tools. Every check runs locally in your browser — no account, no servers, no storage, no tracking of what you type.</p>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. Article email updates are optional and separate.</p>
         <div class="tag-list mt-16">
           <span class="chip">{icon("lock","icon-16")} Client-side</span>
           <span class="chip">{icon("users-off","icon-16")} No account</span>
@@ -276,6 +285,9 @@ def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scr
         + scripts(*(scripts_ or []))
         + "\n</body>\n</html>\n"
     )
+    # These tables intentionally scroll horizontally on narrow screens.
+    html = html.replace('<table', '<table tabindex="0"')
+    html = html.replace('class="table-scroll"', 'class="table-scroll" tabindex="0" aria-label="Scrollable comparison table"')
     return html
 
 
@@ -397,9 +409,21 @@ def jsonld_website():
     return {
         "@context": "https://schema.org",
         "@type": "WebSite",
+        "@id": SITE + "/#website",
         "name": BRAND,
+        "alternateName": ["Oops My Password", "OMP", urlparse(SITE).hostname],
+        "publisher": {"@id": SITE + "/#organization"},
         "url": SITE + "/",
-        "description": "Privacy-first password security tools that run entirely in your browser.",
+        "description": "Privacy-first password tools, practical articles and a no-login learning Academy.",
+    }
+
+
+def jsonld_organization():
+    return {
+        "@context": "https://schema.org", "@type": "Organization",
+        "@id": SITE + "/#organization", "name": BRAND,
+        "alternateName": "Oops My Password", "url": SITE + "/",
+        "logo": SITE + "/assets/icons/icon-512.png",
     }
 
 

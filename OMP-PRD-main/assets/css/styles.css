@@ -720,7 +720,7 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 /* ---------- Forms ---------- */
 .form-grid { display: grid; gap: 18px; }
 .form-field label { display: block; font-size: .88rem; font-weight: 600; margin-bottom: 8px; }
-.form-field input, .form-field textarea {
+.form-field input, .form-field textarea, .form-field select {
   width: 100%;
   background: var(--bg-soft);
   border: 1px solid var(--border-strong);
@@ -730,7 +730,7 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   color: var(--text);
   transition: border-color .15s, box-shadow .15s;
 }
-.form-field input:focus, .form-field textarea:focus {
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus {
   outline: none; border-color: var(--purple);
   box-shadow: 0 0 0 4px rgba(139, 92, 246, .16);
 }
@@ -755,7 +755,7 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 
 /* ---------- Footer ---------- */
 .site-footer { border-top: 1px solid var(--border); background: var(--bg-soft); margin-top: 40px; }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; padding: 64px 0 44px; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr)); gap: 36px; padding: 64px 0 44px; }
 .footer-brand p { color: var(--muted); font-size: .9rem; margin-top: 14px; max-width: 300px; }
 /* Footer column titles are labels, not document headings — an <h4> here sat
    directly after the page's <h2> content and broke the heading outline on
@@ -801,7 +801,8 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .page-hero .lead { max-width: 640px; margin-top: 16px; }
 
 /* ---------- Reveal animations ---------- */
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+/* Content must remain visible when JavaScript or its observer is delayed/disabled. */
+.reveal { opacity: 1; transform: none; transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
 .reveal-d1 { transition-delay: .08s; } .reveal-d2 { transition-delay: .16s; } .reveal-d3 { transition-delay: .24s; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
@@ -1112,3 +1113,44 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   body { background: #fff; color: #000; }
 }
 
+
+/* Optional newsletter is distinct from the device-only Academy. */
+[data-newsletter-form] fieldset { border: 0; padding: 0; margin: 20px 0; min-width: 0; }
+[data-newsletter-form] input[type="email"] { width: 100%; margin: 8px 0 16px; }
+.newsletter-consent { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0; line-height: 1.6; }
+.newsletter-consent input { flex: none; margin-top: 6px; }
+
+/* Keep the complete navigation inside the viewport, including injected search. */
+@media (max-width: 1600px) {
+  .site-nav .btn-get-started { display: none; }
+}
+@media (max-width: 1200px) {
+  .site-nav .nav-links { display: none; }
+  .site-nav .nav-toggle { display: inline-flex; }
+}
+@media (max-width: 380px) {
+  .site-nav .brand { font-size: .9rem; gap: 6px; }
+  .site-nav .nav-inner { gap: 8px; }
+  .site-nav .nav-actions { gap: 6px; }
+  .site-nav #omp-search-trigger { display: none; } /* Search remains in the mobile menu. */
+  .hero-cta .btn { white-space: normal; min-width: 0; text-align: center; padding-inline: 14px; }
+}
+.hero-grid > * { min-width: 0; }
+
+.nav-links a { white-space: nowrap; }
+
+/* Keep consent actions hidden until a valid email link is opened. */
+[data-email-action][hidden] { display: none; }
+
+/* Grid children must be allowed to shrink below long words/tables, not widen
+   the entire mobile viewport. Keep wide tables/code locally scrollable. */
+.grid > *, .two-col > *, .article-layout > * { min-width: 0; }
+.gen-output code, .callout p, .checklist-item .ci-text { min-width: 0; overflow-wrap: anywhere; }
+.prose { overflow-wrap: anywhere; }
+main p a:not(.btn) { text-decoration: underline; text-underline-offset: .18em; }
+.sitemap-grid a { overflow-wrap: anywhere; }
+.table-scroll:focus-visible, .prose table:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
+@media (max-width: 540px) {
+  .gen-actions, .slider-head { flex-wrap: wrap; gap: 10px; }
+  .opt-row > div { min-width: 0; overflow-wrap: anywhere; }
+}
