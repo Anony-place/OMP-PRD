@@ -27,6 +27,9 @@
     { type: 'Tool', title: 'Breach Check (k-Anonymity Demo)', desc: 'See how breach lookups work with k-anonymity — SHA-1 hashed locally.', url: '/breach-check', kw: 'breach pwned leaked have i been k-anonymity sha1 hash demo' },
     { type: 'Tool', title: 'Security Checklist', desc: '16 habits for safer accounts, from 2FA to password manager setup.', url: '/security-checklist', kw: 'habits checklist 2fa safer accounts tips list' },
 
+    /* Academy: public curriculum, not signed-in learner records. */
+    { type: 'Page', title: 'OMP Academy', desc: 'Explore subjects, choose a course, and learn through focused modules and lessons.', url: '/learning', kw: 'academy learn training education courses subjects curriculum programming security' },
+    { type: 'Page', title: 'Security learning roadmap', desc: 'Find your starting point and follow the web security foundation in order.', url: '/learning/roadmap', kw: 'academy beginner start roadmap path prerequisites' },
     /* Site pages */
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
     { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools', kw: 'tools overview all list utilities' },

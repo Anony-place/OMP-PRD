@@ -1,0 +1,194 @@
+{
+  "10000000-0000-4000-8000-000000000001": {
+    "questions": [
+      {
+        "question": "What should you have before testing a website you do not own?",
+        "options": [
+          "A fast connection",
+          "Explicit permission and an agreed scope",
+          "A new email address",
+          "A public URL"
+        ],
+        "answer": 1,
+        "explanation": "A public URL is not permission. Agree on authorization and scope before testing."
+      },
+      {
+        "question": "Where should an application enforce access to protected data?",
+        "options": [
+          "Only in CSS",
+          "Only in browser JavaScript",
+          "On the server for each protected operation",
+          "In the page title"
+        ],
+        "answer": 2,
+        "explanation": "The browser is controlled by the user. Server-side checks must protect each operation."
+      },
+      {
+        "question": "Which boundary deserves security checks?",
+        "options": [
+          "The boundary between untrusted input and trusted processing",
+          "The edge of a button",
+          "A change of font",
+          "A page margin"
+        ],
+        "answer": 0,
+        "explanation": "Treat incoming requests as untrusted and validate them before relying on their contents."
+      },
+      {
+        "question": "What is the purpose of this practice self-check?",
+        "options": [
+          "To grant professional accreditation",
+          "To prove someone\u2019s identity",
+          "To certify a production application",
+          "To help you review concepts locally"
+        ],
+        "answer": 3,
+        "explanation": "This is a browser-local learning aid, not a secure examination or professional credential."
+      }
+    ]
+  },
+  "10000000-0000-4000-8000-000000000002": {
+    "questions": [
+      {
+        "question": "What starts a typical HTTP exchange?",
+        "options": [
+          "A browser or other client sends a request",
+          "The server reads the user\u2019s mind",
+          "A CSS file creates an account",
+          "A database emails a password"
+        ],
+        "answer": 0,
+        "explanation": "The client sends a request, and the server sends a response."
+      },
+      {
+        "question": "What does an HTTP status code describe?",
+        "options": [
+          "The screen size",
+          "The outcome of handling a request",
+          "A secret password",
+          "The user\u2019s age"
+        ],
+        "answer": 1,
+        "explanation": "Status codes communicate outcomes such as success, redirect, client error or server error."
+      },
+      {
+        "question": "Should a server trust a hidden form field just because it is hidden?",
+        "options": [
+          "Yes, hidden means encrypted",
+          "Yes, browsers prevent edits",
+          "No, the client can modify it",
+          "Only on mobile"
+        ],
+        "answer": 2,
+        "explanation": "Hidden fields are still client-controlled input and require server-side validation."
+      },
+      {
+        "question": "What does HTTPS protect in transit?",
+        "options": [
+          "Every database forever",
+          "A user from every phishing page",
+          "The correctness of application permissions",
+          "The confidentiality and integrity of the connection"
+        ],
+        "answer": 3,
+        "explanation": "TLS protects transport. Application authorization and trustworthy endpoints remain necessary."
+      }
+    ]
+  },
+  "10000000-0000-4000-8000-000000000003": {
+    "questions": [
+      {
+        "question": "What is authentication?",
+        "options": [
+          "Checking which resources someone may use",
+          "Verifying the identity being presented",
+          "Choosing a font",
+          "Clearing a page cache"
+        ],
+        "answer": 1,
+        "explanation": "Authentication verifies identity; authorization determines allowed actions."
+      },
+      {
+        "question": "Why should a session identifier be difficult to guess?",
+        "options": [
+          "So attackers cannot readily impersonate another session",
+          "To make HTML smaller",
+          "To replace HTTPS",
+          "To avoid checking permissions"
+        ],
+        "answer": 0,
+        "explanation": "A valid session token can act as a credential, so it must be unpredictable and protected."
+      },
+      {
+        "question": "What does HttpOnly do for a cookie?",
+        "options": [
+          "Makes its value public",
+          "Removes the need for HTTPS",
+          "Prevents page JavaScript from directly reading it",
+          "Guarantees every action is authorized"
+        ],
+        "answer": 2,
+        "explanation": "HttpOnly restricts JavaScript access to the cookie; it is one defense, not a complete security guarantee."
+      },
+      {
+        "question": "What should logout do to an active server session?",
+        "options": [
+          "Change the site logo",
+          "Only hide the logout button",
+          "Keep every token valid indefinitely",
+          "Invalidate the session as appropriate"
+        ],
+        "answer": 3,
+        "explanation": "A logout flow should end the session, not merely hide its interface."
+      }
+    ]
+  },
+  "10000000-0000-4000-8000-000000000004": {
+    "questions": [
+      {
+        "question": "Which question does authorization answer?",
+        "options": [
+          "What color is this page?",
+          "Which browser is installed?",
+          "Is this actor allowed to perform this action on this resource?",
+          "How long is the URL?"
+        ],
+        "answer": 2,
+        "explanation": "Authorization checks the actor, operation and resource together."
+      },
+      {
+        "question": "A request includes someone else\u2019s record ID. What should the server do?",
+        "options": [
+          "Check that the requesting actor is allowed to access that record",
+          "Trust any numeric ID",
+          "Trust a hidden button",
+          "Skip checks if the URL is public"
+        ],
+        "answer": 0,
+        "explanation": "Object-level permissions must be verified even when a valid record identifier is supplied."
+      },
+      {
+        "question": "Is hiding an admin button sufficient access control?",
+        "options": [
+          "Yes, on desktops",
+          "Yes, with a dark theme",
+          "Yes, if the label says private",
+          "No, enforce permission checks on the server"
+        ],
+        "answer": 3,
+        "explanation": "Users can issue requests independently of visible buttons."
+      },
+      {
+        "question": "What is a safe default when permission has not been granted?",
+        "options": [
+          "Allow every request",
+          "Deny the protected action",
+          "Guess based on the URL",
+          "Trust all browser storage"
+        ],
+        "answer": 1,
+        "explanation": "Deny by default and explicitly grant the required permission."
+      }
+    ]
+  }
+}

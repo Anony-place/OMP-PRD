@@ -34,6 +34,7 @@ function makeClient() {
         select() { return b; },
         eq(col, v) { (b._eqs = b._eqs || []).push([col, v]); return b; },
         order() { return b; },
+        limit() { return b; },
         maybeSingle: async () => {
           if (table === 'profiles') return { data: { id: 'u1', email: 'a@b.c', is_admin: true }, error: null };
           return { data: null, error: { message: 'unexpected maybeSingle ' + table } };
@@ -101,6 +102,7 @@ async function boot() {
   ADMIN = fs.readFileSync(`${ROOT}/assets/js/admin.js`, 'utf8');
   w.eval(ADMIN.replace(/^import \{ createClient \} from .*$/m, 'const createClient = window.__mockCreateClient;'));
   await sleep(80);
+  if (!w.document.querySelector('[data-tab="products"]')) throw new Error(w.document.body.textContent);
   return { dom, w };
 }
 
@@ -232,7 +234,7 @@ function setFile(w, input, name, type, bytes) {
   w.document.querySelector('#new-product').click();
   await sleep(20);
   const nf2 = w.document.querySelector('#product-form');
-  setFile(w, nf2.querySelector('#' + nf2.querySelector('input[type="file"][accept^="image"]').id), 'cover.png', 'image/png', new Uint8Array([0x89, 0x50, 0x4e, 0x47]));
+  setFile(w, nf2.querySelector('#' + nf2.querySelector('input[type="file"][accept^="image"]').id), 'cover.png', 'image/png', new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]));
   await sleep(60);
   ok(calls.uploads.some(u => u.bucket === 'products'), 'cover uploaded to the PUBLIC covers bucket');
   ok(calls.publicUrls.some(u => u.bucket === 'products'), 'cover gets a public URL');

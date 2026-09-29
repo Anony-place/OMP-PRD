@@ -19,7 +19,7 @@ const createRouter = require('./hosting_router.js');
 const { resolve } = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
 
 const MIME = {
-  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain',
   '.ico': 'image/x-icon'
@@ -40,7 +40,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   const file = path.join(ROOT, r.file || '/404.html');
-  if (!file.startsWith(ROOT) || !fs.existsSync(file)) {
+  if (!file.startsWith(ROOT + path.sep) || !fs.existsSync(file)) {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('not found');
     return;
@@ -50,7 +50,7 @@ const server = http.createServer((req, res) => {
   log(status + (r.type === 'notfound' ? ' (404 page)' : ' file ' + r.file));
   res.writeHead(status, {
     'Content-Type': MIME[path.extname(file)] || 'application/octet-stream',
-    'Cache-Control': isHtml ? 'no-cache' : 'max-age=60'
+    'Cache-Control': 'no-cache'
   });
   res.end(fs.readFileSync(file));
 });

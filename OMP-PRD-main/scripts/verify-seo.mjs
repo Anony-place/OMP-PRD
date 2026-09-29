@@ -469,7 +469,9 @@ function checkLinks() {
     .filter((u) => {
       const f = routeToFile.get(u);
       const dir = path.dirname(rel(f));
-      return !GENERATED_DIRS.has(dir) && rel(f) !== 'guides.html';
+      // Private/noindex utility pages (e.g. query-based certificate verification)
+      // do not need an indexable inbound landing-page link.
+      return !parsed.get(f)?.robots?.includes('noindex') && !GENERATED_DIRS.has(dir) && rel(f) !== 'guides.html';
     });
   orphans.forEach((u) => fail(`orphan page: ${u} has no inbound internal link`));
 

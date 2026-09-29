@@ -3,6 +3,7 @@
 
 G6 = {
     "slug": "passkeys-explained",
+    "seo_title": "Passkeys Explained: A Beginner’s Guide",
     "title": "Passkeys Explained: Passwords Without the Password",
     "desc": "What passkeys actually are, how the public-key cryptography behind them defeats phishing, and how to start using them today.",
     "category": "The Future",

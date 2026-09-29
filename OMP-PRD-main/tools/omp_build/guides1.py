@@ -179,6 +179,7 @@ G3 = {
 
 G4 = {
     "slug": "password-manager-benefits",
+    "seo_title": "Password Managers: Benefits & How to Choose",
     "title": "Password Manager Benefits — and How to Choose One",
     "desc": "Why a password manager is the single biggest upgrade to your security, how it protects you beyond storage, and what to look for when choosing.",
     "category": "Tools",
@@ -237,6 +238,7 @@ G4 = {
 
 G5 = {
     "slug": "two-factor-authentication",
+    "seo_title": "Two-Factor Authentication: Your Options",
     "title": "Two-Factor Authentication (2FA): What to Use and Why",
     "desc": "SMS codes, authenticator apps, push approvals and hardware keys — how each factor type stacks up, and how to set 2FA up without locking yourself out.",
     "category": "Account Security",

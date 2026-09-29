@@ -113,6 +113,7 @@
       if (!ALLOWED_TAGS[tag]) { walk(node, dstParent); continue; } /* unwrap */
       var dst = document.createElement(tag);
       cleanAttrs(node, dst);
+      if (tag === 'table') dst.setAttribute('tabindex', '0');
       /* An <img> whose src was rejected (javascript:, data:text/html,
          missing) must not survive as an empty broken-image element. */
       if (tag === 'img' && !dst.getAttribute('src')) continue;

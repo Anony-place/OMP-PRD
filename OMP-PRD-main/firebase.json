@@ -8,7 +8,12 @@
       "**/node_modules/**",
       "tools/**",
       "supabase/**",
-      "functions/**"
+      "functions/**",
+      "scripts/**",
+      "**/*.md",
+      "**/__pycache__/**",
+      "package.json",
+      "package-lock.json"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
@@ -42,21 +47,29 @@
         "regex": "/guides/(.+)",
         "destination": "/articles/:1",
         "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/web-application-security-fundamentals",
+        "destination": "/learning/web-application-security/foundations/web-application-security-fundamentals",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/http-requests-responses",
+        "destination": "/learning/web-application-security/foundations/http-requests-responses",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/authentication-and-session-security",
+        "destination": "/learning/web-application-security/foundations/authentication-and-session-security",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/access-control-authorization",
+        "destination": "/learning/web-application-security/foundations/access-control-authorization",
+        "type": 301
       }
     ],
     "rewrites": [
-      {
-        "source": "/certificate",
-        "destination": "/learning.html"
-      },
-      {
-        "source": "/learning",
-        "destination": "/learning.html"
-      },
-      {
-        "source": "/learning/**",
-        "destination": "/learning.html"
-      },
       {
         "source": "/articles/create-strong-password",
         "destination": "/guides/create-strong-password.html"
@@ -234,7 +247,7 @@
         ]
       },
       {
-        "source": "/@(checker|generator|tools|articles|products|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
+        "source": "/@(checker|generator|tools|articles|products|learning|certificate|email-preferences|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -257,6 +270,50 @@
           {
             "key": "Cache-Control",
             "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/learning{,/**}",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/articles",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://esm.sh https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; frame-src https://challenges.cloudflare.com; connect-src https://challenges.cloudflare.com 'self' https://aeehfulikupskyrvcpzb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+          }
+        ]
+      },
+      {
+        "source": "/articles.html",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://esm.sh https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; frame-src https://challenges.cloudflare.com; connect-src https://challenges.cloudflare.com 'self' https://aeehfulikupskyrvcpzb.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+          }
+        ]
+      },
+      {
+        "source": "/admin{,/**}",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive"
           }
         ]
       }

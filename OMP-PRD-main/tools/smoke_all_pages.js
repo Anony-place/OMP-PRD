@@ -36,7 +36,7 @@ function listPages() {
   const out = ['', 'checker', 'generator', 'tools', 'breach-check', 'password-health',
                'entropy', 'passphrase', 'random-string', 'security-checklist',
                'articles', 'products', 'about', 'contact', 'faq', 'glossary',
-               'privacy', 'security', 'sitemap', '404'];
+               'privacy', 'security', 'sitemap', 'terms', 'learning', 'learning/roadmap', '404'];
   for (const f of fs.readdirSync(path.join(ROOT, 'guides'))) {
     if (f.endsWith('.html')) out.push('articles/' + f.replace(/\.html$/, ''));
   }
@@ -69,7 +69,14 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
         if (!w.crypto || !w.crypto.getRandomValues) Object.defineProperty(w, 'crypto', { value: webcrypto, configurable: true });
       }
     });
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(resolve => {
+      const doc = dom.window.document;
+      const ready = () => rel.startsWith('admin/') ? Boolean(dom.window.OMPMarkdown && dom.window.OMPSanitize) : Boolean(doc.getElementById('omp-search-trigger'));
+      if (ready()) return resolve();
+      const observer = new dom.window.MutationObserver(() => { if (ready()) { observer.disconnect(); clearTimeout(timer); resolve(); } });
+      const timer = setTimeout(() => { observer.disconnect(); resolve(); }, 5000);
+      observer.observe(doc, {childList:true,subtree:true});
+    });
 
     const d = dom.window.document;
     const checks = [];
@@ -81,7 +88,7 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
       if (!d.querySelector('footer.site-footer')) checks.push('missing footer.site-footer');
       if (!d.querySelector('main')) checks.push('missing <main>');
       if (!d.querySelector('.skip-link')) checks.push('missing skip link');
-      if (!d.querySelector('link[rel="canonical"]')) checks.push('missing canonical');
+      if (rel !== '404' && !d.querySelector('link[rel="canonical"]')) checks.push('missing canonical');
       if (!d.querySelector('meta[name="description"]')) checks.push('missing meta description');
       if (!d.querySelector('html[lang]')) checks.push('missing html lang');
       if (!d.getElementById('mobile-menu')) checks.push('missing mobile menu');
@@ -95,7 +102,8 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
       if (yr && !/^\d{4}$/.test(yr.textContent.trim())) checks.push('footer year not populated');
       /* products.html is deliberately noindex until the first product ships
          (empty catalog); every other public page must be indexable. */
-      if (d.querySelector('meta[name="robots"][content*="noindex"]') && rel !== 'products') checks.push('public page is noindex');
+      if (d.querySelector('meta[name="robots"][content*="noindex"]') && rel !== 'products' && rel !== '404') checks.push('public page is noindex');
+      if (rel === '404' && (!d.querySelector('meta[name="robots"][content*="noindex"]') || d.querySelector('link[rel="canonical"]'))) checks.push('404 must be noindex without a canonical');
     } else {
       if (!d.getElementById('admin-root')) checks.push('missing #admin-root');
       if (!d.querySelector('meta[name="robots"][content*="noindex"]')) checks.push('admin page is not noindex');

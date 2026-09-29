@@ -1,0 +1,74 @@
+/* Optional Firebase v1 handlers with the real pinned SDK and local HTTP.
+ * Supabase/Edge responses are synthetic; no deployment credentials required. */
+const assert = require('node:assert/strict');
+const { createRequire } = require('node:module');
+const path = require('node:path');
+const deps = createRequire(path.resolve('functions/package.json'));
+const express = deps('express');
+process.env.SUPABASE_URL = 'https://fixture.invalid';
+process.env.SUPABASE_PUBLISHABLE_KEY = 'public-fixture';
+process.env.SITEMAP_EDGE_URL = 'https://fixture.invalid/edge';
+const realFetch = global.fetch;
+let unavailable = false, missing = false;
+const row = { slug: 'fixture', title: 'Fixture <script>unsafe</script>', summary: 'A test article', content: '<h2>Body</h2><img src=x onerror=alert(1)><script>alert(1)</script><table><tr><td>Data</td></tr></table>', status: 'published', published_at: '2026-09-01T00:00:00Z' };
+global.fetch = async (input, init = {}) => {
+  const url = new URL(String(input));
+  assert.equal(url.origin, 'https://fixture.invalid', 'No remote service is contacted');
+  if (url.pathname === '/edge') return new Response('', { status: 503 });
+  assert.equal(init.headers.apikey, 'public-fixture');
+  assert.equal(init.headers.Authorization, undefined);
+  if (unavailable) return new Response('', { status: 503 });
+  return Response.json(url.pathname.endsWith('/articles') && !missing ? [row] : []);
+};
+const handlers = require('../functions');
+let n = 0;
+const ok = s => { n++; console.log('✓ ' + s); };
+(async () => {
+  const app = express();
+  app.all('/sitemap.xml', handlers.sitemap);
+  app.all('/articles/:slug', handlers.article);
+  app.post('/echo', express.text({ type: '*/*' }), (req, res) => res.json({ body: req.body, type: req.headers['content-type'] }));
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  const base = 'http://127.0.0.1:' + server.address().port;
+  try {
+    assert.ok(handlers.article.__trigger.httpsTrigger);
+    assert.ok(handlers.sitemap.__trigger.httpsTrigger);
+    ok('Pinned Firebase SDK preserves existing first-generation HTTP exports');
+    let res = await realFetch(base + '/articles/fixture');
+    let html = await res.text();
+    assert.equal(res.status, 200);
+    assert.match(html, /Fixture &lt;script&gt;unsafe&lt;\/script&gt;/);
+    assert.doesNotMatch(html, /onerror=|<script>alert/);
+    assert.match(html, /<table tabindex="0">/);
+    assert.match(html, /href="\/learning"/);
+    assert.match(html, /https:\/\/oopsmypassword.web.app\/articles\/fixture/);
+    ok('Article rendering escapes metadata, sanitizes content, preserves footer and table keyboard access');
+    res = await realFetch(base + '/articles/fixture', { method: 'HEAD' });
+    assert.equal(res.status, 200); assert.equal(await res.text(), '');
+    assert.equal((await realFetch(base + '/articles/fixture', { method: 'POST' })).status, 405);
+    ok('HTTP HEAD and method restrictions work through the actual SDK');
+    missing = true;
+    res = await realFetch(base + '/articles/missing'); html = await res.text();
+    assert.equal(res.status, 404); assert.match(html, /noindex/); assert.doesNotMatch(html, /rel="canonical"/);
+    assert.equal((await realFetch(base + '/articles/invalid_slug')).status, 404);
+    missing = false;
+    ok('Missing and malformed article URLs remain real noindex 404s');
+    res = await realFetch(base + '/sitemap.xml');
+    assert.equal(res.headers.get('x-sitemap-state'), 'rest-fallback');
+    assert.match(await res.text(), /\/articles\/fixture/);
+    ok('Unavailable Edge sitemap falls back to public REST without a secret or fake JWT');
+    unavailable = true;
+    assert.equal((await realFetch(base + '/articles/fixture')).status, 503);
+    res = await realFetch(base + '/sitemap.xml');
+    assert.equal(res.headers.get('x-sitemap-state'), 'static-fallback');
+    assert.match(await res.text(), /<urlset/);
+    ok('Provider errors return an honest article failure and labelled static sitemap fallback');
+    const { Gaxios } = deps('gaxios');
+    const upload = await new Gaxios().request({ url: base + '/echo', method: 'POST', multipart: [{ headers: { 'Content-Type': 'text/plain' }, content: 'uuid-compatibility-fixture' }] });
+    assert.match(upload.data.type, /multipart/);
+    assert.match(upload.data.body, /uuid-compatibility-fixture/);
+    ok('Scoped patched uuid override preserves Gaxios multipart boundary generation');
+    console.log(`\n${n} Firebase SDK/handler groups passed. Local fixture services only.`);
+  } finally { global.fetch = realFetch; await new Promise(resolve => server.close(resolve)); }
+})().catch(e => { console.error(e); process.exitCode = 1; });

@@ -15,7 +15,7 @@ checks in `admin.js`, `blog.js`, `search.js` or `contact.js` (those are UX, not
 authorization).
 
 The JavaScript in this repo is correct about *what* it intends; this folder is
-the *proof* of what the server actually allows. It must be applied in the
+the intended policy source, not proof of what the deployed server currently allows. It must be applied in the
 Supabase project (Dashboard → SQL Editor, or your project's `supabase/migrations`
 folder) and kept in sync with any schema change.
 
@@ -27,7 +27,7 @@ folder) and kept in sync with any schema change.
 
 ## Required application order
 
-1. **Run `00_schema_migrations.sql`** in the SQL Editor (it is idempotent,
+1. **For a new project**, run `00_schema_migrations.sql` in the SQL Editor (it is locally tested as idempotent,
    `drop policy if exists` / `create or replace`). This creates the `profiles`,
    `articles`, `article_categories`, `tools`, `tool_categories`, `media`,
    `contact_messages` tables, the `articles` Storage bucket, and every RLS /
@@ -37,9 +37,10 @@ folder) and kept in sync with any schema change.
      ```sql
      update public.profiles set is_admin = true where email = 'you@example.com';
      ```
-     (An `on auth.users insert` trigger or the dashboard "user metadata"
-     approach works too. The `/admin/` panel's `checkAdmin()` reads
-     `public.profiles.is_admin` for the signed-in user.)
+     Create the matching `public.profiles` row through a trusted SQL/service-role
+     operator if it does not exist. Never grant administration based on editable
+     user metadata. The admin panel reads the protected `profiles.is_admin` flag;
+     ordinary authenticated users cannot update it.
 3. **Verify** with the checks below.
 
 ## What the front-end does vs. what RLS must allow
@@ -87,3 +88,32 @@ folder) and kept in sync with any schema change.
 - These policies must be **applied to the live project**. This repo cannot set
   them from the client, and the live site has not been re-verified against a
   deployment of these statements in this session.
+
+
+## Existing production projects and fresh-install regression coverage
+
+Do **not** replay the entire base setup over an already hardened live project.
+Compare the live schema/migration history first and apply reviewed forward changes.
+`01_repair_product_storage_buckets.sql`, `02_production_reconciliation_2026_09_18.sql`
+and `03_admin_hardening_2026_09_19.sql` reflect historical production schemas;
+02/03 refer to legacy columns/functions and are not a universal fresh-install
+sequence. In particular, 03 uses a private SECURITY DEFINER helper with a public
+SECURITY INVOKER wrapper. Preserve that stronger deployed arrangement.
+Never replay the historical destructive Academy reset migration on production.
+
+The A-to-Z audit corrected base-schema ordering (profiles/products before their
+functions/grants/triggers), a duplicate Storage policy on rerun, and overly broad
+base contact INSERT permission. Reconciliation 02 already restricts contact
+columns on deployments where it was applied; this was not evidence that the live
+inbox could be modified anonymously. Source fixtures test fresh installation twice,
+public/draft separation, non-admin privilege escalation, contact column grants,
+private product files and authorized admin CRUD:
+
+```sh
+NODE_PATH=$PWD/tools/qa-deps/node_modules node tools/test_site_database.js
+```
+
+This is disposable PostgreSQL with modeled Supabase-owned auth/storage schemas.
+It is not an inspection of production RLS. Contact anti-spam remains an open
+operational gap: direct REST inserts have no server-verified challenge/rate gate
+in this repository. The browser cooldown/honeypot is not such a gate.

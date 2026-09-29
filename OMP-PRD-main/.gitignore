@@ -12,3 +12,5 @@ functions/.env
 supabase/functions/.env.local
 supabase/.branches
 supabase/.temp
+
+tools/site-security-browser-report.json

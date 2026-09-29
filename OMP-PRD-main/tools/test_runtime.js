@@ -296,7 +296,7 @@ const $ = (d, s) => d.querySelector(s);
 
   /* ---------------- contact page ---------------- */
   {
-    console.log('contact.html (Supabase submission + mailto fallback)');
+    console.log('contact.html (Supabase submission + retained retry)');
     const dom = await loadPage('contact');
     const w = dom.window, d = w.document;
     // Simulate an unreachable backend so the suite never POSTs to the live DB.
@@ -315,9 +315,8 @@ const $ = (d, s) => d.querySelector(s);
     await new Promise(r => setTimeout(r, 120));
     ok(note.classList.contains('show'), 'fallback panel appears when backend unreachable');
     ok(note.textContent.includes('Could not send right now'), 'honest failure message shown');
-    const link = note.querySelector('a[data-mailto]');
-    ok(link.href.startsWith('mailto:hello@oopsmypassword.com?subject='), 'mailto fallback pre-filled');
-    ok(link.href.includes('Ada'), 'message folded into mailto link');
+    ok(!note.querySelector('a[href^="mailto:"]'), 'no fallback to an unverified mailbox');
+    ok(d.getElementById('contact-message').value === 'Hello!', 'failed submission retains the message for retry');
     // honeypot: bots filling the hidden field get silent fake success
     d.querySelector('[data-contact-hp]').value = 'spammy';
     form.dispatchEvent(new w.Event('submit', { cancelable: true, bubbles: true }));
@@ -477,7 +476,7 @@ const $ = (d, s) => d.querySelector(s);
     ok(/<strong>bold<\/strong>/.test(out) && /<em>emphasis<\/em>/.test(out), 'bold + italic rendered');
     ok(/<code>code<\/code>/.test(out), 'inline code rendered');
     ok(/<del>struck<\/del>/.test(out), 'strikethrough rendered');
-    ok(/<table>[\s\S]*<th>Detail<\/th>[\s\S]*<td><strong>CVE<\/strong><\/td>/.test(out), 'GFM table rendered');
+    ok(/<table tabindex="0">[\s\S]*<th>Detail<\/th>[\s\S]*<td><strong>CVE<\/strong><\/td>/.test(out), 'GFM table rendered');
     ok(/<ul><li>first item<\/li><li>second item<\/li><\/ul>/.test(out), 'bullet list rendered');
     ok(/<ol><li>step one<\/li><li>step two<\/li><\/ol>/.test(out), 'ordered list rendered');
     ok(/<pre><code>SECRET=\.\.\.<\/\/?code>/.test(out.replace('\n', '')) || /<pre><code>SECRET=\.\.\./.test(out), 'fenced code rendered');
@@ -578,12 +577,12 @@ const $ = (d, s) => d.querySelector(s);
       ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
     }
 
-    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Breach Check, About
+    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, Academy, Breach Check
        (+ the JS-injected Search trigger in nav-actions). */
     const blog = rootHtml.find(x => x.f === 'articles.html').s;
     const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
     const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
-    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'Breach Check', 'About']),
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'Academy', 'Breach Check']),
        `desktop navbar is exactly the 8 target items — got [${navLabels.join(', ')}]`);
     const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
     ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
@@ -593,7 +592,7 @@ const $ = (d, s) => d.querySelector(s);
     /* The legacy hub is a redirect, not a destination. */
     const stub = fs.readFileSync(path.join(ROOT, 'guides.html'), 'utf8');
     ok(/http-equiv="refresh"[^>]*url=\/articles/.test(stub), 'guides.html meta-refreshes to /articles');
-    ok(/rel="canonical"[^>]*\/articles/.test(stub), 'guides.html canonical points at /articles');
+    ok(!/<link[^>]+rel="canonical"/.test(stub), 'noindex redirect stub has no conflicting canonical');
     ok(/noindex/.test(stub), 'guides.html is noindex');
     const fb = fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8');
     ok(fb.includes('"source": "/guides.html"') && fb.includes('"destination": "/articles"') && fb.includes('"type": 301'),
@@ -642,9 +641,9 @@ const $ = (d, s) => d.querySelector(s);
       ['/articles',      { type: 'file', file: '/articles.html' }],
       ['/products',      { type: 'file', file: '/products.html' }],
       ['/articles/create-strong-password', { type: 'file', file: '/guides/create-strong-password.html' }],
-      ['/articles/critical-langflow-vulnerability', { type: 'file', file: '/articles.html' }],
-      ['/products/my-cybersecurity-book', { type: 'file', file: '/products.html' }],
-      ['/sitemap.xml',   { type: 'function', name: 'sitemap' }],
+      ['/articles/__missing_test_article__', { type: 'notfound', file: '/404.html' }],
+      ['/products/__missing_test_product__', { type: 'notfound', file: '/404.html' }],
+      ['/sitemap.xml',   { type: 'file', file: '/sitemap.xml' }],
     ];
     for (const [p, want] of table) {
       const got = router.resolve(p, 0);
@@ -815,10 +814,10 @@ const $ = (d, s) => d.querySelector(s);
     ok(schema.includes('create policy "product_files_admin_insert"'),
        'product-files insert policy is a complete CREATE POLICY statement');
     const fbJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
-    ok(fbJson.hosting.ignore.includes('sitemap.xml'),
-       'static sitemap.xml is ignored so the Cloud Function rewrite actually runs');
-    ok(fbJson.functions && fbJson.functions.source === 'functions',
-       'firebase.json points the sitemap function at functions/');
+    ok(!fbJson.hosting.ignore.includes('sitemap.xml') && fs.existsSync(path.join(ROOT, 'sitemap.xml')),
+       'static sitemap is present and included in the Hosting artifact');
+    ok(!fbJson.functions,
+       'static Hosting deployment does not require a Cloud Functions deployment');
   }
 
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
@@ -976,7 +975,7 @@ const $ = (d, s) => d.querySelector(s);
     }
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
-    ok(heroPages.length === 19, '19 inner pages use .page-hero (products.html added, guides.html is now a redirect stub) — got ' + heroPages.length);
+    ok(heroPages.length === 20, '20 inner pages use .page-hero (including hosted email preferences; guides.html is a redirect stub) — got ' + heroPages.length);
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
     const hex2rgb = h => { h = h.trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
@@ -1220,13 +1219,13 @@ const $ = (d, s) => d.querySelector(s);
 
   /* ================= sitemap: dynamic + wiring ================= */
   {
-    console.log('sitemap (dynamic generation)');
+    console.log('sitemap (static deployment + optional dynamic generator)');
     const firebase = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8'));
-    ok(firebase.hosting.ignore.includes('sitemap.xml'), 'committed sitemap.xml is ignored so it cannot shadow the rewrite');
+    ok(!firebase.hosting.ignore.includes('sitemap.xml'), 'committed sitemap.xml is published as a static artifact');
     ok(firebase.hosting.ignore.includes('functions/**'), 'functions/ source is never published as static content');
     ok(firebase.hosting.ignore.includes('supabase/**'), 'supabase/ (schema + edge functions) is never published');
     const rewrite = firebase.hosting.rewrites.find(r => r.source === '/sitemap.xml');
-    ok(rewrite && rewrite.function === 'sitemap', '/sitemap.xml rewrites to the sitemap function');
+    ok(!rewrite, '/sitemap.xml needs no function rewrite in static Hosting');
 
     const headers = firebase.hosting.headers.find(h => h.source === '**').headers.map(h => h.key);
     ok(headers.includes('Strict-Transport-Security'), 'HSTS header present');
@@ -1240,7 +1239,7 @@ const $ = (d, s) => d.querySelector(s);
 
     const robots = fs.readFileSync(path.join(ROOT, 'robots.txt'), 'utf8');
     ok(/Disallow: \/functions\//.test(robots), 'robots.txt disallows /functions/');
-    ok(/Sitemap: https:\/\/oopsmypassword\.com\/sitemap\.xml/.test(robots), 'robots.txt still advertises the sitemap');
+    ok(robots.includes('Sitemap: ' + (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '') + '/sitemap.xml'), 'robots.txt advertises the canonical production sitemap');
 
     const sitemapPage = fs.readFileSync(path.join(ROOT, 'sitemap.html'), 'utf8');
     ok(/data-sitemap-live/.test(sitemapPage) && /sitemap\.js/.test(sitemapPage),

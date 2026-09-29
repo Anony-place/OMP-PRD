@@ -25,13 +25,13 @@ def about_body():
         <li><strong>Security advice is often theater.</strong> Fake precision ("this password would take 34 quadrillion years"), fake counters, unlabeled demos, dark patterns pushing accounts. We wanted tools that are honest about what they compute.</li>
       </ul>
       <h2 id="philosophy">The privacy-first philosophy</h2>
-      <p>OMP is architected so there is nothing to leak: analysis runs in JavaScript on your device; there are no accounts to compromise; no passwords cross the network to be logged. The best data-protection policy is data you never collect.</p>
+      <p>OMP is architected so password analysis runs in JavaScript on your device. No password inputs cross the network. Optional newsletter and contact details are separate from the tools and local learning records. The best data-protection policy is data you never collect.</p>
       <h2 id="principles">Security principles we hold to</h2>
       <ul>
         <li><strong>Client-side by default.</strong> If a feature can run locally, it runs locally.</li>
         <li><strong>CSPRNG or nothing.</strong> Generation uses <code>crypto.getRandomValues()</code> exclusively — never <code>Math.random()</code>.</li>
         <li><strong>No fake claims.</strong> Estimates are labeled estimates; demos are labeled demos; unfinished tools say "Coming Soon".</li>
-        <li><strong>Minimal attack surface.</strong> Static files, no backend dependency, no third-party trackers.</li>
+        <li><strong>Minimal attack surface.</strong> Password analysis stays local; online publishing, optional email updates and contact messages use documented services.</li>
         <li><strong>Teach, don't lecture.</strong> Every result links to a plain-language explanation.</li>
       </ul>
     </div>
@@ -39,7 +39,7 @@ def about_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("users-off","icon-22")}</span>
         <h3>No account required</h3>
-        <p>There is deliberately no login, no sign-up, no profile, no history. Your usage is yours; nothing follows you between visits except your own theme preference.</p>
+        <p>No learner login is required. Your theme, checklist, optional Academy name and learning progress stay on this browser/device. You can back up or clear Academy data in Device settings.</p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("server-off","icon-22")}</span>
@@ -63,7 +63,7 @@ def privacy_body():
   <div class="container">
     <span class="eyebrow">Legal</span>
     <h1 class="h-1">Privacy Policy</h1>
-    <p class="lead">Last updated: August 23, 2026. Plain language, because privacy policies should be read, not scrolled past.</p>
+    <p class="lead">Last updated: September 29, 2026. Plain language, because privacy policies should be read, not scrolled past.</p>
   </div>
 </section>
 <section class="section-tight">
@@ -79,20 +79,24 @@ def privacy_body():
       <li>If this site ever includes error reporting or analytics, it is configured such that input values — passwords included — can never be part of a payload.</li>
     </ul>
 
-    <h2 id="accounts">2. No accounts, no profiles</h2>
-    <p>OMP has no registration, login, or identity system. We therefore hold no account database to breach. The only browser storage used is for preferences (theme) and, on the Security Checklist page, your checkbox progress — both of which stay on your device and contain no personal information.</p>
+    <h2 id="accounts">2. Device-only learning, no learner login</h2>
+    <p>Public learning and tools require no login. Academy stores an optional display name, course-scoped lesson progress, self-check scores and reading bookmarks in localStorage. Theme preferences and Security Checklist progress are also local. This data does not sync or get attached to a newsletter email. Clearing browser data removes it; use Academy Device settings to download/restore a backup or reset Academy data. Backups include your name and progress, so keep them private. Shared browsers share these local records. Site administrators use a separate protected publishing login; it is not required for visitors. Historical server-issued certificates and learner records, if any, are not automatically deleted or imported by this change.</p>
 
     <h2 id="breach-demo">3. The breach-check demo</h2>
     <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and compares a 5-character hash prefix against a small corpus bundled with the page. No network request is made with any part of your input or its hash. The demo is labeled accordingly and does not represent a live breach database query.</p>
 
     <h2 id="hosting">4. Hosting and server logs</h2>
-    <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and retains it briefly for security and reliability. We do not sell, rent, or share that data.</p>
+    <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and may retain it under its own security, reliability and retention policies. We do not sell, rent, or share that data.</p>
 
     <h2 id="third-parties">5. Third-party services</h2>
-    <p>The current build embeds <strong>no third-party trackers, fonts, CDNs, or analytics</strong>. If any third-party service is added in the future (for example, an opt-in k-anonymity breach-lookup API), this policy will be updated to name the service, document exactly what data it receives (ideally only a 5-character hash prefix), and make the feature explicit and consent-based.</p>
+    <p>Firebase Hosting serves the site. Supabase supplies published articles/products, contact-message storage and newsletter infrastructure; some publishing interfaces load the Supabase library from esm.sh. These requests expose normal network metadata to those providers but do not include password inputs or local Academy progress. No advertising analytics are included in this build. Contact messages include the name, email and message you submit and do not opt you into the newsletter.</p>
+
+    <h2 id="newsletter">Optional article email subscription</h2>
+    <p>When enabled, the newsletter uses your email only to send a confirmation and new article updates. It does not create a login, recover progress, or connect your email to local learning records. We require explicit consent and email confirmation. Resend processes delivery and Cloudflare Turnstile checks the subscription form for abuse; the latter processes network/browser signals. The form stays disabled until these services are configured.</p>
+    <p>Supabase stores your subscription email, consent version, subscription status and confirmation/delivery timestamps. Each article email includes an unsubscribe link. Unsubscribing stops future queued updates; an already in-flight message may arrive. An unsubscribed address is retained as a suppression record to prevent unwanted sends. For deletion or historical learner-record requests, use the <a href="/contact">contact form</a>. Academy reset only clears your local learning records and does not unsubscribe an email address.</p>
 
     <h2 id="children">6. Children</h2>
-    <p>OMP is an educational tool directed at a general audience and collects no personal information from anyone, including children.</p>
+    <p>OMP is intended for a general audience. Password tools and Academy learning need no email. Do not submit unnecessary personal or sensitive information in an optional subscription or contact message.</p>
 
     <h2 id="changes">7. Changes to this policy</h2>
     <p>Material changes will be posted on this page with an updated date. We will never claim compliance certifications we have not obtained; where a formal legal regime applies to how you use this site, consult qualified counsel.</p>
@@ -110,7 +114,7 @@ def terms_body():
   <div class="container">
     <span class="eyebrow">Legal</span>
     <h1 class="h-1">Terms of Use</h1>
-    <p class="lead">Last updated: August 23, 2026. By using OopsMyPassword you agree to these terms.</p>
+    <p class="lead">Last updated: September 29, 2026. By using OopsMyPassword you agree to these terms.</p>
   </div>
 </section>
 <section class="section-tight">
@@ -150,13 +154,13 @@ def contact_body():
   <div class="container">
     <span class="eyebrow">Contact</span>
     <h1 class="h-1">Talk to us</h1>
-    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team; no newsletters, no tracking.</p>
+    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team; contact messages do not subscribe you to article emails.</p>
   </div>
 </section>
 <section class="section-tight">
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad">
-      <div class="form-note">{icon("alert","icon-20")}<div><strong>Messages go straight to the team.</strong><br>Submissions are delivered to our admin inbox and a human reads every one. We never ask for passwords and never share your email — please don't include real passwords or live secrets in your message.</div></div>
+      <div class="form-note">{icon("alert","icon-20")}<div><strong>Messages go straight to the team.</strong><br>A successful submission is saved to the private admin inbox; response times are not guaranteed. We never ask for passwords and never share your email — please don't include real passwords or live secrets in your message.</div></div>
       <form class="form-grid mt-24" data-contact-form novalidate>
         <input type="text" name="company_website" data-contact-hp value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;opacity:0">
         <div class="form-field">
@@ -176,7 +180,7 @@ def contact_body():
         </div>
         <div class="form-success" data-contact-note role="status">
           {icon("check-circle","icon-20")}
-          <div><strong>Message sent.</strong> Thanks — a human reads every submission and we'll reply to you soon. Didn't reach us? <a data-mailto href="mailto:hello@oopsmypassword.com">Email us directly</a>.</div>
+          <div><strong>Message sent.</strong> Your message was saved to the team inbox. Response times are not guaranteed.</div>
         </div>
       </form>
     </div>
@@ -277,14 +281,14 @@ def security_body():
     <div class="prose">
       <h2 id="architecture">Architecture choices that shrink risk</h2>
       <ul>
-        <li><strong>Static, client-side site.</strong> No server-side application logic, no database, no session tokens, no auth surface to attack.</li>
-        <li><strong>Passwords are never sent.</strong> All analysis runs in browser JavaScript; there is no endpoint that accepts a password.</li>
-        <li><strong>No third-party scripts.</strong> Styles, fonts (system stack), and scripts are first-party, which removes supply-chain and tracking surface.</li>
-        <li><strong>Safe DOM handling.</strong> Dynamic UI uses <code>textContent</code>, never <code>innerHTML</code>, for anything influenced by input. No <code>eval()</code> anywhere.</li>
+        <li><strong>Static, client-side site.</strong> Public pages are prebuilt. Password tools and Academy progress run locally; Supabase handles publishing data, contact messages, newsletter records and private admin authentication.</li>
+        <li><strong>Local password analysis.</strong> The public tools do not send password inputs to a server. Private administrator sign-in is a separate authenticated service.</li>
+        <li><strong>Limited, documented dependencies.</strong> Fonts use the system stack. Publishing features load pinned libraries from esm.sh; an enabled newsletter uses Turnstile. These dependencies need maintenance and do not receive password inputs.</li>
+        <li><strong>Safe DOM handling.</strong> Plain text uses <code>textContent</code> or escaping; article and product markup passes through an allowlist sanitizer before rendering. The site does not evaluate user-provided JavaScript.</li>
         <li><strong>CSPRNG-only generation.</strong> <code>crypto.getRandomValues()</code> with rejection sampling and a secure shuffle.</li>
       </ul>
       <h2 id="reporting">Reporting a vulnerability</h2>
-      <p>If you believe you've found a security issue in OMP — for example a way input could be exfiltrated, an XSS, or a generation flaw — email <span class="mono">security@oopsmypassword.com</span> with:</p>
+      <p>If you believe you've found a security issue in OMP — for example a way input could be exfiltrated, an XSS, or a generation flaw — use the <a href="/contact">contact form</a> with:</p>
       <ul>
         <li>A description, affected page(s), and reproduction steps.</li>
         <li><strong>Never real credentials.</strong> Use synthetic example passwords in reports.</li>
@@ -299,9 +303,9 @@ def security_body():
         <h3>Our promises</h3>
         <ul class="list-plain">
           <li>{icon("check","icon-18")}<span>No passwords in logs, URLs, storage, or analytics</span></li>
-          <li>{icon("check","icon-18")}<span>No eval(), no dynamic remote code</span></li>
+          <li>{icon("check","icon-18")}<span>No execution of user-provided code</span></li>
           <li>{icon("check","icon-18")}<span>Labeled demos, honest estimates</span></li>
-          <li>{icon("check","icon-18")}<span>Disclosure inbox monitored</span></li>
+          <li>{icon("check","icon-18")}<span>Reports routed to the private admin inbox</span></li>
         </ul>
       </div>
       <div class="callout callout-warn">{icon("alert","icon-20")}<p><strong>Scope note.</strong> This page describes the properties of the current build. Future features that change the data flow (e.g., opt-in breach APIs) will update this page and the privacy policy before shipping.</p></div>
@@ -337,13 +341,31 @@ def sitemap_body(guides):
   </div>
 </section>
 <section class="section-tight">
-  <div class="container"><div class="footer-grid" style="grid-template-columns:repeat(3,1fr);padding:0">{cols}</div></div>
+  <div class="container"><div class="grid grid-3 sitemap-grid">{cols}</div></div>
 </section>
 <section class="section-tight" data-sitemap-live hidden>
   <div class="container">
     <h2 class="h-3">Live articles &amp; products</h2>
     <p class="muted small" style="margin-top:6px">Published from the admin panel — the same entries the XML sitemap lists.</p>
-    <div class="footer-grid" style="grid-template-columns:repeat(2,1fr);padding:0;margin-top:16px" data-sitemap-live-grid></div>
+    <div class="grid grid-2 sitemap-grid mt-16" data-sitemap-live-grid></div>
   </div>
 </section>
 """
+
+
+def email_preferences_body():
+    return """
+<section class="page-hero"><div class="container container-narrow">
+  <span class="eyebrow">Article updates only</span>
+  <h1 class="h-1">Article email preferences</h1>
+  <p class="lead mt-16">Confirm or stop article emails. This is not a login, and your local Academy progress stays unchanged.</p>
+</div></section>
+<section class="section-tight"><div class="container container-narrow">
+  <div class="card card-pad">
+    <h2 class="h-3" data-email-heading>Open your email link</h2>
+    <p class="mt-16" data-email-status role="status" aria-live="polite">Use the confirmation or unsubscribe link in an OopsMyPassword email. Opening a link alone does not change your preferences.</p>
+    <button class="btn btn-primary mt-24" type="button" data-email-action hidden disabled>Continue</button>
+    <noscript><p class="mt-16">JavaScript is needed to securely confirm this request. Enable it and reopen the link from your email. Email apps that support one-click unsubscribe can also stop updates directly.</p></noscript>
+    <p class="mt-24"><a href="/articles#newsletter">Back to articles and subscription options</a></p>
+  </div>
+</div></section>"""

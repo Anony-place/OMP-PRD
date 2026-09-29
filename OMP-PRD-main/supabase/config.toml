@@ -1,0 +1,15 @@
+project_id = "omp-academy"
+
+# New publishable keys are not JWTs. Mutation handlers validate the user's
+# Bearer session with auth.getUser; certificate verification is intentionally public.
+[functions.learning-progress]
+verify_jwt = false
+[functions.learning-quiz-submit]
+verify_jwt = false
+[functions.learning-certificate-verify]
+verify_jwt = false
+
+# Public newsletter opt-in/confirmation; dispatch requires its own worker secret.
+# Newsletter tokens are not auth sessions and cannot access learning records.
+[functions.newsletter]
+verify_jwt = false

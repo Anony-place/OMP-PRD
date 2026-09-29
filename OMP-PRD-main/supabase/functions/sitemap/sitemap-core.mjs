@@ -1,3 +1,4 @@
+import { ACADEMY_ROUTES } from './academy-routes.mjs';
 /* ============================================================
    OopsMyPassword — dynamic sitemap core.
 
@@ -34,6 +35,7 @@ export const STATIC_LASTMOD = '';
    firebase.json). The fifteen baked-in guides are rewritten by Firebase
    onto /articles/<slug>, so they belong in here too. */
 export const STATIC_ROUTES = [
+  ...ACADEMY_ROUTES,
   '/',
   '/checker',
   '/generator',

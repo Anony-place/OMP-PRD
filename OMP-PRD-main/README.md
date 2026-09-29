@@ -43,7 +43,7 @@ CI:  python3 tools/build.py          → static routes from sitemap-core.mjs
      node scripts/build-static-seo.mjs → + live Supabase articles/products
      cp sitemap.xml google-sitemap.xml → byte-identical alias
      node scripts/verify-seo.mjs      → fails the deploy on any regression
-     firebase deploy --only hosting
+     firebase deploy --project password-e9a30 --only hosting
 
 GET /sitemap.xml → Firebase Hosting static file
 ```
@@ -94,16 +94,18 @@ Users never see `.html` implementation URLs. The public URL is fully separated f
 > Note: the Python build tooling (`tools/`) and test scripts are **excluded from hosting deploys** — only the static site itself is published.
 
 ```bash
-firebase init hosting   # select this repo (config already provided)
-firebase deploy --only hosting
+# Existing firebase.json/.firebaserc are authoritative; do not reinitialize them.
+# Run the full build and regression gates before deployment.
+firebase deploy --project password-e9a30 --only hosting
+node scripts/verify-live-release.mjs
 ```
 
 ## Privacy architecture
 
 - **All analysis is client-side JavaScript.** Passwords never leave the tab: no network, no storage, no logs, nothing in URLs, nothing in analytics.
-- Privacy-first by design: all password tools run 100% client-side; nothing you type is ever sent anywhere.
+- Password analysis and the educational breach-check demo run locally. The demo does not query a live breach service; even its hash prefix stays on this device.
 - Dynamic UI writes use `textContent` or escaped/whitelisted markup only; no `eval()`, and article HTML is always re-sanitized before it reaches the DOM.
-- No third-party scripts, fonts, or trackers.
+- No analytics trackers. Public data/admin features use Supabase; an enabled newsletter loads Turnstile for anti-spam verification and submits only newsletter consent data. No learner accounts or progress sync.
 - Auth exists only in the private admin panel (`/admin/`, Supabase Auth). The public site has no login, no signup, and no analytics.
 
 ## Structure
@@ -151,8 +153,63 @@ python3 tools/qa.py
 NODE_PATH=/path/to/node_modules node tools/test_runtime.js
 ```
 
+## OMP Academy — no learner login
+
+**Academy → Category/Subject → Course → Module → Lesson.** Start at `/learning`.
+Every subject has its own roadmap; courses keep separate curricula, bookmarks
+and progress. Existing lesson URLs and IDs are preserved.
+
+Names are optional. Names, practice completion, self-check scores and progress
+stay in this browser's localStorage. There is no Academy authentication SDK,
+email gate, cloud sync or server grading in the current learner interface.
+Device settings offers backup, restore and an Academy-only reset. Self-checks
+are public practice material, not secure examinations or verified certificates.
+Historical server certificate verification is preserved separately; legacy data
+is not deleted or silently imported. The admin publishing login stays protected.
+
+Email is used **only for optional article subscriptions**. The newsletter is a
+separate, double-opt-in system, with unsubscribe and a new-publication queue.
+It remains disabled until mail provider, anti-spam verification and a private
+scheduled worker are configured. No production deployment/email was performed.
+
+- [Current implementation and site audit](tools/SITE-LOCAL-FIRST-AUDIT.md)
+- [Newsletter deployment/setup](tools/NEWSLETTER-SETUP.md)
+- [Course structure and authoring](tools/ACADEMY-MULTI-SUBJECT.md)
+- [Publishing architecture/research](tools/ACADEMY-ARCHITECTURE.md)
+
+Local preview:
+
+```sh
+npm ci --ignore-scripts  # pinned parser-based publication sanitizer
+python3 tools/build.py
+node scripts/build-academy.mjs --snapshot
+node tools/preview_server.js 8080
+```
+
+Production publication uses live Supabase content (omit `--snapshot`). Apply the
+additive content-hierarchy migrations before a live Academy build; never rerun
+the old destructive reset seed. Hosting deployment does not apply SQL or deploy
+Supabase Edge Functions. The former account-backed progress/quiz reports are
+historical; the current local-first contract supersedes their learner UX.
+
 ## Honesty policy
 
 Strength scores are **heuristic estimates, not guarantees** (see Terms). Anything not
 connected to a real backend says so — the breach page is a labeled demo, the contact
 form does not fake submission, and there are no invented usage statistics or reviews.
+
+### Production release verification
+
+See [`tools/PRODUCTION-RELEASE-CHECKLIST.md`](tools/PRODUCTION-RELEASE-CHECKLIST.md)
+for current account/provider blockers and the safe release sequence. The deployment
+workflow now checks exact live pages/assets and true 404s using
+`node scripts/verify-live-release.mjs`; local test success alone is not a claim that
+the site was deployed or that newsletter delivery is operational.
+
+### Latest whole-site re-audit
+
+The fresh [A-to-Z audit](tools/SITE-A-TO-Z-AUDIT-2026-09-29.md) covers public pages,
+Academy, products, admin PDF import, both themes, responsive layouts, actual local
+SQL permissions, dependencies and release limits. It records the fixes and the
+remaining production/provider/contact-abuse gates without treating local fixtures
+as proof of a working live deployment.

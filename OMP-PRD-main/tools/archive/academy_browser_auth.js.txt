@@ -1,0 +1,894 @@
+/* Run against `node tools/preview_server.js 8080`.
+ * Dependencies: npm install --no-save playwright @axe-core/playwright
+ * npx playwright install chromium
+ * NODE_PATH can point to externally installed dependencies.
+ * API fixtures isolate UI tests: these are NOT production API integration tests.
+ */
+"use strict";
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const { chromium } = require("playwright");
+const { default: AxeBuilder } = require("@axe-core/playwright");
+const ROOT = path.join(__dirname, "..");
+const BASE = process.env.OMP_AUDIT_URL || "http://127.0.0.1:8080";
+const snapshot = JSON.parse(
+  fs.readFileSync(path.join(ROOT, "assets/data/academy-reading.json")),
+);
+const topic = snapshot.topics[0],
+  category = snapshot.categories[0];
+const pathUrl = `/learning/${category.slug}/foundations`;
+const lesson = `${pathUrl}/${topic.slug}`;
+const quizSeed = fs.readFileSync(
+  path.join(
+    ROOT,
+    "supabase/migrations/20260927143000_reset_to_web_application_security.sql",
+  ),
+  "utf8",
+);
+const questions = JSON.parse(
+  quizSeed.match(/15,20,'(\[.*?\])'/)[1].replaceAll("''", "'"),
+);
+// Mirror the forward migration's paired option/key rotation (the old seed had
+// all corrected answers at index 3). Display shuffling remains the app's job.
+questions.forEach((question, i) => {
+  const balanced = [];
+  question.options.forEach((label, index) => {
+    balanced[(index + i + 1) % 4] = label;
+  });
+  question.options = balanced;
+});
+const fixture = {
+  ...snapshot,
+  quizzes: [
+    {
+      id: "quiz-1",
+      topic_id: topic.id,
+      passing_score: 15,
+      max_score: 20,
+      updated_at: "2026-09-29T00:00:00Z",
+      questions,
+    },
+  ],
+  progress: [],
+};
+const mockModule = `
+export function createClient() {
+  const f = window.__academyFixture;
+  window.__academyCalls = [];
+  return {
+    auth: {
+      getSession: async () => ({data:{session:f.signedIn ? {access_token:'fixture'} : null}}),
+      getUser: async () => ({data:{user:{id:'test-learner',email:'learner@example.test'}}}),
+      signInWithOtp: async args => { window.__academyCalls.push({name:'signin',args}); return f.authFail ? {error:new Error('offline')} : {}; },
+      updateUser: async args => { window.__academyCalls.push({name:'profile',args}); return f.profileFail ? {error:new Error('offline')} : {}; },
+      signOut: async () => { window.__academyCalls.push({name:'signout'}); return {}; }
+    },
+    from(table) {
+      const query = {select(){return this},eq(){return this},in(key,values){window.__academyCalls.push({name:'scope',table,key,values});return this},order(){return this},maybeSingle(){this.single=true;return this},
+        then(resolve,reject) {
+          const rows = {learning_categories:f.categories,learning_topics:f.topics,learning_labs:f.labs,learning_quizzes:f.quizzes,learning_progress:f.progress,learning_certificates:f.certificateMissing ? [] : [{certificate_id:'OMP-TEST-CERT'}]}[table] || [];
+          return Promise.resolve({data:this.single ? rows[0] : rows,error:f.catalogueFail || f.progressFail && table==='learning_progress' ? new Error('unavailable') : null}).then(resolve,reject);
+        }};return query;
+    },
+    functions:{invoke:async(name,{body}) => {
+      window.__academyCalls.push({name,body});
+      await new Promise(r=>setTimeout(r,250));
+      if (f.mutationFail) return {error:new Error('network')};
+      if(name==='learning-progress' && body.action==='recover_certificate') return {data:{certificate:{certificate_id:'OMP-RECOVERED-CERT'}}};
+      if(name==='learning-progress') return {data:{progress:{lesson_started:true,lesson_completed:body.action==='complete_lab',lab_completed:body.action==='complete_lab'}}};
+      if(f.staleQuiz) return {error:{context:new Response(JSON.stringify({error:'This quiz has changed. Refresh the lesson before submitting again.',code:'QUIZ_CHANGED'}),{status:409})}};
+      const nextRetryAt = new Date(Date.now()+86400000).toISOString();
+      if (f.lockedResponse) return {error:{context:new Response(JSON.stringify({status:'RETRY_LOCKED',score:10,nextRetryAt,progress:{next_retry_at:nextRetryAt}}),{status:423})}};
+      return {data:{status:f.failQuiz?'RETRY_LOCKED':'PASSED',score:f.failQuiz?10:20,nextRetryAt:f.failQuiz?nextRetryAt:null,progress:{passed:!f.failQuiz,highest_score:f.failQuiz?10:20},certificate:f.failQuiz?null:{certificate_id:'OMP-TEST-CERT'}}};
+    }}
+  };
+}`;
+let browser,
+  tests = 0;
+const errors = [];
+async function makePage(options = {}) {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 1000 },
+    colorScheme: options.theme || "dark",
+    javaScriptEnabled: !options.noJavaScript,
+  });
+  await context.addInitScript(
+    (f) => {
+      window.__academyFixture = f;
+    },
+    { ...fixture, ...options.multiSubject, ...options },
+  );
+  await context.route("https://esm.sh/**", (route) =>
+    options.offline
+      ? route.abort()
+      : route.fulfill({ contentType: "text/javascript", body: mockModule }),
+  );
+  await context.route("**/assets/data/academy-catalogue.json", (route) =>
+    route.fulfill({
+      json: { ...fixture, ...options.multiSubject, ...options },
+    }),
+  );
+  if (options.verification)
+    await context.route(
+      "**/functions/v1/learning-certificate-verify?**",
+      (route) =>
+        options.verification === "network"
+          ? route.abort()
+          : options.verification === "timeout"
+            ? new Promise(() => {})
+            : route.fulfill(options.verification),
+    );
+  if (options.multiSubject) {
+    const { curriculum, resolvePage } =
+      await import("../assets/js/academy-model.mjs");
+    const { publicView, workspaceView, esc } =
+      await import("../assets/js/academy-views.mjs");
+    const model = curriculum(options.multiSubject);
+    const template = fs.readFileSync(
+      path.join(ROOT, "tools/academy-shell.html"),
+      "utf8",
+    );
+    await context.route(
+      (url) =>
+        url.origin === new URL(BASE).origin &&
+        url.pathname.startsWith("/learning"),
+      (route) => {
+        if (route.request().resourceType() !== "document")
+          return route.continue();
+        const page = resolvePage(
+          model,
+          new URL(route.request().url()).pathname,
+        );
+        if (["notfound", "redirect"].includes(page.type))
+          return route.continue();
+        const html = template
+          .replace(
+            "%%ACADEMY_CONTENT%%",
+            workspaceView(model, page, publicView(model, page)),
+          )
+          .replace(
+            /<title>[\s\S]*?<\/title>/,
+            `<title>${esc(page.title)} | OMP Academy</title>`,
+          )
+          .replace(
+            /<link\s+rel="canonical"[^>]*>/,
+            `<link rel="canonical" href="https://oopsmypassword.web.app${page.url}">`,
+          );
+        return route.fulfill({ contentType: "text/html", body: html });
+      },
+    );
+  }
+  const page = await context.newPage();
+  page.on("pageerror", (e) => errors.push(e.message));
+  const response = await page.goto(BASE + (options.route || "/learning"));
+  if (response.status() !== 404 && !options.noJavaScript)
+    await page.waitForSelector(
+      options.route?.startsWith("/certificate")
+        ? ".academy-empty, .certificate-shell"
+        : "#academy-account",
+      { state: "attached" },
+    );
+  return page;
+}
+function ok(name) {
+  tests++;
+  console.log(`✓ ${name}`);
+}
+async function noOverflow(page) {
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+}
+async function audit(page, name) {
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  assert.deepEqual(
+    result.violations.map((v) => ({
+      id: v.id,
+      nodes: v.nodes.map((n) => n.target),
+    })),
+    [],
+    name,
+  );
+  ok(name);
+}
+async function openSection(page, id) {
+  await page.evaluate((id) => {
+    location.hash = id;
+  }, id);
+  await page.waitForSelector(`#section-${id}:visible`);
+}
+async function fillQuiz(page) {
+  for (let i = 0; i < 4; i++) {
+    await page.locator(`input[name="q${i}"][value="${i}"]`).check();
+    if (i < 3) await page.locator("#question-next").click();
+  }
+}
+(async () => {
+  let launch = { headless: true };
+  if (process.env.CHROMIUM_EXECUTABLE_PATH)
+    launch.executablePath = process.env.CHROMIUM_EXECUTABLE_PATH;
+  if (process.env.OMP_USE_SERVERLESS_CHROMIUM) {
+    const serverless = require("@sparticuz/chromium").default;
+    launch = {
+      ...launch,
+      executablePath: await serverless.executablePath(),
+      args: serverless.args.filter(
+        (a) => a !== "--single-process" && a !== "--disable-web-security",
+      ),
+    };
+  }
+  browser = await chromium.launch(launch);
+  let page = await makePage();
+  assert.equal(await page.locator("h1").count(), 1);
+  assert.equal(await page.locator(".category-discovery").count(), 1);
+  assert.equal(await page.locator("#academy-account").isVisible(), false);
+  assert.equal(
+    await page.locator("#learning-app").getAttribute("aria-busy"),
+    "false",
+  );
+  ok(
+    "Guest overview loads without an auth session; account form starts hidden",
+  );
+  await audit(page, "Overview accessibility (dark)");
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await noOverflow(page);
+  }
+  ok("Overview has no horizontal overflow at 320–1440px");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await audit(page, "Mobile overview accessibility");
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  assert.equal(await page.locator("#academy-account").isVisible(), true);
+  await audit(page, "Account dialog accessibility");
+  await page.locator("#academy-email").fill("learner@example.test");
+  await page.locator("#academy-name").fill("Test Learner");
+  await page.getByRole("button", { name: "Send sign-in link" }).click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector("#academy-auth-note")
+      .textContent.includes("Link sent"),
+  );
+  assert.equal(
+    await page.evaluate(
+      () => __academyCalls.filter((c) => c.name === "signin").length,
+    ),
+    1,
+  );
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator("#academy-account").isVisible(), false);
+  assert.equal(
+    await page.evaluate(
+      () =>
+        __academyCalls.find((c) => c.name === "signin").args.options.data
+          .full_name,
+    ),
+    "Test Learner",
+  );
+  ok(
+    "Magic-link form submits once with the chosen certificate name; dialog closes with Escape",
+  );
+  await page.goto(BASE + pathUrl);
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  await page.waitForSelector("#lesson-search");
+  await page.locator("#lesson-search").fill("HTTP Requests");
+  assert.equal(await page.locator(".academy-topic").count(), 1);
+  await page.locator("#lesson-search").fill("no such lesson");
+  await page.locator("#reset-filters").click();
+  assert.equal(await page.locator(".academy-topic").count(), 4);
+  assert.equal(await page.locator("#lesson-filter").isDisabled(), true);
+  ok("Curriculum search, progress filter, no-results and reset work");
+  await page.goto(BASE + lesson);
+  await page.waitForSelector("#section-overview:visible");
+  assert.equal(await page.locator(".lesson-section:visible").count(), 1);
+  await page.locator("#section-next").click();
+  await page.waitForSelector("#section-how-it-works:visible");
+  assert.equal(await page.locator(".lesson-section:visible").count(), 1);
+  await page.goBack();
+  await page.waitForSelector("#section-overview:visible");
+  await openSection(page, "defensive");
+  await page.getByText("Sources & further reading").click();
+  assert.equal(await page.locator(".lesson-references li").count(), 3);
+  await page.reload();
+  await page.waitForSelector("#section-defensive:visible");
+  await page.goto(BASE + lesson);
+  await page.waitForSelector("#section-defensive:visible");
+  ok(
+    "One section visible; next/back, deep links, references and reading bookmarks work",
+  );
+  await page.locator(".lesson-outline-toggle").click();
+  await page.locator('[data-outline="labs"]').click();
+  await page.waitForSelector("#section-labs:visible");
+  assert.equal(
+    await page.locator(".lesson-outline-toggle").getAttribute("aria-expanded"),
+    "false",
+  );
+  await page.locator("#complete-lab").click();
+  assert.equal(await page.locator("#academy-account").isVisible(), true);
+  await page.keyboard.press("Escape");
+  await openSection(page, "quiz");
+  assert.equal(await page.locator("#academy-quiz").count(), 0);
+  ok(
+    "Mobile outline collapses after selection; guests cannot save labs or submit quizzes",
+  );
+  await audit(page, "Guest knowledge-check gate accessibility");
+  await page.context().close();
+  page = await makePage({ route: lesson, signedIn: true });
+  await openSection(page, "labs");
+  await page.locator("#complete-lab").click();
+  assert.match(await page.locator("#lab-feedback").innerText(), /confirm/);
+  await page.locator("#lab-confirm").check();
+  await page.locator("#complete-lab").click();
+  await page.waitForSelector("#academy-quiz:visible");
+  assert.equal(await page.locator(".quiz-question:visible").count(), 1);
+  await page.locator("#question-next").click();
+  assert.match(await page.locator(".quiz-error").innerText(), /Choose/);
+  await audit(page, "Active quiz accessibility");
+  const displayed = await page
+    .locator(".quiz-question")
+    .first()
+    .locator(".quiz-option")
+    .evaluateAll((labels) =>
+      labels.map((label) => ({
+        index: Number(label.querySelector("input").value),
+        text: label.querySelector("span:last-child").textContent,
+      })),
+    );
+  assert.equal(new Set(displayed.map((o) => o.index)).size, 4);
+  assert.ok(displayed.every((o) => questions[0].options[o.index] === o.text));
+  ok("Shuffled quiz options retain their original server answer indexes");
+  await fillQuiz(page);
+  await page.locator("#question-back").click();
+  assert.equal(
+    await page.locator('input[name="q2"][value="2"]').isChecked(),
+    true,
+  );
+  await page.locator("#question-next").click();
+  await page.locator('#academy-quiz button[type="submit"]').click();
+  assert.equal(
+    await page.locator('#academy-quiz button[type="submit"]').isDisabled(),
+    true,
+  );
+  await page.waitForSelector("#quiz-result .success-gate");
+  assert.equal(
+    await page.evaluate(
+      () =>
+        __academyCalls.filter((c) => c.name === "learning-quiz-submit").length,
+    ),
+    1,
+  );
+  assert.match(await page.locator("#lesson-state").innerText(), /Completed/);
+  assert.equal(
+    await page
+      .getByRole("link", { name: "View certificate" })
+      .getAttribute("href"),
+    "/certificate?id=OMP-TEST-CERT",
+  );
+  assert.deepEqual(
+    await page.evaluate(
+      () =>
+        __academyCalls.find((c) => c.name === "learning-quiz-submit").body
+          .answers,
+    ),
+    [0, 1, 2, 3],
+  );
+  ok(
+    "Lab confirmation unlocks quiz; answers persist; pending submit disabled; server result updates completion",
+  );
+  await page.context().close();
+  for (const lockedResponse of [false, true]) {
+    page = await makePage({
+      route: lesson + "#quiz",
+      signedIn: true,
+      progress: [
+        { topic_id: topic.id, lesson_started: true, lab_completed: true },
+      ],
+      failQuiz: true,
+      lockedResponse,
+    });
+    await fillQuiz(page);
+    await page.locator('#academy-quiz button[type="submit"]').click();
+    await page.waitForFunction(() =>
+      document
+        .querySelector("#quiz-result")
+        .textContent.includes("Next attempt"),
+    );
+    assert.equal(await page.locator("#academy-quiz").isVisible(), false);
+    assert.match(await page.locator("#lesson-state").innerText(), /Retry/);
+    await page.context().close();
+  }
+  ok(
+    "Failed attempts and HTTP 423 cooldown responses show the actual retry time",
+  );
+  page = await makePage({
+    route: lesson + "#quiz",
+    signedIn: true,
+    staleQuiz: true,
+    progress: [{ topic_id: topic.id, lab_completed: true }],
+  });
+  await fillQuiz(page);
+  await page.locator('#academy-quiz button[type="submit"]').click();
+  await page
+    .getByRole("button", { name: "Refresh lesson", exact: true })
+    .waitFor();
+  assert.match(await page.locator(".quiz-error").innerText(), /has changed/);
+  assert.equal(await page.locator("#academy-quiz").isVisible(), true);
+  assert.equal(
+    await page.evaluate(
+      () =>
+        __academyCalls.find((c) => c.name === "learning-quiz-submit").body
+          .quiz_version,
+    ),
+    fixture.quizzes[0].updated_at,
+  );
+  ok(
+    "Stale quizzes send a revision and show a refresh action instead of recording a false failure",
+  );
+  await page.context().close();
+  page = await makePage({
+    route: lesson + "#quiz",
+    signedIn: true,
+    progress: [{ topic_id: topic.id, lab_completed: true }],
+    mutationFail: true,
+  });
+  await fillQuiz(page);
+  await page.locator('#academy-quiz button[type="submit"]').click();
+  await page.waitForFunction(
+    () =>
+      !document.querySelector('#academy-quiz button[type="submit"]').disabled,
+  );
+  assert.equal(
+    await page.locator('input[name="q3"][value="3"]').isChecked(),
+    true,
+  );
+  assert.match(await page.locator(".quiz-error").innerText(), /try again/i);
+  ok("Network failures re-enable submit and preserve answers");
+  await page.context().close();
+  page = await makePage({
+    route: lesson + "#quiz",
+    signedIn: true,
+    progress: [
+      {
+        topic_id: topic.id,
+        passed: true,
+        highest_score: 20,
+        lab_completed: true,
+      },
+    ],
+  });
+  await page.waitForSelector("#saved-certificate a");
+  assert.equal(await page.locator("#academy-quiz").count(), 0);
+  ok("Already-completed lessons show the saved certificate, not a retake form");
+  await page.getByRole("button", { name: "My account", exact: true }).click();
+  await page.locator("#academy-profile-name").fill("Updated Learner");
+  await page.getByRole("button", { name: "Save display name" }).click();
+  await page.waitForFunction(() =>
+    document.querySelector("#academy-auth-note").textContent.includes("saved"),
+  );
+  assert.equal(
+    await page.evaluate(
+      () =>
+        __academyCalls.find((c) => c.name === "profile").args.data.full_name,
+    ),
+    "Updated Learner",
+  );
+  ok("Existing learners can choose a name for future public certificates");
+  await page.context().close();
+  page = await makePage({
+    route: lesson + "#quiz",
+    signedIn: true,
+    certificateMissing: true,
+    progress: [
+      {
+        topic_id: topic.id,
+        passed: true,
+        highest_score: 20,
+        lab_completed: true,
+      },
+    ],
+  });
+  await page.waitForSelector("#saved-certificate a");
+  assert.match(
+    await page.locator("#saved-certificate a").getAttribute("href"),
+    /RECOVERED/,
+  );
+  assert.equal(await page.locator("#academy-quiz").count(), 0);
+  assert.equal(
+    await page.evaluate(
+      () =>
+        __academyCalls.filter((c) => c.body?.action === "recover_certificate")
+          .length,
+    ),
+    1,
+  );
+  ok(
+    "Historic passed lessons recover a missing certificate without retaking a quiz",
+  );
+  await page.context().close();
+  page = await makePage({
+    route: lesson + "#quiz",
+    signedIn: true,
+    progress: [
+      {
+        topic_id: topic.id,
+        lab_completed: true,
+        highest_score: 10,
+        next_retry_at: new Date(Date.now() + 86400000).toISOString(),
+      },
+    ],
+  });
+  assert.equal(await page.locator("#academy-quiz").count(), 0);
+  assert.match(
+    await page.locator("#quiz-container").innerText(),
+    /try again on/,
+  );
+  ok("Persisted cooldown keeps quiz locked");
+  await page.context().close();
+  page = await makePage({
+    signedIn: true,
+    progressFail: true,
+    route: lesson + "#labs",
+  });
+  assert.equal(await page.locator("#complete-lab").isDisabled(), true);
+  assert.match(
+    await page.locator(".academy-notice").first().innerText(),
+    /couldn’t load/,
+  );
+  ok(
+    "Progress service errors do not look like empty progress or enable writes",
+  );
+  await page.context().close();
+  page = await makePage({ offline: true, route: lesson + "#labs" });
+  assert.equal(await page.locator("#complete-lab").isDisabled(), true);
+  assert.match(
+    await page.locator(".academy-notice").first().innerText(),
+    /temporarily unavailable/,
+  );
+  await openSection(page, "quiz");
+  assert.equal(await page.locator("#academy-quiz").count(), 0);
+  ok(
+    "Unavailable CDN/API falls back to explicit read-only content, never fake progress",
+  );
+  await page.context().close();
+  page = await makePage({ theme: "light", route: lesson });
+  await audit(page, "Lesson accessibility (light)");
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await noOverflow(page);
+  }
+  ok("Lesson reader has no horizontal overflow at 320–1440px");
+  await page.context().close();
+  for (const route of [
+    "/learning/missing",
+    "/learning/" + category.slug + "/missing",
+    lesson + "/extra",
+  ]) {
+    page = await makePage({ route });
+    assert.equal((await page.request.get(BASE + route)).status(), 404);
+    await page.context().close();
+  }
+  ok(
+    "Invalid category, topic and extra path segments show recovery navigation",
+  );
+  page = await makePage({ categories: [], topics: [] });
+  assert.match(await page.locator("h1").innerText(), /coming/);
+  ok(
+    "Empty published catalogue has a proper empty state (not stale fallback content)",
+  );
+  await page.context().close();
+  page = await makePage({ route: "/certificate" });
+  assert.match(await page.locator("h1").innerText(), /ID required/);
+  await page.route("**/functions/v1/learning-certificate-verify?**", (route) =>
+    route.fulfill({
+      json: {
+        valid: true,
+        certificate: {
+          certificate_id: "OMP-TEST-CERT",
+          recipient_name: "Test Learner",
+          course_name: "Web Security Foundations",
+          topic_name: topic.name,
+          category_name: category.name,
+          score: 20,
+          issued_at: "2026-09-29",
+        },
+      },
+    }),
+  );
+  await page.goto(BASE + "/certificate?id=OMP-TEST-CERT");
+  await page.waitForSelector(".certificate-name");
+  assert.equal(
+    await page.locator(".certificate-name").innerText(),
+    "Test Learner",
+  );
+  assert.match(
+    await page.locator(".certificate-course").innerText(),
+    /Web Security Foundations/,
+  );
+  assert.match(await page.locator("h1").innerText(), /Lesson completion/);
+  ok(
+    "Verified lesson certificate identifies its owning course without claiming whole-course completion",
+  );
+  await page.context().close();
+  for (const status of [400, 404, 429, 500]) {
+    page = await makePage({
+      route: "/certificate?id=OMP-TEST-CERT",
+      verification: { status, json: { error: "Fixture failure" } },
+    });
+    assert.match(
+      await page.locator("h1").innerText(),
+      status < 429 ? /not found/ : /temporarily unavailable/,
+    );
+    assert.equal(
+      await page.locator("[data-retry]").count(),
+      status < 429 ? 0 : 1,
+    );
+    ok(
+      `Certificate HTTP ${status} distinguishes invalid IDs from service failures`,
+    );
+    await page.context().close();
+  }
+  for (const verification of ["network", "timeout"]) {
+    page = await makePage({
+      route: "/certificate?id=OMP-TEST-CERT",
+      verification,
+    });
+    assert.match(
+      await page.locator("h1").innerText(),
+      /temporarily unavailable/,
+    );
+    await page.route(
+      "**/functions/v1/learning-certificate-verify?**",
+      (route) =>
+        route.fulfill({
+          json: {
+            valid: true,
+            certificate: {
+              certificate_id: "OMP-TEST-CERT",
+              recipient_name: "Recovered Learner",
+              topic_name: topic.name,
+              category_name: category.name,
+              score: 20,
+              issued_at: "2026-09-29",
+            },
+          },
+        }),
+    );
+    await page.locator("[data-retry]").click();
+    await page.waitForSelector(".certificate-name");
+    assert.equal(
+      await page.locator(".certificate-name").innerText(),
+      "Recovered Learner",
+    );
+    ok(`Certificate ${verification} failure is retryable and can recover`);
+    await page.context().close();
+  }
+  page = await makePage();
+  await page.getByRole("link", { name: "Find my starting point" }).click();
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  assert.match(await page.locator("h1").innerText(), /learning direction/);
+  assert.equal(await page.locator(".roadmap-timeline > li").count(), 0);
+  await audit(page, "Roadmap accessibility");
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await noOverflow(page);
+  }
+  await page.goto(BASE + "/learning/" + category.slug + "/roadmap");
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  assert.equal(await page.locator(".roadmap-timeline > li").count(), 2);
+  await audit(page, "Subject roadmap accessibility");
+  await page.goto(BASE + "/learning/" + category.slug);
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  assert.equal(await page.locator(".path-card").count(), 1);
+  assert.equal(await page.locator(".academy-topic").count(), 0);
+  await page.getByRole("link", { name: "Explore course" }).click();
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  assert.equal(await page.locator(".curriculum-module").count(), 2);
+  assert.equal(await page.locator(".academy-topic").count(), 4);
+  assert.match(
+    await page.locator(".path-introduction").innerText(),
+    /Before you start/,
+  );
+  await audit(page, "Learning path accessibility");
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await noOverflow(page);
+  }
+  ok(
+    "Orientation → subject roadmap → category → course → modules is navigable on all viewport sizes",
+  );
+  await page.context().close();
+  page = await makePage({
+    route: pathUrl,
+    signedIn: true,
+    progress: [{ topic_id: topic.id, passed: true, lesson_started: true }],
+  });
+  await page.locator("#lesson-filter").selectOption("complete");
+  assert.equal(await page.locator(".academy-topic").count(), 1);
+  await page.locator("#lesson-filter").selectOption("new");
+  assert.equal(await page.locator(".academy-topic").count(), 3);
+  ok("Signed-in path filters use saved account progress");
+  await page.context().close();
+  const { multiSubjectFixture } =
+    await import("./academy_multi_subject_fixture.mjs");
+  const { curriculum } = await import("../assets/js/academy-model.mjs");
+  const multi = multiSubjectFixture(snapshot),
+    multiModel = curriculum(multi);
+  const python = multiModel.paths.find((p) => p.slug === "python-fundamentals");
+  const javascript = multiModel.paths.find(
+    (p) => p.slug === "javascript-fundamentals",
+  );
+  page = await makePage({
+    multiSubject: multi,
+    route: "/learning/programming",
+    signedIn: true,
+    progress: [
+      { topic_id: javascript.topics[0].id, passed: true, lesson_started: true },
+    ],
+  });
+  assert.equal(await page.locator("[data-course-card]:visible").count(), 2);
+  await page.locator("#course-search").fill("Python");
+  assert.equal(await page.locator("[data-course-card]:visible").count(), 1);
+  assert.match(
+    await page.locator("[data-course-card]:visible").innerText(),
+    /Python/,
+  );
+  await page.locator("#course-search").fill("Security");
+  assert.equal(await page.locator("[data-course-card]:visible").count(), 0);
+  await page.locator("#course-reset").click();
+  assert.equal(await page.locator("[data-course-card]:visible").count(), 2);
+  await audit(page, "Multi-course category accessibility");
+  ok("Programming category search never includes courses from another subject");
+  await page.goto(BASE + "/learning/programming/roadmap");
+  await page.waitForSelector("#academy-account", { state: "attached" });
+  assert.doesNotMatch(
+    await page.locator(".academy-content").innerText(),
+    /Web Security Foundations|Interface Design|Defensive thinking/,
+  );
+  await audit(page, "Programming roadmap accessibility");
+  await page.goto(BASE + python.url);
+  await page.waitForSelector("#lesson-search");
+  assert.match(
+    await page.locator(".path-summary").innerText(),
+    /0 of 2 lessons completed/,
+  );
+  assert.deepEqual(
+    await page.evaluate(
+      () =>
+        __academyCalls.find(
+          (c) => c.name === "scope" && c.table === "learning_progress",
+        ).values,
+    ),
+    python.topics.map((t) => t.id),
+  );
+  assert.ok(
+    (
+      await page
+        .locator(".academy-topic")
+        .evaluateAll((els) => els.map((el) => el.getAttribute("href")))
+    ).every((url) => url.startsWith(python.url + "/")),
+  );
+  ok(
+    "Course curriculum and account progress requests are scoped to that course",
+  );
+  await page.goto(BASE + python.topics[1].url + "#examples");
+  await page.waitForSelector("#section-examples:visible");
+  assert.equal(await page.locator(".lesson-outline a").count(), 5);
+  assert.match(
+    await page.locator("#section-examples code").innerText(),
+    /print\(message\)/,
+  );
+  assert.equal(await page.evaluate(() => window.injection), undefined);
+  assert.doesNotMatch(
+    await page.locator(".lesson-outline").innerText(),
+    /Defensive thinking|The background/,
+  );
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await noOverflow(page);
+  }
+  await audit(page, "Programming lesson/code example accessibility");
+  await page.locator("#section-next").click();
+  await page.waitForSelector("#section-exercise:visible");
+  await page.locator("#section-next").click();
+  await page.waitForSelector("#section-labs:visible");
+  await page.locator("#section-next").click();
+  await page.waitForSelector("#section-quiz:visible");
+  assert.equal(await page.locator("#section-next").isVisible(), false);
+  assert.match(
+    await page.locator("#quiz-container").innerText(),
+    /no published knowledge check/,
+  );
+  ok(
+    "Custom lesson sections, escaped code and dynamic reader navigation work without security-only headings",
+  );
+  await page.goto(BASE + javascript.topics[0].url + "#exercise");
+  await page.waitForSelector("#section-exercise:visible");
+  await page.goto(BASE + python.url);
+  await page.waitForSelector("#lesson-search");
+  assert.equal(
+    await page.locator(".path-start a").getAttribute("href"),
+    python.topics[1].url,
+  );
+  assert.match(
+    await page.locator(".path-start a").innerText(),
+    /Continue learning/,
+  );
+  ok("Switching courses does not overwrite another course’s reading bookmark");
+  await page.context().close();
+  page = await makePage({
+    multiSubject: multi,
+    route: python.topics[0].url,
+    noJavaScript: true,
+  });
+  assert.match(
+    await page.locator(".static-lesson").innerText(),
+    /print\(message\)/,
+  );
+  assert.equal(
+    await page.locator(".static-lesson #examples").isVisible(),
+    true,
+  );
+  assert.equal(await page.locator(".static-lesson script").count(), 0);
+  ok(
+    "Programming examples and all custom lesson sections are readable without JavaScript",
+  );
+  await page.context().close();
+  const staticContext = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 844 },
+  });
+  page = await staticContext.newPage();
+  await page.goto(BASE + "/learning");
+  await page
+    .getByRole("link", { name: "Explore category", exact: false })
+    .click();
+  await page.getByRole("link", { name: "Explore course" }).click();
+  await page.getByRole("link", { name: "Start the first lesson" }).click();
+  assert.equal(page.url(), BASE + lesson);
+  assert.match(
+    await page.locator(".static-lesson").innerText(),
+    /trust boundaries/,
+  );
+  assert.equal(
+    await page.locator(".static-lesson #overview").isVisible(),
+    true,
+  );
+  assert.equal(
+    await page.locator('link[rel="canonical"]').getAttribute("href"),
+    "https://oopsmypassword.web.app" + lesson,
+  );
+  assert.equal(await page.locator("h1").count(), 1);
+  await noOverflow(page);
+  ok("Entire discovery flow and full lesson work with JavaScript disabled");
+  await staticContext.close();
+  page = await makePage({ route: lesson });
+  assert.equal(
+    await page.locator('link[rel="canonical"]').getAttribute("href"),
+    "https://oopsmypassword.web.app" + lesson,
+  );
+  const alias = await page.request.get(
+    BASE + `/learning/${category.slug}/${topic.slug}`,
+    { maxRedirects: 0 },
+  );
+  assert.equal(alias.status(), 301);
+  assert.equal(alias.headers().location, lesson);
+  ok(
+    "Canonical is unchanged after enhancement; legacy lesson route returns 301",
+  );
+  await page.context().close();
+  assert.deepEqual(errors, []);
+  ok("No uncaught browser errors across scenarios");
+  console.log(`\n${tests} Academy checks passed.`);
+})()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await browser?.close();
+  });
