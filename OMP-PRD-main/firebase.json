@@ -46,6 +46,18 @@
     ],
     "rewrites": [
       {
+        "source": "/certificate",
+        "destination": "/learning.html"
+      },
+      {
+        "source": "/learning",
+        "destination": "/learning.html"
+      },
+      {
+        "source": "/learning/**",
+        "destination": "/learning.html"
+      },
+      {
         "source": "/articles/create-strong-password",
         "destination": "/guides/create-strong-password.html"
       },
@@ -222,7 +234,7 @@
         ]
       },
       {
-        "source": "/@(checker|generator|tools|articles|products|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
+        "source": "/@(checker|generator|tools|articles|products|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
         "headers": [
           {
             "key": "Cache-Control",
