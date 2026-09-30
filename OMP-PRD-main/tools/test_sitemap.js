@@ -237,6 +237,31 @@ function group(name) {
     assert(a === b, 'copies diverged — run `npm run sync:sitemap` in functions/');
   });
 
+  check('the article renderer cannot drift from the static publisher', () => {
+    /* Firebase only uploads functions/, so the Cloud Function cannot import
+       scripts/build-static-seo.mjs. The header, hero, TOC and prose layout are
+       copied instead, which only works if nothing changes on one side alone. */
+    const build = fs.readFileSync(path.join(ROOT, 'scripts', 'build-static-seo.mjs'), 'utf8');
+    const render = fs.readFileSync(path.join(ROOT, 'functions', 'article-render.cjs'), 'utf8');
+    /* sanitizeHtml is renamed to sanitizeArticleHtml in the function copy so the
+       function does not shadow its own HTML parameter, so accept either name. */
+    for (const name of ['siteHeader', 'siteMobileMenu', 'commonHead', 'normalizeInjected',
+                        'slugifyHeading', 'markdownToHtml', 'markdownInline']) {
+      const inBuild = new RegExp('function ' + name + '\\(').test(build);
+      const inRender = new RegExp('function ' + name + '\\(').test(render);
+      assert(inBuild && inRender,
+        name + ' must exist in both the static publisher and the function renderer');
+    }
+    assert(/function sanitize(Html|ArticleHtml)\(/.test(build), 'static publisher lost its sanitizer wrapper');
+    assert(/function sanitize(Html|ArticleHtml)\(/.test(render), 'function renderer lost its sanitizer wrapper');
+    /* The structural markers a reader sees, so a partial copy is caught too. */
+    for (const marker of ['article-hero', 'article-layout', 'class="toc"', 'class="prose"',
+                          'theme-init.js', 'breadcrumbSchema', 'documentTitle', 'metaDescription']) {
+      assert(build.includes(marker) && render.includes(marker),
+        'article render marker missing from one copy: ' + marker);
+    }
+  });
+
   check('Edge Function reads config from env, never from a hard-coded secret', () => {
     const src = fs.readFileSync(EDGE_INDEX, 'utf8');
     assert(!/service_role|SUPABASE_SERVICE/i.test(src), 'edge function references the service-role key');

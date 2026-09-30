@@ -8,7 +8,7 @@
    ============================================================ */
 
 const functions = require('firebase-functions/v1');
-const safeArticleHTML = require('./safe-article-html.cjs');
+const { renderArticlePage } = require('./article-render.cjs');
 const sharedFooter = require('node:fs').readFileSync(require('node:path').join(__dirname, 'site-footer.fragment'), 'utf8');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
@@ -102,11 +102,6 @@ function escJson(value) {
 
 /* The article editor stores trusted admin-authored HTML or Markdown. Strip
    executable/resource-bearing constructs before sending it as crawler HTML. */
-function sanitizeArticleHtml(input) {
-  const source = String(input || '');
-  return safeArticleHTML(/<[a-z][\s\S]*>/i.test(source) ? source : markdownToHtml(source));
-}
-
 function markdownInline(s) {
   let x = escHtml(s);
   x = x.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -150,29 +145,11 @@ async function fetchPublishedArticle(slug) {
   return Array.isArray(rows) && rows[0] ? rows[0] : null;
 }
 
+/* The full site page is rendered by article-render.cjs, which carries the
+   header, hero, table of contents and prose layout copied from the static
+   publisher so a function-rendered article looks identical to a built one. */
 function articleDocument(article) {
-  const title = String(article.title || 'Article').trim();
-  const summary = String(article.summary || '').trim() || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
-  const slug = String(article.slug || '').trim();
-  const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
-  const content = sanitizeArticleHtml(article.content || '');
-  const published = article.published_at || article.created_at || '';
-  const modified = article.updated_at || published;
-  const image = article.featured_image ? String(article.featured_image) : '';
-  const articleSchema = {
-    '@context': 'https://schema.org', '@type': 'Article', headline: title,
-    description: summary, mainEntityOfPage: canonical, ...(published && Number.isFinite(Date.parse(published)) ? {datePublished:published} : {}),
-    ...(modified && Number.isFinite(Date.parse(modified)) ? {dateModified:modified} : {}), author: { '@type': 'Organization', name: 'OopsMyPassword' },
-    publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }
-  };
-  if (image) articleSchema.image = [image];
-  const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
-    { '@type': 'ListItem', position: 2, name: 'Articles', item: SITE + '/articles' },
-    { '@type': 'ListItem', position: 3, name: title, item: canonical }
-  ]};
-  const ogImage = image ? `<meta property="og:image" content="${escHtml(image)}">` : '';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)} | OopsMyPassword</title><meta name="description" content="${escHtml(summary)}"><link rel="canonical" href="${escHtml(canonical)}"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:type" content="article"><meta property="og:title" content="${escHtml(title)}"><meta property="og:description" content="${escHtml(summary)}"><meta property="og:url" content="${escHtml(canonical)}">${ogImage}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escHtml(title)}"><meta name="twitter:description" content="${escHtml(summary)}"><script type="application/ld+json">${escJson(articleSchema)}</script><script type="application/ld+json">${escJson(breadcrumb)}</script><link rel="stylesheet" href="/assets/css/styles.css"></head><body><main class="container container-narrow"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/articles">Articles</a> / <span>${escHtml(title)}</span></nav><article><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p>${published && Number.isFinite(Date.parse(published)) ? `<p><time datetime="${escHtml(published)}">${escHtml(new Date(published).toISOString().slice(0,10))}</time></p>` : ""}<div class="article-content">${content}</div></article></main>${sharedFooter}</body></html>`;
+  return renderArticlePage(article);
 }
 
 function article404(slug) {
