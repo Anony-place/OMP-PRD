@@ -10,13 +10,12 @@ concurrency:
   group: firebase-hosting-${{ github.ref }}
   cancel-in-progress: true
 
+# Manual runs only. This workflow used to fire on every push and pull request,
+# spending Actions minutes on every commit even when nothing needed deploying.
+# Deploys now run through the Firebase CLI, which is free on the Spark plan, so
+# the gate is opt-in: dispatch it from the Actions tab when you want the full
+# regression suite before a deploy.
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
