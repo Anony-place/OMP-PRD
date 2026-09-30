@@ -67,6 +67,536 @@
         "source": "/learning/web-application-security/access-control-authorization",
         "destination": "/learning/web-application-security/foundations/access-control-authorization",
         "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/what-is-cyber-security",
+        "destination": "/learning/cyber-security/cyber-security-track/what-is-cyber-security",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/cybersecurity-vs-information-security",
+        "destination": "/learning/cyber-security/cyber-security-track/cybersecurity-vs-information-security",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/cia-triad",
+        "destination": "/learning/cyber-security/cyber-security-track/cia-triad",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/assets-threats-vulnerabilities-and-risk",
+        "destination": "/learning/cyber-security/cyber-security-track/assets-threats-vulnerabilities-and-risk",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/attack-surface-and-attack-vectors",
+        "destination": "/learning/cyber-security/cyber-security-track/attack-surface-and-attack-vectors",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/security-controls",
+        "destination": "/learning/cyber-security/cyber-security-track/security-controls",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/security-mindset",
+        "destination": "/learning/cyber-security/cyber-security-track/security-mindset",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/packets-and-the-layered-stack",
+        "destination": "/learning/cyber-security/cyber-security-track/packets-and-the-layered-stack",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/ip-addressing-subnetting-and-nat",
+        "destination": "/learning/cyber-security/cyber-security-track/ip-addressing-subnetting-and-nat",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/dns-name-resolution",
+        "destination": "/learning/cyber-security/cyber-security-track/dns-name-resolution",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/tcp-udp-and-handshake",
+        "destination": "/learning/cyber-security/cyber-security-track/tcp-udp-and-handshake",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/ports-sockets-and-common-services",
+        "destination": "/learning/cyber-security/cyber-security-track/ports-sockets-and-common-services",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/http-https-request-response",
+        "destination": "/learning/cyber-security/cyber-security-track/http-https-request-response",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/lans-wifi-wireless-frame-security",
+        "destination": "/learning/cyber-security/cyber-security-track/lans-wifi-wireless-frame-security",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/routers-firewalls-and-where-traffic-is-inspected",
+        "destination": "/learning/cyber-security/cyber-security-track/routers-firewalls-and-where-traffic-is-inspected",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/vpns-proxies-and-tunnels",
+        "destination": "/learning/cyber-security/cyber-security-track/vpns-proxies-and-tunnels",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/eavesdropping-in-the-clear",
+        "destination": "/learning/cyber-security/cyber-security-track/eavesdropping-in-the-clear",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/man-in-the-middle-arp-dns",
+        "destination": "/learning/cyber-security/cyber-security-track/man-in-the-middle-arp-dns",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/denial-of-service-amplification",
+        "destination": "/learning/cyber-security/cyber-security-track/denial-of-service-amplification",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/password-attacks-over-the-network",
+        "destination": "/learning/cyber-security/cyber-security-track/password-attacks-over-the-network",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/scanning-and-enumeration",
+        "destination": "/learning/cyber-security/cyber-security-track/scanning-and-enumeration",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/malware-delivery-c2-beacons",
+        "destination": "/learning/cyber-security/cyber-security-track/malware-delivery-c2-beacons",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/wireless-attacks-evil-twin-deauth",
+        "destination": "/learning/cyber-security/cyber-security-track/wireless-attacks-evil-twin-deauth",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/network-defence-segmentation-zero-trust",
+        "destination": "/learning/cyber-security/cyber-security-track/network-defence-segmentation-zero-trust",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/secure-remote-access",
+        "destination": "/learning/cyber-security/cyber-security-track/secure-remote-access",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/what-cryptography-promises",
+        "destination": "/learning/cyber-security/cyber-security-track/what-cryptography-promises",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/symmetric-encryption-and-key-distribution",
+        "destination": "/learning/cyber-security/cyber-security-track/symmetric-encryption-and-key-distribution",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/hashing-salting-password-storage",
+        "destination": "/learning/cyber-security/cyber-security-track/hashing-salting-password-storage",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/public-key-cryptography-and-key-exchange",
+        "destination": "/learning/cyber-security/cyber-security-track/public-key-cryptography-and-key-exchange",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/signatures-certificates-and-pki",
+        "destination": "/learning/cyber-security/cyber-security-track/signatures-certificates-and-pki",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/tls-secure-connection-negotiation",
+        "destination": "/learning/cyber-security/cyber-security-track/tls-secure-connection-negotiation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/randomness-nonces-and-entropy",
+        "destination": "/learning/cyber-security/cyber-security-track/randomness-nonces-and-entropy",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/common-crypto-failures",
+        "destination": "/learning/cyber-security/cyber-security-track/common-crypto-failures",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/key-management-lifecycle",
+        "destination": "/learning/cyber-security/cyber-security-track/key-management-lifecycle",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/how-an-os-is-organised",
+        "destination": "/learning/cyber-security/cyber-security-track/how-an-os-is-organised",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/windows-security-model",
+        "destination": "/learning/cyber-security/cyber-security-track/windows-security-model",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/linux-permissions-users-groups",
+        "destination": "/learning/cyber-security/cyber-security-track/linux-permissions-users-groups",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/command-line-for-security-work",
+        "destination": "/learning/cyber-security/cyber-security-track/command-line-for-security-work",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/processes-services-and-persistence",
+        "destination": "/learning/cyber-security/cyber-security-track/processes-services-and-persistence",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/logs-and-event-management",
+        "destination": "/learning/cyber-security/cyber-security-track/logs-and-event-management",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/patching-and-vulnerability-management",
+        "destination": "/learning/cyber-security/cyber-security-track/patching-and-vulnerability-management",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/endpoint-protection-av-edr",
+        "destination": "/learning/cyber-security/cyber-security-track/endpoint-protection-av-edr",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/hardening-a-fresh-install",
+        "destination": "/learning/cyber-security/cyber-security-track/hardening-a-fresh-install",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/accounts-identifiers-identity-perimeter",
+        "destination": "/learning/cyber-security/cyber-security-track/accounts-identifiers-identity-perimeter",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/passwords-creation-storage-rotation",
+        "destination": "/learning/cyber-security/cyber-security-track/passwords-creation-storage-rotation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/multi-factor-authentication-and-passkeys",
+        "destination": "/learning/cyber-security/cyber-security-track/multi-factor-authentication-and-passkeys",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/session-management-and-account-takeover",
+        "destination": "/learning/cyber-security/cyber-security-track/session-management-and-account-takeover",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/authorisation-vs-authentication",
+        "destination": "/learning/cyber-security/cyber-security-track/authorisation-vs-authentication",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/directory-services-sso-and-federation",
+        "destination": "/learning/cyber-security/cyber-security-track/directory-services-sso-and-federation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/privilege-escalation-and-admin-hygiene",
+        "destination": "/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/service-accounts-api-keys-and-secrets",
+        "destination": "/learning/cyber-security/cyber-security-track/service-accounts-api-keys-and-secrets",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/access-reviews-joiner-mover-leaver",
+        "destination": "/learning/cyber-security/cyber-security-track/access-reviews-joiner-mover-leaver",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/data-classification",
+        "destination": "/learning/cyber-security/cyber-security-track/data-classification",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/encryption-at-rest-transit-and-backup",
+        "destination": "/learning/cyber-security/cyber-security-track/encryption-at-rest-transit-and-backup",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/malware-families",
+        "destination": "/learning/cyber-security/cyber-security-track/malware-families",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/malware-delivery-and-initial-access",
+        "destination": "/learning/cyber-security/cyber-security-track/malware-delivery-and-initial-access",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/ransomware-double-extortion-and-recovery",
+        "destination": "/learning/cyber-security/cyber-security-track/ransomware-double-extortion-and-recovery",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/backups-3-2-1-and-tested-restores",
+        "destination": "/learning/cyber-security/cyber-security-track/backups-3-2-1-and-tested-restores",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/personal-data-and-minimisation",
+        "destination": "/learning/cyber-security/cyber-security-track/personal-data-and-minimisation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/device-security-locking-wiping-and-mobile",
+        "destination": "/learning/cyber-security/cyber-security-track/device-security-locking-wiping-and-mobile",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/secure-disposal-and-sanitisation",
+        "destination": "/learning/cyber-security/cyber-security-track/secure-disposal-and-sanitisation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/browser-as-attack-surface",
+        "destination": "/learning/cyber-security/cyber-security-track/browser-as-attack-surface",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/sql-command-and-template-injection",
+        "destination": "/learning/cyber-security/cyber-security-track/sql-command-and-template-injection",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/cross-site-scripting-and-output-encoding",
+        "destination": "/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/broken-access-control-and-idor",
+        "destination": "/learning/cyber-security/cyber-security-track/broken-access-control-and-idor",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/security-misconfiguration-default-credentials",
+        "destination": "/learning/cyber-security/cyber-security-track/security-misconfiguration-default-credentials",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/vulnerable-and-outdated-components",
+        "destination": "/learning/cyber-security/cyber-security-track/vulnerable-and-outdated-components",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/file-uploads-ssrf-and-input-validation",
+        "destination": "/learning/cyber-security/cyber-security-track/file-uploads-ssrf-and-input-validation",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/web-defences-csp-hsts-samesite-and-csrf-tokens",
+        "destination": "/learning/cyber-security/cyber-security-track/web-defences-csp-hsts-samesite-and-csrf-tokens",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/owasp-top-10-2025-reading-the-list",
+        "destination": "/learning/cyber-security/cyber-security-track/owasp-top-10-2025-reading-the-list",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/why-people-are-targeted",
+        "destination": "/learning/cyber-security/cyber-security-track/why-people-are-targeted",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/phishing-anatomy-of-a-message",
+        "destination": "/learning/cyber-security/cyber-security-track/phishing-anatomy-of-a-message",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/vishing-smishing-and-quishing",
+        "destination": "/learning/cyber-security/cyber-security-track/vishing-smishing-and-quishing",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/pretexting-baiting-and-tailgating",
+        "destination": "/learning/cyber-security/cyber-security-track/pretexting-baiting-and-tailgating",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/business-email-compromise-and-payment-fraud",
+        "destination": "/learning/cyber-security/cyber-security-track/business-email-compromise-and-payment-fraud",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/insider-threat-motive-opportunity-detection",
+        "destination": "/learning/cyber-security/cyber-security-track/insider-threat-motive-opportunity-detection",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/reporting-culture-and-channels",
+        "destination": "/learning/cyber-security/cyber-security-track/reporting-culture-and-channels",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/security-awareness-that-changes-behaviour",
+        "destination": "/learning/cyber-security/cyber-security-track/security-awareness-that-changes-behaviour",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/personal-social-footprint-and-osint",
+        "destination": "/learning/cyber-security/cyber-security-track/personal-social-footprint-and-osint",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/what-is-ethical-hacking",
+        "destination": "/learning/cyber-security/cyber-security-track/what-is-ethical-hacking",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/authorisation-scope-and-the-law",
+        "destination": "/learning/cyber-security/cyber-security-track/authorisation-scope-and-the-law",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/reconnaissance-passive-and-active",
+        "destination": "/learning/cyber-security/cyber-security-track/reconnaissance-passive-and-active",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/vulnerability-assessment-vs-penetration-testing",
+        "destination": "/learning/cyber-security/cyber-security-track/vulnerability-assessment-vs-penetration-testing",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/scanners-benchmarks-and-interpreting-a-report",
+        "destination": "/learning/cyber-security/cyber-security-track/scanners-benchmarks-and-interpreting-a-report",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/exploitation-concepts-without-exploiting-anyone",
+        "destination": "/learning/cyber-security/cyber-security-track/exploitation-concepts-without-exploiting-anyone",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/bug-bounty-and-responsible-disclosure",
+        "destination": "/learning/cyber-security/cyber-security-track/bug-bounty-and-responsible-disclosure",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/safe-practice-lab-environments-and-tooling-hygiene",
+        "destination": "/learning/cyber-security/cyber-security-track/safe-practice-lab-environments-and-tooling-hygiene",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/from-finding-to-fixing-writing-a-usable-report",
+        "destination": "/learning/cyber-security/cyber-security-track/from-finding-to-fixing-writing-a-usable-report",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/defenders-loop",
+        "destination": "/learning/cyber-security/cyber-security-track/defenders-loop",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/logs-and-telemetry-what-to-collect",
+        "destination": "/learning/cyber-security/cyber-security-track/logs-and-telemetry-what-to-collect",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/siem-alerts-and-noise",
+        "destination": "/learning/cyber-security/cyber-security-track/siem-alerts-and-noise",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/mitre-attack-for-defenders",
+        "destination": "/learning/cyber-security/cyber-security-track/mitre-attack-for-defenders",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/incident-response-roles-and-communication",
+        "destination": "/learning/cyber-security/cyber-security-track/incident-response-roles-and-communication",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/forensics-and-evidence-handling",
+        "destination": "/learning/cyber-security/cyber-security-track/forensics-and-evidence-handling",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/containment-eradication-and-lessons-learned",
+        "destination": "/learning/cyber-security/cyber-security-track/containment-eradication-and-lessons-learned",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/business-continuity-and-resilience",
+        "destination": "/learning/cyber-security/cyber-security-track/business-continuity-and-resilience",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/threat-intelligence-iocs-ttp-and-kev",
+        "destination": "/learning/cyber-security/cyber-security-track/threat-intelligence-iocs-ttp-and-kev",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/threat-landscape-today",
+        "destination": "/learning/cyber-security/cyber-security-track/threat-landscape-today",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/standards-and-frameworks",
+        "destination": "/learning/cyber-security/cyber-security-track/standards-and-frameworks",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/compliance-and-privacy-law",
+        "destination": "/learning/cyber-security/cyber-security-track/compliance-and-privacy-law",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/risk-likelihood-impact-and-management",
+        "destination": "/learning/cyber-security/cyber-security-track/risk-likelihood-impact-and-management",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/home-and-small-business-security-program",
+        "destination": "/learning/cyber-security/cyber-security-track/home-and-small-business-security-program",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/careers-and-specialisations",
+        "destination": "/learning/cyber-security/cyber-security-track/careers-and-specialisations",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/certifications-and-how-to-choose",
+        "destination": "/learning/cyber-security/cyber-security-track/certifications-and-how-to-choose",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/home-lab-and-safe-practice",
+        "destination": "/learning/cyber-security/cyber-security-track/home-lab-and-safe-practice",
+        "type": 301
+      },
+      {
+        "source": "/learning/cyber-security/where-this-category-ends",
+        "destination": "/learning/cyber-security/cyber-security-track/where-this-category-ends",
+        "type": 301
       }
     ],
     "rewrites": [

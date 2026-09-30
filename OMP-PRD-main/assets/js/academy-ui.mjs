@@ -20,6 +20,7 @@ const icons = {
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
   lab: '<path d="M9 3h6m-5 0v7L4 19a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2l-6-9V3M7 16h10"/>',
   award: '<circle cx="12" cy="9" r="6"/><path d="m8 14-1 8 5-3 5 3-1-8"/>',
+  play: '<path d="M8 5.5v13l11-6.5z"/>',
   close: '<path d="m6 6 12 12M6 18 18 6"/>',
 };
 export const icon = (name) =>

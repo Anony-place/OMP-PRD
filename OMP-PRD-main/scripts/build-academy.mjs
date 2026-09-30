@@ -130,7 +130,9 @@ function structuredData(data, page) {
   return [schema, trail];
 }
 let template = await readFile(join(ROOT, "tools/academy-shell.html"), "utf8");
-template = template.replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, await readFile(join(ROOT, "tools/site-footer.html"), "utf8"));
+// The Academy ships its own minimal header and a single-row footer. The wider
+// marketing chrome would duplicate navigation and squeeze the reading column,
+// so the shared site footer is deliberately not injected into Academy pages.
 function documentHTML(data, page) {
   // Legacy editorial titles already carry a site suffix. Never append a second
   // brand, or lengthen a long descriptive title solely to repeat the site name.

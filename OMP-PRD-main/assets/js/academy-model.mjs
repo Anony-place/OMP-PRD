@@ -175,25 +175,25 @@ export function resolvePage(data, pathname) {
     return {
       type: "overview",
       url,
-      title: "Courses by subject",
+      title: "Learn Cybersecurity Step by Step",
       description:
-        "Choose a subject, explore its courses, and learn through structured modules, focused lessons, practice resources and knowledge checks at OMP Academy.",
+        "Learn cybersecurity step by step. Structured courses with clear outcomes, ordered modules, bite-sized lessons and knowledge checks at OMP Academy.",
     };
   if (url === `${ROOT}/roadmap`)
     return {
       type: "roadmap",
       url,
-      title: "Find your learning direction",
+      title: "Learning paths",
       description:
-        "Choose your subject first. Find its own starting course, prerequisites and learning roadmap without mixing unrelated courses or lessons.",
+        "Choose a learning path and find its recommended starting course, prerequisites and module order, without mixing unrelated courses or lessons.",
     };
   const roadmapCategory = data.categories.find((c) => c.roadmapUrl === url);
   if (roadmapCategory)
     return {
       type: "category-roadmap",
       url,
-      title: `${roadmapCategory.name} roadmap`,
-      description: `Find your starting course in ${roadmapCategory.name}. Compare prerequisites, outcomes and modules within this subject’s published curriculum.`,
+      title: `${roadmapCategory.name} course order`,
+      description: `Choose your starting course in ${roadmapCategory.name}. Compare prerequisites, outcomes and modules within this learning path.`,
       category: roadmapCategory,
     };
   const category = data.categories.find((c) => c.url === url);
@@ -201,7 +201,7 @@ export function resolvePage(data, pathname) {
     return {
       type: "category",
       url,
-      title: category.name,
+      title: `${category.name} learning path`,
       description: category.description,
       category,
     };
@@ -256,11 +256,11 @@ export function breadcrumbs(page) {
   const crumbs = [{ name: "Academy", url: ROOT }];
   if (page.type === "overview") return crumbs;
   if (page.type === "roadmap")
-    return [...crumbs, { name: "Roadmap", url: page.url }];
+    return [...crumbs, { name: "Learning paths", url: page.url }];
   if (page.category)
     crumbs.push({ name: page.category.name, url: page.category.url });
   if (page.type === "category-roadmap")
-    crumbs.push({ name: "Subject roadmap", url: page.url });
+    crumbs.push({ name: "Course order", url: page.url });
   if (page.path) crumbs.push({ name: page.path.name, url: page.path.url });
   if (page.topic) crumbs.push({ name: page.topic.name, url: page.topic.url });
   return crumbs;

@@ -21,11 +21,11 @@ export function breadcrumbView(page) {
 }
 export function sidebarView(data, page) {
   const c = page.category;
-  return `<aside class="academy-sidebar"><a class="academy-wordmark" href="${ROOT}"><span class="academy-symbol">${icon("book")}</span><span>OMP Academy<small>LEARN WITH DIRECTION</small></span></a>
-  <span class="academy-nav-label">YOUR LEARNING HOME</span><nav class="academy-navigation" aria-label="Academy"><a href="${ROOT}" ${page.type === "overview" ? 'aria-current="page"' : ""}>${icon("grid")}Academy home</a><a href="${ROOT}/roadmap" ${page.type === "roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Choose your direction</a></nav>
+  return `<aside class="academy-sidebar"><a class="academy-wordmark" href="${ROOT}"><span class="academy-symbol">${icon("book")}</span><span>OMP Academy<small>STEP BY STEP</small></span></a>
+  <nav class="academy-navigation" aria-label="Academy"><a href="${ROOT}" ${page.type === "overview" ? 'aria-current="page"' : ""}>${icon("grid")}All courses</a>${data.paths.some((p) => p.modules.some((m) => m.topics.length)) > 1 ? `<a href="${ROOT}/roadmap" ${page.type === "roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Learning paths</a>` : ""}</nav>
 ${
   c
-    ? `<div class="sidebar-category-links"><span class="academy-nav-label">IN THIS SUBJECT</span><nav class="academy-navigation" aria-label="Current subject"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a><a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Subject roadmap</a>${c.paths
+    ? `<div class="sidebar-category-links"><span class="academy-nav-label" id="acad-nav-current">THIS LEARNING PATH</span><nav class="academy-navigation" aria-labelledby="acad-nav-current"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a>${c.paths.filter((p) => p.modules.some((m) => m.topics.length)).length > 1 ? `<a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Course order</a>` : ""}${c.paths
         .slice(0, 6)
         .map(
           (p) =>
@@ -34,22 +34,37 @@ ${
         .join("")}</nav></div>`
     : ""
 }
-  <div class="sidebar-category-links"><span class="academy-nav-label">${c ? "SWITCH SUBJECT" : "EXPLORE SUBJECTS"}</span><nav class="academy-navigation" aria-label="Academy categories">${data.categories.map((category) => `<a href="${category.url}" ${c?.id === category.id ? 'aria-current="true"' : ""}>${icon("grid")}<span>${esc(category.name)}</span></a>`).join("")}</nav></div>
-  <div class="sidebar-note">${icon("book")}<strong>Choose. Learn. Practice.</strong><p>Each subject has its own courses. Each course keeps its modules, lessons and learning goals together.</p><a href="${ROOT}/roadmap#how-it-works">How the Academy works →</a></div></aside>`;
+  <div class="sidebar-category-links"><span class="academy-nav-label" id="acad-nav-paths">${c ? "OTHER LEARNING PATHS" : "LEARNING PATHS"}</span><nav class="academy-navigation" aria-labelledby="acad-nav-paths">${data.categories.map((category) => `<a href="${category.url}" ${c?.id === category.id ? 'aria-current="true"' : ""}>${icon("grid")}<span>${esc(category.name)}</span></a>`).join("")}</nav></div>
+  <div class="sidebar-note">${icon("book")}<strong>Learn. Check. Continue.</strong><p>Each course keeps its modules, lessons and learning goals together, so you always know where you are.</p><a href="${ROOT}/roadmap#how-it-works">How learning works →</a></div></aside>`;
 }
+// Pages where a left rail helps: you are already inside a course.
+const RAIL_PAGES = new Set(["path", "lesson"]);
+const PAGE_LABEL = {
+  overview: "Home",
+  roadmap: "Learning paths",
+  category: "Learning path",
+  "category-roadmap": "Learning path",
+  path: "Course",
+  lesson: "Lesson",
+};
+
 export function workspaceView(
   data,
   page,
   content,
   { account, notice = "", sidebar } = {},
 ) {
-  return `<div class="academy-shell">${sidebar || sidebarView(data, page)}<div class="academy-workspace"><div class="academy-topbar"><span>Academy <span class="topbar-slash">/</span><strong>${{ overview: "Home", roadmap: "Choose a subject", category: "Category", "category-roadmap": "Subject roadmap", path: "Course", lesson: "Lesson" }[page.type] || "Explore"}</strong></span>${account || '<span class="academy-account-btn">' + icon("user") + "<span>No login · Local progress</span></span>"}</div><div class="academy-content">${notice}${content}</div></div></div>`;
+  // The rail only earns its width where it carries course context. On the
+  // discovery pages it repeated links that are already on screen, so those
+  // pages render full width instead.
+  const rail = sidebar || (RAIL_PAGES.has(page.type) ? sidebarView(data, page) : "");
+  return `<div class="academy-shell" data-rail="${rail ? "context" : "none"}">${rail}<div class="academy-workspace"><div class="academy-topbar"><span>Academy <span class="topbar-slash">/</span><strong>${PAGE_LABEL[page.type] || "Explore"}</strong></span>${account || '<span class="academy-account-btn">' + icon("user") + "<span>No login · Local progress</span></span>"}</div><div class="academy-content">${notice}${content}</div></div></div>`;
 }
 export function structureView() {
   return `<div class="academy-hierarchy" aria-label="How the curriculum is organized">${[
     ["Academy", "Your learning home"],
-    ["Category", "A subject you choose"],
-    ["Course", "A focused learning goal"],
+    ["Learning Path", "A focused area of study"],
+    ["Course", "A specific goal"],
     ["Module", "Related concepts"],
     ["Lesson", "Learn & practice"],
   ]
@@ -59,38 +74,68 @@ export function structureView() {
     )
     .join("")}</div>`;
 }
-function courseCard(p) {
-  return `<article class="path-card" data-course-card data-difficulty="${esc(p.difficulty)}"><div class="path-card-top"><span class="academy-badge">${esc(p.difficulty)}</span>${p.is_start_here ? '<span class="start-here-tag">Start here in this subject</span>' : ""}</div><h3><a href="${p.url}">${esc(p.name)}</a></h3><p>${esc(p.description)}</p><div class="path-facts"><span>${plural(p.modules.length, "module")}</span><span>${plural(p.topics.length, "lesson")}</span><span>${minutes(p.topics)} min reading</span></div><a class="btn btn-secondary" href="${p.url}">Explore course ${icon("arrow")}</a></article>`;
+function courseCard(p, pmap = new Map(), context = {}) {
+  const done = p.topics.filter((t) => pmap.get(t.id)?.passed).length;
+  const total = p.topics.length;
+  const started = done > 0 || p.topics.some((t) => pmap.get(t.id)?.lesson_started);
+  const complete = total > 0 && done === total;
+  const modules = p.modules.filter((m) => m.topics.length);
+  const category = (context.categories || []).find((c) => c.id === p.category_id);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  return `<article class="course-card" data-course-card data-difficulty="${esc(p.difficulty)}">
+  <div class="course-card-main">
+    <p class="course-card-path">${esc(category?.name || "Course")}</p>
+    <h3>${esc(p.name)}</h3>
+    <p class="course-card-desc">${esc(p.description)}</p>
+    <p class="course-card-facts">
+      <span>${esc(p.difficulty)}</span>
+      <span>${plural(modules.length, "module")}</span>
+      <span>${plural(total, "lesson")}</span>
+      <span>${minutes(p.topics)} min</span>
+    </p>
+  </div>
+  <div class="course-card-side">
+    ${
+      done > 0
+        ? `<p class="course-card-progress"><span class="course-card-bar"><i style="width:${pct}%"></i></span><span>${done}/${total} lessons · ${pct}%</span></p>`
+        : ""
+    }
+    <a class="btn ${complete ? "btn-secondary" : "btn-primary"}" href="${p.url}">${
+      complete ? "Review course" : started ? "Continue course" : "View course"
+    } ${icon("arrow")}</a>
+  </div>
+</article>`;
 }
+
 function browse(data, roadmap = false) {
-  return `<section class="academy-categories" id="categories"><div class="section-heading"><div><span class="academy-kicker">SUBJECTS, NOT A MIXED FEED</span><h2>${roadmap ? "Choose the subject you want to learn" : "Explore by category"}</h2><p>Open a subject to see only its courses, learning goals and recommended starting point.</p></div><span class="small muted">${plural(data.categories.length, "category")} available</span></div><div class="category-grid">${data.categories
+  return `<section class="academy-categories" id="categories"><div class="section-heading"><div><span class="academy-kicker">LEARNING PATHS</span><h2>${roadmap ? "Choose your learning path" : "Available learning paths"}</h2><p>Each learning path contains focused courses with clear outcomes and ordered modules.</p></div><span class="small muted">${plural(data.categories.length, "path")}</span></div><div class="category-grid">${data.categories
     .map((c) => {
       const start = recommended(data, c.id);
-      return `<article class="category-discovery"><span class="course-symbol">${icon("book")}</span><div><span class="academy-kicker">SUBJECT</span><h3><a href="${c.url}">${esc(c.name)}</a></h3><p>${esc(c.description)}</p><div class="path-facts"><span>${plural(c.paths.length, "course")}</span><span>${plural(c.topics.length, "lesson")}</span></div>${roadmap ? `<p class="subject-start"><strong>Suggested first course:</strong> ${esc(start.name)}</p>` : ""}<div class="subject-actions"><a class="text-button" href="${c.url}">Explore category ${icon("arrow")}</a><a class="text-button" href="${c.roadmapUrl}">View subject roadmap →</a></div></div></article>`;
+      return `<article class="category-discovery"><span class="course-symbol">${icon("book")}</span><div><span class="academy-kicker">LEARNING PATH</span><h3><a href="${c.url}">${esc(c.name)}</a></h3><p>${esc(c.description)}</p><div class="path-facts"><span>${plural(c.paths.length, "course")}</span><span>${plural(c.topics.length, "lesson")}</span></div>${roadmap ? `<p class="subject-start"><strong>Start with:</strong> ${esc(start.name)}</p>` : ""}<div class="subject-actions"><a class="text-button" href="${c.url}">View courses ${icon("arrow")}</a>${roadmap ? `<a class="text-button" href="${c.roadmapUrl}">See roadmap →</a>` : ""}</div></div></article>`;
     })
     .join(
       "",
-    )}</div><p class="catalogue-footnote">Only published subjects and courses appear here. New subjects get their own space; they are never added to another subject’s curriculum.</p></section>`;
+    )}</div></section>`;
 }
 function howItWorks() {
-  return `<section class="academy-how" id="how-it-works"><span class="academy-kicker">A CLEAR WAY TO LEARN</span><h2>Choose a course. Take it one lesson at a time.</h2><div class="academy-steps">${[
+  return `<section class="academy-how" id="how-it-works"><span class="academy-kicker">HOW LEARNING WORKS</span><h2>Learn step by step, one lesson at a time.</h2><div class="academy-steps">${[
     [
       "book",
       "01",
       "Learn the concept",
-      "Read focused lessons with subject-appropriate explanations, examples and code snippets where relevant. No login needed.",
+      "Read focused lessons with clear explanations, examples and code where relevant. No login needed.",
     ],
     [
       "lab",
       "02",
       "Put it into practice",
-      "Work through the lesson’s practice resource. Follow the provider’s instructions; practice completion is self-reported.",
+      "Work through the lesson's practice resource. Follow the provider's instructions; practice completion is self-reported.",
     ],
     [
       "award",
       "03",
       "Check your understanding",
-      "Try a self-check where available. Your progress and optional name are saved in this browser, without a login or email.",
+      "Take a self-check to confirm what you learned. Your progress is saved in this browser, without a login or email.",
     ],
   ]
     .map(
@@ -105,26 +150,175 @@ export function hubView(data, context = {}) {
   if (!data.categories.length)
     return '<div class="academy-empty"><h1>Your next chapter is coming</h1><p>No courses are published yet. Check back soon.</p></div>';
   const resume = data.topics.find((t) => t.id === context.lastTopic);
-  const course = resume && data.paths.find((p) => p.id === resume.path_id);
-  const category =
-    course && data.categories.find((c) => c.id === course.category_id);
-  return `<header class="academy-page-heading"><div><span class="academy-kicker">OMP ACADEMY · LEARN WITH DIRECTION</span><h1>Your subject.<br>Your course. A clear next step.</h1><p>Choose what you want to learn, then follow a course built around a specific goal. Subjects stay separate, so your lessons always belong to a clear curriculum.</p></div></header>
-  <div class="academy-orientation-grid"><section class="academy-feature orientation-feature"><div class="feature-copy"><span class="feature-eyebrow"><span class="status-dot"></span>START WITH YOUR GOAL</span><h2>Find your own starting point.</h2><p>There isn’t one course everyone needs to take first. Pick a subject, check the course prerequisites, and follow its modules in order.</p><div class="feature-meta"><span>${icon("grid")}${plural(data.categories.length, "category")}</span><span>${icon("book")}${plural(data.paths.length, "course")} published</span></div><div class="academy-actions"><a class="btn btn-primary" href="${ROOT}/roadmap">Find my starting point ${icon("arrow")}</a><a class="text-button" href="#categories">Browse subjects</a></div><span class="feature-footnote">Self-paced · Free · No login required</span></div><div class="feature-art" aria-hidden="true"><div class="art-orbit"></div><div class="art-tile art-tile-back">&lt;/&gt;</div><div class="art-tile art-tile-front">${icon("book")}</div></div></section><aside class="academy-welcome"><span class="academy-kicker">NO GUESSWORK</span><h2>Know what you’re joining.</h2><p>Each course explains who it is for, what you need beforehand, and what you will learn.</p><ul><li>A separate home for each subject.</li><li>Modules ordered within each course.</li><li>A focused lesson reader, not an endless feed.</li></ul><a class="text-button" href="${ROOT}/roadmap#before-you-start">How do I choose? →</a></aside></div>
-${resume ? `<div class="academy-resume">${icon("book")}<div><strong>Continue your reading</strong><p>${esc(category.name)} · ${esc(course.name)}<br>${esc(resume.name)} · Saved on this device</p></div><a class="btn btn-secondary" href="${resume.url}">Resume ${icon("arrow")}</a></div>` : ""}
-${browse(data)}<section class="academy-structure"><div class="section-heading"><div><h2>A clear place for everything.</h2><p>Subjects are separate. Courses contain modules. Modules contain lessons.</p></div></div>${structureView()}</section>${howItWorks()}`;
+  const resumeCourse = resume && data.paths.find((p) => p.id === resume.path_id);
+  const resumeCategory =
+    resumeCourse && data.categories.find((c) => c.id === resumeCourse.category_id);
+  const pmap = context.pmap || new Map();
+  const totalLessons = data.topics.length;
+
+  // One resume target, and one starting course. A learner who has read
+  // something continues; everyone else starts at the recommended course.
+  const firstUnread = (p) => {
+    const last = p.topics.find((t) => t.id === context.lastTopic);
+    return (
+      (last && !pmap.get(last.id)?.passed && last) ||
+      p.topics.find((t) => !pmap.get(t.id)?.passed) ||
+      p.topics[0]
+    );
+  };
+  const startPath = data.paths.find((p) => p.is_start_here) || data.paths[0];
+  const startCategory =
+    startPath && data.categories.find((c) => c.id === startPath.category_id);
+  const startLesson = startPath && firstUnread(startPath);
+  const resumeLesson = resume && !pmap.get(resume.id)?.passed ? resume : null;
+
+  return `<header class="academy-hero">
+  <div class="hero-copy">
+    <span class="academy-kicker">OopsMyPassword Academy</span>
+    <h1>Learn how security actually works.</h1>
+    <p>Structured courses that explain how systems are built, where they break, and how defenders find out. Start at the beginning or pick up where you stopped.</p>
+    ${
+      resumeLesson
+        ? `<div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="${resumeLesson.url}">Continue ${esc(resumeLesson.name)} ${icon("arrow")}</a>
+            <a class="btn btn-ghost" href="${startLesson.url}">Start from the beginning</a>
+          </div>`
+        : `<div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="${startLesson.url}">${icon("play")} Start learning</a>
+          </div>`
+    }
+    <p class="hero-meta">${plural(data.paths.length, "course")} · ${plural(totalLessons, "lesson")} · No signup, progress stays on this device</p>
+  </div>
+  ${
+    resumeLesson
+      ? `<aside class="hero-resume" aria-label="Continue where you left off">
+          <span class="resume-label">Pick up where you stopped</span>
+          <p class="resume-path">${esc(resumeCategory?.name || "")}</p>
+          <h2>${esc(resumeLesson.name)}</h2>
+          <p class="resume-why">${esc(resumeLesson.description)}</p>
+          <a class="btn btn-secondary" href="${resumeLesson.url}">Resume this lesson ${icon("arrow")}</a>
+        </aside>`
+      : startPath
+        ? `<aside class="hero-resume" aria-label="Recommended starting course">
+            <span class="resume-label">Recommended first course</span>
+            <p class="resume-path">${esc(startCategory?.name || "")}</p>
+            <h2>${esc(startPath.name)}</h2>
+            <p class="resume-why">${esc(startPath.description)}</p>
+            <p class="resume-facts">${esc(startPath.difficulty)} · ${plural(startPath.modules.length, "module")} · ${plural(startPath.topics.length, "lesson")} · ${minutes(startPath.topics)} min</p>
+          </aside>`
+        : ""
+  }
+</header>
+<section class="course-index" aria-labelledby="course-index-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">All courses</span>
+      <h2 id="course-index-heading">Choose a course</h2>
+    </div>
+  </div>
+  <div class="course-index-grid">
+    ${data.paths.map((p) => courseCard(p, pmap, context)).join("")}
+  </div>
+  ${
+    data.paths.some((p) => p.modules.filter((m) => m.topics.length).length > 1)
+      ? `<p class="index-note">Each course is split into modules, and each module into short lessons you can finish in one sitting.</p>`
+      : ""
+  }
+</section>
+${howItWorks()}`;
 }
-export function categoryView(data, page) {
-  const c = page.category,
-    start = recommended(data, c.id);
-  return `${breadcrumbView(page)}<header class="academy-page-heading"><div><span class="academy-kicker">SUBJECT · ${plural(c.paths.length, "course")}</span><h1>${esc(c.name)}</h1><p>${esc(c.description)}</p></div></header><div class="category-explainer"><strong>New to ${esc(c.name)}?</strong><p>Start with ${esc(start.name)}, or compare the prerequisites and outcomes of another course in this subject.</p><a class="text-button" href="${c.roadmapUrl}">View this subject’s roadmap →</a></div><section><div class="section-heading"><h2>Courses in this subject</h2><span class="small muted">${plural(c.paths.length, "course")}</span></div><div class="curriculum-toolbar" data-course-controls hidden><label class="academy-search">${icon("search")}<span class="sr-only">Find a course in this subject</span><input id="course-search" type="search" placeholder="Find a course in this subject…"></label><label class="academy-filter"><span class="sr-only">Course level</span><select id="course-level"><option value="all">All levels</option>${[...new Set(c.paths.map((p) => p.difficulty))].map((level) => `<option value="${esc(level)}">${esc(level)}</option>`).join("")}</select></label></div><p id="course-count" class="small muted" role="status" data-course-controls hidden>${plural(c.paths.length, "course")}</p><div class="path-grid">${c.paths.map(courseCard).join("")}</div><div class="filter-empty" id="course-empty" hidden><h3>No courses match</h3><p>Try another search or level in this subject.</p><button class="btn btn-secondary" id="course-reset">Clear filters</button></div></section><section class="academy-next-note"><h2>Looking for a different subject?</h2><p>This page only lists ${esc(c.name)} courses. Other subjects have their own catalogue and roadmap.</p><a class="text-button" href="${ROOT}#categories">Explore all subjects →</a></section>`;
+
+export function categoryView(data, page, context = {}) {
+  const c = page.category;
+  const pmap = context.pmap || new Map();
+  const start = recommended(data, c.id);
+  const courses = c.paths.filter((p) => p.modules.some((m) => m.topics.length));
+  // A learning path that holds exactly one course should not make the learner
+  // click again. In that case the course is presented here directly.
+  const single = courses.length === 1 ? courses[0] : null;
+  const startLesson =
+    single &&
+    (single.topics.find((t) => !pmap.get(t.id)?.passed) || single.topics[0]);
+  return `${breadcrumbView(page)}
+<header class="path-hero">
+  <p class="path-eyebrow">Learning path</p>
+  <h1>${esc(c.name)}</h1>
+  <p class="path-lede">${esc(c.description)}</p>
+  <p class="path-facts"><span>${plural(courses.length, "course")}</span><span>${plural(c.topics.length, "lesson")}</span><span>${minutes(c.topics)} min of reading</span></p>
+</header>
+${
+  single
+    ? `<section class="path-single" aria-labelledby="path-single-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">The course in this path</span>
+      <h2 id="path-single-heading">${esc(single.name)}</h2>
+    </div>
+  </div>
+  <div class="path-single-body">
+    <div>
+      <h3>What you'll learn</h3>
+      ${list(single.outcomes)}
+    </div>
+    <div>
+      <h3>Before you start</h3>
+      ${list(single.prerequisites)}
+    </div>
+  </div>
+  ${
+    startLesson
+      ? `<div class="path-single-cta">
+          <a class="btn btn-primary btn-lg" href="${startLesson.url}" title="${esc(startLesson.name)}">${icon("play")} Start the first lesson</a>
+          <a class="btn btn-secondary" href="${single.url}">See the full course structure</a>
+        </div>`
+      : ""
+  }
+</section>`
+    : `<section class="path-courses" aria-labelledby="path-courses-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">Courses in this path</span>
+      <h2 id="path-courses-heading">Pick a starting point</h2>
+    </div>
+  </div>
+  <div class="course-index-grid">${courses.map((p) => courseCard(p, pmap, context)).join("")}</div>
+</section>`
 }
+${
+  start
+    ? `<section class="path-next">
+  <h2>Not sure where to begin?</h2>
+  <p>The recommended course is <strong>${esc(start.name)}</strong>: ${esc(start.audience)}</p>
+  <a class="text-button" href="${start.url}">Open the recommended course ${icon("arrow")}</a>
+</section>`
+    : ""
+}
+<section class="path-next">
+  <h2>Course order in this path</h2>
+  <p>${courses
+    .map(
+      (p) =>
+        `${esc(p.name)}: ${p.modules
+          .filter((m) => m.topics.length)
+          .map((m) => esc(m.name))
+          .join(" \u2192 ")}`,
+    )
+    .join("<br>")}</p>
+  <a class="text-button" href="${c.roadmapUrl}">See the full path breakdown ${icon("arrow")}</a>
+</section>
+<section class="path-browse">
+  <p>Looking for a different topic?</p>
+  <a class="text-button" href="${ROOT}">Browse every learning path ${icon("arrow")}</a>
+</section>`;
+}
+
 export function topicRow(t, index, progress) {
   const label = progress?.passed
     ? "Completed"
     : progress?.lesson_started
       ? "In progress"
-      : "Read lesson";
-  return `<a class="academy-topic ${progress?.passed ? "is-complete" : ""}" href="${t.url}"><span class="topic-number">${progress?.passed ? icon("check") : String(index + 1).padStart(2, "0")}</span><div class="topic-body"><h3>${esc(t.name)}</h3><p>${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min reading + practice</span></div></div><span class="topic-action">${label} ${icon("arrow")}</span></a>`;
+      : "Start lesson";
+  return `<a class="academy-topic ${progress?.passed ? "is-complete" : ""}" href="${t.url}"><span class="topic-number">${progress?.passed ? icon("check") : String(index + 1).padStart(2, "0")}</span><div class="topic-body"><h3>${esc(t.name)}</h3><p>${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></div><span class="topic-action">${label} ${icon("arrow")}</span></a>`;
 }
 export function modulesView(path, pmap = new Map(), filter = () => true) {
   let index = 0;
@@ -134,7 +328,10 @@ export function modulesView(path, pmap = new Map(), filter = () => true) {
         .map((t) => ({ t, index: index++ }))
         .filter(({ t }) => filter(t));
       if (!topics.length) return "";
-      return `<section class="curriculum-module" id="module-${m.slug}"><div class="module-heading"><span class="module-number">${String(i + 1).padStart(2, "0")}</span><div><span class="academy-kicker">MODULE ${i + 1} · ${plural(m.topics.length, "lesson")}</span><h2>${esc(m.name)}</h2><p>${esc(m.description)}</p></div></div><div class="academy-course">${topics.map(({ t, index }) => topicRow(t, index, pmap.get(t.id))).join("")}</div><p class="module-outcome">${icon("check")}<span><strong>By the end:</strong> ${esc(m.outcome)}</span></p></section>`;
+      const doneCount = m.topics.filter((t) => pmap.get(t.id)?.passed).length;
+      const allDone = doneCount === m.topics.length;
+      const started = doneCount > 0;
+      return `<section class="curriculum-module" id="module-${m.slug}"><div class="module-heading"><span class="module-number">${String(i + 1).padStart(2, "0")}</span><div><span class="academy-kicker">MODULE ${i + 1} · ${plural(m.topics.length, "lesson")}</span><h2>${esc(m.name)}</h2><p>${esc(m.description)}</p></div><span class="module-status ${allDone ? "is-complete" : started ? "is-in-progress" : "is-not-started"}">${allDone ? "✓ Complete" : started ? "◐ In progress" : "○ Not started"}</span></div><div class="module-outcome"><span class="outcome-label">By the end of this module, you will be able to:</span><p>${esc(m.outcome)}</p></div><div class="academy-course">${topics.map(({ t, index }) => topicRow(t, index, pmap.get(t.id))).join("")}</div></section>`;
     })
     .join("");
 }
@@ -142,21 +339,60 @@ export function pathView(data, page, context = {}) {
   const p = page.path,
     pmap = context.pmap || new Map(),
     done = p.topics.filter((t) => pmap.get(t.id)?.passed).length;
+  const total = p.topics.length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
   const next =
-    p.topics.find(
-      (t) => t.id === context.lastTopic && !pmap.get(t.id)?.passed,
-    ) ||
+    p.topics.find((t) => t.id === context.lastTopic && !pmap.get(t.id)?.passed) ||
     p.topics.find((t) => !pmap.get(t.id)?.passed) ||
     p.topics[0];
-  return `${breadcrumbView(page)}<header class="academy-page-heading"><div><span class="academy-kicker">COURSE · ${esc(p.difficulty)}</span><h1>${esc(p.name)}</h1><p>${esc(p.description)}</p></div></header><div class="path-summary"><span>${icon("book")}${plural(p.modules.length, "module")} · ${plural(p.topics.length, "lesson")}</span><span>${icon("clock")}${minutes(p.topics)} min reading + practice</span><span>${icon("award")}${context.progressUnavailable ? "Local progress unavailable" : context.localProgress || context.user ? `${done} of ${p.topics.length} lessons completed on this device` : "Progress stays in your browser"}</span></div><div class="path-introduction"><section><h2>Who this course is for</h2><p>${esc(p.audience)}</p><h2>Before you start</h2>${list(p.prerequisites)}</section><section><h2>What you’ll be able to do</h2>${list(p.outcomes)}</section></div><div class="path-start"><a class="btn btn-primary" href="${next.url}">${done === p.topics.length ? "Review this course" : context.lastTopic === next.id ? "Continue learning" : "Start the first lesson"} ${icon("arrow")}</a><p>Follow this course’s modules in order, or use the outcomes to choose a lesson you need. Your progress here belongs to this course.</p></div><section aria-label="Course curriculum" id="curriculum"><div class="section-heading"><div><span class="academy-kicker">WITHIN THIS COURSE</span><h2>Your course curriculum</h2><p>Build understanding one module at a time. Each module explains its goal before you begin.</p></div><span class="small muted" id="lesson-count" role="status">${plural(p.topics.length, "lesson")}</span></div><div class="curriculum-toolbar" data-enhanced-control hidden><label class="academy-search">${icon("search")}<span class="sr-only">Search lessons in this course</span><input type="search" id="lesson-search" placeholder="Find a lesson in this course…" autocomplete="off"></label><label class="academy-filter"><span class="sr-only">Filter by progress</span><select id="lesson-filter"><option value="all">All lessons</option><option value="active">In progress</option><option value="new">Not started</option><option value="complete">Completed</option></select></label></div><div id="category-lessons">${modulesView(p, pmap)}</div></section><section class="academy-next-note"><span class="academy-kicker">WHEN YOU FINISH</span><h2>Reflect before moving on.</h2><p>${esc(p.next_steps)}</p><a class="text-button" href="${page.category.roadmapUrl}#next-steps">Explore the next step in this subject →</a></section>`;
+  const started = done > 0 || p.topics.some((t) => pmap.get(t.id)?.lesson_started);
+  const ctaLabel = done === total ? "Review course" : started ? "Continue learning" : "Start course";
+  return `${breadcrumbView(page)}<header class="course-hero"><div class="course-hero-inner"><span class="academy-kicker">COURSE</span><h1>${esc(p.name)}</h1><p class="course-lede">${esc(p.description)}</p><div class="course-stats"><div class="stat"><span class="stat-value">${esc(p.difficulty)}</span><span class="stat-label">Level</span></div><div class="stat"><span class="stat-value">${p.modules.length}</span><span class="stat-label">Module${p.modules.length !== 1 ? "s" : ""}</span></div><div class="stat"><span class="stat-value">${total}</span><span class="stat-label">Lesson${total !== 1 ? "s" : ""}</span></div><div class="stat"><span class="stat-value">~${Math.max(1, Math.round(minutes(p.topics) / 60))}h</span><span class="stat-label">Est. time</span></div><div class="stat stat-progress"><span class="stat-value">${pct}%</span><span class="stat-label">Progress</span></div></div><div class="course-progress-bar"><div class="course-progress-track"><span style="width:${pct}%"></span></div><span class="course-progress-label">${done} of ${total} lessons completed</span></div><a class="btn btn-primary btn-lg" href="${next.url}">${ctaLabel} ${icon("arrow")}</a></div></header>
+<section class="course-outcomes"><div class="section-heading"><div><span class="academy-kicker">WHAT YOU'LL LEARN</span><h2>By the end of this course, you will understand:</h2></div></div>${list(p.outcomes)}</section>
+<section class="course-audience"><details><summary>Who this course is for &amp; prerequisites</summary><p>${esc(p.audience)}</p><h3>Before you start</h3>${list(p.prerequisites)}</details></section>
+<section aria-label="Course curriculum" id="curriculum" class="course-structure"><div class="section-heading"><div><span class="academy-kicker">YOUR LEARNING PATH</span><h2>Course structure</h2><p>Work through each module in order. Each module builds on the one before it.</p></div><span class="small muted" id="lesson-count" role="status">${plural(total, "lesson")}</span></div><div class="curriculum-toolbar" data-enhanced-control hidden><label class="academy-search">${icon("search")}<span class="sr-only">Search lessons</span><input type="search" id="lesson-search" placeholder="Find a lesson…" autocomplete="off"></label><label class="academy-filter"><span class="sr-only">Filter by progress</span><select id="lesson-filter"><option value="all">All lessons</option><option value="active">In progress</option><option value="new">Not started</option><option value="complete">Completed</option></select></label></div><div id="category-lessons">${modulesView(p, pmap)}</div></section>
+<section class="academy-next-note"><span class="academy-kicker">WHEN YOU FINISH</span><h2>What comes next</h2><p>${esc(p.next_steps)}</p>${page.category ? `<a class="text-button" href="${page.category.url}">Explore other courses →</a>` : ""}</section>`;
 }
-export function roadmapView(data) {
-  return `${breadcrumbView({ type: "roadmap", url: `${ROOT}/roadmap` })}<header class="academy-page-heading"><div><span class="academy-kicker">START WITH A SUBJECT</span><h1>Choose your learning direction.</h1><p>Different subjects need different starting points. Choose your subject below—its roadmap will help you pick a course without mixing unrelated lessons.</p></div></header><div class="roadmap-start" id="before-you-start"><section><span class="academy-kicker">01 · CHOOSE YOUR GOAL</span><h2>What do you want to learn?</h2><p>Choose a subject that matches your goal. You do not need to complete a course in another subject before starting.</p></section><section><span class="academy-kicker">02 · CHECK THE COURSE</span><h2>Use prerequisites and outcomes.</h2><p>The recommended starting course is specific to that subject. If you already know the basics, compare other courses and choose the right level.</p></section></div>${browse(data, true)}${howItWorks()}<section class="academy-next-note" id="after-foundations"><h2>Keep your next step relevant.</h2><p>At the end of a course, review its outcomes and use that subject’s roadmap to decide what comes next. There is no compulsory journey through every category.</p></section><details class="academy-faq"><summary>How is the Academy organized?</summary><p>A category is a subject. A course has a focused goal. Modules organize concepts within a course; lessons are the individual units you read and practice.</p></details>`;
+export function roadmapView(data, page, context = {}) {
+  const pmap = context.pmap || new Map();
+  const courses = data.paths.filter((p) => p.modules.some((m) => m.topics.length));
+  const totalLessons = data.pathics ? 0 : data.topics.length;
+  const totalMinutes = data.topics.reduce((n, t) => n + Number(t.estimated_minutes || 0), 0);
+  return `${breadcrumbView(page)}
+<header class="path-hero">
+  <p class="path-eyebrow">Academy</p>
+  <h1>Learning paths</h1>
+  <p class="path-lede">Every published course, in the order it is meant to be taken. Pick a path, read what you will learn, and start the first lesson.</p>
+  <p class="path-facts"><span>${plural(courses.length, "course")}</span><span>${plural(data.topics.length, "lesson")}</span><span>${totalMinutes} min of reading</span></p>
+</header>
+<section class="path-single" aria-labelledby="how-to-choose">
+  <div class="section-heading"><div><span class="academy-kicker">How to choose</span><h2 id="how-to-choose">Two questions decide it for you</h2></div></div>
+  <div class="path-single-body">
+    <div>
+      <h3>1. Have you done this before?</h3>
+      <p>Every course here starts at the beginning and assumes no prior security knowledge. You do not need to finish one course before starting another.</p>
+    </div>
+    <div>
+      <h3>2. What do you want to be able to do?</h3>
+      <p>Read the outcome list on each course. If those outcomes describe work you want to do, that is the course to take.</p>
+    </div>
+  </div>
+</section>
+<section class="path-courses" aria-labelledby="all-courses-h">
+  <div class="section-heading"><div><span class="academy-kicker">Every course</span><h2 id="all-courses-h">Start here</h2></div></div>
+  <div class="course-index-grid">${courses.map((p) => courseCard(p, pmap, { ...context, categories: data.categories })).join("")}</div>
+</section>
+<section class="path-next" id="how-it-works">
+  <h2>How a course is organised</h2>
+  <p>Each course is split into modules. Each module has one clear goal, and each lesson is short enough to finish in one sitting. You can leave and come back: your progress is stored on this device only, with no account.</p>
+  <a class="text-button" href="#how-to-choose">Back to how to choose ${icon("arrow")}</a>
+</section>`;
 }
+
 export function categoryRoadmapView(data, page) {
   const c = page.category,
     start = recommended(data, c.id);
-  return `${breadcrumbView(page)}<header class="academy-page-heading"><div><span class="academy-kicker">${esc(c.name)} · SUBJECT ROADMAP</span><h1>Your starting point in ${esc(c.name)}.</h1><p>Explore only this subject’s courses. The module order belongs to each course—not a compulsory order across every course in the Academy.</p></div></header><section class="category-explainer"><span class="academy-kicker">SUGGESTED FIRST COURSE</span><h2>${esc(start.name)}</h2><p>${esc(start.audience)}</p><h3>Before you start</h3>${list(start.prerequisites)}<a class="btn btn-primary" href="${start.url}">Explore the starting course ${icon("arrow")}</a></section><section class="roadmap-order"><h2>Courses and their module order</h2>${c.paths.map((p) => `<div class="roadmap-path"><div class="section-heading"><h3><a href="${p.url}">${esc(p.name)}</a></h3><span class="small muted">${plural(p.topics.length, "lesson")}</span></div><p>${esc(p.description)}</p><ol class="roadmap-timeline">${p.modules.map((m, i) => `<li><span class="roadmap-stop" aria-hidden="true">${i + 1}</span><div><h4>${esc(m.name)}</h4><p>${esc(m.outcome)}</p><ul>${m.topics.map((t) => `<li><a href="${t.url}">${esc(t.name)} →</a></li>`).join("")}</ul></div></li>`).join("")}</ol><a class="text-button" href="${p.url}">See course prerequisites & outcomes →</a></div>`).join("")}</section><section class="academy-next-note" id="next-steps"><h2>Choose your next course deliberately.</h2><p>Finish or review your current course’s outcomes, then compare another course’s prerequisites. Only published courses are shown; this roadmap makes no promise of a complete professional qualification.</p><a class="text-button" href="${c.url}">Compare courses in ${esc(c.name)} →</a></section>`;
+  return `${breadcrumbView(page)}<header class="academy-page-heading"><div><span class="academy-kicker">${esc(c.name)}</span><h1>Your roadmap in ${esc(c.name)}.</h1><p>Explore the courses in this learning path and the order of modules within each one.</p></div></header><section class="category-explainer"><span class="academy-kicker">RECOMMENDED STARTING COURSE</span><h2>${esc(start.name)}</h2><p>${esc(start.audience)}</p><h3>Before you start</h3>${list(start.prerequisites)}<a class="btn btn-primary" href="${start.url}">Start this course ${icon("arrow")}</a></section><section class="roadmap-order"><h2>Courses and their module order</h2>${c.paths.map((p) => `<div class="roadmap-path"><div class="section-heading"><h3><a href="${p.url}">${esc(p.name)}</a></h3><span class="small muted">${plural(p.topics.length, "lesson")}</span></div><p>${esc(p.description)}</p><ol class="roadmap-timeline">${p.modules.map((m, i) => `<li><span class="roadmap-stop" aria-hidden="true">${i + 1}</span><div><h4>${esc(m.name)}</h4><p>${esc(m.outcome)}</p><ul>${m.topics.map((t) => `<li><a href="${t.url}">${esc(t.name)} →</a></li>`).join("")}</ul></div></li>`).join("")}</ol><a class="text-button" href="${p.url}">See course details →</a></div>`).join("")}</section><section class="academy-next-note" id="next-steps"><h2>Choose your next course.</h2><p>Finish or review your current course's outcomes, then compare another course's prerequisites.</p><a class="text-button" href="${c.url}">Compare courses in ${esc(c.name)} →</a></section>`;
 }
 export function blocksView(blocks) {
   return blocks
@@ -174,25 +410,22 @@ export function staticLessonView(data, page) {
     p = page.path,
     module = p.modules.find((m) => m.id === t.module_id),
     next = p.topics[p.topics.indexOf(t) + 1],
-    sections = sectionsFor(t);
-  const resources = (t.content.references || [])
-    .map(safeHttpUrl)
-    .filter(Boolean);
-  return `${breadcrumbView(page)}<header class="lesson-heading"><span class="academy-kicker">${esc(p.name)} · ${esc(module.name)}</span><h1>${esc(t.name)}</h1><p>${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min reading + practice</span></div></header><div class="topic-context"><strong>Where this fits</strong><p>Lesson ${p.topics.indexOf(t) + 1} of ${p.topics.length} in ${esc(p.name)}. Module goal: ${esc(module.outcome)}</p><a class="text-button" href="${p.url}#module-${module.slug}">View this course’s curriculum →</a></div><nav class="static-section-links" aria-label="On this lesson">${sections.map((s) => `<a href="#${s.id}">${esc(s.title)}</a>`).join("")}<a href="#labs">Practice</a></nav><article class="lesson-reader static-lesson">${sections.map((s) => `<section id="${s.id}" class="lesson-section"><h2>${esc(s.title)}</h2><div class="prose learning-prose">${blocksView(s.blocks)}</div></section>`).join("")}<section id="labs" class="lesson-section"><h2>Practice resources</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource’s instructions. Test other people’s systems only with permission.")}</p>${data.labs
-    .filter((l) => l.topic_id === t.id && safeHttpUrl(l.url))
-    .map(
-      (l) =>
-        `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`,
-    )
-    .join(
-      "",
-    )}</section>${resources.length ? `<section class="lesson-section"><h2>Sources & further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}</article><div class="academy-next-note"><h2>${next ? "Next in this course" : "You’ve reached the last lesson in this course"}</h2><p>${next ? esc(next.name) : "Review the outcomes and practice any concepts that still feel unfamiliar."}</p><a class="btn btn-secondary" href="${next?.url || p.url}">${next ? "Continue to the next lesson" : "Review course outcomes"} ${icon("arrow")}</a></div>`;
+    all = sectionsFor(t);
+  // "Overview" is promoted to "Why this matters" and "Defensive thinking" to
+  // "Key takeaways", so neither is repeated inside the concept body.
+  const sections = all.filter(
+    (s) => !["overview", "why", "defensive"].includes(s.id),
+  );
+  const takeaways = all.find((s) => s.id === "defensive");
+  const resources = (t.content.references || []).map(safeHttpUrl).filter(Boolean);
+  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div><section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
 }
 export function publicView(data, page, context = {}) {
-  if (page.type === "overview") return hubView(data, context);
-  if (page.type === "roadmap") return roadmapView(data);
+  if (page.type === "overview") return hubView(data, { ...context, categories: data.categories });
+  if (page.type === "roadmap")
+    return roadmapView(data, page, { ...context, categories: data.categories });
   if (page.type === "category-roadmap") return categoryRoadmapView(data, page);
-  if (page.type === "category") return categoryView(data, page);
+  if (page.type === "category") return categoryView(data, page, { ...context, categories: data.categories });
   if (page.type === "path") return pathView(data, page, context);
   if (page.type === "lesson") return staticLessonView(data, page);
   return '<div class="academy-empty"><h1>Lesson not found</h1><p>This lesson is not in the published curriculum.</p><a href="/learning">Explore the Academy</a></div>';

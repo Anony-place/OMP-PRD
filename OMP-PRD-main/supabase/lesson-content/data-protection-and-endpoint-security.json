@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft content for Data Protection and Endpoint Security. Data-only.",
+  "lessons": {
+    "data-classification": {
+      "overview": "Data classification is the step that decides what protection something deserves. Without it, every item is treated the same way, which usually means the sensitive items are not protected enough.",
+      "how_it_works": [
+        "Classification assigns a level based on sensitivity and the harm disclosure would cause.",
+        "Each level maps to controls: where the data may be stored, who may see it, how it is encrypted, and how long it is kept.",
+        "Classification is only useful if the mapping to controls is written down and enforced by systems.",
+        "The hardest part is usually deciding the level for new data, and getting people to label it consistently.",
+        "Retention is part of classification, because data nobody needs should not exist at all."
+      ],
+      "history": [
+        "Physical filing systems used clear markings like confidential, which translated directly once data became digital.",
+        "Regulatory definitions introduced formal categories tied to specific legal obligations rather than to intuition.",
+        "Cloud storage made it technically easy to apply different controls per classification, which turned policy into configuration.",
+        "Data discovery tooling emerged because nobody actually knew where all the sensitive data lived."
+      ],
+      "real_world": [
+        "A spreadsheet of customer records in a general-purpose shared folder is the most common classification failure in practice.",
+        "Data that is correctly classified but stored without encryption loses its protection the moment storage is misconfigured.",
+        "Labeling that depends on the user's judgement produces wildly inconsistent results across a large organisation."
+      ],
+      "what_to_look_for": [
+        "Check whether a written classification scheme exists and whether the levels map to specific controls.",
+        "Check where the most sensitive data actually lives, rather than where policy says it should.",
+        "Check whether retention periods are defined and enforced, rather than being indefinite by default.",
+        "Check whether classification is applied automatically where it can be, rather than relying on users to label files."
+      ],
+      "defensive": [
+        "Define a small number of levels and map each one to concrete technical controls.",
+        "Discover where sensitive data actually is, because you cannot protect data you have not found.",
+        "Apply classification automatically by pattern or by location, and let users only correct it.",
+        "Set retention periods and enforce deletion, because unretained data cannot leak.",
+        "Re-classify when data is aggregated, since combining two ordinary records can create a sensitive one."
+      ],
+      "references": [
+        "https://www.nist.gov/privacy-framework",
+        "https://csrc.nist.gov/pubs/fips/199/final",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "encryption-at-rest-transit-and-backup": {
+      "overview": "Encryption helps in three separate places, and each covers a different failure. Encrypting only in transit leaves the most common leak paths completely unprotected.",
+      "how_it_works": [
+        "In transit protects data while it moves between systems, and this is what HTTPS provides.",
+        "At rest protects stored data, so a stolen disk or a compromised storage account does not yield plaintext.",
+        "Backups need protection too, because a backup is a full copy of everything you were trying to protect.",
+        "Encryption only helps if the key is protected separately from the data, or the two are compromised together.",
+        "Full-disk and application-level encryption solve different problems, since one protects a device and the other a specific field."
+      ],
+      "history": [
+        "Encryption at rest was expensive and so was applied to databases and backups rather than to laptops.",
+        "Storage vendors began offering encryption by default, which removed the cost barrier and the decision.",
+        "Cloud platforms added server-side encryption options, often on by default but not always for every service.",
+        "Asynchronous replication made it necessary to encrypt backups separately, since a snapshot is a new copy of the data."
+      ],
+      "real_world": [
+        "A lost laptop with an unencrypted disk turns into a data breach report, regardless of how good the rest of the system is.",
+        "A database with encrypted columns but backups in the clear means the breach simply happens at restore time.",
+        "A customer-managed key stored in the same account as the data it protects provides almost no benefit."
+      ],
+      "what_to_look_for": [
+        "Check whether encryption is enabled on every store that holds sensitive data, including backups and logs.",
+        "Check where the keys live and who can read them.",
+        "Check whether backups are encrypted separately from the source system.",
+        "Check device-level encryption, since portable devices are the ones that get lost."
+      ],
+      "defensive": [
+        "Encrypt everything that holds sensitive data, including backups, replicas and exported extracts.",
+        "Keep keys separate from the data, and control key access more tightly than data access.",
+        "Enable full-disk encryption on every portable device and require it by policy.",
+        "Encrypt data in transit on every connection, including internal ones and backups sent off site.",
+        "Verify that a backup is encrypted by restoring from it, rather than by reading the configuration."
+      ],
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "malware-families": {
+      "overview": "Malware names describe how something spreads and what it does. Knowing the families is useful mainly because each one implies a different set of controls that would have stopped it.",
+      "how_it_works": [
+        "A virus attaches itself to a file and needs the file to be run, which is why it faded as executable-only systems became rare.",
+        "A worm spreads by itself across a network, so containment matters more than detection per machine.",
+        "A trojan poses as something legitimate and relies on the user running it, so user-facing controls matter most.",
+        "Ransomware encrypts data and demands payment, and its modern form also steals the data first.",
+        "Fileless and living-off-the-land techniques run through tools already installed, which is why file-based detection misses them."
+      ],
+      "history": [
+        "Early malware relied on floppy disks and shared filesystems, which is why the virus category dominated for decades.",
+        "Email and macro-enabled documents created a huge wave of trojans as email replaced physical media.",
+        "Polymorphic engines defeated signature detection, and packers were used to hide the real content of a file.",
+        "Fileless execution and living-off-the-land techniques shifted the problem toward behavioural detection."
+      ],
+      "real_world": [
+        "A worm inside a flat network can reach most systems before anyone notices, which is why segmentation is the main control.",
+        "A trojan delivered as an invoice attachment succeeds because the context makes it look expected.",
+        "Ransomware that also exfiltrates data gives the attacker leverage even if you restore cleanly."
+      ],
+      "what_to_look_for": [
+        "Check that segmentation would actually contain a worm or a ransomware spread.",
+        "Check how email attachments and macros are handled, since that is the most common initial delivery.",
+        "Check whether behavioural detection is enabled, since file scanning alone misses modern techniques.",
+        "Check how quickly you could isolate a machine, because response speed limits most outbreaks."
+      ],
+      "defensive": [
+        "Segment the network so a single infected machine cannot reach everything.",
+        "Block macros by default and treat attachments from outside the organisation as untrusted.",
+        "Use behavioural detection and application control rather than relying on file signatures.",
+        "Keep offline or immutable backups, so encryption of the live systems cannot reach the copies.",
+        "Practice isolating a machine, because an unproven containment plan does not contain anything."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://attack.mitre.org/",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "malware-delivery-and-initial-access": {
+      "overview": "Initial access is the step defenders most often miss. If you know how things are getting in, you can remove the route instead of chasing every payload.",
+      "how_it_works": [
+        "Delivery is the mechanism: an attachment, a link, a compromised website, or a malicious update.",
+        "The payload then executes with the privileges of whoever opened it, which is usually a person.",
+        "Living in memory rather than on disk shortens the window in which a file scan can see anything.",
+        "A remote access tool installed afterwards gives persistent hands-on control while looking like a normal tool.",
+        "Most intrusions leave a visible trace at delivery, and that trace is the most reliable detection point available."
+      ],
+      "history": [
+        "Physical media and unpatched services were the usual routes before widespread internet access.",
+        "Email became the dominant delivery channel, and remains so despite years of predictions to the contrary.",
+        "Compromised legitimate websites made delivery look like ordinary browsing.",
+        "Supply-chain compromise shifted delivery upstream, so the update mechanism itself became the vector."
+      ],
+      "real_world": [
+        "A fake invoice with an attachment is still one of the most common first steps in a real intrusion.",
+        "An unpatched internet-facing service is often the route, and it is discoverable within hours of appearing.",
+        "A third-party update mechanism with broad permissions can distribute malicious code to every customer at once."
+      ],
+      "what_to_look_for": [
+        "Check which external services are reachable and what they expose.",
+        "Check how email attachments and links are handled, and whether reporting is easy.",
+        "Check for software with update rights far beyond what it needs.",
+        "Check whether a remote access tool is installed anywhere it should not be."
+      ],
+      "defensive": [
+        "Reduce reachable surface first, since an unreachable service cannot be the entry point.",
+        "Handle email attachments deliberately: block by default, or require a reason to open.",
+        "Give update mechanisms only the permission they need, and monitor what they change.",
+        "Alert on remote access software being installed, since that is rarely legitimate.",
+        "Make reporting something easy, because speed matters more than perfect filtering."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://attack.mitre.org/",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "ransomware-double-extortion-and-recovery": {
+      "overview": "Modern ransomware usually does two things: it encrypts the data and it copies it first. The copy is what creates pressure, because the victim can restore but cannot be sure the data was not taken.",
+      "how_it_works": [
+        "Initial access is followed by a period of quiet activity while the attacker prepares, which is the most useful detection window.",
+        "Data is often exfiltrated before encryption, so the theft is complete even if every system is restored.",
+        "Encryption then disrupts operations, usually in batches so recovery is deliberately painful.",
+        "Backups that share credentials or network access with production are often reached by the same attacker.",
+        "Recovery is a business decision under pressure, which is exactly when paying becomes tempting."
+      ],
+      "history": [
+        "Early ransomware encrypted one machine at a time and was largely a nuisance.",
+        "Crypto-ransomware made payment meaningful, and criminal groups built around it.",
+        "Exfiltration before encryption introduced the double-extortion model and changed the negotiation position.",
+        "Ransomware-as-a-service lowered the skill barrier, and affiliate models scaled it."
+      ],
+      "real_world": [
+        "An organisation that restores quickly still has to act on the assumption that data was taken.",
+        "Backups reachable with the same domain administrator account as production are effectively inside the blast radius.",
+        "A network share used for file access can be encrypted far faster than a server, and it is where business data usually lives."
+      ],
+      "what_to_look_for": [
+        "Check whether backups are isolated from production in both credentials and network path.",
+        "Check whether the backup catalogue itself is protected, since deleting backups defeats everything.",
+        "Check how long a full restore would actually take, measured rather than assumed.",
+        "Check whether the decision-making path for a ransomware incident is written down and known."
+      ],
+      "defensive": [
+        "Keep backups immutable or offline, so encryption cannot reach them.",
+        "Use separate credentials for backup administration, so one compromise does not do both.",
+        "Test full restores on a schedule and record the real elapsed time.",
+        "Segment aggressively, because most ransomware is stopped by containment rather than recovery.",
+        "Decide the response criteria in advance, when nobody is panicking, and rehearse it."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.cisa.gov/stopransomware",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "backups-3-2-1-and-tested-restores": {
+      "overview": "A backup that has never been restored is a hypothesis, not a control. The rule of three copies is well known; the part everyone gets wrong is the test.",
+      "how_it_works": [
+        "Three copies means the original plus two backups, so one failure is survivable.",
+        "Two media means the copies are not all on the same device that can fail together.",
+        "One off site means a fire, theft or ransomware at the primary location does not destroy everything.",
+        "Incremental and full backups trade speed against restore time, since a restore of many incrementals is slower.",
+        "Retention determines what point you can return to, so a ransomware event may exceed the shortest retention."
+      ],
+      "history": [
+        "Backups were tape-based, offsite by definition, and slow enough that testing was routine.",
+        "Cheap disk arrays made local backups affordable and, with them, the assumption that the copy was safe.",
+        "Synchronised storage made replication continuous, which quietly turned a backup into a mirror of the primary.",
+        "Ransomware made immutability the main requirement, because anything writable by the attacker is not a backup."
+      ],
+      "real_world": [
+        "A synchronised folder is not a backup, since deletion or encryption propagates to the copy immediately.",
+        "A restore that has never been timed turns a four-hour outage into a four-day outage.",
+        "Backups with a retention shorter than the attacker's dwell time can be entirely deleted before anyone notices."
+      ],
+      "what_to_look_for": [
+        "Check whether the backup copy is genuinely separate, or synchronised to the primary.",
+        "Check whether backups are protected from deletion by the same credentials that run production.",
+        "Check the last time a full restore was actually performed and timed.",
+        "Check the retention period against the time an attacker could plausibly remain undetected."
+      ],
+      "defensive": [
+        "Follow three copies, two media, one off site, and make the off-site copy immutable.",
+        "Use separate credentials for backup administration and require multi-factor authentication on it.",
+        "Test restores regularly and record the real elapsed time for a full recovery.",
+        "Alert on backup deletion, since that is a strong indicator of an ongoing incident.",
+        "Include configuration and identity data in backups, since restoring only data often leaves a system unusable."
+      ],
+      "references": [
+        "https://www.cisa.gov/stopransomware",
+        "https://www.cisecurity.org/controls",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "personal-data-and-minimisation": {
+      "overview": "Data protection law is built on a simple idea: collect and keep only what you actually need. Everything else is liability you chose to take on.",
+      "how_it_works": [
+        "Personal data is any information relating to an identified or identifiable person, which is broader than people assume.",
+        "Collecting less reduces the impact of a breach, because there is less to disclose.",
+        "Retention limits exposure in time as well as in size, since old data is still a liability.",
+        "Sharing with a processor transfers responsibility, which is why contracts and instructions matter.",
+        "Individual rights such as access and deletion require the ability to find and remove a person data across systems."
+      ],
+      "history": [
+        "Early privacy regulation was sector-specific and focused on records held by organisations.",
+        "Broader modern regulation treats data protection as a default across all processing.",
+        "Data minimisation moved from a recommendation to an obligation in several jurisdictions.",
+        "The practical difficulty of honouring individual rights across many systems is what drives current tooling."
+      ],
+      "real_world": [
+        "A marketing database that was never needed becomes the largest disclosure in a breach.",
+        "Data retained for a made-up future purpose cannot be justified when a request arrives.",
+        "A processor breach becomes your breach from the regulator's point of view if you did not control the contract."
+      ],
+      "what_to_look_for": [
+        "Check what personal data is actually held, and whether each purpose is still real.",
+        "Check the retention schedule and whether anything is kept indefinitely by default.",
+        "Check which processors hold data and under what written instructions.",
+        "Check whether you could find and delete a specific person data on request."
+      ],
+      "defensive": [
+        "Collect only what a stated purpose requires, and write that purpose down.",
+        "Set retention periods and automate deletion rather than reviewing manually.",
+        "Keep a record of processing so you can answer questions about any dataset.",
+        "Use written contracts with processors and verify they are followed.",
+        "Build the ability to find and delete a person's data across all systems that hold it."
+      ],
+      "references": [
+        "https://www.nist.gov/privacy-framework",
+        "https://www.edpb.europa.eu/sme-data-protection-guide/data-protection-basics_en",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "device-security-locking-wiping-and-mobile": {
+      "overview": "Devices leave the building, and that is the whole problem. Encryption, screen locks and remote wipe only work together, because each addresses a different loss scenario.",
+      "how_it_works": [
+        "Full-disk encryption means a lost device does not leak its contents if it is powered off.",
+        "A screen lock and a strong unlock credential are what make that encryption effective in practice.",
+        "A PIN or pattern is far weaker than a passphrase, and a short one is brute-forceable quickly.",
+        "Remote wipe requires the device to be online and enrolled, so it fails when the device is off or unconnected.",
+        "Mobile platforms apply their own protections, but managed-device settings change what an organisation can enforce."
+      ],
+      "history": [
+        "Devices were rarely encrypted, and a lost laptop was treated as a lost laptop rather than a data event.",
+        "Full-disk encryption became standard on laptops as hardware support matured.",
+        "Mobile platforms introduced hardware-backed key storage and strong defaults by default.",
+        "Mobile device management added the ability to enforce settings, which only works if the device is enrolled."
+      ],
+      "real_world": [
+        "An encrypted laptop with no screen lock is barely better than an unencrypted one, because the key is already in memory.",
+        "A four-digit code can be tried quickly enough that a short PIN is effectively no protection.",
+        "A device that is out of remote-wipe range cannot be wiped, which is why the recovery plan needs a second step."
+      ],
+      "what_to_look_for": [
+        "Check whether full-disk encryption is enabled on every portable device.",
+        "Check the screen-lock timeout and whether the unlock credential is a passphrase rather than a short PIN.",
+        "Check which devices are enrolled for remote management and which are not.",
+        "Check what happens if remote wipe fails, since a second procedure is required."
+      ],
+      "defensive": [
+        "Require full-disk encryption and a strong screen lock on every portable device.",
+        "Prefer a passphrase over a PIN, and require multi-factor authentication where the platform supports it.",
+        "Enrol every device in remote management, and verify the wipe path has been tested.",
+        "Keep short automatic lock timeouts, since an unattended device is an unlocked device.",
+        "Revoke certificates and sessions on the device when it is lost, so a wipe is not the only defence."
+      ],
+      "references": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "secure-disposal-and-sanitisation": {
+      "overview": "Data that is deleted but still recoverable is not deleted. Disposal has to match the medium and the sensitivity of what was on it.",
+      "how_it_works": [
+        "Deleting a file removes the reference, not the content, and the data usually remains on the medium.",
+        "Overwriting can work on a traditional drive but is unreliable on flash and on wear-levelled storage.",
+        "Full-disk encryption changes the problem: once the key is destroyed, the data is unrecoverable regardless of the medium.",
+        "Physical destruction is the only certain method, and it matters most for small volumes of highly sensitive data.",
+        "Retention matters most of all, because a drive that never held the data cannot leak it."
+      ],
+      "history": [
+        "Overwriting was the standard method when magnetic drives were the norm and traces were readable.",
+        "Flash storage introduced remapping layers that defeat overwriting entirely.",
+        "Full-disk encryption shifted the focus to key destruction, which is cheaper and verifiable.",
+        "Cloud services made disposal a contractual and logical question rather than a physical one."
+      ],
+      "real_world": [
+        "A formatted drive that was encrypted and then had its key destroyed is safe, while a formatted unencrypted drive is not.",
+        "Discarded phones and drives are a routine source of data exposure because the wipe was never performed.",
+        "A backup provider retaining data past the contract end is a common and easily missed exposure."
+      ],
+      "what_to_look_for": [
+        "Check how devices are disposed of, and whether the process is documented and witnessed.",
+        "Check whether drives were encrypted, since that changes the correct disposal method.",
+        "Check whether backups and cloud copies are included in the disposal process, not just the primary device.",
+        "Check for media in recycling and storage that was never processed at all."
+      ],
+      "defensive": [
+        "Encrypt every drive that holds sensitive data, so disposal reduces to destroying keys.",
+        "Use a documented and witnessed process for any medium that cannot be encrypted.",
+        "Cryptographically erase where the platform supports it, and record the certificate that proves it.",
+        "Include backups, cloud copies and returned equipment in the disposal process.",
+        "Prefer retaining less, because disposal is only necessary for what was kept."
+      ],
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/88/r1/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    }
+  }
+}

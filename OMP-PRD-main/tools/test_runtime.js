@@ -618,11 +618,31 @@ const $ = (d, s) => d.querySelector(s);
     ok((sjs.match(/url: '\/articles\/[a-z0-9-]+'/g) || []).length === 15, 'search index finds all 15 guide articles at /articles/<slug>');
     ok(/url: '\/articles', kw: 'blog articles[^']*guides/.test(sjs), 'Articles hub entry covers "guides" queries');
 
-    /* Sitemaps: hub listed, legacy hub gone, guide articles kept. */
+    /* Sitemaps: hub listed, legacy hub gone, every routable article present. */
     const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
     ok(!sm.includes('/guides.html</loc>'), 'sitemap.xml drops the removed /guides.html page');
     ok(sm.includes('https://oopsmypassword.web.app/articles</loc>'), 'sitemap.xml lists the Articles hub at its pretty URL');
-    ok((sm.match(/\/articles\/[a-z0-9-]+<\/loc>/g) || []).length === 15, 'sitemap.xml lists all 15 guide articles at /articles/<slug>');
+    /* Derive the routable article set from hosting config and the generated
+       pages, so publishing a new article cannot silently leave it out. */
+    const hosting = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8')).hosting;
+    const routed = (hosting.rewrites || [])
+      .map(r => ({ source: r.source, destination: r.destination }))
+      .filter(r => r.source.startsWith('/articles/'));
+    const generated = fs.readdirSync(path.join(ROOT, 'articles'))
+      .filter(f => f.endsWith('.html'))
+      .map(f => '/articles/' + f.replace(/\.html$/, ''));
+    const routable = [...new Set([...routed.map(r => r.source), ...generated])];
+    ok(routable.length > 0, 'catalogue exposes at least one routable article');
+    for (const route of routable) {
+      const target = routed.find(r => r.source === route)?.destination
+        || route.replace(/^\/articles\//, '/articles/') + '.html';
+      ok(fs.existsSync(path.join(ROOT, target.slice(1))), 'routable article has a real page: ' + route);
+      ok(sm.includes('https://oopsmypassword.web.app' + route + '</loc>'),
+         'sitemap.xml lists the routable article at ' + route);
+    }
+    const sitemapArticles = [...sm.matchAll(/<loc>https:\/\/oopsmypassword\.web\.app(\/articles\/[a-z0-9-]+)<\/loc>/g)].map(m => m[1]);
+    ok(sitemapArticles.length === routable.length,
+      'sitemap.xml lists exactly the routable articles, no more and no fewer');
     ok(!/\.html<\/loc>/.test(sm), 'sitemap.xml contains no .html implementation URLs');
   }
 

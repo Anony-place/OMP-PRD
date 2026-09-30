@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft content for Offensive Thinking and Safe Testing. Data-only.",
+  "lessons": {
+    "what-is-ethical-hacking": {
+      "overview": "Ethical hacking is not a different set of techniques. It is the same knowledge used inside a boundary somebody has explicitly agreed to. The boundary is the entire difference.",
+      "how_it_works": [
+        "The skill set is identical; what changes is whether the owner of the system has consented to the attempt.",
+        "Consent is specific: a scope defines which systems, which techniques, and which time window are allowed.",
+        "Good intent does not substitute for permission, and an intrusion that helped the owner is still an intrusion without it.",
+        "Finding a vulnerability on a system you do not own and reporting it is legitimate only under a defined disclosure route.",
+        "The person's judgement is the part that cannot be taught by tooling, and it is what this whole category is about."
+      ],
+      "history": [
+        "The term was popularised as a way to make penetration testing respectable, which it genuinely was.",
+        "Structured methodologies emerged so that testing became repeatable and auditable rather than improvised.",
+        "Bug bounty programmes turned disclosure into a paid activity, which removed some of the incentive conflict.",
+        "Regulators started to expect testing evidence, which moved it from a specialist service to a routine purchase."
+      ],
+      "real_world": [
+        "A consultant who finds a serious flaw in a system outside the agreed scope has created a legal problem, not a good story.",
+        "A researcher who probes a system hoping to be forgiven is gambling with someone else's career.",
+        "A test that stops at the first serious finding leaves the owner without a complete picture, which defeats the purpose."
+      ],
+      "what_to_look_for": [
+        "Check whether written authorisation names the specific systems, not just the organisation.",
+        "Check whether the rules of engagement are documented and understood before any testing begins.",
+        "Check whether the person authorising the test actually owns the system, or can authorise the owner to approve.",
+        "Check what happens if a test causes an outage, and whether anyone is available to make decisions during it."
+      ],
+      "defensive": [
+        "Get authorisation in writing before touching anything, and verify the scope covers each system you intend to test.",
+        "Define the rules of engagement up front: methods, time window, contacts, and stop conditions.",
+        "Test what you are authorised to test, and report what you find even when it is inconvenient.",
+        "Protect any data you encounter, and disclose it through the agreed channel rather than storing or sharing it.",
+        "Practise only on systems you own or systems built for the purpose."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-web-security-testing-guide/"
+      ]
+    },
+    "authorisation-scope-and-the-law": {
+      "overview": "Most people who cause real trouble in this field did so by assuming a permission that did not exist. Scope is not paperwork; it is the thing that decides whether your activity is legitimate.",
+      "how_it_works": [
+        "Scope should list every system, by address or domain, and every account you may use.",
+        "It should also state what you may not do, because the most damaging actions are the ones nobody wrote down as forbidden.",
+        "A time window matters, because testing during production hours has a different risk profile.",
+        "Emergency contacts and stop conditions are what turn a mistake into an incident rather than a catastrophe.",
+        "Law varies by jurisdiction: an authorisation in one country may not be valid evidence in another."
+      ],
+      "history": [
+        "The first computer intrusion laws were written for a few specific cases and did not generalise well.",
+        "As testing became commercial, contracts began to carry the authorisation that legislation did not clearly provide.",
+        "Computer misuse legislation in several jurisdictions created specific offences for unauthorised access.",
+        "Exemptions for good-faith security research were introduced in some places, and they are narrow."
+      ],
+      "real_world": [
+        "Testing a third-party hosted service that shares infrastructure with the client can be an offence against someone who never agreed.",
+        "Subdomain takeover testing that creates a resource on a shared platform can affect other customers.",
+        "Accessing data beyond what was needed to prove a finding can itself be a serious breach, even with authorisation."
+      ],
+      "what_to_look_for": [
+        "Check the scope document names targets precisely enough that you cannot be uncertain whether something is in it.",
+        "Check whether denial of service, social engineering of staff, and physical testing are explicitly excluded.",
+        "Check whether you are permitted to view, download or retain the data you encounter.",
+        "Check how disagreements about scope are resolved, and who decides during the test."
+      ],
+      "defensive": [
+        "Get a written authorisation that names systems, dates, methods and exclusions.",
+        "Confirm in writing that you may not test anything outside the named list, and treat an in-scope doubt as out of scope.",
+        "Agree an escalation contact and a stop condition before starting.",
+        "Minimise the data you access, and never retain more than the finding requires.",
+        "Keep the authorisation with your working notes, because you may need to demonstrate it later."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-web-security-testing-guide/"
+      ]
+    },
+    "reconnaissance-passive-and-active": {
+      "overview": "Reconnaissance is how you learn what you are dealing with before touching it. Most of it is legal and unremarkable, and doing it properly removes almost all of the guesswork from later phases.",
+      "how_it_works": [
+        "Passive reconnaissance uses information others have already published: records, certificates, code repositories, job adverts.",
+        "Active reconnaissance queries the target directly, which is more informative and is where scope starts to matter.",
+        "The goal of the passive phase is a list of assets, technologies, people and attack surface worth confirming.",
+        "A job advert, a public code repository or a leaked credential can tell you more than a scan will.",
+        "Attackers do exactly this, which is why the same information is your first line of defence."
+      ],
+      "history": [
+        "Reconnaissance in the early web era meant reading error pages and directory listings.",
+        "Certificate transparency logs made certificate data public, which massively increased passive discovery.",
+        "Code repositories and paste sites became a standard place to find credentials by accident.",
+        "Search engines indexing of cloud storage misconfiguration turned a single URL into a global exposure."
+      ],
+      "real_world": [
+        "An exposed cloud storage bucket is found by a search engine before any scanning is done at all.",
+        "A public repository containing a deployment file yields infrastructure names, hostnames and possibly credentials.",
+        "A job advert reveals the technology stack, and therefore which defaults to expect."
+      ],
+      "what_to_look_for": [
+        "Check what a stranger can learn about your systems without touching any of them.",
+        "Check whether certificate, domain and address records expose more infrastructure than intended.",
+        "Check whether code repositories, container images and package registries are discoverable.",
+        "Check whether current and former staff are findable, and whether that is a problem for you."
+      ],
+      "defensive": [
+        "Review what passive reconnaissance reveals about you, and remove what serves an attacker without serving you.",
+        "Remove secrets from repositories and rotate anything that was ever committed.",
+        "Register only the names you need externally, and manage records deliberately.",
+        "Run the same passive collection against yourself, so you know what an attacker sees before one does.",
+        "Publish a contact route for researchers, so a finding goes to you rather than to a forum."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "vulnerability-assessment-vs-penetration-testing": {
+      "overview": "These are different services with different goals. Confusing them produces either a report full of unexploitable findings, or a test with no coverage record.",
+      "how_it_works": [
+        "A vulnerability assessment is broad and shallow: many checks across many systems, usually automated, producing a prioritised list.",
+        "A penetration test is narrow and deep: a small number of systems examined in detail, including logic and chaining, producing evidence of impact.",
+        "The assessment tells you what might be wrong. The test tells you what is wrong and what it would cost you.",
+        "An assessment answer is roughly how many systems are affected. A test answer is whether the path actually works.",
+        "They are complementary, and a common mistake is paying for one and expecting the other."
+      ],
+      "history": [
+        "Scanning tools made automated assessment cheap, and the volume of findings became its own problem.",
+        "Organisations discovered that a list of thousands of findings was not actionable and started asking for fewer, better ones.",
+        "Penetration testing professionalised, with methodologies and reporting standards to match.",
+        "Continuous testing emerged to close the gap between a once-a-year assessment and daily change."
+      ],
+      "real_world": [
+        "A version disclosed as vulnerable on every host produces a large list and no decision, because none of it is exploitable.",
+        "An assessment that never tries chaining misses that a low-severity information leak plus a configuration default equals a full compromise.",
+        "A penetration test with no written scope cannot be compared year over year, so the trend is invisible."
+      ],
+      "what_to_look_for": [
+        "Check whether the deliverable is a list of findings or a demonstration of impact.",
+        "Check how much manual analysis each finding received, and whether the false positives were reduced.",
+        "Check whether the scope is written down, since without it you cannot tell what was not tested.",
+        "Check whether findings include a realistic attack path rather than isolated issues."
+      ],
+      "defensive": [
+        "Run broad assessment frequently and narrow testing periodically, and be honest about which one you are buying.",
+        "Require scope and methodology to be documented before work starts.",
+        "Ask for findings to be deduplicated and validated, because raw tool output is not an assessment.",
+        "Prioritise by exploitability and exposure rather than by scanner severity.",
+        "Retest the specific findings you fixed, rather than rerunning everything and re-reading a long report."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "scanners-benchmarks-and-interpreting-a-report": {
+      "overview": "A scanner tells you what matches a signature. A benchmark tells you what should be configured. Neither tells you whether your system is actually attackable, and a report of several thousand findings is usually a measurement problem rather than a security one.",
+      "how_it_works": [
+        "Scanners compare configuration and version data against a signature set, so they find what has been written down.",
+        "Benchmarks are curated configuration guidance for a platform, usually hardened defaults with justification.",
+        "A scan finding is evidence of a possible weakness, not evidence of a vulnerability, until someone confirms it.",
+        "The highest-value findings are the small number that combine with something else to create a path.",
+        "Coverage matters more than count: a scan of the wrong network tells you nothing about the right one."
+      ],
+      "history": [
+        "Network scanners were the original tool, and the Nessus model made regular scanning routine.",
+        "Web application scanners matured into the dominant source of application findings.",
+        "Configuration benchmarks were written to give administrators a defensible target rather than an opinion.",
+        "Continuous and agent-based scanning moved the model from scheduled sweeps to live visibility."
+      ],
+      "real_world": [
+        "A report of four thousand findings gets triaged to about ten, and the rest is discarded, which is a wasted exercise.",
+        "A high-severity finding on a host with no route from the internet is a lower real risk than a medium one on a public host.",
+        "A scan that only covers authenticated checks misses the misconfigurations that are actually found in the wild."
+      ],
+      "what_to_look_for": [
+        "Check whether authenticated scanning was used, since unauthenticated checks see very little.",
+        "Check whether the report distinguishes confirmed findings from informational items.",
+        "Check whether severity accounts for exposure and not only for the technical severity of the issue.",
+        "Check the scan date and whether the estate has changed since."
+      ],
+      "defensive": [
+        "Use authenticated scanning, and make the credential a managed one with read-only access where possible.",
+        "Tune the signature set to your estate so the report reflects your technology.",
+        "Convert a scan into a work queue by grouping findings by control rather than by tool.",
+        "Verify high-severity findings by hand before acting, since scanners produce false positives at every severity.",
+        "Rescan continuously and alert on the change, rather than reading a monthly report."
+      ],
+      "references": [
+        "https://www.cisecurity.org/cis-benchmarks",
+        "https://www.cisecurity.org/controls",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "exploitation-concepts-without-exploiting-anyone": {
+      "overview": "You can understand exploitation completely without running it against anything you do not own. The concepts transfer; the target does not have to be somebody else's system.",
+      "how_it_works": [
+        "Exploitation means turning a weakness into a capability, usually by controlling the instruction pointer or the decision the system makes.",
+        "Memory corruption classes differ by what they corrupt: the stack, the heap, or a pointer used as a data value.",
+        "Mitigations work by removing the primitives: no-execute pages, canaries, address randomisation and control flow integrity each close a different step.",
+        "Logic flaws need none of that machinery, which is why they survive every mitigation.",
+        "Post-exploitation is where real damage happens: credential access, discovery, and movement toward what the attacker actually wanted."
+      ],
+      "history": [
+        "Stack-based overflows were the dominant exploit class for years, and mitigations were added in response to each wave.",
+        "Heap exploitation became necessary as stack protections matured, and it is far harder to reason about.",
+        "Modern mitigations shifted towards hardware-enforced control flow, which changed rather than eliminated the problem.",
+        "Logic and configuration flaws stayed constant throughout, which is a useful corrective to the focus on memory safety."
+      ],
+      "real_world": [
+        "A heap exploitation chain requires several working primitives, so an incomplete mitigation is a real and lasting gap.",
+        "Memory-safe languages remove a whole class of bug, but logic flaws in the same code are unaffected.",
+        "Most successful intrusions do not need memory corruption at all; they use a default credential or a misconfigured permission."
+      ],
+      "what_to_look_for": [
+        "Check whether a memory-safe language is used for the components that handle untrusted input.",
+        "Check which exploit mitigations are actually enabled, and on which components.",
+        "Check whether the application has logic that assumes input is correct, since that is the class mitigations do not cover.",
+        "Check whether any component is a native library without those protections."
+      ],
+      "defensive": [
+        "Use memory-safe languages wherever untrusted input is processed, and treat native code as the exception that needs review.",
+        "Enable every available mitigation on native components: no-execute, canaries, address randomisation and control flow integrity.",
+        "Fuzz the components that parse untrusted input, since memory safety does not cover logic errors.",
+        "Review business logic separately, because no mitigation addresses a missing check.",
+        "Practise exploitation only in a lab you control, using deliberately vulnerable software built for it."
+      ],
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://attack.mitre.org/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "bug-bounty-and-responsible-disclosure": {
+      "overview": "A bug bounty pays for findings that would otherwise be a gamble. Responsible disclosure is the same activity without the payment. Both are legitimate, and both depend entirely on a defined safe harbour.",
+      "how_it_works": [
+        "A programme states what is in scope, what is out of scope, and what is prohibited, usually including denial of service and social engineering of staff.",
+        "Safe harbour is the promise that good-faith research will not be pursued, and without it a researcher is gambling.",
+        "Severity is set by the programme, usually based on impact rather than on how clever the technique was.",
+        "A report needs reproduction steps, impact, and a suggested remediation, which is what makes it actionable.",
+        "Duplicates and out-of-scope submissions are common, so expectations should be set before the work starts."
+      ],
+      "history": [
+        "Researchers found vulnerabilities first and had no formal route, so disclosure was public and often disruptive.",
+        "Early programmes at large vendors created both a payment model and a written safe harbour.",
+        "Platforms aggregated many programmes, which made it possible to hunt across a wide scope as routine work.",
+        "Programmes matured to publish response times and scope, which is what makes them usable by outsiders."
+      ],
+      "real_world": [
+        "A researcher who tests beyond the stated scope, or causes an outage, can lose the safe harbour protection and face legal action.",
+        "A report without demonstrated impact is often triaged low, even when the underlying bug is real.",
+        "A programme that never responds teaches researchers to publish instead, which is worse for everyone."
+      ],
+      "what_to_look_for": [
+        "Check the scope list before testing anything, and treat anything not named as excluded.",
+        "Check the prohibited actions, which usually include denial of service and automated scanning outside a rate limit.",
+        "Check whether the programme has an explicit safe harbour and a disclosed response time.",
+        "Check how severity is determined, so you know what outcome to aim for."
+      ],
+      "defensive": [
+        "Publish a programme or at least a security contact and a safe harbour, even if you do not pay bounties.",
+        "State scope and exclusions explicitly, since ambiguity is what causes most disputes.",
+        "Commit to a response time, and meet it, because silence is what pushes researchers to publish.",
+        "Run a triage process that separates impact from novelty, so researchers optimise for the right thing.",
+        "Credit reporters, which is a strong incentive for good behaviour and costs very little."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "safe-practice-lab-environments-and-tooling-hygiene": {
+      "overview": "Everything you want to practise on exists as a deliberately vulnerable system you can run yourself. Practising on anything else is both unsafe and, for the skill, less useful.",
+      "how_it_works": [
+        "Deliberately vulnerable systems exist to be broken, and they are built so that breaking them is safe and repeatable.",
+        "Isolating the lab on a host-only or internal network means a mistake cannot reach anything real.",
+        "Snapshots let you reset in seconds, which removes the reason people keep practising on live systems.",
+        "The tools you install for testing are themselves an attack surface, so they are worth handling carefully.",
+        "Anything you capture in a lab is still real evidence, so treat lab data as if it were sensitive."
+      ],
+      "history": [
+        "Training environments were once assembled by hand from deliberately old software, which worked and was painful.",
+        "Prebuilt vulnerable systems made it possible to start in minutes rather than days.",
+        "Virtualisation and container platforms made resetting an environment nearly free.",
+        "Current practice increasingly uses infrastructure-as-code so a lab is described rather than assembled."
+      ],
+      "real_world": [
+        "A test tool installed with default credentials is itself a route into the machine it runs on.",
+        "A lab with default network bridging can reach the real network the moment a mistake is made.",
+        "Captured credentials and tokens from a lab get reused, because they look like ordinary credentials."
+      ],
+      "what_to_look_for": [
+        "Check whether the lab is isolated from any network you care about, and verify rather than assume.",
+        "Check whether the test tooling is from a trusted source and is kept current.",
+        "Check whether you have a way to reset quickly, because time pressure causes mistakes.",
+        "Check that you know which of your own accounts and credentials you are using in the lab."
+      ],
+      "defensive": [
+        "Run labs on a host-only or dedicated internal network, with no route to production.",
+        "Snapshot before each session so you can reset instead of trying to undo damage.",
+        "Download tooling only from the official source, verify what you run, and keep it updated.",
+        "Use separate, throwaway credentials inside the lab, and never reuse a real one.",
+        "Document the lab setup so you can rebuild it, and so the next person does not rebuild it badly."
+      ],
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "from-finding-to-fixing-writing-a-usable-report": {
+      "overview": "A finding nobody can act on is a finding that will not be fixed. The report is the deliverable, and its quality matters more than the sophistication of how the issue was found.",
+      "how_it_works": [
+        "A usable finding states the impact in the owner's terms, not in the researcher's technique.",
+        "Reproduction has to be reliable and quick, because the first person to verify it decides whether it gets fixed.",
+        "Evidence should show the problem occurred, not merely that a scanner thought it might.",
+        "A specific remediation is worth more than a general principle, because the owner has to decide what to change.",
+        "Severity should be argued from impact and exposure, and the argument should be visible in the report."
+      ],
+      "history": [
+        "Early penetration test reports were long narratives, which read well and changed very little.",
+        "Standardised report formats emerged so that findings could be tracked to closure across teams.",
+        "The industry moved toward a common weakness classification, which made severity comparable between tools and reports.",
+        "Bug bounty platforms imposed short structured templates, which is why most modern reports are structured."
+      ],
+      "real_world": [
+        "A report with twenty pages of narrative and no reproduction steps gets closed as unverifiable.",
+        "A one-page report with a clear impact statement and a specific fix gets fixed.",
+        "A severity argument based on scanner rating alone is easily overruled by a team that knows their own exposure."
+      ],
+      "what_to_look_for": [
+        "Check whether every finding has reproducible steps that a sceptical person can follow.",
+        "Check whether impact is stated in business terms rather than only in technical ones.",
+        "Check whether the recommendation is specific enough to be turned into a change.",
+        "Check whether the severity reflects this environment's exposure, not just the issue in the abstract."
+      ],
+      "defensive": [
+        "Track findings in one place with an owner and a due date, and review open ones regularly.",
+        "Retest what you fixed and close on evidence rather than on the developer's word.",
+        "Write the report so a busy person can act in five minutes: summary, impact, reproduction, fix.",
+        "Feed recurring findings back into code review and pipeline checks so the category does not return.",
+        "Accept that not everything gets fixed, and record the accepted risk explicitly rather than silently."
+      ],
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    }
+  }
+}

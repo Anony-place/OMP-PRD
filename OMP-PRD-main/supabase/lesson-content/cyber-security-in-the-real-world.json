@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft content for Cyber Security in the Real World. Data-only.",
+  "lessons": {
+    "threat-landscape-today": {
+      "overview": "The threat landscape is not one thing. What matters for you depends on your sector, your size and what you are worth, and the most useful question is which of the common patterns is actually aimed at organisations like yours.",
+      "how_it_works": [
+        "Ransomware remains the most visible cause of disruption, and the exfiltration-first model is now the norm.",
+        "Initial access is usually a person, a default credential or an unpatched internet-facing service, not a novel technique.",
+        "Command and control increasingly blends into normal traffic, which makes network blocking alone insufficient.",
+        "Supply chain compromise is lower frequency but very high impact, because trust is extended to whoever you depend on.",
+        "Most organisations are not targeted by name; they are reached because they are exposed, which means exposure is the thing to fix."
+      ],
+      "history": [
+        "Mass indiscriminate malware made volume the main problem, and it largely peaked.",
+        "Organised criminal groups emerged, running ransomware and initial access as a service business.",
+        "Extortion shifted to include the data itself, which changed the leverage entirely.",
+        "Current activity combines all of the above, and the defensive implication is that containment and recovery matter as much as prevention."
+      ],
+      "real_world": [
+        "An unpatched internet-facing appliance is compromised within days of appearing, routinely and without targeting.",
+        "A criminal affiliate buys access to one organisation and reuses it across many others in the same sector.",
+        "An organisation that can rebuild quickly from clean backups negotiates from a position that most never reach."
+      ],
+      "what_to_look_for": [
+        "Check which of the common intrusion paths are open for you: exposed services, default credentials, unmanaged devices, email.",
+        "Check whether your backups are reachable with the credentials production uses.",
+        "Check how long it would take to rebuild a core system, since that number decides the outcome more than prevention does.",
+        "Check what your sector is specifically targeted for, since it changes the priority order."
+      ],
+      "defensive": [
+        "Remove internet exposure that serves no purpose, which removes the most common entry point at zero cost.",
+        "Monitor the actively exploited catalogue against your actual estate, including what is buried in dependencies.",
+        "Assume exfiltration happened, and design backups on the assumption the attacker will reach them too.",
+        "Segment so a single compromised account does not reach everything.",
+        "Rehearse recovery, because response time is the variable you still control when everything else has failed."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "https://attack.mitre.org/"
+      ]
+    },
+    "standards-and-frameworks": {
+      "overview": "Frameworks exist to stop you inventing your own vocabulary. The honest position is that none of them is the answer, and that using one properly beats knowing several superficially.",
+      "how_it_works": [
+        "The cybersecurity framework is organised as govern, identify, protect, detect, respond and recover, and it is deliberately outcome-based rather than control-based.",
+        "The centre for Informed Security controls give a prioritised, tiered set of concrete safeguards with implementation detail.",
+        "The international standard is certifiable and is what most regulated and supplier-assessed organisations are held to.",
+        "A service organisation control report is an attestation against trust services criteria, not a certification of security.",
+        "Frameworks overlap heavily; the useful move is to choose one as the primary structure and map the others into it."
+      ],
+      "history": [
+        "The cybersecurity framework began as a response to the fragmentation of American critical infrastructure regulation.",
+        "Its second version added governance explicitly, acknowledging that most risk is not technical.",
+        "The centre for informed security controls moved to tiered safeguards, which made prioritisation explicit.",
+        "Certification pressure drove adoption more than practical utility did, which is a fair criticism of several of them."
+      ],
+      "real_world": [
+        "A supplier questionnaire asks for one framework, and answering it in the wrong vocabulary costs a week each time.",
+        "An audit against a tiered control set produces a short, prioritised list, which is far more actionable than a generic assessment.",
+        "Adopting three frameworks fully is not possible; adopting one and mapping the others is."
+      ],
+      "what_to_look_for": [
+        "Check whether one framework is the primary language your reporting and audits already use.",
+        "Check whether the framework version is current, since the frameworks themselves have changed materially.",
+        "Check whether the controls you selected are actually implemented and verified, rather than documented.",
+        "Check how you will evidence the controls, since unevidenced controls do not survive an assessment."
+      ],
+      "defensive": [
+        "Pick one framework as the spine of your programme and map everything else into it.",
+        "Use the tiered approach where it exists, so effort goes to the controls that reduce the most risk first.",
+        "Implement a control fully rather than documenting many partially.",
+        "Verify controls continuously rather than at audit time, since unverified controls are assumptions.",
+        "Keep evidence as a by-product of the work rather than as a separate documentation exercise."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.iso.org/isoiec-27001-information-security.html"
+      ]
+    },
+    "compliance-and-privacy-law": {
+      "overview": "Compliance is a floor, not a ceiling. It tells you what you must do and by when, which is genuinely useful, and it tells you nothing about whether you are actually secure.",
+      "how_it_works": [
+        "Obligations come from law, from contracts, and from sector regulators, and they overlap without agreeing.",
+        "Privacy law is built around a lawful basis for processing, a notice obligation and individual rights, rather than around security controls.",
+        "Security obligations are usually about process: what you must be able to show, and how quickly you must respond.",
+        "Cross-border transfers have their own rules in several jurisdictions, which affects any global service.",
+        "Contractual requirements from customers are frequently stricter than any legal obligation, and are the ones you will actually be held to."
+      ],
+      "history": [
+        "Early regulation was sector-specific and focused on record keeping rather than on technology.",
+        "Broader privacy regulation introduced the concept of a lawful basis and made minimisation an obligation.",
+        "Breach notification rules put a clock on the response process, which changed how incident response is written.",
+        "Current enforcement is increasingly about what you did versus what you documented, which makes the documentation the evidence."
+      ],
+      "real_world": [
+        "An organisation is fully compliant with every control and still suffers a breach, because compliance never claimed otherwise.",
+        "A contractual security questionnaire from a large customer imposes requirements the law does not.",
+        "A breach notification deadline passes because the decision to notify was never assigned to a person."
+      ],
+      "what_to_look_for": [
+        "Check which regulations actually apply to you by size, sector and location, rather than assuming.",
+        "Check your notification obligations and their clocks, and who owns the decision.",
+        "Check what your customer contracts require, since they are usually the strictest thing you are held to.",
+        "Check whether you can evidence your controls to a standard an auditor would accept."
+      ],
+      "defensive": [
+        "Maintain a short, accurate record of which obligations apply and why, reviewed when you change jurisdiction or sector.",
+        "Build the notification decision path into the incident playbook with a named owner.",
+        "Treat contractual security requirements as the baseline to design against, since they are the strictest and most enforced.",
+        "Keep evidence generation as part of the normal control operation.",
+        "Use compliance to structure the work honestly, and be explicit with leadership about what it does not cover."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.edpb.europa.eu/sme-data-protection-guide/data-protection-basics_en",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "risk-likelihood-impact-and-management": {
+      "overview": "Risk is the only currency in which a security decision gets made. The point of the exercise is not to compute a number; it is to make the comparison between risks explicit enough to argue about.",
+      "how_it_works": [
+        "Risk is likelihood multiplied by impact, and both terms are estimates that reflect your own organisation, not an abstract score.",
+        "Impact has several dimensions: money, customers, regulatory, and personal, and they rarely rank the same way.",
+        "A risk register is only useful if it drives a decision, and most do not because nothing is ever retired from them.",
+        "Inherent risk is what exists before controls; residual risk is what remains after them, and only residual matters for the decision.",
+        "Risk acceptance is a legitimate outcome and should be recorded by a named person, not left implicit."
+      ],
+      "history": [
+        "Risk registers arrived as compliance artefacts in regulated industries.",
+        "Quantitative approaches promised precise numbers and mostly produced false precision, and largely lost favour.",
+        "Current practice leans towards qualitative, comparative scales used consistently rather than numerical ones.",
+        "Risk appetite, agreed at board level, is what makes the individual decisions easier."
+      ],
+      "real_world": [
+        "A register with two thousand entries and no prioritisation is a document, not a management tool.",
+        "A control chosen because it was cheap rather than because it reduced risk fills the register without reducing anything.",
+        "A risk accepted silently by one person is invisible to everyone who later needs to know."
+      ],
+      "what_to_look_for": [
+        "Check whether risk is expressed in your own environment rather than generic scores.",
+        "Check whether anything on the register has been removed, which tells you whether it is a live document.",
+        "Check whether risk owners are named individuals rather than departments.",
+        "Check whether the top risks are reflected in current investment decisions."
+      ],
+      "defensive": [
+        "Keep the register short enough that it can be read, and rank it explicitly.",
+        "Use one consistent scale and apply it the same way every time, since comparability matters more than precision.",
+        "Name an owner for each risk and record who accepted it and when.",
+        "Review the register on a schedule and remove anything that is no longer a risk.",
+        "Report the top few risks and the decisions taken on them, rather than the whole document."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "home-and-small-business-security-program": {
+      "overview": "Most of the serious attacks on small organisations and home setups are opportunistic rather than targeted. A small number of habits removes most of that exposure, and the habits are not expensive.",
+      "how_it_works": [
+        "Small environments have the same weaknesses as large ones and none of the defences, so defaults are the real risk.",
+        "Automatic updates on everything reachable from the internet is the single highest-value action.",
+        "Administrative separation matters even at home, because it stops a compromised everyday account reaching everything.",
+        "Backups on a separate medium, tested occasionally, are what distinguish a bad day from a bad month.",
+        "The people who run small environments are also the people who must respond to an incident, which is a capacity problem."
+      ],
+      "history": [
+        "Home and small business computing was consumer-grade and assumed the router was the boundary.",
+        "Cloud services moved most of the estate off-premises, which removed the boundary but added account risk.",
+        "Ransomware shifted from targeting organisations to targeting whoever is reachable, including home machines.",
+        "Remote work made home networks business networks, which removed the distinction entirely."
+      ],
+      "real_world": [
+        "An unpatched router or camera is compromised and used to reach devices inside, which is routine and automated.",
+        "A reused password on a service that holds your email is the most valuable credential you own.",
+        "A backup on the same device as the original protects against nothing except accidental deletion."
+      ],
+      "what_to_look_for": [
+        "Check what is reachable from the internet, including remote access tools you may have installed and forgotten.",
+        "Check whether updates are automatic on the router, cameras, laptops and phones.",
+        "Check whether the account that manages everything is separate from the everyday account.",
+        "Check whether backups are off the device and whether you have ever restored one."
+      ],
+      "defensive": [
+        "Turn on automatic updates everywhere, and prioritise the devices that face the internet.",
+        "Use a password manager and a separate, generated password for every account, with multi-factor on email first.",
+        "Do not expose remote access to anything; use a brokered service that does not require inbound connections.",
+        "Keep two backups, one of them offline, and test a restore once a year.",
+        "Write down what to do first if something goes wrong, so you are not deciding it while panicking."
+      ],
+      "references": [
+        "https://www.cisa.gov/secure-our-world",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "careers-and-specialisations": {
+      "overview": "Security is not one job. It splits into technical specialisms, into defensive and offensive work, and into the part of the job that is deciding what to do about it. Knowing which of those you are is more useful than a list of job titles.",
+      "how_it_works": [
+        "The main technical families are security operations, security engineering, application security, and governance and risk.",
+        "Offensive work exists as a legitimate career, but the entry routes and the required judgement are different from defensive work.",
+        "Most roles are a mixture of technical and non-technical, and the non-technical half is what determines whether the technical half gets used.",
+        "The specialisms are converging: cloud, identity and supply chain have blurred the boundaries between them.",
+        "Portability comes from fundamentals and from a verifiable way of demonstrating you have them."
+      ],
+      "history": [
+        "The profession grew out of system administration and network engineering, and that grounding still shows.",
+        "Consulting and audit created a separate non-technical track that never had a technical equivalent.",
+        "Cloud platforms moved the centre of gravity from the data centre to the identity provider.",
+        "Current hiring increasingly asks for demonstrable hands-on work, and less for credentials alone."
+      ],
+      "real_world": [
+        "A generalist who can read code, configure a platform and write a policy is more employable than a narrow specialist in one of them.",
+        "A technical finding nobody communicates does not change anything, and that is the most common reason good security work is undervalued.",
+        "Someone who only has certification knowledge struggles once the environment does not match the exam."
+      ],
+      "what_to_look_for": [
+        "Check whether the role involves the work you would rather do, since titles vary and descriptions often do not.",
+        "Check whether you would be expected to communicate with non-technical stakeholders, because most roles are.",
+        "Check whether the team actually has the authority to fix what it finds.",
+        "Check whether the role has a path, or whether it is the same job with more years."
+      ],
+      "defensive": [
+        "Learn the fundamentals properly: operating systems, networking, and how identity actually works.",
+        "Demonstrate capability with something you built, broke and explained, rather than with a list of credentials.",
+        "Practise writing: a clear finding or a short design note is a genuine differentiator.",
+        "Get comfortable with the business language, since you will need to prioritise in those terms.",
+        "Pick a specialism deliberately after a broad base, rather than specialising before you know what the work involves."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://attack.mitre.org/"
+      ]
+    },
+    "certifications-and-how-to-choose": {
+      "overview": "Certifications help in some hiring contexts and hurt in others. The useful question is not which is best, but which one your target employers actually ask for, because that varies sharply by role and by country.",
+      "how_it_works": [
+        "Some certifications are genuinely requirements: government clearance, contract bids, and regulated roles often name them explicitly.",
+        "Others are signals, and are read as evidence of effort rather than of capability.",
+        "A certification cannot demonstrate judgement, which is the thing the profession actually selects for.",
+        "Practical assessments test more than multiple choice, and generally carry more weight with hiring managers.",
+        "An expired certificate is worse than none in some procurement contexts, so the maintenance cost is part of the price."
+      ],
+      "history": [
+        "Vendor-neutral entry certifications created a floor and made the field accessible without a degree.",
+        "Hands-on offensive certifications emerged to address the gap between knowing about exploitation and being able to do it.",
+        "Cloud platform certifications grew quickly with the platforms themselves.",
+        "The market consolidated around a smaller set of widely recognised names, which helped employers and hurt diversity of route."
+      ],
+      "real_world": [
+        "A consultant bidding on a government contract may be unable to proceed without a named certification.",
+        "A senior engineering candidate is usually judged on evidence of work rather than on a certificate.",
+        "A certification obtained without ever using the material fails the first time the environment differs from the exam."
+      ],
+      "what_to_look_for": [
+        "Check whether the role, the contract or the regulation names the certification explicitly.",
+        "Check what the exam actually tests, and whether it resembles the work you would be doing.",
+        "Check the renewal and continuing-education requirements, since they are a real ongoing cost.",
+        "Check how many people in the roles you want hold it, since a rare certificate is a weak signal."
+      ],
+      "defensive": [
+        "Read the job description of the role you want and take the names from there rather than from a ranking.",
+        "Use certifications to fill a specific gap, not as the whole of your preparation.",
+        "Pair any certification with hands-on evidence, because the two together are much stronger than either alone.",
+        "Factor the renewal cost into the decision before you start, not after.",
+        "Be honest in interviews about what the certificate did and did not teach you."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.iso.org/isoiec-27001-information-security.html",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "home-lab-and-safe-practice": {
+      "overview": "A home lab is where security understanding actually forms. It is also where care is needed, because a badly isolated lab is a real risk to the network it sits on.",
+      "how_it_works": [
+        "The lab needs deliberately vulnerable targets, and they are built for exactly this and are safe by design when isolated.",
+        "Isolation is the whole point: host-only networking with no route to anything you care about.",
+        "Snapshots and templates make reset instant, which removes the temptation to test on something real.",
+        "Attack simulation on a lab host is a genuinely useful way to practise detection and response as well as offence.",
+        "Documentation of the lab is part of the lab, because an undocumented lab cannot be rebuilt or improved."
+      ],
+      "history": [
+        "Labs were assembled by hand from old software and an isolated network segment, which was effective and slow.",
+        "Prebuilt vulnerable applications and environments removed most of the setup cost.",
+        "Virtualisation on ordinary laptops made it possible to run several systems at once.",
+        "Current practice increasingly defines the lab as code, so it is reproducible rather than bespoke."
+      ],
+      "real_world": [
+        "A virtual machine with default bridged networking can reach the home network, which defeats the isolation entirely.",
+        "A lab machine running as administrator makes any mistake on it far worse.",
+        "A lab that is never reset accumulates state that makes later practice unreliable and misleading."
+      ],
+      "what_to_look_for": [
+        "Check whether the lab network can route to your real network, and verify rather than trust the default.",
+        "Check what privileges the lab host account has.",
+        "Check whether you can reset quickly, and how long a rebuild takes.",
+        "Check whether the targets you are using are still maintained, since old images accumulate known issues."
+      ],
+      "defensive": [
+        "Use host-only or a dedicated internal network, and confirm isolation from inside the lab.",
+        "Run the lab host as a standard, unprivileged user.",
+        "Snapshot before each session and keep at least one clean template.",
+        "Take the lab offline entirely when it is not in use, which removes the risk rather than managing it.",
+        "Write down how to rebuild it, so the lab survives a machine failure and stays trustworthy."
+      ],
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "where-this-category-ends": {
+      "overview": "This is the end of the fundamentals, not the end of the subject. What you do next depends on which part of it you enjoyed, and that is a better signal than any roadmap.",
+      "how_it_works": [
+        "The fundamentals give you the vocabulary to read a finding, judge a risk and argue for a control without help.",
+        "Every specialism here assumes them, which is why they are worth learning before choosing.",
+        "The next step is depth in one area plus continued breadth, because the specialisms keep recombining.",
+        "Keeping a record of what you actually built and fixed is worth more than any of the resources you consume.",
+        "Security changes quickly enough that the habit of learning is the part that has to last."
+      ],
+      "history": [
+        "The field has repeatedly split into new specialisms and then recombined, so a chosen path is rarely permanent.",
+        "Cloud, identity and supply chain have merged several traditional boundaries within a few years.",
+        "Certification structures have changed less than the underlying work has.",
+        "The fundamentals have stayed remarkably stable even as everything around them has moved."
+      ],
+      "real_world": [
+        "Someone who enjoyed the systems lessons goes towards security engineering; someone who enjoyed the risk lessons goes towards governance.",
+        "A person who found the offensive material most interesting often ends up in detection engineering, which surprises them.",
+        "The most valuable next step for most people is applying one thing properly rather than sampling everything."
+      ],
+      "what_to_look_for": [
+        "Notice which lessons you wanted to keep reading, because that is the most reliable signal available to you.",
+        "Check whether you can explain a real finding in your own environment now, which is the practical test of this material.",
+        "Check whether you can say what you would do differently in your own systems, since that is the point of it.",
+        "Check whether you have something you built, since that is what makes the next step possible."
+      ],
+      "defensive": [
+        "Go deep in the area that held your attention, and keep a little breadth everywhere else.",
+        "Apply one thing properly: harden a system, run a test, or write a plan, and finish it.",
+        "Keep a written record of what you did and what happened, since that record is what evidences capability.",
+        "Follow one authoritative source per topic rather than many shallow ones.",
+        "Come back to these fundamentals whenever a specialism starts feeling unmoored, because they are the reference frame."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://owasp.org/www-project-web-security-testing-guide/",
+        "https://www.cisa.gov/secure-our-world"
+      ]
+    }
+  }
+}

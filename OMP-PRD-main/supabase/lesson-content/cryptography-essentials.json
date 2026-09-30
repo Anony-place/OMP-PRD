@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft lesson content for the Cryptography Essentials module. Educational and defensive in framing. Data-only, no HTML.",
+  "lessons": {
+    "what-cryptography-promises": {
+      "overview": "Cryptography reliably does a few specific things and reliably does not do the others. Most real cryptographic failures come from asking it for something it was never designed to provide.",
+      "how_it_works": [
+        "Encryption provides confidentiality, and it does so only for readers holding the key.",
+        "A cryptographic hash provides integrity by making any change detectable, and it is a one-way function rather than an encryption.",
+        "A digital signature provides authenticity and non-repudiation, using a private key to sign and a public key to verify.",
+        "A key agreement protocol lets two parties derive a shared secret over a channel that may already be observed, which is what TLS relies on.",
+        "None of these provide correctness of the input, safety of the software using them, or proof that the person holding a key deserves it."
+      ],
+      "history": [
+        "Classical cryptography was used for centuries before computing, and was traditionally about concealing a message rather than proving anything.",
+        "The introduction of public-key cryptography in the 1970s changed what was possible, because key distribution no longer required a private channel.",
+        "Formal security proofs arrived in the 1990s, replacing an assumption that a scheme was secure because nobody had broken it.",
+        "Practical guidance is now published as standards that specify exactly which construction to use, because the number of insecure choices is very large."
+      ],
+      "real_world": [
+        "An encrypted connection is still wrong if the software on either end has a flaw, since cryptography only protects the channel.",
+        "A correctly signed message does not mean the action requested is safe, only that it genuinely came from the claimed sender.",
+        "A hash matching proves the file is unchanged since hashing, not that the file is safe to run."
+      ],
+      "what_to_look_for": [
+        "Decide which property you actually need: confidentiality, integrity, authenticity, or all three.",
+        "Check that a construction is being used for the purpose it was designed for rather than a similar-sounding one.",
+        "Notice when a random value is reused, since that breaks several otherwise-sound schemes.",
+        "Treat any custom or home-grown cryptographic design as a serious finding."
+      ],
+      "defensive": [
+        "Use well-reviewed, standard constructions rather than designing your own.",
+        "Prefer high-level libraries over interfaces that expose raw choices you have to get right.",
+        "State the security goal in a document, so a reviewer can tell whether the design meets it.",
+        "Budget time for algorithm migration, since old schemes stop being safe long before they stop working."
+      ],
+      "references": [
+        "https://csrc.nist.gov/publications/detail/sp/800-131a/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.rfc-editor.org/rfc/rfc8446"
+      ]
+    },
+    "symmetric-encryption-and-key-distribution": {
+      "overview": "Symmetric encryption uses one shared key to both encrypt and decrypt. It is fast and strong, which is why nearly all data encryption is symmetric. The hard part has always been sharing the key safely.",
+      "how_it_works": [
+        "The same key encrypts and decrypts, so both parties must hold it, and anyone holding it can both read and forge.",
+        "Modern authenticated encryption combines a cipher and a MAC, so a message is both confidential and tamper-evident in one construction.",
+        "Nonce or initialisation vector values must never repeat under the same key, because repetition leaks information.",
+        "Counter mode is efficient and parallelisable, which is why it is widely used once the nonce is handled correctly.",
+        "Key distribution is solved today by public-key cryptography: the shared key is negotiated, and the symmetric key does the actual work."
+      ],
+      "history": [
+        "Block ciphers replaced stream ciphers and hand-rolled designs once block ciphers proved fast enough for most uses.",
+        "Stream ciphers such as RC4 were ubiquitous for decades and were deprecated once practical attacks surfaced.",
+        "The transition to authenticated encryption fixed a long-standing pattern where encryption and integrity were bolted together and often one was missing.",
+        "Nonce misuse in widely used libraries has caused repeated real breaches, which is why the risk is now treated as a design failure rather than a bug."
+      ],
+      "real_world": [
+        "A nonce reused with the same key in a widely used library made a large amount of traffic decryptable, and it took years to rotate everything.",
+        "A scheme that encrypts but does not authenticate lets an attacker modify ciphertext, so an application must verify before acting on it.",
+        "Storing a symmetric key next to the data it protects provides no real confidentiality if the same storage is compromised."
+      ],
+      "what_to_look_for": [
+        "Check whether the scheme provides integrity as well as confidentiality, because one alone is rarely enough.",
+        "Look for nonce or initialisation vector generation and confirm it cannot repeat.",
+        "Check where the key is stored and who can read it.",
+        "Notice any custom cipher or mode, which is a finding on its own."
+      ],
+      "defensive": [
+        "Use an authenticated encryption mode from a standard library rather than combining primitives yourself.",
+        "Derive keys with a key derivation function, not by hashing a passphrase directly.",
+        "Never reuse a nonce with the same key, and prefer constructions that fail safely if one might repeat.",
+        "Store keys in a dedicated secret store with restricted access, and separate them from the data they protect.",
+        "Plan for key rotation before you need it, and confirm the rotated key actually replaces the old one."
+      ],
+      "references": [
+        "https://csrc.nist.gov/publications/detail/sp/800-38a/final",
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "hashing-salting-password-storage": {
+      "overview": "Password storage is the single most consequential use of hashing. Storing a fast hash is equivalent to storing the password, because an attacker can simply try guesses as fast as the hardware allows.",
+      "how_it_works": [
+        "A general-purpose hash such as SHA-256 is designed to be fast, which is exactly wrong for password storage.",
+        "A password hash is deliberately slow and memory-hard, so each guess costs the attacker real time and memory.",
+        "A unique salt per password means two users with the same password get different stored values, and precomputed tables cannot be reused.",
+        "The salt is not secret and is stored alongside the hash, so it only needs to be unique rather than hidden.",
+        "Password hashing is deliberately not reversible: verifying a password means hashing the candidate and comparing."
+      ],
+      "history": [
+        "Passwords were once stored in plaintext, and later with unsalted fast hashes, so one breach cracked every account at once.",
+        "Per-user salts fixed rainbow tables but did nothing against a fast hash, since guesses were still cheap.",
+        "Memory-hard algorithms such as Argon2, scrypt and bcrypt were introduced to make parallel and hardware attacks expensive.",
+        "Tuning the work factor is now expected, since a fixed cost becomes cheap as hardware improves."
+      ],
+      "real_world": [
+        "A leaked database hashed with a fast algorithm has historically been cracked within hours on consumer hardware.",
+        "A single reused password across services is what turns one database leak into many account compromises.",
+        "A hard-coded work factor from years ago is now far too cheap, even though nothing in the code changed."
+      ],
+      "what_to_look_for": [
+        "Identify the algorithm and confirm it is intended for passwords rather than general use.",
+        "Check that each user has a unique salt.",
+        "Check whether the work factor is set explicitly and is appropriate for current hardware.",
+        "Notice any password policy that pushes people toward short predictable patterns rather than long unique ones."
+      ],
+      "defensive": [
+        "Use a memory-hard password hash with a unique per-user salt and a tuned work factor.",
+        "Never use a general-purpose hash for passwords, even with a salt, because the speed is the problem.",
+        "Require multi-factor authentication so a cracked password is not sufficient on its own.",
+        "Check new and changed passwords against a breached-password list.",
+        "Re-evaluate the work factor periodically, since hardware improves faster than code changes."
+      ],
+      "references": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://owasp.org/www-project-top-ten/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "public-key-cryptography-and-key-exchange": {
+      "overview": "Public-key cryptography uses a mathematically linked pair of keys: one that can be published and one that cannot. It solved the key distribution problem that had limited symmetric encryption for decades.",
+      "how_it_works": [
+        "Each user holds a private key that stays with them and a public key that anyone can have.",
+        "Data encrypted to your public key can only be decrypted with your private key.",
+        "A signature created with your private key can be verified by anyone holding your public key.",
+        "A key agreement protocol such as Diffie-Hellman lets two parties derive one shared secret over an observed channel, without ever sending the secret.",
+        "The security rests on a mathematical problem being hard in one direction and easy in the other, which is why only reviewed curves and parameters are acceptable."
+      ],
+      "history": [
+        "Public-key ideas appeared in classified work in the 1970s and were published by Diffie, Hellman and Rivest.",
+        "RSA became the dominant scheme for both encryption and signatures, and for a long time was also used with small parameters by mistake.",
+        "Elliptic-curve schemes offer equivalent strength with much smaller keys, which reduced handshake cost and is now the default in TLS.",
+        "Post-quantum schemes have been standardised for the future, because an adversary can record traffic today and decrypt it later."
+      ],
+      "real_world": [
+        "A key exchange with a non-standard curve removes the assumption that discrete logarithms are hard, which can let an attacker recover the shared secret.",
+        "Traffic captured today can be decrypted in future if the algorithm used is broken later, which is why harvest-now-decrypt-later is a real concern.",
+        "An implementation that accepts any offered parameter can be coerced into choosing a weak one."
+      ],
+      "what_to_look_for": [
+        "Confirm only standard curves and standard parameter sizes are accepted, with no negotiation downgrade path.",
+        "Check that keys are generated with a good random source rather than derived from predictable values.",
+        "Notice whether forward secrecy is claimed, since it decides whether a later key compromise exposes old traffic.",
+        "Check that key validation actually happens, since an unauthenticated handshake has no identity to trust."
+      ],
+      "defensive": [
+        "Use well-reviewed algorithms from a maintained library, and avoid implementing the mathematics yourself.",
+        "Enable forward secrecy, commonly called ephemeral key exchange, so past traffic is not exposed by a later key theft.",
+        "Pin the set of acceptable parameters in configuration rather than trusting the peer to choose.",
+        "Plan a migration path to post-quantum key exchange for long-lived sensitive traffic.",
+        "Validate peer keys against something you already trust rather than accepting whatever is presented."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "signatures-certificates-and-pki": {
+      "overview": "A digital signature proves a key holder authorised a specific piece of data. A certificate binds an identity to a public key, and the public key infrastructure is the chain of trust that says who is allowed to issue those certificates.",
+      "how_it_works": [
+        "Signing hashes the data and encrypts the hash with a private key, so the signature is bound to that exact content.",
+        "Verification uses the public key to recover the signed hash and compares it with a fresh hash of the received data.",
+        "A certificate contains a public key, an identity, and a signature from an issuer, so a relying party can check who vouched for the key.",
+        "A trust store holds the roots the client is willing to accept, and the chain from leaf to root is what makes an untrusted certificate acceptable.",
+        "Validation checks chain, dates, permitted uses and revocation, and a client that skips a step gains nothing from the scheme."
+      ],
+      "history": [
+        "Certificates were introduced with the public web because there was no way to know whom a public key belonged to.",
+        "Root certificates distributed with operating systems and browsers became the anchor of trust, and their compromise has repeatedly broken trust worldwide.",
+        "Certificate revocation has always been awkward, because a revoked certificate is a small amount of signed data that must be distributed reliably.",
+        "Certificate transparency was introduced to make issuance publicly auditable, so a mis-issued certificate can be spotted even before it is used."
+      ],
+      "real_world": [
+        "A certificate issued to the wrong name can let an impersonating server pass validation, which is why name checking is essential.",
+        "A device clock that is far out of step makes perfectly valid certificates look expired, so time accuracy is a security control.",
+        "Ignoring a certificate warning trains users to accept interception, which is how warnings get defeated in practice."
+      ],
+      "what_to_look_for": [
+        "Confirm the expected name is checked against the certificate, not just that a chain validates.",
+        "Check clock accuracy, since validation depends on it.",
+        "Check that warnings are treated as fatal rather than dismissible.",
+        "Look for internal certificates issued by a private authority, and confirm that authority is one you actually intend to trust."
+      ],
+      "defensive": [
+        "Use certificates from a reputable authority and automate renewal, so expiry is never a manual step.",
+        "Validate the full chain, the name, the dates and the permitted uses, and fail closed on any problem.",
+        "Keep the trust store small and current, since every root in it can issue for every name you visit.",
+        "Use certificate transparency monitoring for your own domains to catch a mis-issuance quickly.",
+        "Treat a bypassed certificate warning as an incident, not as a user inconvenience."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc5280",
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "tls-secure-connection-negotiation": {
+      "overview": "TLS is what makes HTTPS work. The handshake agrees on a protocol version, authenticates the server, negotiates keys, and only then does application data flow. Almost every step is a decision about what you refuse to accept.",
+      "how_it_works": [
+        "The client offers a list of protocol versions and cipher suites, and the server chooses one from that list.",
+        "Server certificates are presented and validated, which is how the client learns it is talking to the right host.",
+        "A key exchange derives fresh session secrets, so each connection has keys that are never transmitted.",
+        "With modern versions the key exchange can itself be authenticated, so no separate certificate round trip is needed.",
+        "Finished messages verify that both sides derived the same keys and detected tampering, before any application data is sent."
+      ],
+      "history": [
+        "SSL was designed for the web in the 1990s and had a long list of design and implementation problems.",
+        "TLS 1.2 improved on it but still allowed negotiation to fall back to weaker options, which is what downgrade attacks exploited.",
+        "TLS 1.3 removed the problematic negotiation, shortened the handshake, and removed algorithms that were long known to be weak.",
+        "Encrypted client hello, now being adopted, hides the last plaintext detail, which was the server name in the initial request."
+      ],
+      "real_world": [
+        "A server that still supports an old protocol version remains downgradeable even if modern clients prefer a new one.",
+        "A captive portal that intercepts traffic typically presents a certificate the client is asked to accept, which is the moment trust is given away.",
+        "Certificate pinning left in place after a key rotation causes an outage that is often mistaken for an attack."
+      ],
+      "what_to_look_for": [
+        "Check that only current protocol versions are enabled and that weak cipher suites are removed.",
+        "Confirm the server presents a certificate for the exact name being visited.",
+        "Check that forward secrecy is in use and that legacy renegotiation is disabled.",
+        "Check the certificate chain is complete, because an incomplete chain fails for some clients and not others."
+      ],
+      "defensive": [
+        "Enable only current protocol versions and a short list of strong cipher suites.",
+        "Serve HSTS so browsers refuse to fall back to an unencrypted connection.",
+        "Automate certificate issuance and renewal, including the intermediate certificates.",
+        "Monitor for protocol downgrade attempts and for clients reporting certificate errors.",
+        "Remove obsolete options such as legacy renegotiation, which exist for compatibility nobody should still need."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching",
+        "https://owasp.org/www-project-top-ten/"
+      ]
+    },
+    "randomness-nonces-and-entropy": {
+      "overview": "Much of modern security depends on values nobody should be able to predict. Weak randomness in the wrong place does not reduce security slightly; it removes it completely for that mechanism.",
+      "how_it_works": [
+        "A cryptographic random number generator should be indistinguishable from random to an observer who has seen no previous outputs.",
+        "Operating system generators are seeded from hardware entropy sources and are suitable for keys, nonces and salts.",
+        "A general-purpose random function in a programming language is often predictable, and was the root cause of many real vulnerabilities.",
+        "A nonce must be unique for a given key, which is a different requirement from being random, and is usually easier to guarantee.",
+        "A unique nonce can be a counter, and a counter is easier to reason about than a random value you hope does not collide."
+      ],
+      "history": [
+        "Early software seeded generators with the current time, which made keys guessable to anyone who knew roughly when the system booted.",
+        "Debian's reduced initialisation values in OpenSSL were a small change with an outsized effect, and the incident changed how randomness is reviewed.",
+        "Randomness requirements became formal, with standards specifying how randomness should be obtained and tested.",
+        "Hardware and virtualised environments made accidental weak entropy easier to introduce, since a virtual machine can start repeatedly from similar state."
+      ],
+      "real_world": [
+        "Predictable session identifiers let an attacker fix a session before a victim ever logs in, which is why session generation is security-critical.",
+        "A virtual machine restored from a snapshot can start with the same generator state, so keys created after a restore can repeat.",
+        "Predictable password-reset tokens turn a forgotten password into an account takeover."
+      ],
+      "what_to_look_for": [
+        "Check that keys, nonces, tokens and identifiers all come from a cryptographic source, not a general-purpose one.",
+        "Look for time-based seeding anywhere a value must be unpredictable.",
+        "Check whether nonces are guaranteed unique or merely random, and prefer uniqueness.",
+        "Look for a fork, restore or snapshot path that could reproduce generator state."
+      ],
+      "defensive": [
+        "Use the operating system or a vetted library for every security-relevant random value.",
+        "Prefer counters or explicit uniqueness guarantees for nonces where the construction allows it.",
+        "Reseed appropriately after virtual machine snapshot or restore operations.",
+        "Treat any code that rolls its own random generator as unsafe until proven otherwise.",
+        "Use constant-time comparisons for values compared against attacker input, since a timing difference leaks information."
+      ],
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/90/a/final",
+        "https://csrc.nist.gov/publications/detail/sp/800-90b/final",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "common-crypto-failures": {
+      "overview": "Cryptographic code fails in recurring ways, and the failures are rarely in the mathematics. They are in the choices around it: what is encrypted, what is verified, and what is compared.",
+      "how_it_works": [
+        "Encrypting without authenticating lets an attacker modify the ciphertext, so a decryption failure must stop the application rather than be ignored.",
+        "Comparing values with an ordinary string comparison can leak the correct value through timing, so secret comparisons must be constant time.",
+        "Padding oracles let an attacker learn about plaintext from error behaviour, which is why modern schemes avoid them or make errors indistinguishable.",
+        "Inventing a construction from sound primitives can still be insecure, because a scheme is more than the sum of its parts.",
+        "Failing open on an error, such as accepting traffic when verification is unavailable, turns a security control into an availability preference."
+      ],
+      "history": [
+        "Early application code decrypted and then trusted the result, so errors were informative by default.",
+        "A long series of padding oracle vulnerabilities demonstrated that error handling alone can break an otherwise sound scheme.",
+        "High-level libraries absorbed many of these lessons, and the residual failures are now mostly in how applications use them.",
+        "Framework guidance now forbids rolling your own crypto in most languages for exactly this reason."
+      ],
+      "real_world": [
+        "A verification error that is logged and then ignored lets an attacker tamper with signed data without anyone noticing.",
+        "A timing side channel on a token comparison is difficult to notice and difficult to fix once shipped.",
+        "Using a fast hash for signatures with a short key length reduces the scheme to something that can be brute forced."
+      ],
+      "what_to_look_for": [
+        "Confirm every message is verified before it is trusted, and that verification failure stops processing.",
+        "Look for ordinary equality comparisons on anything secret, including tokens and session identifiers.",
+        "Check that error paths fail closed rather than falling back to an allowed state.",
+        "Check algorithm and key length choices against current guidance rather than against what the library defaults to years ago."
+      ],
+      "defensive": [
+        "Authenticate before you act on data, and treat any verification error as fatal.",
+        "Use constant-time comparison functions provided by the platform rather than writing your own.",
+        "Never invent a construction; choose a named, reviewed one and use it as documented.",
+        "Keep libraries updated, because most crypto failures live in code that has not been revised.",
+        "Have cryptographic choices reviewed by someone who did not write the feature."
+      ],
+      "references": [
+        "https://owasp.org/www-project-top-ten/",
+        "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "key-management-lifecycle": {
+      "overview": "Most organisations can deploy strong cryptography and still lose data because the keys are poorly managed. The algorithm is rarely the weak point; storage, rotation and revocation are.",
+      "how_it_works": [
+        "Keys are generated with a good random source, then stored somewhere with tighter access than the data they protect.",
+        "Separate keys per purpose and per environment, so a test key can never be used against production data.",
+        "Rotation limits how much traffic or data a single key can expose, and rotation only helps if it actually happens.",
+        "Revocation says a key must never be used again, which requires something that checks rather than something that logs.",
+        "A key management system should record who used which key for what, because that is what an investigation needs."
+      ],
+      "history": [
+        "Keys were once kept in application configuration, which meant they appeared in source control and in every copy of the system.",
+        "Hardware security modules gave a place to keep keys that code could use but could not read.",
+        "Cloud secret managers made managed keys broadly available, but also created a central point of failure worth attacking.",
+        "Managed key management with automatic rotation became the default expectation, which makes manual key handling the outlier."
+      ],
+      "real_world": [
+        "A key committed to a source repository may still be live years later, and history makes deleting the file irrelevant.",
+        "One key reused across every environment means a single test-system compromise can affect production data.",
+        "A key that is rotated but never retired leaves the old one usable, so the rotation provides no benefit at all."
+      ],
+      "what_to_look_for": [
+        "Check whether keys appear in source control, build logs, container images or client-side code.",
+        "Confirm development, test and production use different keys.",
+        "Check whether retired keys are actually destroyed, and whether that is verified rather than assumed.",
+        "Check who can read keys, and whether that access is logged."
+      ],
+      "defensive": [
+        "Store keys in a managed secret store or hardware module, never in application code or configuration files.",
+        "Use separate keys per environment and per purpose, and label them so misuse is obvious.",
+        "Automate rotation, and verify that old material is destroyed afterwards.",
+        "Give key access its own access reviews, since it is more sensitive than the data itself.",
+        "Scan source history and build artefacts for secrets, because removing them later does not remove them.",
+        "Rehearse revocation, since a key you cannot revoke is really a key you cannot rotate."
+      ],
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    }
+  }
+}

@@ -12,8 +12,28 @@ const data = JSON.parse(
 const selfChecks = JSON.parse(
   fs.readFileSync(path.join(ROOT, "assets/data/academy-self-checks.json")),
 );
-const t = data.topics[0],
-  course = "/learning/web-application-security/foundations",
+// Resolve the exercise course and lesson from the catalogue rather than
+// hardcoding a path: the first topic now belongs to the cyber-security track,
+// so a fixed prefix produced a 404 and every downstream assertion failed. The
+// lesson is picked from the topics that actually carry a self-check, because the
+// quiz assertions below need one.
+const selfCheckIds = new Set(
+  Object.keys(
+    JSON.parse(
+      fs.readFileSync(path.join(ROOT, "assets/data/academy-self-checks.json")),
+    ),
+  ),
+);
+const t =
+  data.topics.find((topic) => selfCheckIds.has(topic.id)) || data.topics[0];
+assert.ok(
+  selfCheckIds.has(t.id),
+  "catalogue must contain a lesson with a published self-check",
+);
+const tCategory = data.categories.find((c) => c.id === t.category_id),
+  tPath = data.paths.find((p) => p.id === t.path_id);
+assert.ok(tCategory && tPath, "catalogue topic must resolve to a category and a path");
+const course = `/learning/${tCategory.slug}/${tPath.slug}`,
   lesson = course + "/" + t.slug;
 let checks = 0,
   scans = 0;
@@ -52,6 +72,15 @@ const errors = [];
         .locator('#learning-app[aria-busy="false"] .academy-topbar button')
         .waitFor();
     };
+    /* The course page reports local progress as a share of the course, so the
+       assertions below compare the rendered percentage rather than a removed
+       "n of m lessons" sentence. */
+    const courseSize = data.topics.filter(
+      (topic) => topic.path_id === tPath.id,
+    ).length;
+    const pct = (done) => Math.round((done / courseSize) * 100) + "%";
+    const progressStat = async () =>
+      (await page.locator(".stat-progress .stat-value").innerText()).trim();
     const axe = async (label) => {
       const r = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
@@ -144,9 +173,13 @@ const errors = [];
       "Immediate retries are allowed and a lower score does not erase the previous completion",
     );
     await go(course);
+    assert.equal(courseSize, 4, "fixture course should have 4 lessons");
+    assert.equal(await progressStat(), pct(1));
+    // The label is uppercased in CSS, and innerText reflects that, so compare
+    // without regard to case rather than pinning the visual casing.
     assert.match(
-      await page.locator(".path-summary").innerText(),
-      /1 of 4 lessons completed on this device/,
+      await page.locator(".stat-progress .stat-label").innerText(),
+      /^progress$/i,
     );
     await page.locator("#lesson-filter").selectOption("complete");
     assert.equal(await page.locator(".academy-topic").count(), 1);
@@ -178,7 +211,7 @@ const errors = [];
       await page.evaluate(() => localStorage.getItem("unrelated-preference")),
       "keep",
     );
-    assert.match(await page.locator(".path-summary").innerText(), /0 of 4/);
+    assert.equal(await progressStat(), pct(0));
     await page.getByRole("button", { name: "Device settings" }).click();
     await page
       .locator("#progress-file")
@@ -189,7 +222,7 @@ const errors = [];
       });
     await page.getByText(/matching lesson records restored/).waitFor();
     await go(course);
-    assert.match(await page.locator(".path-summary").innerText(), /1 of 4/);
+    assert.equal(await progressStat(), pct(1));
     ok("Backup/restore works; confirmed reset affects Academy only");
     assert.deepEqual(external, []);
     ok(
@@ -213,7 +246,10 @@ const errors = [];
     await context.route("**/assets/data/academy-catalogue.json", (r) =>
       r.fulfill({ json: raw }),
     );
-    await context.route("**/learning/programming**", (r) => {
+    // Serve every private fixture subject from the shell, not just
+    // /learning/programming, otherwise the other subject falls through to the
+    // real preview server and 404s.
+    await context.route(/\/learning\/(programming|design)(\/|$)/, (r) => {
       const p = resolvePage(model, new URL(r.request().url()).pathname);
       return r.fulfill({
         contentType: "text/html",
@@ -224,14 +260,41 @@ const errors = [];
       });
     });
     await go("/learning/programming");
-    await page.locator("#course-search").fill("Python");
-    assert.equal(await page.locator("[data-course-card]:visible").count(), 1);
-    await axe("Programming category");
-    await page.locator("#course-search").fill("not-published");
-    assert.equal(await page.locator("#course-empty").isVisible(), true);
-    await page.locator("#course-reset").click();
-    assert.equal(await page.locator("[data-course-card]:visible").count(), 2);
-    ok("Category search/reset never mixes subjects");
+    // The path page used to offer a search box with an empty state and a reset
+    // button. That UI is gone, so subject isolation is now asserted directly:
+    // a path must list exactly its own courses and never another subject's.
+    const cardNames = () =>
+      page.locator("[data-course-card]:visible h3").allInnerTexts();
+    const programmingCards = await cardNames();
+    assert.equal(programmingCards.length, 2);
+    assert.ok(
+      programmingCards.some((t) => /Python Fundamentals/.test(t)),
+      "programming path lists the Python course",
+    );
+    assert.ok(
+      programmingCards.some((t) => /JavaScript Fundamentals/.test(t)),
+      "programming path lists the JavaScript course",
+    );
+    assert.ok(
+      !programmingCards.some((t) => /Interface Design/.test(t)),
+      "programming path never lists a course from another subject",
+    );
+    await axe("Programming path");
+    // The design path holds a single course, so it is inlined rather than
+    // shown as a grid. Isolation is asserted against the rendered text.
+    await go("/learning/design");
+    const designText = await page.locator("#learning-app").innerText();
+    assert.match(designText, /Interface Design/);
+    assert.ok(
+      !/Python Fundamentals|JavaScript Fundamentals/.test(designText),
+      "design path never lists a course from another subject",
+    );
+    assert.equal(
+      await page.locator("[data-course-card]:visible").count(),
+      0,
+      "a single-course path is inlined instead of rendered as a grid",
+    );
+    ok("Path listings never mix subjects");
     await go("/learning/programming/roadmap");
     assert.doesNotMatch(
       await page.locator(".academy-content").innerText(),
@@ -346,15 +409,34 @@ const errors = [];
     const nojs = await browser.newContext({ javaScriptEnabled: false });
     const np = await nojs.newPage();
     await np.goto(BASE + lesson);
-    assert.equal(await np.locator(".static-lesson .lesson-section").count(), 8);
+    /* Without JavaScript the lesson falls back to consolidated static sections
+       rather than the interactive reader's per-section layout, so assert the
+       real reading content is present instead of a section count. */
+    for (const kind of [
+      "lesson-concept",
+      "lesson-practice",
+      "lesson-takeaways",
+      "lesson-resources",
+    ]) {
+      assert.equal(
+        await np.locator(`.lesson-section.${kind}`).count(),
+        1,
+        "no-JS fallback renders the " + kind + " section",
+      );
+    }
+    const noJsText = await np.locator("#learning-app").innerText();
+    assert.match(noJsText, new RegExp(t.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.match(noJsText, /What you'll learn/);
+    assert.match(noJsText, /Key takeaways/);
+    assert.ok(
+      (await np.locator(".lesson-section a[href^='https://']").count()) > 0,
+      "no-JS fallback still cites its sources",
+    );
     assert.equal(
       await np.locator('footer.site-footer a[href="/learning"]').count(),
       1,
     );
-    assert.doesNotMatch(
-      await np.locator("#learning-app").innerText(),
-      /Sign in/,
-    );
+    assert.doesNotMatch(noJsText, /Sign in/);
     await np.goto(BASE + "/");
     assert.equal(await np.locator("h1").evaluate(el => getComputedStyle(el).opacity), "1");
     await nojs.close();

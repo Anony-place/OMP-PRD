@@ -134,7 +134,7 @@ function commonHead({ title, description, canonical, ogType, ogImage, jsonld = [
 function articleHtml(article) {
   const title = String(article.title || 'Article').trim();
   const slug = String(article.slug || '').trim();
-  const summary = String(article.summary || '').trim() || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+  const summary = metaDescription(String(article.summary || '').trim() || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
@@ -152,13 +152,37 @@ function articleHtml(article) {
   const body = toc.length
     ? `<div class="container"><div class="article-layout">${tocHtml}<article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div>`
     : `<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div>`;
-  const head = commonHead({ title: `${title} | OopsMyPassword`, description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
-  return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  const head = commonHead({ title: documentTitle(title, 'OopsMyPassword'), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
+  return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
+// Append the brand suffix only when the result still fits the search-result
+// budget. A long, descriptive headline is more useful than a truncated one, and
+// this matches how the Academy publisher already builds its titles.
+const TITLE_MAX = 65;
+function documentTitle(title, brand) {
+  const text = String(title || '').trim();
+  const branded = `${text} | ${brand}`;
+  return branded.length <= TITLE_MAX ? branded : text;
+}
+
+const META_DESCRIPTION_MAX = 160;
+function metaDescription(value) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (text.length <= META_DESCRIPTION_MAX) return text;
+  const cut = text.slice(0, META_DESCRIPTION_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 80 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.-]+$/, '') + '\u2026';
+}
+
 function productHtml(product) {
   const slug = String(product.slug || '').trim();
   const name = String(product.name || 'Product').trim();
-  const summary = String(product.summary || '').trim() || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+  // The meta description must be bounded no matter which column supplied it.
+  // Previously the 160-char cut only applied to the description fallback, so a
+  // long `summary` was emitted verbatim and truncated by search results.
+  const rawSummary = String(product.summary || '').trim()
+    || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const summary = metaDescription(rawSummary);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
   const content = normalizeInjected(sanitizeHtml(product.description || '')).html;
   const image = /^https?:\/\//i.test(String(product.featured_image || '')) ? String(product.featured_image) : `${SITE}/assets/images/og-image.jpg`;
@@ -172,8 +196,8 @@ function productHtml(product) {
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Products', item: `${SITE}/products` }, { '@type': 'ListItem', position: 3, name, item: canonical }] };
   const cta = String(product.cta_label || '').trim() || (buyUrl ? 'Buy now' : 'Learn more');
   const ctaHtml = buyUrl ? `<p><a class="btn btn-primary" href="${esc(buyUrl)}" rel="noopener noreferrer">${esc(cta)} →</a></p>` : '';
-  const head = commonHead({ title: `${name} — OopsMyPassword`, description: summary, canonical, ogType: 'product', ogImage: image, jsonld: [productSchema, breadcrumb] });
-  return `${head}<body>${siteHeader('/products')}${siteMobileMenu('/products')}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  const head = commonHead({ title: documentTitle(name, 'OopsMyPassword'), description: summary, canonical, ogType: 'product', ogImage: image, jsonld: [productSchema, breadcrumb] });
+  return `${head}<body>${siteHeader('/products')}${siteMobileMenu('/products')}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 function dateOnly(value) { if (!value) return ''; const ms = Date.parse(value); return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
 function sitemapXml({ articles, products }) {

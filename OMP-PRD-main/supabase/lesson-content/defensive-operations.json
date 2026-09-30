@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft content for Defensive Operations. Data-only.",
+  "lessons": {
+    "defenders-loop": {
+      "overview": "Incident response is a loop, not a line. The value is in coming back around with the thing you learned and making the next pass cheaper.",
+      "how_it_works": [
+        "Preparation is everything done before an incident: the playbooks, the access, the logging and the contacts.",
+        "Detection is the moment you become aware, and the gap between compromise and awareness is the number that matters.",
+        "Containment stops it spreading without destroying evidence, which is a genuine tension rather than a contradiction.",
+        "Eradication removes the cause, which is not the same as cleaning up the symptoms you found.",
+        "Recovery restores service, and lessons learned only count if they change something concrete afterwards."
+      ],
+      "history": [
+        "Response was initially improvised by whoever discovered the problem, which rarely went well.",
+        "Formal playbooks arrived so that roles and steps were defined before the pressure was on.",
+        "The realisation that most incidents repeat turned post-incident work from optional into the main driver of improvement.",
+        "Current practice treats the loop as continuous, with detection engineering feeding directly into the playbooks."
+      ],
+      "real_world": [
+        "Most organisations can contain quickly and recover slowly, and the recovery step is where the outage actually happens.",
+        "An incident closed without a documented cause leads to the same incident again within a year.",
+        "A playbook nobody has rehearsed is a document, not a capability."
+      ],
+      "what_to_look_for": [
+        "Check whether the plan is written down and whether the named people still work there.",
+        "Check how long it takes to detect, to contain and to recover, and whether those numbers are measured or assumed.",
+        "Check whether anyone has authority to make decisions during an incident without waiting for a meeting.",
+        "Check what happens to the evidence, because that decision is often made by accident."
+      ],
+      "defensive": [
+        "Write the playbook before you need it, and rehearse it with the people who will actually run it.",
+        "Measure detection and containment times, since they are the numbers that improve when you practise.",
+        "Name a decision-maker for out-of-hours incidents and define what they can authorise.",
+        "Record the root cause, and require an owner and a date for every corrective action.",
+        "Feed the lessons back into the playbook rather than into a report nobody opens."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://attack.mitre.org/"
+      ]
+    },
+    "logs-and-telemetry-what-to-collect": {
+      "overview": "Logs are the raw material of every investigation. The design question is not what you can log, but what you will need in six months when you do not yet know what you are looking for.",
+      "how_it_works": [
+        "Collection is only useful if it survives the attack, so logs need to live somewhere the compromised host cannot reach.",
+        "Log integrity matters: an attacker who can edit a log can mislead the investigation.",
+        "Retention is a real trade-off between disk cost and the window in which you might need the data.",
+        "Time synchronisation decides whether records from different systems can be correlated at all.",
+        "Context matters as much as events: an event without the user, source and outcome is hard to act on."
+      ],
+      "history": [
+        "Local logging was controlled by whoever owned the machine, which meant an administrator could erase their tracks.",
+        "Central collection solved that and created a new problem: far more data than anyone reads.",
+        "Structured logging formats made cross-source correlation practical for the first time.",
+        "Current practice treats log data as a security asset with its own access controls and lifecycle."
+      ],
+      "real_world": [
+        "An investigation stalls because authentication records for the relevant week were never collected.",
+        "A system whose clock drifted produces a timeline that looks plausible and is wrong.",
+        "Logs stored on the same host as the compromised application are gone by the time anyone looks."
+      ],
+      "what_to_look_for": [
+        "Check which events are actually collected, and whether successful logins are included as well as failures.",
+        "Check whether a local administrator can delete or alter the logs you rely on.",
+        "Check the retention period against the longest window an investigation might realistically need.",
+        "Check clock synchronisation across every system whose records you intend to correlate."
+      ],
+      "defensive": [
+        "Centralise collection so host compromise cannot erase the record.",
+        "Log authentication, privilege changes, administrative actions and outbound connections, not just errors.",
+        "Synchronise time across systems, and treat drift as a monitoring alert.",
+        "Protect log storage with its own access controls and integrity checking.",
+        "Set retention deliberately and make it visible what is kept and for how long."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://attack.mitre.org/"
+      ]
+    },
+    "siem-alerts-and-noise": {
+      "overview": "A SIEM collects everything and therefore alerts on whatever someone configured. The work is deciding what deserves a human, and the honest answer is usually a small fraction of what fires.",
+      "how_it_works": [
+        "A detection rule encodes a hypothesis about attacker behaviour, and its quality is the quality of that hypothesis.",
+        "A rule that fires on common activity produces alert fatigue, and alert fatigue is functionally the same as no detection.",
+        "Coverage should be measured against known techniques rather than against the number of rules deployed.",
+        "Tuning is continuous: an environment's baseline changes, so a rule that was rare becomes common.",
+        "The measure that matters is how long a true positive takes to reach a person who can act."
+      ],
+      "history": [
+        "Early correlation engines were log-file filters that produced little more than grep with a schedule.",
+        "Rules migrated into platforms as regular expressions, which made detection easy to write and hard to maintain.",
+        "The volume of alerts became the dominant problem, and organisations started measuring false positive rates deliberately.",
+        "Detection engineering and behaviour analytics moved the goal from more rules to more coverage."
+      ],
+      "real_world": [
+        "A queue with thousands of open alerts is read by nobody, and the rule is present on a compliance slide.",
+        "A rule written for a specific incident and never generalised catches that incident once.",
+        "An alert with no documented response is a notification, and notifications do not reduce risk."
+      ],
+      "what_to_look_for": [
+        "Check how many alerts are open, how old they are, and how many were true positives.",
+        "Check whether each alert has a documented first action, and who performs it.",
+        "Check which attacker techniques you have any coverage for at all.",
+        "Check how long a real alert took to reach a responder, measured rather than estimated."
+      ],
+      "defensive": [
+        "Measure coverage against a behaviour framework, so gaps are visible rather than assumed absent.",
+        "Give every alert a documented first action, and delete the ones that have none.",
+        "Tune continuously using the false positive data you already generate, rather than in a one-off project.",
+        "Prioritise alerts by the technique they indicate, so triage starts from impact.",
+        "Track time to detect and time to respond as the primary metrics, since they predict outcome better than rule count."
+      ],
+      "references": [
+        "https://attack.mitre.org/",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "mitre-attack-for-defenders": {
+      "overview": "ATT&CK is a shared vocabulary for what attackers actually do. For defenders its main value is coverage: it turns the vague goal of being secure into a checklist you can measure yourself against.",
+      "how_it_works": [
+        "A technique describes behaviour an adversary uses to reach an objective, and each has sub-techniques describing specific implementations.",
+        "Tactics are the reason for the technique, so the same technique may appear in different phases for different goals.",
+        "Software, industry and the adversary groups are published as separate matrices, which lets you compare your own relevance.",
+        "Mapping your detections to techniques makes coverage explicit and gaps arguable rather than invisible.",
+        "The framework is descriptive, not prescriptive: it tells you what is possible, not what is likely against you."
+      ],
+      "history": [
+        "It began as a way to document adversary behaviour from incident reports, because the knowledge existed only in people's heads.",
+        "Organisations adopted it as a detection reference, and the detection and platform matrices followed.",
+        "Public incident reporting across sectors made the data set large enough to be genuinely representative.",
+        "It is now used for threat modelling and for procurement, as well as for detection coverage."
+      ],
+      "real_world": [
+        "A team with five hundred detection rules can still have no coverage of the techniques actually used against their sector.",
+        "Coverage measured by rule count is meaningless; coverage measured by technique is at least arguable.",
+        "Adversaries choose the technique that works against the defences in front of them, so they route around gaps."
+      ],
+      "what_to_look_for": [
+        "Check which techniques relevant to your sector you have visibility into, and start with the ones you lack entirely.",
+        "Check whether your detections produce usable context, since a technique alert with no detail is not actionable.",
+        "Check which sub-techniques you cover, because the specific implementation varies by group.",
+        "Check when your coverage was last reviewed, since it decays as systems change."
+      ],
+      "defensive": [
+        "Map your logging and detections to techniques, and treat unmapped techniques as the work list.",
+        "Start with the techniques most common against your sector rather than the most famous ones.",
+        "Use the framework to explain gaps to non-specialists, since the vocabulary is widely understood now.",
+        "Review coverage on a schedule, because a change in estate silently reduces it.",
+        "Use it for detection engineering and threat modelling, and ignore the parts you have no use for."
+      ],
+      "references": [
+        "https://attack.mitre.org/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "incident-response-roles-and-communication": {
+      "overview": "Most incident response failures are coordination failures rather than technical ones. Knowing who decides, who talks and who is told is worth more than knowing any particular tool.",
+      "how_it_works": [
+        "Roles are usually incident commander, technical lead, communications and scribe, and the separation matters more than the titles.",
+        "The incident commander makes decisions and does not investigate, because doing both reliably is not possible under pressure.",
+        "One person communicates outward, so the internal team is not answering questions while working.",
+        "Severity has to be defined in advance, because deciding during the incident biases towards under-calling it.",
+        "Legal, privacy and regulatory notification obligations usually run on their own clocks, independent of the technical work."
+      ],
+      "history": [
+        "Response was once a small group of people who all knew the systems and each other.",
+        "Organisations grew and the ad hoc approach stopped scaling, so formal roles were introduced.",
+        "Distributed work made written communication necessary, since the conversation could no longer happen in one room.",
+        "Current practice treats communication as a deliverable with its own owner, not as something that happens by accident."
+      ],
+      "real_world": [
+        "The technical lead starts fixing things and stops directing, and the incident loses its coordination.",
+        "A statement goes out describing an incident that later turns out to be different, which is hard to walk back.",
+        "A regulatory deadline passes because nobody owned the notification decision."
+      ],
+      "what_to_look_for": [
+        "Check whether the plan names a commander, a technical lead and a communications owner.",
+        "Check whether severity levels have defined criteria and who is allowed to declare them.",
+        "Check whether the out-of-hours contact list is current and has been tested.",
+        "Check whether the notification decision path is documented, including who can start the clock."
+      ],
+      "defensive": [
+        "Define roles and name the people who fill them, with a named deputy for each.",
+        "Write severity criteria in advance and require the higher severity when uncertain.",
+        "Give the incident commander the authority to make decisions without convening anyone.",
+        "Keep a written timeline during the incident, because reconstructing it afterwards is much harder.",
+        "Practise the communication path at least once, including the awkward conversations with legal and customers."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "forensics-and-evidence-handling": {
+      "overview": "Forensics is what you do with the data you preserved. The order of operations matters enormously, because the first action taken often destroys the evidence you would have needed.",
+      "how_it_works": [
+        "Live memory holds evidence that is gone the moment the machine powers off, so that decision comes first and is irreversible.",
+        "Imaging a running system is not perfect, which is why containment decisions have to be made consciously.",
+        "A write-blocked copy preserves the original; analysing the original directly is how evidence gets contaminated.",
+        "Hashing and timestamping establish an integrity record that survives a challenge later.",
+        "Chain of custody exists so the evidence is admissible, which is a legal requirement rather than a technical one."
+      ],
+      "history": [
+        "Early forensics was disk-level and destructive, which meant investigating meant destroying the evidence.",
+        "Write blockers and disk imaging made non-destructive analysis possible.",
+        "Memory forensics became practical and changed what could be recovered after a compromise.",
+        "Cloud and containerised systems changed the model again, because there is often no disk to image."
+      ],
+      "real_world": [
+        "Rebuilding a machine before imaging it destroys the memory and the temporary files that explained the intrusion.",
+        "Running antivirus on an infected host before imaging changes the very files being investigated.",
+        "Evidence held without a custody record can be excluded, however conclusive it was."
+      ],
+      "what_to_look_for": [
+        "Check whether your response plan starts with preservation, or with containment that destroys evidence.",
+        "Check whether you can acquire a full memory capture on the platforms you run.",
+        "Check whether the imaging and custody process is documented and repeatable.",
+        "Check whether you have somewhere to store evidence securely for as long as it may be needed."
+      ],
+      "defensive": [
+        "Decide the preservation order in advance and write it into the playbook.",
+        "Capture memory before power-off on systems where that evidence matters, and accept the trade-off consciously.",
+        "Image with a tool that hashes as it writes, and keep the original read-only.",
+        "Record every transfer of evidence, with who handled it and when.",
+        "Practise acquisition on a lab machine, since the first real attempt should not be the first attempt."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "containment-eradication-and-lessons-learned": {
+      "overview": "Containment is a decision under pressure with real trade-offs, and getting it wrong is more expensive than getting it slow. Eradication is where most teams stop too early.",
+      "how_it_works": [
+        "Short-term containment is fast and reversible, such as isolating a host or disabling an account.",
+        "Long-term containment is slower and more durable, such as rebuilding rather than cleaning.",
+        "Cleaning a compromised system is unreliable because you cannot prove you removed everything, which is why rebuilding is preferred.",
+        "Eradication includes closing the entry point, not only removing what is already there.",
+        "Recovery is validated, not assumed: service restored is not the same as service trustworthy."
+      ],
+      "history": [
+        "Early response guidance leaned towards cleaning, on the reasonable assumption that attacks were visible.",
+        "Persistence mechanisms that are easy to miss made cleaning unreliable, and the guidance moved to rebuild.",
+        "Ransomware made the point concrete, because recovery time matters more than elegance when business is down.",
+        "Current practice treats recovery verification as a distinct step rather than part of restoring service."
+      ],
+      "real_world": [
+        "A host returned to the network with the original persistence still present, and the same intrusion continued.",
+        "Rebuilding from an image that already contained the compromise repeats the problem exactly.",
+        "Service restored quickly and a second incident follows within a day."
+      ],
+      "what_to_look_for": [
+        "Check whether the plan prefers rebuild over clean, and whether the option to rebuild actually exists at speed.",
+        "Check how you confirm eradication, rather than assuming the absence of symptoms means it is gone.",
+        "Check whether rebuilds come from a source you trust, since a compromised image reproduces the compromise.",
+        "Check how recovery is validated before a system is trusted again."
+      ],
+      "defensive": [
+        "Rebuild from a known-good image rather than cleaning, and keep rebuild time measured.",
+        "Close the entry point as part of eradication, not as a separate task someone forgets.",
+        "Monitor rebuilt systems for the same indicators before declaring them clean.",
+        "Validate recovery with a defined check before returning the system to service.",
+        "Hold a blameless review with a named owner and a date for every corrective action."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "business-continuity-and-resilience": {
+      "overview": "Security and availability are usually in tension, and resilience is the discipline that resolves it. The question is not whether you can prevent everything, but whether you can keep operating while you deal with what you cannot prevent.",
+      "how_it_works": [
+        "Business impact analysis establishes which services matter most and what their tolerable downtime is.",
+        "Recovery time and recovery point are different questions, and a plan has to answer both for each service.",
+        "Resilience means surviving degradation, not only avoiding failure, so a reduced mode of operation should exist.",
+        "Plans fail because of assumptions about systems and people that are no longer true.",
+        "Exercises test the plan, and an untested plan is a document with good intentions."
+      ],
+      "history": [
+        "Continuity planning started as disaster recovery for datacentres, focused on restoring hardware.",
+        "It broadened to include processes and people, which is where most real disruption actually lands.",
+        "Cloud services changed the recovery options without changing the underlying questions.",
+        "Resilience became a board-level concern as dependence on digital services increased."
+      ],
+      "real_world": [
+        "A business that can operate manually for two days has far more options than one that cannot.",
+        "A ransomware event where staff cannot be paid or customers cannot be reached becomes a business problem, not a technical one.",
+        "A plan that lists a recovery time no supplier has ever committed to is fiction."
+      ],
+      "what_to_look_for": [
+        "Check whether the plan names recovery times per service and whether they were agreed with the business, not only with IT.",
+        "Check whether a reduced manual mode is defined and has been practised.",
+        "Check what the plan assumes about staff availability, since that assumption breaks during an incident.",
+        "Check when the plan was last exercised and what the exercise found."
+      ],
+      "defensive": [
+        "Agree tolerable downtime per service with the business owner, in writing.",
+        "Define and rehearse a manual mode for the services where downtime is most damaging.",
+        "Exercise the plan with the people who would run it, including outside working hours.",
+        "Reconcile the plan against actual supplier commitments at least annually.",
+        "Treat availability decisions as security decisions, since they are usually the same decision."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "threat-intelligence-iocs-ttp-and-kev": {
+      "overview": "Threat intelligence is only useful when it changes a decision. Indicators tell you what to look for now; techniques tell you what to build; the exploited catalogue tells you what to patch first.",
+      "how_it_works": [
+        "An indicator is a specific artefact: an address, a domain, a file hash. It is precise and expires quickly.",
+        "A technique is behaviour: how the adversary achieves something. It is durable and useful for design.",
+        "The known exploited vulnerabilities catalogue is a small, high-confidence list of weaknesses being used in the wild.",
+        "Intelligence has to be mapped to your estate, or it is just someone else's incident report.",
+        "A feed you do not act on adds cost and false confidence, which is worse than having no feed."
+      ],
+      "history": [
+        "Intelligence started as a commercial feed industry selling indicator lists that were frequently stale.",
+        "Realised value came from understanding the adversary behind the indicators, not the indicators themselves.",
+        "Frameworks such as ATT&CK gave the durable layer that survives the indicator churn.",
+        "Government catalogues of actively exploited vulnerabilities have made prioritisation concrete for everyone."
+      ],
+      "real_world": [
+        "A blocklist updated weekly stops campaigns that started years ago and does nothing about current ones.",
+        "An exploited catalogue entry for a library buried in a build turns a general patch problem into a specific task.",
+        "Intelligence shared in a machine-readable format is usable; intelligence in a PDF is an article."
+      ],
+      "what_to_look_for": [
+        "Check whether consumed intelligence has led to a specific change, and find the last one.",
+        "Check whether your exploited-catalogue monitoring covers the products you actually run, including libraries.",
+        "Check whether your estate data is current enough to make an indicator useful at all.",
+        "Check how you evaluate a source, since an unrated feed is an unverified claim."
+      ],
+      "defensive": [
+        "Prioritise the actively exploited catalogue above severity scores, since it reflects real attacker behaviour.",
+        "Consume intelligence in a machine-readable format and feed it into detection and blocking automatically.",
+        "Map adversary techniques to your detections, which is the part of intelligence that keeps its value.",
+        "Score sources and drop the ones that never produce a useful indicator.",
+        "Review what changed because of intelligence each quarter, and stop consuming anything that changes nothing."
+      ],
+      "references": [
+        "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "https://attack.mitre.org/",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    }
+  }
+}

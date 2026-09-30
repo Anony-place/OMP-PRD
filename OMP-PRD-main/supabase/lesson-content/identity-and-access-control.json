@@ -1,0 +1,356 @@
+{
+  "_note": "Reviewed draft content for Identity, Authentication and Access Control. Data-only.",
+  "lessons": {
+    "accounts-identifiers-identity-perimeter": {
+      "overview": "Identity is the security boundary that actually matters today. Almost nothing is reachable because of where it sits on a network; it is reachable because of who is asking.",
+      "how_it_works": [
+        "An account is a set of credentials, an identity is what that account represents, and the difference matters for revocation.",
+        "Authentication establishes who is asking. Authorisation then decides what that identity may do.",
+        "Machine and human identities behave differently: one is consumed by software, the other by a person who can be phished.",
+        "Group membership is the usual way permissions are granted, so a single group change can grant a lot at once.",
+        "Because access is evaluated per request, the same identity may have different reach at different times."
+      ],
+      "history": [
+        "Networks were originally trusted by location, so a machine on the internal network was implicitly an authorised user.",
+        "As users became remote, identity became the boundary and directory services became the place where it is defined.",
+        "Single sign-on reduced the number of passwords to remember and concentrated the risk in the identity provider.",
+        "Cloud platforms added short-lived, narrowly scoped credentials in place of long-lived shared secrets."
+      ],
+      "real_world": [
+        "A service account with far more access than the application needs turns an application flaw into a broad compromise.",
+        "A contractor who keeps access after a project ends is one of the most common access-review findings.",
+        "An account that can reach production because it sits in a convenience group is an access problem that looks like a network problem."
+      ],
+      "what_to_look_for": [
+        "List every identity with administrative or production access, and check each one still needs it.",
+        "Check which permissions arrive by group membership rather than by an explicit grant.",
+        "Notice machine identities, since they are rarely reviewed and rarely expire.",
+        "Check whether an identity is used interactively by a person as well as by software, which complicates attribution."
+      ],
+      "defensive": [
+        "Create a distinct identity per person and per workload, and never share one.",
+        "Grant the minimum access each identity needs, and review group membership regularly.",
+        "Prefer short-lived, narrowly scoped credentials for workloads over permanent shared keys.",
+        "Remove access automatically when someone leaves or changes role.",
+        "Log identity use, so you can tell a person from a service after the fact."
+      ],
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/63/3/final",
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "passwords-creation-storage-rotation": {
+      "overview": "Everything about passwords has changed except the advice most people still receive. Length and uniqueness matter far more than symbol substitutions, and storage matters more than creation rules.",
+      "how_it_works": [
+        "A password is a shared secret, so its strength is entirely a function of how unpredictable it is to an attacker.",
+        "Human-chosen passwords cluster around predictable patterns, which is why length beats complexity rules.",
+        "A breach of one service makes every reused password vulnerable everywhere, and reuse is common.",
+        "Storage decides how much a leak costs: a memory-hard salted hash makes guessing expensive per attempt.",
+        "Rotation was widely recommended, but forced frequent rotation often produces weaker passwords and is now discouraged without evidence of compromise."
+      ],
+      "history": [
+        "Password-only authentication dominated, with complexity rules enforced by systems rather than chosen by users.",
+        "Breach corpora made reuse attacks practical, and check-your-breach services turned the problem into a checklist.",
+        "Password managers removed the cognitive cost of long unique passwords and changed what good practice looks like.",
+        "Passkeys and multi-factor authentication have started to remove the password as the primary factor entirely."
+      ],
+      "real_world": [
+        "A leaked database stored with a fast hash is cracked quickly, and rotating afterward does not help users who reused the password.",
+        "A policy demanding a symbol and a digit at eight characters produces predictable patterns that fall quickly to guessing.",
+        "Shared team passwords are rarely rotated, and are frequently the weakest credential in the environment."
+      ],
+      "what_to_look_for": [
+        "Check the storage algorithm, the salt and the work factor, since those decide what a leak costs.",
+        "Check the length and uniqueness policy, and whether it pushes people toward predictable patterns.",
+        "Check whether rotation is enforced on a schedule rather than in response to evidence.",
+        "Check that shared accounts are identified, since they defeat attribution and revocation."
+      ],
+      "defensive": [
+        "Store passwords with a memory-hard function, a unique salt and a tuned work factor.",
+        "Encourage long, unique, generated passwords through a manager rather than mandating symbol rules.",
+        "Check new and changed passwords against known breached lists.",
+        "Stop forcing periodic rotation unless there is evidence of compromise, and require rotation on any suspected exposure.",
+        "Eliminate shared passwords entirely by giving each person and workload its own identity."
+      ],
+      "references": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-top-ten/"
+      ]
+    },
+    "multi-factor-authentication-and-passkeys": {
+      "overview": "Multi-factor authentication is the single most effective control available to most organisations, and passkeys are the version that finally works without users fighting it.",
+      "how_it_works": [
+        "A factor is something you know, something you have, or something you are, and using two of the three is what makes it strong.",
+        "One-time codes are widely deployed and much better than nothing, but they are phishable and can be relayed.",
+        "Push approvals are better, but an approval prompt that does not describe the request is easy to accept by reflex.",
+        "Passkeys use a public and private key pair, so the site never sees a secret that can be replayed.",
+        "Because the private key stays on the device, a passkey resists phishing by construction rather than by user vigilance."
+      ],
+      "history": [
+        "One-time passcodes were introduced as a simple second factor and remain the most common implementation.",
+        "Push-based approval arrived to fix the code-phishing problem but introduced approval-fatigue instead.",
+        "Passkeys were standardised by the industry and are now supported by the major platform and browser vendors.",
+        "Syncing passkeys across a user account made them practical for people who lose devices and change phones."
+      ],
+      "real_world": [
+        "An attacker who asks an employee to approve a push notification can take over the account in one call.",
+        "Number matching reduces the usefulness of a phishing page because the attacker does not know the code in advance.",
+        "A passkey on a synced account is still far safer than a password, and much safer than an SMS code."
+      ],
+      "what_to_look_for": [
+        "Check whether the second factor is phishable, such as a code or an uncontextualised push approval.",
+        "Check that multi-factor is required rather than merely available.",
+        "Check how recovery works, since a weak recovery path bypasses the factor entirely.",
+        "Check that administrative and remote access require a factor, not only ordinary sign-in."
+      ],
+      "defensive": [
+        "Require multi-factor authentication everywhere, starting with email and administrative access.",
+        "Prefer passkeys, then number-matched codes, and treat SMS as a last resort.",
+        "Make approval prompts describe the specific request and origin, so a blind approval is a mistake.",
+        "Harden account recovery as carefully as sign-in, since attackers go to the easier door.",
+        "Remove the option to disable the factor for an account, and alert on any attempt to."
+      ],
+      "references": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "session-management-and-account-takeover": {
+      "overview": "A session is proof that somebody authenticated, carried in a token. How that token is created, stored, scoped and invalidated determines whether an attacker who steals it gains much.",
+      "how_it_works": [
+        "A login creates a session identifier, and from then on the token stands in for the credential.",
+        "An identifier in a cookie is convenient for the application and convenient for an attacker who can read the cookie.",
+        "Binding the session to something the attacker does not have, such as a device key, removes the value of a stolen token.",
+        "Session lifetime is a direct trade-off: longer sessions are friendlier and give an attacker more time.",
+        "Invalidating a session on logout, password change and privilege change is what makes revocation meaningful."
+      ],
+      "history": [
+        "Sessions were originally server-side state referenced by an identifier, which meant the identifier was the whole security story.",
+        "Stateless approaches moved the state into a signed token, which is efficient but makes revocation harder.",
+        "Session fixation and hijacking were the dominant web vulnerabilities for years and drove most of the current cookie guidance.",
+        "Device binding and passkeys reduce the value of a stolen token rather than only shortening its life."
+      ],
+      "real_world": [
+        "A session identifier that never changes after login can be fixed by an attacker before the victim signs in.",
+        "A session token stored where page scripts can read it is exposed to any cross-site scripting flaw.",
+        "Logging out that only clears a cookie on the client leaves a still-valid token in the hands of anyone who copied it."
+      ],
+      "what_to_look_for": [
+        "Check that the session identifier changes on login, which prevents session fixation.",
+        "Check the cookie flags, especially secure, HttpOnly and an appropriate SameSite value.",
+        "Check session lifetime and whether idle sessions expire.",
+        "Check that logout and password change actually invalidate the session server-side."
+      ],
+      "defensive": [
+        "Regenerate the session identifier on every privilege change, especially at login.",
+        "Set secure, HttpOnly and SameSite on session cookies, and keep the lifetime short.",
+        "Invalidate sessions server-side on logout, password change and suspected compromise.",
+        "Bind sessions to a device key where possible, so a stolen token alone is not enough.",
+        "Provide a way to see and revoke active sessions, so a lost device is recoverable."
+      ],
+      "references": [
+        "https://owasp.org/www-project-top-ten/",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies",
+        "https://pages.nist.gov/800-63-3/sp800-63b.html"
+      ]
+    },
+    "authorisation-vs-authentication": {
+      "overview": "Authentication and authorisation are different questions, and most serious application breaches are authorisation failures rather than authentication ones. Broken access control has ranked first in the most recent industry survey for exactly this reason.",
+      "how_it_works": [
+        "Authentication asks who this is. Authorisation asks whether this identity may perform this action on this resource.",
+        "The correct authorisation decision needs the identity, the action and the specific object, not just the route.",
+        "Default-deny means a request is rejected unless a rule explicitly allows it, which is the safer default.",
+        "Least privilege means each identity receives only the access its task requires, and no more.",
+        "Enforcement belongs on the server for every request, because the client is under the user's control."
+      ],
+      "history": [
+        "Early applications checked authentication in the interface and assumed that was sufficient.",
+        "As APIs grew, authorisation moved to the server, but was often implemented per endpoint, which led to inconsistent rules.",
+        "The industry survey began ranking broken access control as a leading category, which changed what teams prioritised.",
+        "Centralised policy engines emerged so authorisation decisions could be written once and applied consistently."
+      ],
+      "real_world": [
+        "Hiding a delete button in the interface leaves the endpoint available, and the request can be sent directly.",
+        "A record identifier in a request is often treated as proof of permission, which lets one user reach another's data.",
+        "An endpoint that checks only that a user is logged in, and not which records belong to them, is a very common flaw."
+      ],
+      "what_to_look_for": [
+        "Check whether every endpoint that touches a specific object verifies permission for that object.",
+        "Check for authorisation enforced only in the client, which is not enforcement.",
+        "Check whether a role can be supplied by the user, since a client-supplied role is not a decision.",
+        "Check that denied requests are logged, because silent denial is how these flaws persist."
+      ],
+      "defensive": [
+        "Default to deny and grant explicitly, so a forgotten rule fails safely.",
+        "Check permission on the object being acted on, not only on the route being called.",
+        "Keep authorisation decisions on the server and repeat them on every request.",
+        "Centralise policy so endpoints cannot quietly implement contradictory rules.",
+        "Test with two accounts of different privilege, which finds these flaws faster than any scanner."
+      ],
+      "references": [
+        "https://owasp.org/www-project-top-ten/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+        "https://www.cisecurity.org/controls"
+      ]
+    },
+    "directory-services-sso-and-federation": {
+      "overview": "A directory service is the single place identities and their relationships are defined. Single sign-on and federation let one authenticated identity reach many systems, which is convenient and concentrates risk.",
+      "how_it_works": [
+        "The directory stores identities, their attributes and their group memberships.",
+        "Authentication is usually delegated to a single provider, and other systems accept its assertion of identity.",
+        "Federation extends that across organisational boundaries, so a partner's identity can be accepted under agreed conditions.",
+        "Claims carry what the provider asserts, and trusting too much in a claim is how access leaks across boundaries.",
+        "Group membership decided in the directory becomes access everywhere, which makes the directory a high-value target."
+      ],
+      "history": [
+        "Directories existed to manage users and resources, and became identity stores once authentication moved into them.",
+        "Single sign-on was adopted to reduce password prompts, and the resulting dependency became a concentration of risk.",
+        "Federation protocols standardised cross-organisational trust, which also made misconfiguration more consequential.",
+        "Modern approaches increasingly use short-lived, audience-restricted tokens so a stolen assertion is limited."
+      ],
+      "real_world": [
+        "A directory compromise is worse than a single application compromise, because it affects everything that trusts it.",
+        "A group that includes both staff and service identities can grant a human the permissions intended for a program.",
+        "An application that accepts a token without checking the intended audience will accept tokens meant for another service."
+      ],
+      "what_to_look_for": [
+        "Check which systems trust the directory, since that is the blast radius of a directory compromise.",
+        "Check that tokens are audience-restricted, and that the receiving system verifies it.",
+        "Check group membership, since it is where most access is actually granted.",
+        "Check the lifetime of issued tokens and whether they can be revoked."
+      ],
+      "defensive": [
+        "Protect the directory as tier-zero infrastructure, with strong authentication and tight administrative access.",
+        "Restrict every application's trust to the specific directory and services it needs.",
+        "Issue short-lived, audience-restricted tokens, and verify the audience on receipt.",
+        "Review group membership on a schedule, and remove identities that no longer need access.",
+        "Require multi-factor authentication on the directory itself, ahead of any other system."
+      ],
+      "references": [
+        "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory",
+        "https://www.cisecurity.org/controls",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "privilege-escalation-and-admin-hygiene": {
+      "overview": "Privilege escalation turns a limited foothold into control of the system. Most of it succeeds because of ordinary configuration mistakes rather than clever exploitation.",
+      "how_it_works": [
+        "Escalation means moving from one level of access to a higher one, either by exploiting a flaw or by abusing a permissive setting.",
+        "Misconfigured service permissions, over-broad file permissions and unattended administrative sessions are the usual route.",
+        "Scheduled tasks and services are frequently configured to run with more privilege than the work requires.",
+        "Administrator accounts used for daily work turn any credential theft into full control immediately.",
+        "Separating a standard account from an administrative one makes this class of escalation much harder."
+      ],
+      "history": [
+        "Local privilege escalation was largely about predictable service paths and permissive file permissions.",
+        "Kernel and driver exploits were the high-profile route, and are still the route when configuration is sound.",
+        "Token and impersonation features gave applications ways to act as other users, which is powerful and frequently misconfigured.",
+        "Current guidance is dominated by removing the permissions that made escalation possible in the first place."
+      ],
+      "real_world": [
+        "A service that can read a file only administrators should read is a complete escalation path on its own.",
+        "An unquoted service path lets an attacker place an executable earlier in the search order and run it as the service.",
+        "A single administrative account for an entire team means one stolen laptop is a domain compromise."
+      ],
+      "what_to_look_for": [
+        "Check service and task permissions, since these are the most common local escalation path.",
+        "Check whether the administrative accounts used day to day are separate from standard user accounts.",
+        "Check file permissions on program directories and configuration files.",
+        "Check how many accounts are administrators, since more than a handful is a finding in itself."
+      ],
+      "defensive": [
+        "Run day-to-day work as a standard user and elevate only for specific tasks.",
+        "Give services the minimum privilege they need, and check their file and directory permissions.",
+        "Use absolute or quoted paths in service definitions so an attacker cannot substitute a binary.",
+        "Give each administrator a separate named account, and use just-in-time elevation where available.",
+        "Monitor for new members of privileged groups, which is the event that precedes most escalation chains."
+      ],
+      "references": [
+        "https://www.cisecurity.org/controls",
+        "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/audit-system-integrity",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "service-accounts-api-keys-and-secrets": {
+      "overview": "Machine identities outnumber human ones and are reviewed far less often. A leaked service credential is often a long-lived key that grants broad access and is invisible in account review.",
+      "how_it_works": [
+        "A service account is a real account used by software, so it can log in interactively unless you prevent it.",
+        "An API key is a shared secret, and anyone holding it inherits every permission it was granted.",
+        "A stored credential such as a certificate or a managed identity removes the shared secret entirely.",
+        "Rotation is difficult for embedded credentials, which is why so many of them are permanent.",
+        "Scope is the main defence: a narrowly scoped, short-lived credential limits the damage even if it leaks."
+      ],
+      "history": [
+        "Software integrations were built by copying a password into a configuration file, which is still a common pattern.",
+        "Infrastructure as code brought managed identities, so a workload could be given an identity without storing a secret.",
+        "Secrets management products made rotation routine, and made secret sprawl visible for the first time.",
+        "Workload identity federation extended the same idea to external and third-party workloads."
+      ],
+      "real_world": [
+        "An API key with administrator rights, committed to a repository, is a complete compromise that is often still live years later.",
+        "A service account permitted to log in interactively gives an attacker a persistent administrative identity.",
+        "A credential rotated in the secret store but still hard-coded in an application gains nothing, because the old copy still works."
+      ],
+      "what_to_look_for": [
+        "Check where credentials are stored, and whether any appear in source control, images or client-side code.",
+        "Check what permission each service identity holds, and whether it matches the work it does.",
+        "Check whether service accounts can log in interactively.",
+        "Check whether rotation actually reaches every copy of the credential in use."
+      ],
+      "defensive": [
+        "Prefer a workload identity over a stored secret wherever the platform offers one.",
+        "Scope every service identity to the smallest set of permissions the work needs.",
+        "Disable interactive logon for service accounts, so a stolen credential cannot be used by a person.",
+        "Scan source history and build artefacts for secrets, since removing a file later does not remove the secret.",
+        "Automate rotation and verify that old credentials stop working, rather than assuming it."
+      ],
+      "references": [
+        "https://www.cisecurity.org/controls",
+        "https://www.nist.gov/cyberframework",
+        "https://owasp.org/www-project-top-ten/"
+      ]
+    },
+    "access-reviews-joiner-mover-leaver": {
+      "overview": "Most over-privileged accounts are not created maliciously. They accumulate because nobody removes access when a person or a project changes, and that accumulation is the actual vulnerability.",
+      "how_it_works": [
+        "A joiner needs access, a mover needs different access, and a leaver needs none at all.",
+        "Access is usually granted to a person directly, so each new role creates another grant rather than a replacement.",
+        "A review is only useful if it forces removal, not just confirmation that the list looks right.",
+        "Group-based access reduces the number of individual decisions but can hide who actually has access.",
+        "Deprovisioning has to be triggered by something reliable, or it becomes a manual process that will eventually be missed."
+      ],
+      "history": [
+        "Access was managed by hand, so reviews were rare and sampled, and errors accumulated silently.",
+        "Identity governance tooling made it possible to see who has access to what across many systems.",
+        "Certification campaigns introduced a periodic, deliberate approval step, which removed a great deal of unnecessary access.",
+        "Automated joiner-mover-leaver flows reduced the delay between a role change and the access change that should follow it."
+      ],
+      "real_world": [
+        "An employee who changed role three years ago still has their old administrative rights on a system nobody remembers.",
+        "A contractor keeps access to a project system long after the project closed, and nobody owns the system to remove it.",
+        "A review where the reviewer approves everything within a minute changes nothing at all."
+      ],
+      "what_to_look_for": [
+        "Check how long high-privilege access has existed without being reviewed, and whether reviews happen at all.",
+        "Compare current access against the person's actual current role, not their original one.",
+        "Check whether leaver removal is automatic or manual, and how long it takes.",
+        "Check whether a group has grown over time without anyone examining what it now grants."
+      ],
+      "defensive": [
+        "Trigger joiner, mover and leaver actions from the human resources system rather than from memory.",
+        "Review privileged access on a schedule, and require the reviewer to actively remove what is not justified.",
+        "Make removals faster than grants, since a missed removal is the more common and more damaging error.",
+        "Base access on groups with a clear business owner, so a review has something specific to examine.",
+        "Report unused entitlements, because access nobody needs is the easiest thing to remove."
+      ],
+      "references": [
+        "https://www.cisecurity.org/controls",
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://www.nist.gov/cyberframework"
+      ]
+    }
+  }
+}

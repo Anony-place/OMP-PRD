@@ -1,0 +1,354 @@
+{
+  "_note": "Reviewed draft lesson content for the Network Attacks and Defences module. Educational and defensive in framing: each lesson names an attack so a defender can recognise and stop it. Data-only, no HTML.",
+  "lessons": {
+    "eavesdropping-in-the-clear": {
+      "overview": "Traffic on a shared network is readable unless it is encrypted, and most internal traffic historically was not. Understanding what an observer can learn from unencrypted traffic is the basis for deciding what must be encrypted.",
+      "how_it_works": [
+        "On a hub, or any segment where traffic is broadcast, a device can read frames not addressed to it without doing anything unusual.",
+        "A switched network forwards each frame only to the right port, so ordinary eavesdropping needs either the switch to be coerced or the traffic to be routed through an attacker.",
+        "Any router along the path necessarily sees the packet headers in the clear, because it has to read them to forward the packet.",
+        "Unencrypted application protocols therefore expose their contents, including credentials sent in a request body or a cookie.",
+        "TLS removes that exposure for the part of the path it covers, which is why the endpoints matter as much as the protocol."
+      ],
+      "history": [
+        "Shared-medium Ethernet made passive listening trivial, and the switch was partly a performance feature before it became a security boundary.",
+        "Wired equivalent privacy and similar link-layer protections addressed wireless eavesdropping but not traffic on the wire itself.",
+        "As protocols moved to TLS by default, passive interception became much harder and attackers shifted to endpoints and to plaintext services that remained.",
+        "Certificate transparency and pinning were added to close the gap where a trusted authority issued a certificate for someone else's name."
+      ],
+      "real_world": [
+        "A legacy service that still speaks a plaintext protocol exposes its traffic even on a fully switched network.",
+        "Email submitted without transport encryption reveals message content to anyone on the path, which is why mail servers are configured to upgrade.",
+        "A device on the same wireless network as a misconfigured service can read that service's traffic directly."
+      ],
+      "what_to_look_for": [
+        "Identify any protocol on your network that still sends secrets in the clear, including within an internal segment.",
+        "Check that a switch is actually managed, since an unmanaged device forwards everywhere.",
+        "Confirm that management protocols such as telnet are replaced by their encrypted equivalents.",
+        "Treat a router or proxy in the path as able to read anything not encrypted end to end."
+      ],
+      "defensive": [
+        "Require encryption for every protocol that carries authentication or personal data, including legacy ones.",
+        "Replace plaintext management protocols with SSH, and plaintext mail submission with an encrypted one.",
+        "Use managed switches and disable unused ports so a device cannot listen passively on a shared segment.",
+        "Encrypt traffic end to end where the endpoints are trusted, rather than only between hops."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "man-in-the-middle-arp-dns": {
+      "overview": "A man-in-the-middle attack positions the attacker between two parties who believe they are talking to each other. On a local network, ARP and DNS are the usual levers because both were designed to be trusted.",
+      "how_it_works": [
+        "ARP maps an IP address to a hardware address on the local segment, and the original design lets any device answer for any address.",
+        "An attacker who answers first can associate their own hardware address with another host's IP, so traffic for that host arrives at the attacker.",
+        "DNS poisoning works similarly: a forged earlier answer can be cached and used in place of the authoritative one.",
+        "In a TLS man-in-the-middle the attacker must also satisfy certificate validation, which is why plaintext or wrongly trusted certificates are usually required.",
+        "Modern clients detect some of these attempts directly, so the attack usually needs a foothold such as a compromised router or a trusted certificate."
+      ],
+      "history": [
+        "ARP was specified for a small trusted network and never included authentication, which is a design limitation rather than an implementation bug.",
+        "DNS likewise was built on the assumption that resolvers were honest, so poisoning has been productive since the early 1990s.",
+        "Dynamic ARP inspection on switches was the first widespread mitigation, and DNSSEC later addressed DNS at the protocol level.",
+        "Certificate validation improvements and the move to HTTPS by default removed most of the value of a simple network-level interception."
+      ],
+      "real_world": [
+        "An attacker with access to a router or an unmanaged switch can intercept traffic from devices that have not yet learned the correct mapping.",
+        "A compromised home or office router is a common interception point precisely because it already sits in the path.",
+        "A captive-portal style setup that installs a trusted root certificate removes the last obstacle to interception on that network."
+      ],
+      "what_to_look_for": [
+        "Notice a single device answering for many addresses, which is unusual and worth investigating.",
+        "Check whether the network's switches have dynamic ARP inspection enabled.",
+        "Treat any network that asks you to install a root certificate as a full trust decision.",
+        "Watch for TLS errors that users have been trained to ignore."
+      ],
+      "defensive": [
+        "Enable dynamic ARP inspection and DHCP snooping on managed switches.",
+        "Use DNSSEC validation on resolvers where the domain supports it.",
+        "Never install a third-party root certificate on a device that handles sensitive work.",
+        "Segment networks so a compromised device cannot intercept traffic for a whole floor.",
+        "Treat network devices as privileged infrastructure with dedicated hardening and monitoring."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc826",
+        "https://www.rfc-editor.org/rfc/rfc4033",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "denial-of-service-amplification": {
+      "overview": "A denial-of-service attack makes a service unavailable. Amplification attacks achieve this cheaply by finding a protocol where a small request produces a much larger reply aimed at someone else.",
+      "how_it_works": [
+        "A basic flood exhausts a target's bandwidth or connection capacity with traffic the attacker generates directly.",
+        "An amplification attack instead uses an open service that replies to a spoofed source address, so the reply is sent to the victim.",
+        "A single small query can produce a reply tens or hundreds of times larger, which is what makes this so cost-effective for an attacker.",
+        "Services that answer without verifying they are talking to a real client are the usual amplifiers, and they exist in both UDP and connectionless DNS paths.",
+        "The victim sees traffic that looks like ordinary requests from many unrelated sources, which is why basic blocking is ineffective."
+      ],
+      "history": [
+        "Denial of service predates the internet and was treated as an accepted cost of open networks.",
+        "SYN floods exploited the connection handshake, and operating systems later added SYN cookies to reduce their effect.",
+        "Amplification moved the cost onto third parties, and the 2018 attacks against domain name infrastructure showed the scale available.",
+        "Rate limiting at the responders and source-address validation at the amplifiers turned out to be the effective controls."
+      ],
+      "real_world": [
+        "An open resolver that answers queries for anyone will amplify an attack against its victims until it is fixed or rate limited.",
+        "A misconfigured network device can amplify unexpectedly, turning it into an unwitting participant.",
+        "A small business is as vulnerable to amplification as a large one, because the protocol does not care who is targeted."
+      ],
+      "what_to_look_for": [
+        "Run amplification services as recursive-only, and never leave an open resolver on the internet.",
+        "Check for services that reply to requests whose source address is not yours.",
+        "Watch for sudden growth in outbound traffic, which may mean you are being used as an amplifier.",
+        "Note that a sudden spike in inbound traffic to a UDP service is a strong indicator."
+      ],
+      "defensive": [
+        "Restrict DNS resolvers to the clients that need them and rate limit aggressively.",
+        "Apply source-address validation on edge devices so spoofed sources are never answered.",
+        "Ask your provider for amplification filtering before an incident rather than during one.",
+        "Have a rehearsed plan with your provider, because mitigation options are measured in minutes once traffic is saturating the link."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc9293",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "password-attacks-over-the-network": {
+      "overview": "Most account compromise is a password problem, not an exploit. The three common patterns are guessing a few common passwords, trying one password everywhere, and trying many passwords against one account.",
+      "how_it_works": [
+        "Spraying tries a small number of the most common passwords against many accounts, so no single account is obviously attacked and lockout rarely triggers.",
+        "Credential stuffing reuses passwords stolen from one breach against another service, which works because people reuse passwords.",
+        "Brute force tries many passwords against one account and is usually the loudest and easiest to detect, and also the slowest.",
+        "Offline attacks matter most: once a hash is stolen, the attacker can try unlimited guesses with no rate limit and no lockout.",
+        "Multi-factor authentication and rate limiting change which of these is practical, far more than password complexity rules do."
+      ],
+      "history": [
+        "Early systems stored passwords in plaintext, so a stolen file leaked every credential at once and reuse made it worse.",
+        "One-way hashes and later memory-hard functions raised the cost of each guess, which was the first real structural improvement.",
+        "Password complexity rules were widely promoted, and later research showed length and uniqueness matter considerably more.",
+        "Breach notification and multi-factor authentication shifted the emphasis from guessing to credential theft."
+      ],
+      "real_world": [
+        "A single breach at a small service can feed credential stuffing against a bank, because the password was reused.",
+        "Spraying against a company email system is common precisely because the most-used password will unlock at least one mailbox.",
+        "A backup of a password database is often worth more to an attacker than the live system, because it can be attacked offline."
+      ],
+      "what_to_look_for": [
+        "Watch for many failed attempts spread across many accounts, which indicates spraying rather than brute force.",
+        "Check whether the same password appears across services, which is the main driver of credential stuffing.",
+        "Notice whether rate limiting and lockout exist at all, and whether they can be used to deny service to real users.",
+        "Ask whether the password store is hashed with a modern, memory-hard function and a per-user salt."
+      ],
+      "defensive": [
+        "Require multi-factor authentication, especially for email, which is the usual route to everything else.",
+        "Length beats complexity: prefer long passphrases and a manager over short strings with substitution rules.",
+        "Detect spraying by counting failures per source across many accounts, not per account alone.",
+        "Hash passwords with a memory-hard function and a unique salt per user, and treat the store as high-value data.",
+        "Check breached-password lists at the point of choosing or changing a password."
+      ],
+      "references": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://owasp.org/www-project-top-ten/"
+      ]
+    },
+    "scanning-and-enumeration": {
+      "overview": "Before attacking a network, someone maps it. Scanning finds reachable hosts and ports, and enumeration turns those open doors into a list of services, versions and accounts worth trying.",
+      "how_it_works": [
+        "Scanning sends traffic across address ranges to find hosts that answer, and then probes ports to find open ones.",
+        "Service detection then identifies what is listening, often down to a product and version, which tells an attacker which weaknesses to try.",
+        "Enumeration goes further: naming records, directory services, certificate details and error messages all leak information about the organisation.",
+        "The same techniques are how defenders find forgotten systems, shadow IT and misconfigurations, so the tools are not inherently offensive.",
+        "Rate, source and timing are the observable signals, and a full sweep is rarely the quietest approach."
+      ],
+      "history": [
+        "Scanning emerged as a way to manage a growing network, and the tools existed before they were used offensively.",
+        "It became a reconnaissance staple as more services moved to the internet, and as operating systems began hiding version banners.",
+        "Service and version fingerprinting improved with the availability of large fingerprint databases.",
+        "Defenders adopted the same tools for asset management, which made blocking scans a harder default than it once was."
+      ],
+      "real_world": [
+        "A forgotten file-sharing server on the same network is exactly what a sweep finds and almost never what a plan anticipated.",
+        "A directory service that answers anonymous queries can hand over a full staff and system list.",
+        "A certificate that reveals internal hostnames gives an attacker a target list without touching the network at all."
+      ],
+      "what_to_look_for": [
+        "Run periodic sweeps of your own ranges so unknown systems are discovered by you rather than by someone else.",
+        "Check whether any service answers enumeration queries it should not, such as a directory service with anonymous bind enabled.",
+        "Look for outward-facing certificates and DNS records that reveal internal naming.",
+        "Notice scan traffic in logs, and treat a sweep across many hosts as reconnaissance worth escalating."
+      ],
+      "defensive": [
+        "Maintain an inventory by scanning your own ranges on a schedule, and reconcile it against what should exist.",
+        "Remove or isolate systems that no longer have an owner.",
+        "Restrict directory services so anonymous bind and broad search are disabled.",
+        "Reduce the information your public records and certificates reveal, since it removes an attacker free reconnaissance.",
+        "Alert on wide sweeps from a single source."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework",
+        "https://owasp.org/www-project-top-ten/"
+      ]
+    },
+    "malware-delivery-c2-beacons": {
+      "overview": "Malware needs a way in and a way to be controlled afterwards. Delivery is often mundane, while command and control is deliberately designed to look like ordinary network traffic and to survive being blocked.",
+      "how_it_works": [
+        "Delivery vectors include attachments, fake login pages, compromised websites, and supply-chain software updates.",
+        "Once running, the malware calls home on a schedule, which is called a beacon, and the interval is often jittered to avoid a visible pattern.",
+        "Command and control may use HTTPS to a normal-looking domain, a domain generation algorithm, or traffic hidden in a trusted service.",
+        "A fallback channel matters: if the primary is blocked, a second is usually already configured.",
+        "Persistence and lateral movement follow, and both create artefacts that are usually easier to detect than the beacon itself."
+      ],
+      "history": [
+        "Early malware was a file you downloaded and ran, so email and removable media were the main routes.",
+        "Scripting and macros moved much of it into memory, which made file-based detection less effective.",
+        "Domain generation algorithms and HTTPS beacons were adopted specifically to make command and control harder to block and to attribute.",
+        "Living-off-the-land techniques now aim to use only software already present, so the process tree looks ordinary."
+      ],
+      "real_world": [
+        "A fake sign-in page for a mail provider is one of the most common routes to an initial foothold, and it looks like normal login traffic.",
+        "A beacon every sixty seconds with small random variation is a pattern that survives in logs for months if nobody looks.",
+        "A compromised legitimate tool is harder to spot than a new executable, because the software is expected to be there."
+      ],
+      "what_to_look_for": [
+        "Look for regular outbound connections to destinations the organisation has no business talking to.",
+        "Watch for a new process making network connections shortly after starting, especially one spawned by an office document.",
+        "Check for established sessions from machines that should not be reaching the internet at all.",
+        "Notice DNS queries to newly registered or nonsensical domains, which is what a generation algorithm looks like."
+      ],
+      "defensive": [
+        "Control egress so a compromised host can only reach services it genuinely needs.",
+        "Monitor for beaconing patterns: regular intervals, small payloads, and long-lived connections to rare destinations.",
+        "Alert on new destinations per host, which is a stronger signal than raw volume.",
+        "Keep macros and scripting disabled by default where they are not required.",
+        "Assume a single compromised host will attempt lateral movement, and segment accordingly."
+      ],
+      "references": [
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://attack.mitre.org/",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "wireless-attacks-evil-twin-deauth": {
+      "overview": "Wireless attacks take advantage of the fact that a radio signal is visible to everyone nearby. The important ones let an attacker learn about a network, force clients to reconnect, or impersonate the network entirely.",
+      "how_it_works": [
+        "A passive listener can capture the beacons that access points broadcast, which reveal names, channels and supported security modes.",
+        "A deauthentication or disassociation frame is a standard management frame, and sending one can force a client to leave a network without any password.",
+        "A client that reconnects must re-authenticate, and a fake access point advertising the same name can capture that exchange.",
+        "The evil twin attack does exactly this: it impersonates a known network so users join the attacker instead.",
+        "WPA3 mitigates the offline handshake attack, but deauthentication is not fully prevented because the frame is part of the protocol."
+      ],
+      "history": [
+        "Wireless security started badly with WEP, whose short key and weak cipher were broken almost immediately.",
+        "WPA was a rushed fix that kept a serious weakness, and WPA2 corrected the handshake at the cost of adoption time.",
+        "WPA3 added protection against offline guessing and encrypted open networks, though deauthentication remains a live technique.",
+        "802.11w addressed management-frame integrity, and its adoption is still uneven."
+      ],
+      "real_world": [
+        "A deauthentication flood can empty a busy meeting room network without touching the password at all.",
+        "An evil twin on a conference network is a realistic scenario, because attendees expect to join an open network.",
+        "A strong passphrase does not stop deauthentication, since the attacker never needs it."
+      ],
+      "what_to_look_for": [
+        "Watch for clients repeatedly disconnecting and reconnecting, which suggests deauthentication rather than a weak signal.",
+        "Look for more than one access point advertising the same name in the same area.",
+        "Check which security modes your access points actually enable, including any legacy options left on.",
+        "Be suspicious of an open network with a name that resembles one you use at work or home."
+      ],
+      "defensive": [
+        "Use WPA3 with management-frame protection, and disable legacy protocols such as WEP and WPA.",
+        "Give access points distinctive names so an impersonation attempt is noticeable.",
+        "Consider client isolation so wireless clients cannot reach each other directly.",
+        "For staff and guests on shared networks, prefer a per-user identity over a single shared passphrase.",
+        "Monitor for repeated deauthentication frames, which are rarely legitimate."
+      ],
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc8446",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories",
+        "https://www.nist.gov/cyberframework"
+      ]
+    },
+    "network-defence-segmentation-zero-trust": {
+      "overview": "Defence assumes something will eventually be compromised. Segmentation limits how far an attacker can go afterwards, and zero trust replaces the idea of a trusted network with a check on every request.",
+      "how_it_works": [
+        "Segmentation divides the network so that compromising one zone does not automatically grant access to another.",
+        "Zones are usually defined by sensitivity, with rules between them that permit only the traffic actually required.",
+        "A flat network makes lateral movement easy, so segmentation is one of the highest-value changes for a modest amount of work.",
+        "Zero trust removes the assumption that being inside a network means being trusted, and verifies identity and device state per request.",
+        "Microsegmentation applies that at a per-workload level, which is powerful but expensive to operate without automation."
+      ],
+      "history": [
+        "Networks were originally designed for a small number of trusted hosts, and perimeter security assumed the inside was safe.",
+        "As more devices and cloud services joined, the perimeter became porous and the assumption stopped holding.",
+        "The zero-trust model was popularised in the 2010s as a response to that failure, and has since become a common architectural goal.",
+        "Cloud platforms made fine-grained policy practical, since policy can be expressed as code and applied consistently."
+      ],
+      "real_world": [
+        "Flat networks are the single most common reason a ransomware incident spreads to every system at once.",
+        "A network where contractors and guest devices sit alongside servers provides a very short path to production.",
+        "A database that accepts connections from the entire internal network has no segmentation around the thing that matters most."
+      ],
+      "what_to_look_for": [
+        "Check whether any single compromised device can reach every other system without restriction.",
+        "List which systems can talk directly to the database, and reduce that list to the applications that genuinely need it.",
+        "Notice how many devices share administrative credentials, because shared credentials defeat per-identity access.",
+        "Check whether internal traffic is logged, since you cannot investigate lateral movement you did not record."
+      ],
+      "defensive": [
+        "Segment by sensitivity first, and start with the systems that would hurt most if reached.",
+        "Allow only required flows between segments, and default to deny rather than to permissive.",
+        "Replace shared administrative logins with individual identities, because shared accounts destroy accountability.",
+        "Require multi-factor authentication for every administrative path, including ones only reachable internally.",
+        "Log east-west traffic, because lateral movement is otherwise invisible."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    },
+    "secure-remote-access": {
+      "overview": "Remote access concentrates a difficult problem: granting a user on an untrusted network the same reach as a user in an office. The design question is what the connection grants, and for how long.",
+      "how_it_works": [
+        "A remote access system authenticates the user and the device, then decides what the session is allowed to reach.",
+        "Publishing the whole internal network to a remote client gives away far more than most users need.",
+        "Publishing individual applications narrows that, and per-request authorisation narrows it further.",
+        "Long-lived credentials on a shared device mean the access outlives the person who asked for it.",
+        "Session recording and per-request logs are what make remote access auditable after the fact."
+      ],
+      "history": [
+        "Remote access began as a dial-up modem and a protocol that gave full network access, which is why it was trusted implicitly.",
+        "VPN clients moved that model to the internet without changing its shape, so full network access became the default expectation.",
+        "Application-level access grew as organisations became uncomfortable exposing entire internal ranges.",
+        "Zero-trust access management moved the decision from network location to identity and device posture on each request."
+      ],
+      "real_world": [
+        "A VPN account that still works after someone leaves is one of the most common and most damaging findings in an assessment.",
+        "Split tunnelling on a lost laptop can leave corporate traffic unprotected while the device is on hostile Wi-Fi.",
+        "An access system that trusts the internal network implicitly is only as strong as every device on that network."
+      ],
+      "what_to_look_for": [
+        "List every remote access account and check whether it still belongs to someone who needs it.",
+        "Check what each account can reach, and whether that matches the person's actual job.",
+        "Look for shared remote credentials, and for accounts that bypass multi-factor authentication.",
+        "Confirm that sessions are logged well enough to answer who accessed what, and when."
+      ],
+      "defensive": [
+        "Grant access to the applications a person needs rather than to the whole network.",
+        "Require multi-factor authentication for remote access and for every administrative path.",
+        "Remove access automatically when someone leaves or changes role, rather than on a schedule.",
+        "Re-authenticate periodically during long sessions so a stolen connection has a limited useful life.",
+        "Combine remote access with device health checks, so unmanaged devices do not receive the same access as managed ones."
+      ],
+      "references": [
+        "https://www.nist.gov/cyberframework",
+        "https://www.cisecurity.org/controls",
+        "https://www.cisa.gov/topics/cyber-threats-and-advisories"
+      ]
+    }
+  }
+}

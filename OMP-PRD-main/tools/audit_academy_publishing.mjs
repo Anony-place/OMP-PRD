@@ -9,7 +9,34 @@ const raw = JSON.parse(
     "utf8",
   ),
 );
-assert.equal(curriculum(raw).topics.length, 4);
+// Every published topic in the built snapshot must survive validation, and
+// every one of them must carry the full set of lesson sections. Deriving the
+// expected count from the snapshot keeps this a real invariant check instead
+// of a magic number that silently goes stale when content is published.
+const published = raw.topics.filter((t) => t.status === "published");
+assert.ok(published.length > 0, "snapshot has no published topics to validate");
+const REQUIRED = [
+  "overview",
+  "how_it_works",
+  "history",
+  "real_world",
+  "what_to_look_for",
+  "defensive",
+  "references",
+];
+for (const topic of published) {
+  for (const section of REQUIRED) {
+    assert.ok(
+      topic.content?.[section],
+      `published lesson ${topic.slug} is missing ${section}`,
+    );
+  }
+  assert.ok(
+    topic.content.references.every((r) => r.startsWith("https://")),
+    `published lesson ${topic.slug} has a non-HTTPS reference`,
+  );
+}
+assert.equal(curriculum(raw).topics.length, published.length);
 let checks = 1;
 for (const content of [
   {},
@@ -28,7 +55,7 @@ for (const content of [
 const draft = structuredClone(raw);
 draft.topics[0].status = "draft";
 draft.topics[0].content = {};
-assert.equal(curriculum(draft).topics.length, 3);
+assert.equal(curriculum(draft).topics.length, published.length - 1);
 checks++;
 const missingOutcome = structuredClone(raw);
 missingOutcome.modules[0].outcome = " ";

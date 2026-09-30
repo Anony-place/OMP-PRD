@@ -232,36 +232,6 @@ function renderPublic(data, page, pmap) {
       lastTopic: lastTopic(page.path?.id),
     }),
   );
-  if (page.type === "category") {
-    document
-      .querySelectorAll("[data-course-controls]")
-      .forEach((el) => (el.hidden = false));
-    const search = document.querySelector("#course-search"),
-      level = document.querySelector("#course-level");
-    const cards = [...document.querySelectorAll("[data-course-card]")];
-    const update = () => {
-      let count = 0;
-      for (const card of cards) {
-        card.hidden =
-          !card.textContent
-            .toLocaleLowerCase()
-            .includes(search.value.trim().toLocaleLowerCase()) ||
-          (level.value !== "all" && card.dataset.difficulty !== level.value);
-        if (!card.hidden) count++;
-      }
-      document.querySelector("#course-count").textContent =
-        `${count} of ${cards.length} courses`;
-      document.querySelector("#course-empty").hidden = count !== 0;
-    };
-    search.addEventListener("input", update);
-    level.addEventListener("change", update);
-    document.querySelector("#course-reset").onclick = () => {
-      search.value = "";
-      level.value = "all";
-      update();
-      search.focus();
-    };
-  }
   if (page.type !== "path") return;
   document
     .querySelectorAll("[data-enhanced-control]")
@@ -337,18 +307,84 @@ function quizView(quiz, p) {
       "",
     )}<p class="quiz-error" role="alert"></p><div class="quiz-navigation"><button class="btn btn-secondary" type="button" id="question-back" disabled>Previous</button><button class="btn btn-primary" type="button" id="question-next">Next question ${icon("arrow")}</button><button class="btn btn-primary" type="submit" hidden>Submit answers ${icon("check")}</button></div></form><div id="quiz-result" role="status" tabindex="-1"></div>`;
 }
+/* What the learner does next, derived only from the published curriculum. */
+function nextStepFor(data, path, module, topic, passed) {
+  const index = path.topics.findIndex((t) => t.id === topic.id);
+  const next = path.topics[index + 1];
+  const lastInModule = !next || next.module_id !== topic.module_id;
+  if (!next)
+    return {
+      kind: "course",
+      label: "COURSE COMPLETE ✓",
+      title: `You've completed ${path.name}.`,
+      body: `You worked through ${pluralize(path.modules.length, "module")} and ${pluralize(path.topics.length, "lesson")} in this course. Review any lesson you cannot explain in your own words, then pick your next step from the published courses.`,
+      cta: "Review this course",
+      href: path.url,
+    };
+  if (!passed)
+    return {
+      kind: "upcoming",
+      label: "NEXT",
+      title: next.name,
+      body: next.description,
+      cta: lastInModule ? "Start the next module" : "Next lesson",
+      href: next.url,
+    };
+  if (lastInModule)
+    return {
+      kind: "module",
+      label: "MODULE COMPLETE ✓",
+      title: `You've completed ${module.name}.`,
+      body: `Next: ${next.name}. You have finished ${module.name} and are moving into ${path.modules.find((m) => m.id === next.module_id)?.name || "the next module"}.`,
+      cta: "Continue",
+      href: next.url,
+    };
+  return {
+    kind: "lesson",
+    label: "LESSON COMPLETE ✓",
+    title: next.name,
+    body: next.description,
+    cta: "Next lesson",
+    href: next.url,
+  };
+}
+const pluralize = (n, label) =>
+  `${n} ${label}${n === 1 ? "" : label === "module" ? "s" : "s"}`;
+function nextStepView(data, path, module, topic, passed) {
+  const step = nextStepFor(data, path, module, topic, passed);
+  return `<div class="lesson-next" id="lesson-next" data-kind="${step.kind}"><div class="lesson-next-label">${esc(step.label)}</div><h2>${esc(step.title)}</h2><p>${step.body}</p><a class="btn btn-primary" href="${step.href}">${esc(step.cta)} ${icon("arrow")}</a></div>`;
+}
 async function renderTopic(data, cat, topic, saved = {}) {
   updateSeo(topic.name, topic.content?.seo_description || topic.description);
   let p = { ...saved };
   const path = data.paths.find((path) => path.id === topic.path_id);
   const module = path.modules.find((module) => module.id === topic.module_id);
   const teaching = sectionsFor(topic),
+    // "why" replaces the "overview" section, so concept count is unchanged.
     learnCount = teaching.length;
+  // One consistent learning loop per lesson: why it matters, learn the concept,
+  // see real examples, apply it, check understanding, then an explicit next step.
   const sections = [
-    ...teaching.map((s) => [s.id, s.title, s.blocks]),
+    [
+      "why",
+      "Why this matters",
+      [{ type: "paragraph", text: topic.content.overview || topic.description }],
+    ],
+    ...teaching
+      .filter((s) => s.id !== "overview")
+      .map((s) => [s.id, s.title, s.blocks]),
     ["labs", "Practice", null],
-    ["quiz", "Knowledge check", null],
+    ["quiz", "Check your understanding", null],
   ];
+  const sectionKickers = {
+    why: "WHY THIS MATTERS",
+    "real-world": "SEE AN EXAMPLE",
+    "what-to-look-for": "APPLY THIS",
+    "look-for": "APPLY THIS",
+    defensive: "KEY TAKEAWAYS",
+    labs: "PRACTICE / APPLY",
+    quiz: "CHECK YOUR UNDERSTANDING",
+  };
   const nextTopic =
     path.topics[path.topics.findIndex((t) => t.id === topic.id) + 1];
   const labs = data.labs.filter(
@@ -357,14 +393,27 @@ async function renderTopic(data, cat, topic, saved = {}) {
   const quiz = data.selfCheckUnavailable
     ? { unavailable: true }
     : data.quizzes.find((q) => q.topic_id === topic.id);
-  const outline = `<aside class="academy-sidebar lesson-sidebar"><a class="lesson-back" href="${path.url}">← Back to course</a><div class="lesson-sidebar-title"><span class="academy-kicker">${esc(path.name)}</span><strong>${esc(topic.name)}</strong><span>${esc(topic.difficulty)} · ${Number(topic.estimated_minutes) || 0} min</span></div><button class="lesson-outline-toggle" aria-expanded="false" aria-controls="lesson-outline">Lesson contents <span aria-hidden="true">⌄</span></button><nav id="lesson-outline" class="lesson-outline" aria-label="Lesson sections"><span class="academy-nav-label">LEARN THE CONCEPT</span>${sections.map(([id, title], i) => `${i === learnCount ? '<span class="academy-nav-label outline-practice-label">PUT IT INTO PRACTICE</span>' : ""}<a href="#${id}" data-outline="${id}"><span class="outline-index">${i === learnCount ? icon("lab") : i === learnCount + 1 ? icon("award") : String(i + 1).padStart(2, "0")}</span>${esc(title)}<span class="outline-current" aria-hidden="true"></span></a>`).join("")}</nav><div class="sidebar-note"><strong>Focus on understanding.</strong><p>You can move between sections at any time. Your reading position is saved on this device.</p></div></aside>`;
+  const outline = `<aside class="academy-sidebar lesson-sidebar"><a class="lesson-back" href="${path.url}">← Back to course</a><div class="lesson-sidebar-title"><span class="academy-kicker">${esc(path.name)}</span><strong>${esc(topic.name)}</strong><span>${esc(topic.difficulty)} · ${Number(topic.estimated_minutes) || 0} min</span></div><button class="lesson-outline-toggle" aria-expanded="false" aria-controls="lesson-outline">Lesson contents <span aria-hidden="true">⌄</span></button><nav id="lesson-outline" class="lesson-outline" aria-label="Lesson sections"><span class="academy-nav-label">LEARN</span>${sections.map(([id, title], i) => `${i === learnCount ? '<span class="academy-nav-label outline-practice-label">PRACTICE &amp; CHECK</span>' : ""}<a href="#${id}" data-outline="${id}"><span class="outline-index">${i === learnCount ? icon("lab") : i === learnCount + 1 ? icon("award") : String(i + 1).padStart(2, "0")}</span>${esc(title)}<span class="outline-current" aria-hidden="true"></span></a>`).join("")}</nav><div class="sidebar-note"><strong>Focus on understanding.</strong><p>You can move between sections at any time. Your reading position is saved on this device.</p></div></aside>`;
   shell(
     data,
     "lesson",
-    `${breadcrumbView(resolvePage(data, topic.url))}<header class="lesson-heading"><div class="lesson-heading-meta"><span class="academy-badge">${esc(topic.difficulty)}</span><span>${icon("clock")}${Number(topic.estimated_minutes) || 0} min</span><span class="lesson-state" id="lesson-state">${labels[state(p)]}</span></div><h1>${esc(topic.name)}</h1><p>${esc(topic.description)}</p></header><div class="topic-context"><strong>${esc(module.name)} · Lesson ${path.topics.findIndex((t) => t.id === topic.id) + 1} of ${path.topics.length}</strong><p>${esc(module.outcome)}</p><a class="text-button" href="${path.url}#module-${module.slug}">See this lesson in the course →</a></div><div class="lesson-stage-bar" aria-label="Learning stages"><span data-stage="learn">01 <strong>Learn</strong></span><span data-stage="labs">02 <strong>Practice</strong></span><span data-stage="quiz">03 <strong>Knowledge check</strong></span></div><div id="lesson-feedback" role="status"></div><div class="lesson-reader">${sections.map(([id, title, key], i) => `<section id="section-${id}" class="lesson-section" aria-labelledby="heading-${id}" hidden><div class="reader-eyebrow">${i < learnCount ? `THE CONCEPT · SECTION ${i + 1} OF ${learnCount}` : i === learnCount ? "PUT YOUR KNOWLEDGE TO WORK" : "BRING IT ALL TOGETHER"}</div><h2 id="heading-${id}" tabindex="-1">${esc(title)}</h2>${key ? `<div class="prose learning-prose">${blocksView(key)}</div>${i === learnCount - 1 ? references(topic.content?.references) : ""}` : id === "labs" ? `<p class="reader-intro">Move from understanding to doing. Explore the resource below, then confirm you’ve completed the practice.</p><div class="lab-safety">${icon("shield")}${esc(topic.content.practice_guidance || "Use a suitable learning environment. Follow the resource’s instructions and test other people’s systems only with permission.")}</div>${labs.length ? labs.map((l) => `<div class="academy-lab"><span class="academy-kicker">${esc(l.provider)} · EXTERNAL RESOURCE</span><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open practice resource ↗<span class="sr-only"> (opens in a new tab)</span></a></div>`).join("") + `<div class="lab-confirmation"><label><input type="checkbox" id="lab-confirm" ${p.lab_completed ? "checked disabled" : ""}>I’ve worked through the practice and reviewed the key concepts.</label><button class="btn btn-primary" id="complete-lab" ${p.lab_completed ? "disabled" : ""}>${p.lab_completed ? "Practice completed ✓" : "Save practice & continue"}${icon("arrow")}</button><p class="small muted">Practice and self-check results stay on this device. Completion is self-reported.</p><p id="lab-feedback" role="status"></p></div>` : notice("No practice resources are published for this lesson yet. Please check back later.")}` : `<div id="quiz-container">${quizView(quiz, p)}</div>`}</section>`).join("")}<footer class="reader-navigation"><button class="btn btn-secondary" id="section-back">← Previous</button><span id="section-counter"></span><button class="btn btn-primary" id="section-next">Next section ${icon("arrow")}</button></footer></div><p class="reader-footnote">${icon("shield")}Learn responsibly. Practice with permission. Build with confidence.</p><div class="topic-next"><a class="btn btn-secondary" href="${nextTopic?.url || path.url}">${nextTopic ? `Next lesson: ${esc(nextTopic.name)}` : "Review course outcomes"} ${icon("arrow")}</a><span>${nextTopic ? "Follow the recommended learning order." : "This is the last lesson in this course."}</span></div>`,
+    `${breadcrumbView(resolvePage(data, topic.url))}<header class="lesson-heading"><div class="lesson-heading-meta"><span class="academy-badge">${esc(topic.difficulty)}</span><span>${icon("clock")}${Number(topic.estimated_minutes) || 0} min</span><span class="lesson-state" id="lesson-state">${labels[state(p)]}</span></div><h1>${esc(topic.name)}</h1><p>${esc(topic.description)}</p></header><div class="topic-context"><strong>${esc(module.name)} · Lesson ${path.topics.findIndex((t) => t.id === topic.id) + 1} of ${path.topics.length}</strong><p>${esc(module.outcome)}</p><a class="text-button" href="${path.url}#module-${module.slug}">See this lesson in the course →</a></div><div class="lesson-stage-bar" aria-label="Learning stages"><span data-stage="learn">01 <strong>Learn</strong></span><span data-stage="example">02 <strong>See examples</strong></span><span data-stage="apply">03 <strong>Apply</strong></span><span data-stage="labs">04 <strong>Practice</strong></span><span data-stage="quiz">05 <strong>Check</strong></span></div><div id="lesson-feedback" role="status"></div><div class="lesson-reader">${sections.map(([id, title, key], i) => `<section id="section-${id}" class="lesson-section" aria-labelledby="heading-${id}" hidden><div class="reader-eyebrow">${sectionKickers[id] || (i < learnCount ? `LEARN THE CONCEPT · STEP ${i + 1} OF ${learnCount}` : "CHECK YOUR UNDERSTANDING")}</div><h2 id="heading-${id}" tabindex="-1">${esc(title)}</h2>${key ? `<div class="prose learning-prose">${blocksView(key)}</div>${i === learnCount - 1 ? references(topic.content?.references) : ""}` : id === "labs" ? `<p class="reader-intro">Move from understanding to doing. Explore the resource below, then confirm you’ve completed the practice.</p><div class="lab-safety">${icon("shield")}${esc(topic.content.practice_guidance || "Use a suitable learning environment. Follow the resource’s instructions and test other people’s systems only with permission.")}</div>${labs.length ? labs.map((l) => `<div class="academy-lab"><span class="academy-kicker">${esc(l.provider)} · EXTERNAL RESOURCE</span><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open practice resource ↗<span class="sr-only"> (opens in a new tab)</span></a></div>`).join("") + `<div class="lab-confirmation"><label><input type="checkbox" id="lab-confirm" ${p.lab_completed ? "checked disabled" : ""}>I’ve worked through the practice and reviewed the key concepts.</label><button class="btn btn-primary" id="complete-lab" ${p.lab_completed ? "disabled" : ""}>${p.lab_completed ? "Practice completed ✓" : "Save practice & continue"}${icon("arrow")}</button><p class="small muted">Practice and self-check results stay on this device. Completion is self-reported.</p><p id="lab-feedback" role="status"></p></div>` : notice("No practice resources are published for this lesson yet. Please check back later.")}` : `<div id="quiz-container">${quizView(quiz, p)}</div>`}</section>`).join("")}<footer class="reader-navigation"><button class="btn btn-secondary" id="section-back">← Previous</button><span id="section-counter"></span><button class="btn btn-primary" id="section-next">Next section ${icon("arrow")}</button></footer></div><p class="reader-footnote">${icon("shield")}Learn responsibly. Practice with permission. Build with confidence.</p><div id="lesson-next-slot">${nextStepView(data, path, module, topic, Boolean(p.passed))}</div>`,
     outline,
   );
   let current = 0;
+  // Section id -> learning stage. Labs and the knowledge check are always their
+  // own stage; concept sections map onto the published lesson loop. Unknown ids
+  // (custom `sections` content) stay on the concept stage rather than breaking.
+  const stageById = {
+    why: "learn",
+    "how-it-works": "learn",
+    history: "learn",
+    "real-world": "example",
+    "look-for": "apply",
+    defensive: "apply",
+  };
+  const stageFor = (id) =>
+    id === "labs" ? "labs" : id === "quiz" ? "quiz" : stageById[id] || "learn";
   function showSection(id, focus = false) {
     let index = sections.findIndex((s) => s[0] === id);
     if (index < 0 && !topic.content.sections && /^s-0[1-8]$/.test(id))
@@ -379,13 +428,11 @@ async function renderTopic(data, cat, topic, saved = {}) {
         el.setAttribute("aria-current", "step");
       else el.removeAttribute("aria-current");
     });
+    const activeStage = stageFor(activeId);
     document
       .querySelectorAll("[data-stage]")
       .forEach((el) =>
-        el.classList.toggle(
-          "active",
-          el.dataset.stage === (current < learnCount ? "learn" : activeId),
-        ),
+        el.classList.toggle("active", el.dataset.stage === activeStage),
       );
     document.querySelector("#section-back").disabled = current === 0;
     document.querySelector("#section-next").hidden =
@@ -394,7 +441,7 @@ async function renderTopic(data, cat, topic, saved = {}) {
       (current === learnCount - 1
         ? "Continue to practice"
         : current === learnCount
-          ? "View knowledge check"
+          ? "Check your understanding"
           : "Next section") + icon("arrow");
     document.querySelector("#section-counter").textContent =
       `${current + 1} / ${sections.length}`;
@@ -427,6 +474,17 @@ async function renderTopic(data, cat, topic, saved = {}) {
         .querySelector("#lesson-outline")
         .classList.toggle("is-open", open);
     });
+  function refreshNextStep() {
+    const slot = document.querySelector("#lesson-next-slot");
+    if (slot)
+      slot.innerHTML = nextStepView(
+        data,
+        path,
+        module,
+        topic,
+        Boolean(p.passed),
+      );
+  }
   function bindQuiz() {
     document
       .querySelectorAll("[data-section-link]")
@@ -447,6 +505,7 @@ async function renderTopic(data, cat, topic, saved = {}) {
         p = { ...p, ...result.progress };
         if (result.status === "PASSED") p.passed = true;
         document.querySelector("#lesson-state").textContent = labels[state(p)];
+        refreshNextStep();
       });
     document.querySelector("[data-retake]")?.addEventListener("click", () => {
       document.querySelector("#quiz-container").innerHTML = quizView(quiz, {
@@ -464,15 +523,17 @@ async function renderTopic(data, cat, topic, saved = {}) {
       });
       document.querySelector("#lesson-state").textContent = labels[state(p)];
       document.querySelector("#quiz-container").innerHTML = quizView(quiz, p);
+      refreshNextStep();
       storageNotice();
     });
   }
   showSection(
     location.hash.slice(1) ||
       position(topic) ||
-      (p.lab_completed ? "quiz" : p.lesson_completed ? "labs" : "overview"),
+      (p.lab_completed ? "quiz" : p.lesson_completed ? "labs" : "why"),
   );
   bindQuiz();
+  refreshNextStep();
   document
     .querySelector("#complete-lab")
     ?.addEventListener("click", async (e) => {
@@ -704,8 +765,17 @@ async function init() {
     }
     if (page.type === "notfound") return;
     allTopics = data.topics;
+    // Discovery pages (home, learning path) render per-course progress, so they
+    // need the whole published catalogue. Lesson/course pages stay scoped to
+    // their own lessons.
     const pmap = await progressFor(
-      page.topic ? [page.topic] : page.path?.topics || [],
+      page.topic
+        ? [page.topic]
+        : ["overview", "roadmap", "category", "category-roadmap"].includes(
+              page.type,
+            )
+          ? data.topics
+          : page.path?.topics || [],
     );
     if (page.topic) {
       let check = page.topic.content.self_check;
@@ -740,8 +810,11 @@ async function init() {
     else renderPublic(data, page, pmap);
     if (location.hash === "#account")
       document.querySelector("#academy-account")?.showModal();
-  } catch {
+  } catch (error) {
     // Keep the server-rendered public content if enhancement cannot initialize.
+    // Log the cause: a swallowed error here is indistinguishable from a
+    // rendering bug when it happens in production.
+    console.error("Academy reader failed to initialise", error);
     app.insertAdjacentHTML(
       "afterbegin",
       notice(

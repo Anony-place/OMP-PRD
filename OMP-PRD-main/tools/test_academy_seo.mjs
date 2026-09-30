@@ -135,7 +135,7 @@ check(
   },
 );
 check(
-  "A second category and path work without changes to navigation or route code",
+  "An additional category and path work without changes to navigation or route code",
   () => {
     const extra = structuredClone(raw);
     extra.categories.push({
@@ -168,7 +168,12 @@ check(
     });
     const expanded = curriculum(extra),
       url = "/learning/defensive-security/basics/trust-models";
-    assert.equal(expanded.categories.length, 2);
+    // The added category must appear alongside every category already in the
+    // catalogue, so the expectation is derived rather than a fixed count.
+    assert.equal(expanded.categories.length, raw.categories.length + 1);
+    assert.ok(
+      expanded.categories.some((c) => c.slug === "defensive-security"),
+    );
     assert.equal(resolvePage(expanded, url).type, "lesson");
     assert.ok(
       publicView(expanded, resolvePage(expanded, "/learning")).includes(
@@ -178,8 +183,26 @@ check(
   },
 );
 check("Unpublished ancestors never expose their lessons or routes", () => {
+  // Hiding a single path must remove exactly that path's own modules and
+  // lessons, and must leave every other published path intact.
+  const target = raw.paths[0];
+  const targetTopics = raw.topics.filter((t) => t.path_id === target.id).length;
+  const targetModules = raw.modules.filter((m) => m.path_id === target.id).length;
+  assert.ok(targetTopics > 0 && targetModules > 0, "catalogue has no lessons to hide");
+  const partial = structuredClone(raw);
+  partial.paths[0].status = "draft";
+  const partialFiltered = curriculum(partial);
+  assert.equal(partialFiltered.paths.length, raw.paths.length - 1);
+  assert.equal(
+    partialFiltered.topics.length,
+    raw.topics.length - targetTopics,
+  );
+  for (const topic of partialFiltered.topics) {
+    assert.notEqual(topic.path_id, target.id);
+  }
+  // With every path unpublished nothing at all may be exposed.
   const hidden = structuredClone(raw);
-  hidden.paths[0].status = "draft";
+  for (const path of hidden.paths) path.status = "draft";
   const filtered = curriculum(hidden);
   assert.equal(filtered.topics.length, 0);
   assert.equal(filtered.paths.length, 0);
