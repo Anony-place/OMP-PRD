@@ -27,7 +27,23 @@ const issues = [], observations = [];
     }};` }));
     await ctx.route('**/functions/v1/sitemap?format=json', r => r.fulfill({ json: { urls: [] } }));
     await ctx.route(BASE + '/**', async r => {
-      const response = await r.fetch({ maxRedirects: 0 });
+      /* Each route runs two axe scans and six viewport resizes, so the gap
+         between requests on the same keep-alive connection can exceed the
+         preview server's idle timeout. When that happens the client reuses a
+         socket the server has already closed and the fetch dies with
+         "socket hang up", failing the whole sweep on a transport hiccup
+         rather than on anything the site did. Retry the fetch; the assertions
+         that follow are unchanged. */
+      let response;
+      for (let attempt = 0; ; attempt++) {
+        try {
+          response = await r.fetch({ maxRedirects: 0 });
+          break;
+        } catch (err) {
+          if (attempt >= 3) throw err;
+          await new Promise((res) => setTimeout(res, 250 * (attempt + 1)));
+        }
+      }
       await r.fulfill({ response, headers: { ...response.headers(), ...headersFor(new URL(r.request().url()).pathname) } });
     });
     const page = await ctx.newPage();

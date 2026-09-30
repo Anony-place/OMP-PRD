@@ -130,12 +130,20 @@ function localDialog() {
 }
 function storageNotice() {
   const target = document.querySelector("#device-storage-note");
-  if (target)
-    target.textContent = !local.persistent
-      ? "Browser storage is unavailable. Changes are kept for this tab only and may be lost on reload. Download a backup before leaving."
-      : local.damaged
-        ? "Some saved data could not be read. Restore a backup in Device settings if you have one."
-        : "Progress saved on this device only · No login · No cloud sync";
+  if (!target) return;
+  // "Progress stays on this device" is a property of the product, not news: it
+  // is stated in Device settings, on the course pages and in the home page
+  // facts. Repeating it above every lesson is noise, so the banner only speaks
+  // up when storage is actually unavailable or its contents were unreadable.
+  if (local.persistent && !local.damaged) {
+    target.hidden = true;
+    target.textContent = "";
+    return;
+  }
+  target.hidden = false;
+  target.textContent = !local.persistent
+    ? "Browser storage is unavailable. Changes are kept for this tab only and may be lost on reload. Download a backup before leaving."
+    : "Some saved data could not be read. Restore a backup in Device settings if you have one.";
 }
 function shell(data, selected, content, customSidebar = "") {
   const page = resolvePage(data, location.pathname);

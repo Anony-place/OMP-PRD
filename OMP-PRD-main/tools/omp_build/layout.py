@@ -222,8 +222,8 @@ def footer():
         ]),
         ("Academy", [
             ("Academy home", "/learning"),
-            ("Subjects & courses", "/learning#categories"),
-            ("Choose your roadmap", "/learning/roadmap"),
+            ("Learning paths", "/learning/roadmap"),
+            ("Course order", "/learning/roadmap#all-courses-h"),
             ("How learning works", "/learning/roadmap#how-it-works"),
             ("Article email updates", "/articles#newsletter"),
         ]),

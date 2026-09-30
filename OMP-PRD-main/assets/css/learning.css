@@ -3692,7 +3692,9 @@
   height: auto;
   border-bottom: 0;
   justify-content: flex-end;
-  padding: 0;
+  /* Keep the horizontal padding: the control is the only thing left in this
+     row, and at padding 0 its label touched the viewport edge on phones. */
+  padding: 0 38px;
 }
 .academy-page .academy-topbar > span:first-child {
   display: none;
@@ -4251,4 +4253,194 @@
   .academy-page .course-card {
     padding: 20px 18px;
   }
+}
+
+/* ===========================================================================
+   Narrow-viewport rail.
+
+   The rail rules scoped to .academy-page (248px column, sticky full-height
+   panel) are more specific than the plain .academy-sidebar rules inside the
+   earlier media queries, and a media query adds no specificity of its own.
+   The rail therefore kept its full height when the shell collapsed to one
+   column, stacking as an ~800px block above the content: on a 390px phone the
+   lesson heading sat 1100px down the page with a large empty gap. Re-assert
+   the compact horizontal rail at matching specificity, in one place.
+   =========================================================================== */
+@media (max-width: 900px) {
+  .academy-page .academy-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Course pages: one scrollable row of links. The wordmark duplicates the
+     header brand, the section labels and the explanatory note are desktop
+     affordances, and the subject list is already reachable from the header. */
+  .academy-page .academy-sidebar:not(.lesson-sidebar) {
+    position: static;
+    height: auto;
+    max-height: none;
+    padding: 10px 16px;
+    background: var(--bg);
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .academy-page .academy-sidebar:not(.lesson-sidebar)::-webkit-scrollbar {
+    display: none;
+  }
+  /* The wordmark duplicates the header brand, the explanatory note is a
+     desktop affordance, and the section labels mean nothing once the groups sit
+     side by side. The two link groups themselves stay: flattened into one row
+     they make a compact, complete navigation bar, and the current path and
+     course are no longer repeated because sidebarView excludes the current
+     subject from the other list. */
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .academy-wordmark,
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .sidebar-note,
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .academy-nav-label {
+    display: none;
+  }
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .sidebar-category-links,
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .academy-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+  }
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .academy-navigation a {
+    white-space: nowrap;
+    padding: 8px 10px;
+    font-size: 0.74rem;
+    min-height: 40px;
+  }
+
+  /* Lesson pages: the sidebar is replaced by the lesson outline, which already
+     has its own disclosure control. Keep the row short so the lesson heading
+     is the first thing on screen. */
+  .academy-page .lesson-sidebar {
+    position: static;
+    height: auto;
+    max-height: none;
+    display: block;
+    padding: 10px 16px 12px;
+    background: var(--bg);
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .academy-page .lesson-sidebar .lesson-sidebar-title,
+  .academy-page .lesson-sidebar .sidebar-note {
+    display: none;
+  }
+  .academy-page .lesson-sidebar .lesson-outline {
+    max-height: 62vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 600px) {
+  .academy-page .academy-sidebar:not(.lesson-sidebar) {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .academy-page .academy-sidebar:not(.lesson-sidebar) .academy-navigation a {
+    padding: 7px 8px;
+    font-size: 0.72rem;
+  }
+  .academy-page .lesson-sidebar {
+    padding: 8px 12px 10px;
+  }
+}
+
+/* Align the rail and the lone topbar control with the content column, and keep
+   the storage notice to one compact line, so a phone shows the lesson heading
+   within the first screenful instead of below three blocks of chrome. */
+@media (max-width: 900px) {
+  .academy-page .academy-topbar {
+    padding-inline: 22px;
+  }
+  .academy-page .academy-device-note {
+    padding: 9px 12px;
+    font-size: 0.78rem;
+    margin-bottom: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .academy-page .academy-topbar {
+    padding-inline: 16px;
+  }
+  .academy-page .academy-device-note {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+}
+
+/* Hero orientation panel: explains the shape of a lesson instead of repeating
+   the recommended course, which the course list below already shows. */
+.hero-resume--orientation {
+  background: var(--academy-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.hero-resume--orientation .resume-label {
+  margin-bottom: 0;
+}
+.hero-loop {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.hero-loop li {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+.hero-loop li > span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--academy-accent);
+  background: var(--bg);
+}
+.hero-loop strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+.hero-loop small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.hero-resume--orientation .resume-facts {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* The storage banner is a status line, not a panel: it is hidden entirely when
+   storage is healthy and only takes layout space when it has something to say.
+   Set explicitly because the banner's own rule sets padding and margins that
+   would otherwise survive the [hidden] attribute. */
+.academy-device-note[hidden] {
+  display: none;
 }

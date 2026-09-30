@@ -21,11 +21,16 @@ export function breadcrumbView(page) {
 }
 export function sidebarView(data, page) {
   const c = page.category;
-  return `<aside class="academy-sidebar"><a class="academy-wordmark" href="${ROOT}"><span class="academy-symbol">${icon("book")}</span><span>OMP Academy<small>STEP BY STEP</small></span></a>
+  // The other-subject list must not repeat the learning path you are already
+  // in, and it disappears entirely when there is nothing else to show.
+  const otherPaths = data.categories.filter(
+    (category) => category.id !== c?.id,
+  );
+  return `<aside class="academy-sidebar"><a class="academy-wordmark" href="${ROOT}"><span class="academy-symbol">${icon("book")}</span><span>Academy<small>STEP BY STEP</small></span></a>
   <nav class="academy-navigation" aria-label="Academy"><a href="${ROOT}" ${page.type === "overview" ? 'aria-current="page"' : ""}>${icon("grid")}All courses</a>${data.paths.some((p) => p.modules.some((m) => m.topics.length)) > 1 ? `<a href="${ROOT}/roadmap" ${page.type === "roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Learning paths</a>` : ""}</nav>
 ${
   c
-    ? `<div class="sidebar-category-links"><span class="academy-nav-label" id="acad-nav-current">THIS LEARNING PATH</span><nav class="academy-navigation" aria-labelledby="acad-nav-current"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a>${c.paths.filter((p) => p.modules.some((m) => m.topics.length)).length > 1 ? `<a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Course order</a>` : ""}${c.paths
+    ? `<div class="sidebar-category-links sidebar-group--current"><span class="academy-nav-label" id="acad-nav-current">THIS LEARNING PATH</span><nav class="academy-navigation" aria-labelledby="acad-nav-current"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a>${c.paths.filter((p) => p.modules.some((m) => m.topics.length)).length > 1 ? `<a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Course order</a>` : ""}${c.paths
         .slice(0, 6)
         .map(
           (p) =>
@@ -34,7 +39,11 @@ ${
         .join("")}</nav></div>`
     : ""
 }
-  <div class="sidebar-category-links"><span class="academy-nav-label" id="acad-nav-paths">${c ? "OTHER LEARNING PATHS" : "LEARNING PATHS"}</span><nav class="academy-navigation" aria-labelledby="acad-nav-paths">${data.categories.map((category) => `<a href="${category.url}" ${c?.id === category.id ? 'aria-current="true"' : ""}>${icon("grid")}<span>${esc(category.name)}</span></a>`).join("")}</nav></div>
+${
+  otherPaths.length
+    ? `<div class="sidebar-category-links sidebar-group--paths"><span class="academy-nav-label" id="acad-nav-paths">${c ? "OTHER LEARNING PATHS" : "LEARNING PATHS"}</span><nav class="academy-navigation" aria-labelledby="acad-nav-paths">${otherPaths.map((category) => `<a href="${category.url}">${icon("grid")}<span>${esc(category.name)}</span></a>`).join("")}</nav></div>`
+    : ""
+}
   <div class="sidebar-note">${icon("book")}<strong>Learn. Check. Continue.</strong><p>Each course keeps its modules, lessons and learning goals together, so you always know where you are.</p><a href="${ROOT}/roadmap#how-it-works">How learning works →</a></div></aside>`;
 }
 // Pages where a left rail helps: you are already inside a course.
@@ -167,8 +176,6 @@ export function hubView(data, context = {}) {
     );
   };
   const startPath = data.paths.find((p) => p.is_start_here) || data.paths[0];
-  const startCategory =
-    startPath && data.categories.find((c) => c.id === startPath.category_id);
   const startLesson = startPath && firstUnread(startPath);
   const resumeLesson = resume && !pmap.get(resume.id)?.passed ? resume : null;
 
@@ -199,12 +206,17 @@ export function hubView(data, context = {}) {
           <a class="btn btn-secondary" href="${resumeLesson.url}">Resume this lesson ${icon("arrow")}</a>
         </aside>`
       : startPath
-        ? `<aside class="hero-resume" aria-label="Recommended starting course">
-            <span class="resume-label">Recommended first course</span>
-            <p class="resume-path">${esc(startCategory?.name || "")}</p>
-            <h2>${esc(startPath.name)}</h2>
-            <p class="resume-why">${esc(startPath.description)}</p>
-            <p class="resume-facts">${esc(startPath.difficulty)} · ${plural(startPath.modules.length, "module")} · ${plural(startPath.topics.length, "lesson")} · ${minutes(startPath.topics)} min</p>
+        ? /* Without saved progress there is nothing to resume, and repeating the
+             recommended course here just duplicated the first card in the
+             course list directly below. Explain the shape of a lesson instead:
+             it is the one thing the list below does not already say. */
+          `<aside class="hero-resume hero-resume--orientation" aria-label="What a lesson looks like">
+            <span class="resume-label">Inside every lesson</span>
+            <ol class="hero-loop">
+              <li><span>${icon("book")}</span><div><strong>Read the concept</strong><small>A focused explanation, its history and real examples.</small></div></li>
+              <li><span>${icon("lab")}</span><div><strong>Practice it</strong><small>External exercises you run yourself, and the defensive view.</small></div></li>
+              <li><span>${icon("award")}</span><div><strong>Check yourself</strong><small>A self-check on the lessons that publish one. No score is claimed where there isn't one.</small></div></li>
+            </ol>
           </aside>`
         : ""
   }
@@ -285,7 +297,9 @@ ${
 </section>`
 }
 ${
-  start
+  /* With a single course there is no choice to help with and no order to
+     show, so both blocks would only restate the course inlined above. */
+  !single && start
     ? `<section class="path-next">
   <h2>Not sure where to begin?</h2>
   <p>The recommended course is <strong>${esc(start.name)}</strong>: ${esc(start.audience)}</p>
@@ -293,7 +307,10 @@ ${
 </section>`
     : ""
 }
-<section class="path-next">
+${
+  single
+    ? ""
+    : `<section class="path-next">
   <h2>Course order in this path</h2>
   <p>${courses
     .map(
@@ -305,10 +322,12 @@ ${
     )
     .join("<br>")}</p>
   <a class="text-button" href="${c.roadmapUrl}">See the full path breakdown ${icon("arrow")}</a>
-</section>
+</section>`
+}
 <section class="path-browse">
   <p>Looking for a different topic?</p>
   <a class="text-button" href="${ROOT}">Browse every learning path ${icon("arrow")}</a>
+  ${single ? `<a class="text-button" href="${c.roadmapUrl}">See the module order in this path ${icon("arrow")}</a>` : ""}
 </section>`;
 }
 
