@@ -31,8 +31,7 @@ from omp_build.pages_core import (  # noqa: E402
 from omp_build.pages_blog import articles_body, products_body  # noqa: E402
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
-    security_body, sitemap_body, terms_body, email_preferences_body,
-)
+    security_body, sitemap_body, terms_body, )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GUIDES = GUIDES_1 + GUIDES_2 + GUIDES_3
@@ -279,7 +278,7 @@ def main():
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Articles", "/articles")]),
         # Order matters: sanitize.js and markdown.js expose the window globals
         # that articles.js renders article bodies with (Markdown or HTML input).
-        scripts_=["sanitize.js", "markdown.js", "articles.js", "newsletter.js"],
+        scripts_=["sanitize.js", "markdown.js", "articles.js"],
     ))
     write("products.html", page(
         path="/products", active="/products",
@@ -304,7 +303,7 @@ def main():
     write("privacy.html", page(
         path="/privacy", active="/about",
         title="Privacy Policy — OopsMyPassword",
-        desc="How OMP handles local password tools, device-only Academy progress, optional article emails and contact messages. Read our plain-language privacy policy.",
+        desc="How OMP handles local password tools, device-only Academy progress and contact messages. Read our plain-language privacy policy.",
         body=privacy_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Privacy Policy", "/privacy")]),
     ))
@@ -350,14 +349,6 @@ def main():
         desc="Every page on OopsMyPassword: tools, guides, and site information.",
         body=sitemap_body(GUIDES),
         scripts_=["sitemap.js"],
-    ))
-    write("email-preferences.html", page(
-        path="/email-preferences", active="/articles",
-        title="Article Email Preferences — OopsMyPassword",
-        desc="Confirm or stop article updates. No account or Academy progress changes.",
-        body=email_preferences_body(), robots="noindex, nofollow",
-        head_extra='<meta name="referrer" content="no-referrer">',
-        scripts_=["email-preferences.js"],
     ))
     write_404()
 

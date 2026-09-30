@@ -1124,11 +1124,6 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 }
 
 
-/* Optional newsletter is distinct from the device-only Academy. */
-[data-newsletter-form] fieldset { border: 0; padding: 0; margin: 20px 0; min-width: 0; }
-[data-newsletter-form] input[type="email"] { width: 100%; margin: 8px 0 16px; }
-.newsletter-consent { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0; line-height: 1.6; }
-.newsletter-consent input { flex: none; margin-top: 6px; }
 
 /* Keep the complete navigation inside the viewport, including injected search. */
 @media (max-width: 1600px) {

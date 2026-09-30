@@ -105,7 +105,7 @@ node scripts/verify-live-release.mjs
 - **All analysis is client-side JavaScript.** Passwords never leave the tab: no network, no storage, no logs, nothing in URLs, nothing in analytics.
 - Password analysis and the educational breach-check demo run locally. The demo does not query a live breach service; even its hash prefix stays on this device.
 - Dynamic UI writes use `textContent` or escaped/whitelisted markup only; no `eval()`, and article HTML is always re-sanitized before it reaches the DOM.
-- No analytics trackers. Public data/admin features use Supabase; an enabled newsletter loads Turnstile for anti-spam verification and submits only newsletter consent data. No learner accounts or progress sync.
+- No analytics trackers. Public data/admin features use Supabase. No learner accounts or progress sync, and no email collection of any kind.
 - Auth exists only in the private admin panel (`/admin/`, Supabase Auth). The public site has no login, no signup, and no analytics.
 
 ## Structure
@@ -167,13 +167,12 @@ are public practice material, not secure examinations or verified certificates.
 Historical server certificate verification is preserved separately; legacy data
 is not deleted or silently imported. The admin publishing login stays protected.
 
-Email is used **only for optional article subscriptions**. The newsletter is a
-separate, double-opt-in system, with unsubscribe and a new-publication queue.
-It remains disabled until mail provider, anti-spam verification and a private
-scheduled worker are configured. No production deployment/email was performed.
+The site collects **no email addresses at all**. There is no newsletter, no
+mailing list and no subscription state. The only form on the site is the
+contact form, which stores a message you choose to send and is used only to
+reply to you.
 
 - [Current implementation and site audit](tools/SITE-LOCAL-FIRST-AUDIT.md)
-- [Newsletter deployment/setup](tools/NEWSLETTER-SETUP.md)
 - [Course structure and authoring](tools/ACADEMY-MULTI-SUBJECT.md)
 - [Publishing architecture/research](tools/ACADEMY-ARCHITECTURE.md)
 
@@ -204,7 +203,7 @@ See [`tools/PRODUCTION-RELEASE-CHECKLIST.md`](tools/PRODUCTION-RELEASE-CHECKLIST
 for current account/provider blockers and the safe release sequence. The deployment
 workflow now checks exact live pages/assets and true 404s using
 `node scripts/verify-live-release.mjs`; local test success alone is not a claim that
-the site was deployed or that newsletter delivery is operational.
+the site was deployed.
 
 ### Latest whole-site re-audit
 

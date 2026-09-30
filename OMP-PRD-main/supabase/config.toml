@@ -9,7 +9,3 @@ verify_jwt = false
 [functions.learning-certificate-verify]
 verify_jwt = false
 
-# Public newsletter opt-in/confirmation; dispatch requires its own worker secret.
-# Newsletter tokens are not auth sessions and cannot access learning records.
-[functions.newsletter]
-verify_jwt = false

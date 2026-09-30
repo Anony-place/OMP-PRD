@@ -21,8 +21,6 @@ const fetcher = async (url, options) => {
 };
 const run = (extra = {}) => verifyLiveRelease({ root, fetcher, attempts: 1, delayMs: 0, log: () => {}, ...extra });
 assert.equal(await run(), artifacts.length);
-assert.ok(byRoute.has('/email-preferences'));
-assert.ok(byRoute.has('/assets/js/email-preferences.js'));
 assert.ok(byRoute.has('/learning/web-application-security/foundations'));
 assert.equal(byRoute.get('/__omp_release_missing_page__').status, 404);
 console.log(`✓ Exact Hosting artifact verification covers ${artifacts.length} resources and a real 404`);

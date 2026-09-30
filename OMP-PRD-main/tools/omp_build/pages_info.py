@@ -25,7 +25,7 @@ def about_body():
         <li><strong>Security advice is often theater.</strong> Fake precision ("this password would take 34 quadrillion years"), fake counters, unlabeled demos, dark patterns pushing accounts. We wanted tools that are honest about what they compute.</li>
       </ul>
       <h2 id="philosophy">The privacy-first philosophy</h2>
-      <p>OMP is architected so password analysis runs in JavaScript on your device. No password inputs cross the network. Optional newsletter and contact details are separate from the tools and local learning records. The best data-protection policy is data you never collect.</p>
+      <p>OMP is architected so password analysis runs in JavaScript on your device. No password inputs cross the network. Optional contact details are separate from the tools and local learning records. The best data-protection policy is data you never collect.</p>
       <h2 id="principles">Security principles we hold to</h2>
       <ul>
         <li><strong>Client-side by default.</strong> If a feature can run locally, it runs locally.</li>
@@ -80,7 +80,7 @@ def privacy_body():
     </ul>
 
     <h2 id="accounts">2. Device-only learning, no learner login</h2>
-    <p>Public learning and tools require no login. Academy stores an optional display name, course-scoped lesson progress, self-check scores and reading bookmarks in localStorage. Theme preferences and Security Checklist progress are also local. This data does not sync or get attached to a newsletter email. Clearing browser data removes it; use Academy Device settings to download/restore a backup or reset Academy data. Backups include your name and progress, so keep them private. Shared browsers share these local records. Site administrators use a separate protected publishing login; it is not required for visitors. Historical server-issued certificates and learner records, if any, are not automatically deleted or imported by this change.</p>
+    <p>Public learning and tools require no login. Academy stores an optional display name, course-scoped lesson progress, self-check scores and reading bookmarks in localStorage. Theme preferences and Security Checklist progress are also local. This data does not sync to any server. Clearing browser data removes it; use Academy Device settings to download/restore a backup or reset Academy data. Backups include your name and progress, so keep them private. Shared browsers share these local records. Site administrators use a separate protected publishing login; it is not required for visitors. Historical server-issued certificates and learner records, if any, are not automatically deleted or imported by this change.</p>
 
     <h2 id="breach-demo">3. The breach-check demo</h2>
     <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and compares a 5-character hash prefix against a small corpus bundled with the page. No network request is made with any part of your input or its hash. The demo is labeled accordingly and does not represent a live breach database query.</p>
@@ -89,11 +89,7 @@ def privacy_body():
     <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and may retain it under its own security, reliability and retention policies. We do not sell, rent, or share that data.</p>
 
     <h2 id="third-parties">5. Third-party services</h2>
-    <p>Firebase Hosting serves the site. Supabase supplies published articles/products, contact-message storage and newsletter infrastructure; some publishing interfaces load the Supabase library from esm.sh. These requests expose normal network metadata to those providers but do not include password inputs or local Academy progress. No advertising analytics are included in this build. Contact messages include the name, email and message you submit and do not opt you into the newsletter.</p>
-
-    <h2 id="newsletter">Optional article email subscription</h2>
-    <p>When enabled, the newsletter uses your email only to send a confirmation and new article updates. It does not create a login, recover progress, or connect your email to local learning records. We require explicit consent and email confirmation. Resend processes delivery and Cloudflare Turnstile checks the subscription form for abuse; the latter processes network/browser signals. The form stays disabled until these services are configured.</p>
-    <p>Supabase stores your subscription email, consent version, subscription status and confirmation/delivery timestamps. Each article email includes an unsubscribe link. Unsubscribing stops future queued updates; an already in-flight message may arrive. An unsubscribed address is retained as a suppression record to prevent unwanted sends. For deletion or historical learner-record requests, use the <a href="/contact">contact form</a>. Academy reset only clears your local learning records and does not unsubscribe an email address.</p>
+    <p>Firebase Hosting serves the site. Supabase supplies published articles/products and contact-message storage; some publishing interfaces load the Supabase library from esm.sh. These requests expose normal network metadata to those providers but do not include password inputs or local Academy progress. No advertising analytics are included in this build. Contact messages include the name, email and message you submit.</p>
 
     <h2 id="children">6. Children</h2>
     <p>OMP is intended for a general audience. Password tools and Academy learning need no email. Do not submit unnecessary personal or sensitive information in an optional subscription or contact message.</p>
@@ -154,7 +150,7 @@ def contact_body():
   <div class="container">
     <span class="eyebrow">Contact</span>
     <h1 class="h-1">Talk to us</h1>
-    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team; contact messages do not subscribe you to article emails.</p>
+    <p class="lead">Questions, corrections, guide requests, security reports — all welcome. Messages go straight to the team.</p>
   </div>
 </section>
 <section class="section-tight">
@@ -281,9 +277,9 @@ def security_body():
     <div class="prose">
       <h2 id="architecture">Architecture choices that shrink risk</h2>
       <ul>
-        <li><strong>Static, client-side site.</strong> Public pages are prebuilt. Password tools and Academy progress run locally; Supabase handles publishing data, contact messages, newsletter records and private admin authentication.</li>
+        <li><strong>Static, client-side site.</strong> Public pages are prebuilt. Password tools and Academy progress run locally; Supabase handles publishing data, contact messages and private admin authentication.</li>
         <li><strong>Local password analysis.</strong> The public tools do not send password inputs to a server. Private administrator sign-in is a separate authenticated service.</li>
-        <li><strong>Limited, documented dependencies.</strong> Fonts use the system stack. Publishing features load pinned libraries from esm.sh; an enabled newsletter uses Turnstile. These dependencies need maintenance and do not receive password inputs.</li>
+        <li><strong>Limited, documented dependencies.</strong> Fonts use the system stack. Publishing features load pinned libraries from esm.sh. These dependencies need maintenance and do not receive password inputs.</li>
         <li><strong>Safe DOM handling.</strong> Plain text uses <code>textContent</code> or escaping; article and product markup passes through an allowlist sanitizer before rendering. The site does not evaluate user-provided JavaScript.</li>
         <li><strong>CSPRNG-only generation.</strong> <code>crypto.getRandomValues()</code> with rejection sampling and a secure shuffle.</li>
       </ul>
@@ -353,19 +349,3 @@ def sitemap_body(guides):
 """
 
 
-def email_preferences_body():
-    return """
-<section class="page-hero"><div class="container container-narrow">
-  <span class="eyebrow">Article updates only</span>
-  <h1 class="h-1">Article email preferences</h1>
-  <p class="lead mt-16">Confirm or stop article emails. This is not a login, and your local Academy progress stays unchanged.</p>
-</div></section>
-<section class="section-tight"><div class="container container-narrow">
-  <div class="card card-pad">
-    <h2 class="h-3" data-email-heading>Open your email link</h2>
-    <p class="mt-16" data-email-status role="status" aria-live="polite">Use the confirmation or unsubscribe link in an OopsMyPassword email. Opening a link alone does not change your preferences.</p>
-    <button class="btn btn-primary mt-24" type="button" data-email-action hidden disabled>Continue</button>
-    <noscript><p class="mt-16">JavaScript is needed to securely confirm this request. Enable it and reopen the link from your email. Email apps that support one-click unsubscribe can also stop updates directly.</p></noscript>
-    <p class="mt-24"><a href="/articles#newsletter">Back to articles and subscription options</a></p>
-  </div>
-</div></section>"""

@@ -83,34 +83,11 @@ test("Every built public page has the shared Academy footer (including lessons a
     assert.ok(footer, file);
     assert.ok(footer.querySelector('a[href="/learning"]'), file);
     assert.ok(footer.querySelector('a[href="/learning/roadmap"]'), file);
-    assert.ok(footer.querySelector('a[href="/articles#newsletter"]'), file);
+    assert.ok(!footer.querySelector('a[href*="newsletter"]'), file + " still links the newsletter");
   }
   assert.equal(
     fs.readFileSync("tools/site-footer.html", "utf8"),
     fs.readFileSync("functions/site-footer.fragment", "utf8"),
-  );
-});
-test("Newsletter is disabled until configured and CSP allows its challenge only on the hub", () => {
-  const config = JSON.parse(
-    fs.readFileSync("assets/data/newsletter-config.json"),
-  );
-  assert.equal(typeof config.enabled, "boolean");
-  if (config.enabled)
-    assert.match(config.turnstile_site_key, /^[a-zA-Z0-9_-]{10,100}$/);
-  const groups = JSON.parse(fs.readFileSync("firebase.json")).hosting.headers;
-  assert.ok(
-    groups
-      .find((g) => g.source === "/articles")
-      .headers.some(
-        (h) =>
-          h.key === "Content-Security-Policy" &&
-          h.value.includes("frame-src https://challenges.cloudflare.com"),
-      ),
-  );
-  const js = fs.readFileSync("assets/js/newsletter.js", "utf8");
-  assert.doesNotMatch(
-    js,
-    /localStorage|sessionStorage|signIn|learning-progress/,
   );
 });
 test("Preview paths cannot bypass private deploy exclusions using dot segments", () => {

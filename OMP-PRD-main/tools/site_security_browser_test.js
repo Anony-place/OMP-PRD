@@ -9,7 +9,7 @@ const { default: AxeBuilder } = require('@axe-core/playwright');
 const ROOT = path.resolve(__dirname, '..');
 const BASE = process.env.OMP_AUDIT_URL || 'http://127.0.0.1:8080';
 const { headersFor } = require('./hosting_router')(ROOT);
-const routes = [...new Set([...fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname).concat(['/email-preferences', '/certificate', '/404', '/admin']))];
+const routes = [...new Set([...fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname).concat(['/certificate', '/404', '/admin']))];
 const issues = [], observations = [];
 (async () => {
   let launch = { headless: true };

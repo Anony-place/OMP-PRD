@@ -225,7 +225,6 @@ def footer():
             ("Learning paths", "/learning/roadmap"),
             ("Course order", "/learning/roadmap#all-courses-h"),
             ("How learning works", "/learning/roadmap#how-it-works"),
-            ("Article email updates", "/articles#newsletter"),
         ]),
         ("Company", [
             ("About", "/about"),
@@ -243,7 +242,7 @@ def footer():
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="/" aria-label="{BRAND} — home">{logo_svg("f")}<span>Oops<span class="grad-text">MyPassword</span></span></a>
-        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. Article email updates are optional and separate.</p>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
         <div class="tag-list mt-16">
           <span class="chip">{icon("lock","icon-16")} Client-side</span>
           <span class="chip">{icon("users-off","icon-16")} No account</span>

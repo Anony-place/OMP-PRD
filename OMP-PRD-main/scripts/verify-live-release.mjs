@@ -13,15 +13,14 @@ export async function releaseArtifacts(root) {
   const { resolve: routeFile } = createRouter(root);
   const sitemap = await readFile(join(root, 'sitemap.xml'), 'utf8');
   const paths = new Set([
-    '/', '/articles', '/learning', '/privacy', '/email-preferences', '/certificate',
+    '/', '/articles', '/learning', '/privacy', '/certificate',
     '/sitemap.xml', '/google-sitemap.xml', '/robots.txt',
     '/assets/css/styles.css', '/assets/css/learning.css',
     '/assets/js/main.js', '/assets/js/learning.js', '/assets/js/academy-local.mjs',
     '/assets/js/academy-views.mjs', '/assets/js/academy-model.mjs', '/assets/js/academy-ui.mjs',
-    '/assets/js/academy-content.mjs', '/assets/js/academy-quiz.mjs', '/assets/js/newsletter.js', '/assets/js/email-preferences.js',
+    '/assets/js/academy-content.mjs', '/assets/js/academy-quiz.mjs',
     '/assets/data/academy-catalogue.json', '/assets/data/academy-self-checks.json',
-    '/assets/data/newsletter-config.json',
-  ]);
+      ]);
   for (const [, loc] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) paths.add(new URL(loc).pathname);
   const artifacts = [];
   for (const route of paths) {
@@ -71,7 +70,7 @@ export async function verifyLiveRelease({ root = process.cwd(), origin = process
     if (failure) throw new Error(`${item.route}: ${failure.message}`);
     log(`✓ Live artifact ${item.route} (HTTP ${item.status})`);
   }
-  log(`${artifacts.length} exact live artifacts verified. Newsletter inbox delivery and Google indexing require separate evidence.`);
+  log(`${artifacts.length} exact live artifacts verified. Google indexing requires separate evidence.`);
   return artifacts.length;
 }
 

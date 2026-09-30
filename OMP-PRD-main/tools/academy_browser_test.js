@@ -443,130 +443,6 @@ const errors = [];
     ok(
       "Full lesson, homepage headline, course links and Academy footer remain available without JavaScript",
     );
-    // Newsletter is tested in disabled and configured modes with fake external services only.
-    await context.route("**/assets/data/newsletter-config.json", (r) =>
-      r.fulfill({ json: { enabled: false, turnstile_site_key: "" } }),
-    );
-    await page.goto(BASE + "/articles#newsletter");
-    await page.reload();
-    await page.getByText(/No email is being collected/).waitFor();
-    assert.equal(await page.locator("#newsletter-email").isDisabled(), true);
-    ok(
-      "Unconfigured newsletter cannot collect email or fake subscription success",
-    );
-    await context.route("**/assets/data/newsletter-config.json", (r) =>
-      r.fulfill({
-        json: { enabled: true, turnstile_site_key: "test-site-key-12345" },
-      }),
-    );
-    await context.route("https://challenges.cloudflare.com/**", (r) =>
-      r.fulfill({
-        contentType: "text/javascript",
-        body: 'window.turnstile={render(el,c){window.__challenge=c; c.callback("fixture-token");return 1},reset(){window.__challenge.callback("fixture-token")}};',
-      }),
-    );
-    let posted;
-    await context.route("**/functions/v1/newsletter", (r) => {
-      posted = r.request().postDataJSON();
-      return r.fulfill({
-        json: {
-          message:
-            "Check your inbox to confirm article updates. This is not a login.",
-        },
-      });
-    });
-    await page.goto(BASE + "/articles#newsletter");
-    await page.reload();
-    await page
-      .locator("[data-newsletter-form] button:not([disabled])")
-      .waitFor();
-    await page.locator("#newsletter-email").fill("subscriber@example.test");
-    await page.locator("[name=consent]").check();
-    await page.locator("[data-newsletter-form] button").click();
-    await page
-      .getByText(
-        "Check your inbox to confirm article updates. This is not a login.",
-      )
-      .waitFor();
-    assert.deepEqual(Object.keys(posted).sort(), [
-      "action",
-      "challenge",
-      "consent",
-      "email",
-    ]);
-    assert.equal(
-      await page.evaluate(() =>
-        JSON.stringify(Object.entries(localStorage)).includes(
-          "subscriber@example.test",
-        ),
-      ),
-      false,
-    );
-    ok(
-      "Newsletter requires consent and sends only the subscription payload, never learning records",
-    );
-    await axe("Newsletter form");
-    await context.route("**/functions/v1/newsletter", (r) =>
-      r.fulfill({
-        status: 503,
-        json: { error: "Email delivery unavailable. Please retry." },
-      }),
-    );
-    await page.locator("#newsletter-email").fill("subscriber@example.test");
-    await page.locator("[name=consent]").check();
-    await page.locator("[data-newsletter-form] button").click();
-    await page.getByText("Email delivery unavailable. Please retry.").waitFor();
-    assert.equal(
-      await page.locator("#newsletter-email").inputValue(),
-      "subscriber@example.test",
-    );
-    ok(
-      "Newsletter failures retain the email for retry and never claim subscription success",
-    );
-    // Hosted email links: GET/scanner navigation must never modify consent.
-    const emailToken = "a".repeat(64);
-    let emailCalls = [], emailFails = false;
-    await context.route("**/functions/v1/newsletter", (r) => {
-      emailCalls.push(r.request().postDataJSON());
-      assert.equal(r.request().method(), "POST");
-      return r.fulfill({ status: emailFails ? 503 : 200, json: emailFails
-        ? { error: "Temporary failure" }
-        : { message: "Email preferences updated. Your local Academy progress is unchanged." } });
-    });
-    const savedBeforeEmail = await page.evaluate(() => JSON.stringify(Object.entries(localStorage)));
-    await page.goto(BASE + "/email-preferences#action=confirm&token=" + emailToken);
-    await page.getByRole("button", { name: "Confirm subscription" }).waitFor();
-    assert.equal(new URL(page.url()).hash, "");
-    assert.equal(emailCalls.length, 0);
-    await axe("Hosted email confirmation");
-    await page.getByRole("button", { name: "Confirm subscription" }).click();
-    await page.locator("[data-email-status]").filter({ hasText: "Email preferences updated" }).waitFor();
-    assert.deepEqual(emailCalls, [{ action: "confirm", token: emailToken }]);
-    assert.equal(await page.locator("[data-email-action]").isVisible(), false);
-    assert.equal(await page.evaluate(() => JSON.stringify(Object.entries(localStorage))), savedBeforeEmail);
-    ok("Hosted confirmation requires a click, clears its URL token and never touches local learning data");
-    const emailId = "12345678-1234-1234-1234-123456789abc";
-    await page.goto(BASE + `/email-preferences#action=unsubscribe&id=${emailId}&token=${emailToken}`);
-    await page.getByRole("button", { name: "Unsubscribe", exact: true }).waitFor();
-    assert.equal(emailCalls.length, 1);
-    await page.setViewportSize({ width: 320, height: 900 });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-    await axe("Hosted unsubscribe at 320px");
-    emailFails = true;
-    await page.getByRole("button", { name: "Unsubscribe", exact: true }).click();
-    await page.getByText(/Could not verify the result/).waitFor();
-    assert.equal(await page.getByRole("button", { name: "Unsubscribe", exact: true }).isEnabled(), true);
-    emailFails = false;
-    await page.getByRole("button", { name: "Unsubscribe", exact: true }).click();
-    await page.locator("[data-email-status]").filter({ hasText: "Email preferences updated" }).waitFor();
-    assert.deepEqual(emailCalls[2], { action: "unsubscribe", token: emailToken, id: emailId });
-    ok("Hosted unsubscribe handles provider failure/retry without account creation or automatic GET actions");
-    for (const fragment of ["", "#action=confirm&token=bad", "#action=dispatch&token=" + emailToken]) {
-      await page.goto(BASE + "/email-preferences" + fragment);
-      assert.equal(await page.locator("[data-email-action]").isVisible(), false);
-    }
-    assert.equal(emailCalls.length, 3);
-    ok("Missing, malformed and privileged-action links cannot initiate an email request");
     await page.setViewportSize({ width: 1440, height: 1000 });
     await context.route("**/functions/v1/learning-certificate-verify*", (r) =>
       r.fulfill({
@@ -609,7 +485,7 @@ const errors = [];
     ok("No uncaught browser errors");
     await context.close();
     console.log(
-      `\n${checks} no-login Academy/newsletter browser checks passed (${scans} axe scans).`,
+      `\n${checks} no-login Academy browser checks passed (${scans} axe scans).`,
     );
   } finally {
     await browser.close();

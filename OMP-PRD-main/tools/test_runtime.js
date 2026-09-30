@@ -995,7 +995,12 @@ const $ = (d, s) => d.querySelector(s);
     }
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
-    ok(heroPages.length === 20, '20 inner pages use .page-hero (including hosted email preferences; guides.html is a redirect stub) — got ' + heroPages.length);
+    /* guides.html is a redirect stub and is deliberately excluded. The hosted
+       email-preferences page went away with the newsletter, so the count is 19
+       and that page must not be regenerated. */
+    ok(heroPages.length === 19 && !heroPages.includes('email-preferences.html'),
+      '19 inner pages use .page-hero and the retired email-preferences page is not regenerated — got '
+      + heroPages.length + ' [' + heroPages.join(', ') + ']');
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
     const hex2rgb = h => { h = h.trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };

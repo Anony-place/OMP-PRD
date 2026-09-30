@@ -124,8 +124,8 @@ function localDialog() {
     <form id="academy-profile-form"><label for="academy-profile-name">Your name (optional)</label><input class="input" id="academy-profile-name" maxlength="100" autocomplete="off" value="${esc(local.name())}"><button class="btn btn-primary" type="submit">Save on this device</button></form>
     <div class="academy-actions"><button class="btn btn-secondary" id="export-progress">Download backup</button><button class="btn btn-secondary" id="import-progress">Restore backup</button></div>
     <input type="file" id="progress-file" accept="application/json,.json" hidden>
-    <details><summary>Reset Academy data</summary><p>This removes only your Academy name, progress and bookmarks on this device—not your theme, checklist or newsletter subscription.</p><label><input type="checkbox" id="confirm-reset">I understand this cannot be undone without a backup.</label><button class="btn btn-secondary" id="reset-progress">Clear Academy data</button></details>
-    <p id="academy-auth-note" role="status" class="small"></p><p class="small muted">Article emails are separate and optional. <a href="/articles#newsletter">Newsletter subscription →</a></p>
+    <details><summary>Reset Academy data</summary><p>This removes only your Academy name, progress and bookmarks on this device—not your theme or checklist.</p><label><input type="checkbox" id="confirm-reset">I understand this cannot be undone without a backup.</label><button class="btn btn-secondary" id="reset-progress">Clear Academy data</button></details>
+    <p id="academy-auth-note" role="status" class="small"></p>
   </dialog>`;
 }
 function storageNotice() {

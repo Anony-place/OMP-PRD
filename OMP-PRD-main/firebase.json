@@ -777,7 +777,7 @@
         ]
       },
       {
-        "source": "/@(checker|generator|tools|articles|products|learning|certificate|email-preferences|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
+        "source": "/@(checker|generator|tools|articles|products|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
         "headers": [
           {
             "key": "Cache-Control",
