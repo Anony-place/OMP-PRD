@@ -288,7 +288,7 @@ def main():
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Products", "/products")]),
         scripts_=["sanitize.js", "markdown.js", "products.js"],
     ))
-    # NOTE: admin/index.html is intentionally NOT generated here.
+    # NOTE: studio-a4d8ec7260/index.html is intentionally NOT generated here.
     # The admin panel is hand-maintained (Supabase Auth) — regenerating it
     # from this script would clobber the live page. See omp_build/pages_blog.py.
     for g in GUIDES:
@@ -399,7 +399,7 @@ def main():
     print("IndexNow key:", indexnow_key, f"(served at /{indexnow_key}.txt)")
 
     # Only genuinely private paths are blocked.
-    #   /admin/    - the noindex admin panel
+    #   /studio-a4d8ec7260/ - the noindex publishing panel
     #   /functions/- Cloud Function sources (not deployed, blocked in depth)
     # /tools/ was previously listed here. That was a no-op AND a hazard:
     # trailingSlash:false means the public toolbox is /tools (no slash), so
@@ -408,7 +408,7 @@ def main():
     # substitute for noindex, and must never appear to hide public content.
     write("robots.txt", f"""User-agent: *
 Allow: /
-Disallow: /admin/
+Disallow: /studio-a4d8ec7260/
 Disallow: /functions/
 
 # Submit this exact URL in Google Search Console on the

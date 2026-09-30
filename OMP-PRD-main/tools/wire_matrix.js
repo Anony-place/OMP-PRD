@@ -86,7 +86,7 @@ isFile('/articles/create-strong-password', '/guides/create-strong-password.html'
 /* --- no redirect loops on any public entry --- */
 const entries = ['/', '/checker', '/generator', '/tools', '/articles', '/articles/passkeys-explained',
   '/products', '/products/some-slug', '/breach-check', '/about', '/blog', '/guides',
-  '/guides/passkeys-explained.html', '/products.html', '/admin/'];
+  '/guides/passkeys-explained.html', '/products.html', '/studio-a4d8ec7260/'];
 for (const e of entries) {
   const { end, hops } = follow(e);
   ok(end.type !== 'loop', `no redirect loop for ${e}${hops.length ? ' (hops: ' + hops.map(h => h.to).join(' → ') + ')' : ''}`);

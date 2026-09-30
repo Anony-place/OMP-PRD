@@ -11,6 +11,28 @@ let pass = 0, fail = 0;
 const ok = (c, msg) => { if (c) pass++; else { fail++; console.log('  ✗ FAIL: ' + msg); } };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+/* The admin click handlers are async: they await a mocked Supabase query
+   before they touch the DOM or the recorded calls. How many ticks that takes
+   depends on machine load, so a fixed sleep made this harness fail
+   intermittently. Wait for the observable condition instead, with a bounded
+   timeout so a real regression still reports as a failure and not a hang. */
+/* A quick action (publish/feature/delete) calls loadTab('products'), which
+   replaces the whole list. The buttons the test holds references to are
+   therefore stale the moment the write is recorded, and clicking one of those
+   re-renders into a detached container. Wait for the button to be replaced. */
+const waitReplaced = async (el, label) =>
+  waitFor(() => !el.isConnected, `${label} (list re-render)`);
+
+const waitFor = async (fn, label = 'condition', timeoutMs = 5000) => {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const v = fn();
+    if (v) return v;
+    if (Date.now() > deadline) throw new Error(`timed out after ${timeoutMs}ms waiting for ${label}`);
+    await sleep(5);
+  }
+};
+
 const LIBS = ['url.js', 'sanitize.js', 'markdown.js', 'filevalidate.js'].map(f => fs.readFileSync(`${ROOT}/assets/js/${f}`, 'utf8'));
 let ADMIN = fs.readFileSync(`${ROOT}/assets/js/admin.js`, 'utf8');
 
@@ -101,8 +123,11 @@ async function boot() {
   w.__mockCreateClient = makeClient;
   ADMIN = fs.readFileSync(`${ROOT}/assets/js/admin.js`, 'utf8');
   w.eval(ADMIN.replace(/^import \{ createClient \} from .*$/m, 'const createClient = window.__mockCreateClient;'));
-  await sleep(80);
-  if (!w.document.querySelector('[data-tab="products"]')) throw new Error(w.document.body.textContent);
+  try {
+    await waitFor(() => w.document.querySelector('[data-tab="products"]'), 'the products tab');
+  } catch {
+    throw new Error(w.document.body.textContent);
+  }
   return { dom, w };
 }
 
@@ -121,8 +146,12 @@ function setFile(w, input, name, type, bytes) {
   const tabBtn = w.document.querySelector('[data-tab="products"]');
   ok(!!tabBtn, 'Products tab exists on the dashboard');
   tabBtn.click();
-  await sleep(60);
-  const panel = w.document.querySelector('#panel');
+  const panel = await waitFor(
+    () => {
+      const el = w.document.querySelector('#panel');
+      return el && el.querySelectorAll('.admin-row').length === 2 ? el : null;
+    },
+    'the products panel with 2 rows');
   ok(panel.textContent.includes('Products'), 'Products section loads');
   ok(panel.textContent.includes('private'), 'products tab explains the private-bucket flow');
   ok(panel.querySelectorAll('.admin-row').length === 2, 'two product rows listed');
@@ -131,25 +160,34 @@ function setFile(w, input, name, type, bytes) {
   ok(!panel.innerHTML.includes('product-files/audit/pack.zip'), 'raw storage path never displayed');
 
   /* ---------- quick actions ---------- */
-  w.document.querySelector('[data-publish-product="p2"]').click(); // draft -> published
-  await sleep(40);
+  const publishBtn = w.document.querySelector('[data-publish-product="p2"]');
+  publishBtn.click(); // draft -> published
+  await waitFor(() => calls.updates.some(u => u.table === 'products' && u.set.published_at), 'the publish write');
+  await waitReplaced(publishBtn, 'publish');
   ok(calls.updates.some(u => u.table === 'products' && u.set.status === 'published' && u.set.published_at),
      'publish quick-action sets status=published + published_at');
-  w.document.querySelector('[data-feature-product="p2"]').click();
-  await sleep(40);
+  const featureBtn = w.document.querySelector('[data-feature-product="p2"]');
+  featureBtn.click();
+  await waitFor(() => calls.updates.some(u => u.table === 'products' && u.set.featured === true), 'the featured write');
+  await waitReplaced(featureBtn, 'feature');
   ok(calls.updates.some(u => u.table === 'products' && u.set.featured === true), 'feature quick-action sets featured=true');
   ok(!calls.updates.some(u => u.table === 'products' && u.set.featured === true && u.set.status), 'feature toggle patches only the featured flag');
   w.confirm = () => true;
-  w.document.querySelector('[data-delete-product="p1"]').click();
-  await sleep(40);
+  const deleteBtn = w.document.querySelector('[data-delete-product="p1"]');
+  deleteBtn.click();
+  await waitFor(() => calls.deletes.some(d => d.table === 'products'), 'the delete');
+  await waitReplaced(deleteBtn, 'delete');
   ok(calls.deletes.some(d => d.table === 'products'), 'delete quick-action deletes the row');
 
   /* ---------- edit form population ---------- */
   w.document.querySelector('[data-edit-product="p1"]').click();
-  await sleep(40);
+  /* #product-editor already exists as an empty container from the tab render,
+     so waiting for it proves nothing. productForm() creates #product-form
+     inside it once the async row fetch resolves, so wait for that instead. */
+  const form = await waitFor(() => w.document.querySelector('#product-form'), 'the product form');
   const editor = w.document.querySelector('#product-editor');
-  const form = editor.querySelector('#product-form');
   ok(!!form, 'edit click opens the product form');
+  ok(form.parentElement === editor, 'the form renders inside the product editor container');
   ok(form.querySelector('[name="name"]').value === 'The Passphrase Book', 'name populated');
   ok(form.querySelector('[name="slug"]').value === 'passphrase-book', 'slug populated');
   ok(form.querySelector('[name="product_type"]').value === 'book', 'type populated');
@@ -166,8 +204,7 @@ function setFile(w, input, name, type, bytes) {
 
   /* ---------- new product validation ---------- */
   w.document.querySelector('#new-product').click();
-  await sleep(20);
-  const nf = w.document.querySelector('#product-form');
+  const nf = await waitFor(() => w.document.querySelector('#product-form'), 'the new-product form');
   nf.querySelector('[name="name"]').value = 'New Toolkit!';
   nf.querySelector('[name="name"]').dispatchEvent(new w.Event('input', { bubbles: true }));
   ok(nf.querySelector('[name="slug"]').value === 'new-toolkit', 'slug auto-derives from title (slugify charset)');
@@ -232,10 +269,9 @@ function setFile(w, input, name, type, bytes) {
 
   /* ---------- cover upload → public bucket → fills URL ---------- */
   w.document.querySelector('#new-product').click();
-  await sleep(20);
-  const nf2 = w.document.querySelector('#product-form');
+  const nf2 = await waitFor(() => w.document.querySelector('#product-form'), 'the second new-product form');
   setFile(w, nf2.querySelector('#' + nf2.querySelector('input[type="file"][accept^="image"]').id), 'cover.png', 'image/png', new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]));
-  await sleep(60);
+  await waitFor(() => calls.uploads.some(u => u.bucket === 'products'), 'the cover upload');
   ok(calls.uploads.some(u => u.bucket === 'products'), 'cover uploaded to the PUBLIC covers bucket');
   ok(calls.publicUrls.some(u => u.bucket === 'products'), 'cover gets a public URL');
   ok(/^https:\/\/pub\.example\.com\/products\/covers\//.test(nf2.querySelector('[name="featured_image"]').value), 'cover URL field auto-filled');

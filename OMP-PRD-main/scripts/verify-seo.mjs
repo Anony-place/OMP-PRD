@@ -132,7 +132,7 @@ function publicUrl(file) {
   const r = rel(file).split(path.sep).join('/');
   if (r === '404.html') return null;
   if (r === 'index.html') return '/';
-  if (r === 'admin/index.html') return '/admin/';
+  if (r === 'studio-a4d8ec7260/index.html') return '/studio-a4d8ec7260/';
   if (r.startsWith('guides/') && r !== 'guides.html') return '/articles/' + path.basename(r, '.html');
   return '/' + r.replace(/\.html$/, '');
 }
@@ -171,7 +171,7 @@ function checkRobots() {
   /* Anything Disallow'ed must be something we genuinely do not want crawled. */
   const disallowed = (robots.match(/^Disallow:[ \t]*(\S+)[ \t]*$/gm) || [])
     .map((l) => l.replace(/^Disallow:[ \t]*/, '').trim());
-  const allowedPrivate = ['/admin', '/functions'];
+  const allowedPrivate = ['/studio-a4d8ec7260', '/functions'];
   for (const d of disallowed) {
     if (!d) continue;
     if (!allowedPrivate.some((p) => d === p || d === p + '/')) {
@@ -465,7 +465,7 @@ function checkLinks() {
   const orphans = [...inbound.entries()]
     .filter(([u, n]) => n === 0)
     .map(([u]) => u)
-    .filter((u) => !u.startsWith('/admin'))
+    .filter((u) => !u.startsWith('/studio-a4d8ec7260'))
     .filter((u) => {
       const f = routeToFile.get(u);
       const dir = path.dirname(rel(f));

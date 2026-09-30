@@ -1,4 +1,4 @@
-/* OMP admin panel styles (loaded only on /admin/) */
+/* OMP admin panel styles (loaded only on the private studio page) */
 .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .admin-list { display: grid; gap: 10px; }
 .admin-row {

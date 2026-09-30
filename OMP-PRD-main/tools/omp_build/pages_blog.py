@@ -74,14 +74,14 @@ blog_body = lambda: articles_body([])  # noqa: E731
 
 def admin_body():
     """Legacy body kept only for reference. The live admin panel is a
-    hand-maintained page at admin/index.html backed by Supabase Auth and
+    hand-maintained page at the private studio folder backed by Supabase Auth and
     assets/js/admin.js — tools/build.py intentionally does NOT write it."""
     return f"""
 <section class="page-hero" style="padding-bottom:8px">
   <div class="container">
     <span class="badge badge-demo">Owner tool · Supabase Auth</span>
     <h1 class="h-1 mt-16">Article Manager</h1>
-    <p class="lead">Sign in with an authorized account to write and publish articles to the live feed. The panel lives at <span class="mono">/admin/</span>.</p>
+    <p class="lead">Sign in with an authorized account to write and publish articles to the live feed. The panel lives at a private path that is not linked from the site.</p>
   </div>
 </section>
 """

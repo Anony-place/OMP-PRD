@@ -442,8 +442,8 @@ const $ = (d, s) => d.querySelector(s);
 
   /* ---------------- admin panel (Supabase Auth scaffold) ---------------- */
   {
-    console.log('admin/index.html (auth-gated scaffold)');
-    const dom = await loadPage('admin/index.html', { wait: 200 });
+    console.log('studio-a4d8ec7260/index.html (auth-gated scaffold)');
+    const dom = await loadPage('studio-a4d8ec7260/index.html', { wait: 200 });
     const d = dom.window.document;
     await new Promise(r => setTimeout(r, 200));
     ok(!!d.getElementById('admin-root'), 'admin mount point present');
@@ -949,8 +949,8 @@ const $ = (d, s) => d.querySelector(s);
   }
   /* ================= admin panel ================= */
   {
-    console.log('admin/index.html (shared render pipeline + live preview editor)');
-    const dom = await loadPage('admin/index.html', { wait: 250 });
+    console.log('studio-a4d8ec7260/index.html (shared render pipeline + live preview editor)');
+    const dom = await loadPage('studio-a4d8ec7260/index.html', { wait: 250 });
     const d = dom.window.document;
     await new Promise(r => setTimeout(r, 250));
     ok(d_scriptsInOrder(d, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/admin-boot-watchdog.js']),
@@ -1131,7 +1131,7 @@ const $ = (d, s) => d.querySelector(s);
     const idxBlog = blogHtml.indexOf('/assets/js/articles.js');
     ok(idxUrl !== -1 && idxUrl < idxSan && idxSan < idxMk && idxMk < idxBlog,
        'articles page loads url.js before sanitize.js/markdown.js/articles.js');
-    const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf8');
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'studio-a4d8ec7260/index.html'), 'utf8');
     ok(adminHtml.indexOf('/assets/js/url.js') < adminHtml.indexOf('/assets/js/sanitize.js') &&
        adminHtml.indexOf('/assets/js/filevalidate.js') < adminHtml.indexOf('/assets/js/admin-boot-watchdog.js'),
        'admin loads url.js + filevalidate.js before the modules that use them');
@@ -1238,7 +1238,7 @@ const $ = (d, s) => d.querySelector(s);
     ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(src),
        'every module loads the same pinned Supabase SDK version');
 
-    const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf8');
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'studio-a4d8ec7260/index.html'), 'utf8');
     ok(/<noscript>/.test(adminHtml), 'admin panel explains itself when JavaScript is disabled');
   }
 

@@ -831,7 +831,7 @@
         ]
       },
       {
-        "source": "/admin{,/**}",
+        "source": "/studio-a4d8ec7260{,/**}",
         "headers": [
           {
             "key": "Content-Security-Policy",

@@ -49,7 +49,7 @@ const ok = s => { n++; console.log('✓ ' + s); };
     const page = await ctx.newPage();
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(() => { window.__csp = []; document.addEventListener('securitypolicyviolation', e => window.__csp.push(e.effectiveDirective + ':' + e.blockedURI)); });
-    await page.goto(BASE + '/admin');
+    await page.goto(BASE + '/studio-a4d8ec7260');
     await page.locator('#new-article').waitFor();
     ok('Admin dashboard boots with a fixture-authorized account and the real CSP');
     await page.locator('#new-article').click();

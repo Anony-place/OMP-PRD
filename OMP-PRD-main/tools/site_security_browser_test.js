@@ -9,7 +9,7 @@ const { default: AxeBuilder } = require('@axe-core/playwright');
 const ROOT = path.resolve(__dirname, '..');
 const BASE = process.env.OMP_AUDIT_URL || 'http://127.0.0.1:8080';
 const { headersFor } = require('./hosting_router')(ROOT);
-const routes = [...new Set([...fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname).concat(['/certificate', '/404', '/admin']))];
+const routes = [...new Set([...fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname).concat(['/certificate', '/404', '/studio-a4d8ec7260']))];
 const issues = [], observations = [];
 (async () => {
   let launch = { headless: true };
@@ -59,7 +59,7 @@ const issues = [], observations = [];
       await page.setViewportSize({ width: 1440, height: 1000 });
       const response = await page.goto(BASE + route, { waitUntil: 'networkidle' });
       if (response.status() !== 200) issues.push({ route, kind: 'status', detail: response.status() });
-      if (route === '/admin') await page.locator('#login-form').waitFor();
+      if (route === '/studio-a4d8ec7260') await page.locator('#login-form').waitFor();
       const csp = await page.evaluate(() => window.__cspViolations);
       if (csp.length) issues.push({ route, kind: 'CSP', detail: csp });
       for (const theme of ['dark', 'light']) {
