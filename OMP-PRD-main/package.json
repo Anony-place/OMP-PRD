@@ -2,5 +2,10 @@
   "name": "omp-static-build",
   "private": true,
   "description": "Pinned build-time HTML sanitization for published articles and products",
-  "dependencies": { "sanitize-html": "2.17.7" }
+  "dependencies": {
+    "sanitize-html": "2.17.7"
+  },
+  "scripts": {
+    "vercel-build": "npx --yes firebase-tools@latest deploy --only hosting --project oopsmypassword --non-interactive"
+  }
 }
