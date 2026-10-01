@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /studio-a4d8ec7260/
+Disallow: /Anony.su/
 Disallow: /functions/
 
 # Submit this exact URL in Google Search Console on the

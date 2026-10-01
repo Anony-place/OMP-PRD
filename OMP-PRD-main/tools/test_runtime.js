@@ -87,13 +87,23 @@ async function loadPage(rel, opts = {}) {
       };
     },
   });
-  return new Promise((resolve) => {
-    const t = setTimeout(() => resolve(dom), 3000);
-    dom.window.addEventListener('load', () => {
-      clearTimeout(t);
-      setTimeout(() => resolve(dom), opts.wait || 60);
-    });
+  /* Poll readyState instead of trusting a one-shot 'load' listener.
+     JSDOM.fromURL resolves as soon as the document parses, and with
+     resources:'usable' the deferred scripts are still in flight. The load
+     event can therefore fire in the gap before this listener attaches, in
+     which case the old code silently waited out its 3s fallback and then
+     asserted against scripts that had not run yet — the home checker and
+     quick generator reported "Awaiting input" and 15 checks failed. That was
+     intermittent: 4 runs failed, 1 passed. readyState cannot be missed. */
+  await new Promise((resolve) => {
+    const deadline = Date.now() + 8000;
+    (function poll() {
+      if (dom.window.document.readyState === 'complete' || Date.now() > deadline) resolve();
+      else setTimeout(poll, 10);
+    })();
   });
+  await new Promise((resolve) => setTimeout(resolve, opts.wait || 60));
+  return dom;
 }
 
 function type(window, el, value) {
@@ -442,8 +452,8 @@ const $ = (d, s) => d.querySelector(s);
 
   /* ---------------- admin panel (Supabase Auth scaffold) ---------------- */
   {
-    console.log('studio-a4d8ec7260/index.html (auth-gated scaffold)');
-    const dom = await loadPage('studio-a4d8ec7260/index.html', { wait: 200 });
+    console.log('Anony.su/index.html (auth-gated scaffold)');
+    const dom = await loadPage('Anony.su/index.html', { wait: 200 });
     const d = dom.window.document;
     await new Promise(r => setTimeout(r, 200));
     ok(!!d.getElementById('admin-root'), 'admin mount point present');
@@ -949,8 +959,8 @@ const $ = (d, s) => d.querySelector(s);
   }
   /* ================= admin panel ================= */
   {
-    console.log('studio-a4d8ec7260/index.html (shared render pipeline + live preview editor)');
-    const dom = await loadPage('studio-a4d8ec7260/index.html', { wait: 250 });
+    console.log('Anony.su/index.html (shared render pipeline + live preview editor)');
+    const dom = await loadPage('Anony.su/index.html', { wait: 250 });
     const d = dom.window.document;
     await new Promise(r => setTimeout(r, 250));
     ok(d_scriptsInOrder(d, ['/assets/js/sanitize.js', '/assets/js/markdown.js', '/assets/js/admin-boot-watchdog.js']),
@@ -1131,7 +1141,7 @@ const $ = (d, s) => d.querySelector(s);
     const idxBlog = blogHtml.indexOf('/assets/js/articles.js');
     ok(idxUrl !== -1 && idxUrl < idxSan && idxSan < idxMk && idxMk < idxBlog,
        'articles page loads url.js before sanitize.js/markdown.js/articles.js');
-    const adminHtml = fs.readFileSync(path.join(ROOT, 'studio-a4d8ec7260/index.html'), 'utf8');
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'Anony.su/index.html'), 'utf8');
     ok(adminHtml.indexOf('/assets/js/url.js') < adminHtml.indexOf('/assets/js/sanitize.js') &&
        adminHtml.indexOf('/assets/js/filevalidate.js') < adminHtml.indexOf('/assets/js/admin-boot-watchdog.js'),
        'admin loads url.js + filevalidate.js before the modules that use them');
@@ -1238,7 +1248,7 @@ const $ = (d, s) => d.querySelector(s);
     ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(src),
        'every module loads the same pinned Supabase SDK version');
 
-    const adminHtml = fs.readFileSync(path.join(ROOT, 'studio-a4d8ec7260/index.html'), 'utf8');
+    const adminHtml = fs.readFileSync(path.join(ROOT, 'Anony.su/index.html'), 'utf8');
     ok(/<noscript>/.test(adminHtml), 'admin panel explains itself when JavaScript is disabled');
   }
 

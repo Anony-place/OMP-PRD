@@ -40,7 +40,7 @@ function listPages() {
   for (const f of fs.readdirSync(path.join(ROOT, 'guides'))) {
     if (f.endsWith('.html')) out.push('articles/' + f.replace(/\.html$/, ''));
   }
-  out.push('studio-a4d8ec7260/index.html');
+  out.push('Anony.su/index.html');
   return out.sort();
 }
 
@@ -71,7 +71,7 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
     });
     await new Promise(resolve => {
       const doc = dom.window.document;
-      const ready = () => rel.startsWith('studio-a4d8ec7260/') ? Boolean(dom.window.OMPMarkdown && dom.window.OMPSanitize) : Boolean(doc.getElementById('omp-search-trigger'));
+      const ready = () => rel.startsWith('Anony.su/') ? Boolean(dom.window.OMPMarkdown && dom.window.OMPSanitize) : Boolean(doc.getElementById('omp-search-trigger'));
       if (ready()) return resolve();
       const observer = new dom.window.MutationObserver(() => { if (ready()) { observer.disconnect(); clearTimeout(timer); resolve(); } });
       const timer = setTimeout(() => { observer.disconnect(); resolve(); }, 5000);
@@ -82,7 +82,7 @@ const ALLOWED_ERROR = /esm\.sh|supabase|ERR_VM_DYNAMIC_IMPORT|Article feed error
     const checks = [];
 
     /* --- structural sanity shared by every public page --- */
-    const isAdmin = rel.startsWith('studio-a4d8ec7260/');
+    const isAdmin = rel.startsWith('Anony.su/');
     if (!isAdmin) {
       if (!d.querySelector('header.site-nav')) checks.push('missing header.site-nav');
       if (!d.querySelector('footer.site-footer')) checks.push('missing footer.site-footer');

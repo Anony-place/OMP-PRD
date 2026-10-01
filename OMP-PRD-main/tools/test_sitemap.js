@@ -339,7 +339,7 @@ function group(name) {
     const robots = fs.readFileSync(ROBOTS_TXT, 'utf8');
     const disallowed = (robots.match(/^Disallow:[ \t]*(\S+)[ \t]*$/gm) || [])
       .map((l) => l.replace(/^Disallow:[ \t]*/, '').trim());
-    const allowed = ['/studio-a4d8ec7260', '/functions'];
+    const allowed = ['/Anony.su', '/functions'];
     disallowed.forEach((d) => {
       assert(allowed.some((p) => d === p || d === p + '/'),
         'Disallow ' + d + ' is not a known private path — it may hide public content from crawlers');

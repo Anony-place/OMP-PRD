@@ -98,7 +98,7 @@ test("Preview paths cannot bypass private deploy exclusions using dot segments",
 });
 test("Admin-only PDF CSP does not broaden public worker permissions", () => {
   const { headersFor } = require("./hosting_router")(process.cwd());
-  for (const route of ["/studio-a4d8ec7260", "/studio-a4d8ec7260/", "/studio-a4d8ec7260/index.html"]) {
+  for (const route of ["/Anony.su", "/Anony.su/", "/Anony.su/index.html"]) {
     assert.match(headersFor(route)["content-security-policy"], /worker-src 'self' blob:/);
     assert.match(headersFor(route)["content-security-policy"], /img-src 'self' data: blob:/);
     assert.equal(headersFor(route)["cache-control"], "no-store");
