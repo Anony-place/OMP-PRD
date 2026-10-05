@@ -774,6 +774,10 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .footer-col ul { list-style: none; padding: 0; display: grid; gap: 10px; }
 .footer-col a { color: var(--muted); font-size: .92rem; transition: color .15s; }
 .footer-col a:hover { color: var(--text); }
+.footer-connect { margin-top: 16px; }
+.footer-connect-links { display: grid; gap: 10px; }
+.footer-connect a { color: var(--muted); font-size: .92rem; transition: color .15s; }
+.footer-connect a:hover { color: var(--text); }
 .footer-bottom {
   border-top: 1px solid var(--border);
   padding: 22px 0;
