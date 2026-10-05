@@ -247,6 +247,13 @@ def footer():
           <span class="chip">{icon("lock","icon-16")} Client-side</span>
           <span class="chip">{icon("users-off","icon-16")} No account</span>
         </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
       </div>
       {col_html}
     </div>
