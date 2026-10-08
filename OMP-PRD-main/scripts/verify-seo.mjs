@@ -43,7 +43,7 @@ const SKIP_DIRS = new Set(['.git', 'node_modules', 'tools', 'functions', 'supaba
 /* Generated from the database at build time: they are deployed, but they are
    linked from JavaScript, not from static HTML, so they are exempt from the
    orphan check (not from any other check). */
-const GENERATED_DIRS = new Set(['articles', 'products']);
+const GENERATED_DIRS = new Set(['articles', 'products', 'osint']);
 
 const failures = [];
 const warnings = [];
@@ -216,7 +216,8 @@ function checkSitemap(file, routes, noindexRoutes) {
     if (lm === undefined) continue;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(lm)) fail(`${file}: ${loc} has a malformed <lastmod> "${lm}"`);
     const isDbBacked = /^\/articles\/[^/]+$/.test(loc.slice(SITE.length)) ||
-                       /^\/products\/[^/]+$/.test(loc.slice(SITE.length));
+                       /^\/products\/[^/]+$/.test(loc.slice(SITE.length)) ||
+                       /^\/osint\/[^/]+$/.test(loc.slice(SITE.length));
     const isStaticGuide = loc.slice(SITE.length).startsWith('/guides/');
     if (!isDbBacked && !isStaticGuide) {
       fail(`${file}: ${loc} asserts <lastmod> ${lm}, but generated pages have no real modification date`);
@@ -484,7 +485,7 @@ function checkLinks() {
 /* ==================================================================== main */
 console.log(`Verifying SEO output for ${SITE}\n`);
 
-const routes = ['/', '/checker', '/generator', '/tools', '/articles', '/products',
+const routes = ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/osint',
   '/breach-check', '/password-health', '/entropy', '/passphrase', '/random-string',
   '/security-checklist', '/about', '/faq', '/glossary', '/security', '/sitemap',
   '/privacy', '/terms', '/contact'];
@@ -604,7 +605,11 @@ function checkCrawlerFetch() {
   if (unknownProduct.type !== 'notfound') {
     fail(`/products/<unknown> resolves to ${unknownProduct.type} instead of 404 (soft 404)`);
   }
-  console.log('  CRAWL   sitemap/robots crawler-open; unknown product slugs 404');
+  const unknownOsint = router.resolve('/osint/this-slug-does-not-exist-for-seo', 0);
+  if (unknownOsint.type !== 'notfound') {
+    fail(`/osint/<unknown> resolves to ${unknownOsint.type} instead of 404 (soft 404)`);
+  }
+  console.log('  CRAWL   sitemap/robots crawler-open; unknown product + osint slugs 404');
 }
 
 checkIndexNow();

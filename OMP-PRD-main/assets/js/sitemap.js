@@ -74,15 +74,18 @@
   function show(data) {
     var articles = [];
     var products = [];
+    var osint = [];
     try {
       if (data && Array.isArray(data.articles)) articles = data.articles;
       if (data && Array.isArray(data.products)) products = data.products;
+      if (data && Array.isArray(data.osint)) osint = data.osint;
     } catch (e) { /* malformed payload — nothing to add */ }
 
-    if (!articles.length && !products.length) return;
+    if (!articles.length && !products.length && !osint.length) return;
 
     grid.appendChild(groupCard('Articles', articles));
     grid.appendChild(groupCard('Products', products));
+    grid.appendChild(groupCard('OSINT tools', osint));
     section.hidden = false;
   }
 

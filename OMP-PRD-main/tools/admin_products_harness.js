@@ -78,7 +78,13 @@ function makeClient() {
         delete() { calls.deletes.push({ table, eqs: b._eqs || [] }); return b; },
         then(res) {
           setTimeout(() => {
-            if (table === 'products') res({ data: PRODUCTS.map(p => ({ ...p })), error: null });
+            if (table === 'products') {
+              /* Respect eq() filters so slug-collision checks see the
+                 truth: an unknown slug matches zero rows. */
+              let rows = PRODUCTS.map(p => ({ ...p }));
+              for (const [col, v] of (b._eqs || [])) rows = rows.filter(r => String(r[col]) === String(v));
+              res({ data: rows, error: null });
+            }
             else if (table === 'articles' || table === 'messages' || table === 'article_categories' || table === 'tool_categories') res({ data: [], error: null });
             else res({ data: [], error: null });
           }, 5);
@@ -122,7 +128,12 @@ async function boot() {
   for (const src of LIBS) w.eval(src);
   w.__mockCreateClient = makeClient;
   ADMIN = fs.readFileSync(`${ROOT}/assets/js/admin.js`, 'utf8');
-  w.eval(ADMIN.replace(/^import \{ createClient \} from .*$/m, 'const createClient = window.__mockCreateClient;'));
+  /* admin.js now also imports ACADEMY_CONFIG; jsdom eval is a classic script,
+     so inline the config module (minus export keywords) in the same eval. */
+  const CFG = fs.readFileSync(`${ROOT}/assets/js/academy-config.mjs`, 'utf8').replace(/^export /gm, '');
+  w.eval(CFG + '\n' + ADMIN
+    .replace(/^import \{ createClient \} from .*$/m, 'const createClient = window.__mockCreateClient;')
+    .replace(/^import \{ ACADEMY_CONFIG \} from .*$/m, ''));
   try {
     await waitFor(() => w.document.querySelector('[data-tab="products"]'), 'the products tab');
   } catch {
@@ -266,6 +277,17 @@ function setFile(w, input, name, type, bytes) {
     ok(p.status === 'published' && p.published_at, 'published rows get published_at');
     ok(p.cta_label === 'Grab It', 'custom CTA saved');
   }
+
+  /* ---------- duplicate slug → friendly error, no insert ---------- */
+  w.document.querySelector('#new-product').click();
+  const nf3 = await waitFor(() => w.document.querySelector('#product-form'), 'the third new-product form');
+  const beforeDupes = calls.inserts.length;
+  nf3.querySelector('[name="name"]').value = 'Clashing Title';
+  nf3.querySelector('[name="slug"]').value = 'passphrase-book';
+  nf3.querySelector('[name="description"]').value = 'Some text.';
+  msg = await submit();
+  ok(/already used/.test(msg), `duplicate slug fails friendly (${msg || 'no flash'})`);
+  ok(calls.inserts.length === beforeDupes, 'no insert happened for the duplicate slug');
 
   /* ---------- cover upload → public bucket → fills URL ---------- */
   w.document.querySelector('#new-product').click();

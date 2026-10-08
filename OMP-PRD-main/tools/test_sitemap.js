@@ -110,8 +110,12 @@ function group(name) {
     { slug: 'live-product', name: 'Live', status: 'published', published_at: '2026-09-02T10:00:00Z' },
     { slug: 'hidden-product', name: 'Hidden', status: 'draft', published_at: '2026-09-02T10:00:00Z' }
   ];
+  const OSINT = [
+    { slug: 'live-tool', name: 'Live Tool', status: 'published', published_at: '2026-09-02T10:00:00Z' },
+    { slug: 'hidden-tool', name: 'Hidden Tool', status: 'draft', published_at: '2026-09-02T10:00:00Z' }
+  ];
 
-  const OPTS = { articles: ARTICLES, products: PRODUCTS, site: SITE };
+  const OPTS = { articles: ARTICLES, products: PRODUCTS, osint: OSINT, site: SITE };
 
   group('sitemap-core.mjs (shared generator)');
 
@@ -119,6 +123,7 @@ function group(name) {
     const xml = core.buildSitemapXml(OPTS);
     assert(xml.includes('/articles/published-one'), 'missing published article');
     assert(xml.includes('/products/live-product'), 'missing published product');
+    assert(xml.includes('/osint/live-tool'), 'missing published osint tool');
   });
 
   check('drafts and archived rows are never listed', () => {
@@ -126,6 +131,7 @@ function group(name) {
     assert(!xml.includes('draft-one'), 'draft leaked into sitemap');
     assert(!xml.includes('archived-one'), 'archived leaked into sitemap');
     assert(!xml.includes('hidden-product'), 'draft product leaked into sitemap');
+    assert(!xml.includes('hidden-tool'), 'draft osint tool leaked into sitemap');
   });
 
   check('invalid slugs are dropped before a URL is built', () => {
@@ -200,7 +206,7 @@ function group(name) {
 
   check('static route set is complete', () => {
     const xml = core.buildSitemapXml({ site: SITE });
-    ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/breach-check', '/about',
+    ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/osint', '/breach-check', '/about',
       '/privacy', '/terms', '/contact', '/faq', '/glossary', '/security', '/sitemap',
       '/password-health', '/entropy', '/passphrase', '/random-string', '/security-checklist'
     ].forEach((r) => assert(xml.includes(`<loc>${SITE}${r}</loc>`), 'missing ' + r));
@@ -225,6 +231,8 @@ function group(name) {
     assert(data.articles.length === 1 && data.articles[0].slug === undefined, 'unexpected article set');
     assert(data.articles[0].url.endsWith('/articles/published-one'), 'bad article url');
     assert(data.products.length === 1 && data.products[0].title === 'Live', 'bad product entry');
+    assert(data.osint.length === 1 && data.osint[0].title === 'Live Tool', 'bad osint entry');
+    assert(data.osint[0].url.endsWith('/osint/live-tool'), 'bad osint url');
     assert(typeof data.count === 'number' && data.count > 0, 'missing count');
   });
 
@@ -401,6 +409,43 @@ function group(name) {
     const catchAll = (cfg.hosting.rewrites || []).find((rule) =>
       /products\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/products/**');
     assert(!catchAll, '/products catch-all rewrite would 200 every fake slug');
+  });
+
+  check('unknown /osint/<slug> URLs 404 instead of serving the hub (no soft 404)', () => {
+    const createRouter = require(path.join(ROOT, 'tools', 'hosting_router.js'));
+    const router = createRouter(ROOT, FIREBASE_JSON);
+    const r = router.resolve('/osint/this-slug-does-not-exist-for-seo', 0);
+    assert(r.type === 'notfound',
+      'unknown osint URL resolved as ' + r.type + (r.file ? ' (' + r.file + ')' : '') +
+      ' — a 200 of osint.html is a soft 404');
+    const cfg = JSON.parse(fs.readFileSync(FIREBASE_JSON, 'utf8'));
+    const catchAll = (cfg.hosting.rewrites || []).find((rule) =>
+      /osint\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/osint/**');
+    assert(!catchAll, '/osint catch-all rewrite would 200 every fake slug');
+  });
+
+  check('no unmaintained SRI integrity hashes on local assets', () => {
+    /* No pipeline step regenerates integrity attributes, so any present
+       hash goes stale on the next asset edit — and browsers then BLOCK the
+       file (this once shipped /learning with no stylesheet at all).
+       Local assets must ship without integrity attributes; the pinned
+       esm.sh SDK version (tested in test_runtime.js) is the version guard
+       instead. */
+    const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+      if (e.isDirectory()) {
+        if (['.git', 'node_modules', 'tools', 'functions', 'supabase'].includes(e.name)) return [];
+        return walk(path.join(dir, e.name));
+      }
+      return e.name.endsWith('.html') ? [path.join(dir, e.name)] : [];
+    });
+    const offenders = [];
+    for (const file of walk(ROOT)) {
+      const html = fs.readFileSync(file, 'utf8');
+      const re = /((?:src|href)="(\/assets\/[^"]+)"[^>]*?)integrity="([^"]*)"/g;
+      let m;
+      while ((m = re.exec(html)) !== null) offenders.push(path.relative(ROOT, file) + ' :: ' + m[2]);
+    }
+    assert(offenders.length === 0, 'unmaintained integrity attributes (stale ones get blocked by browsers):\n      ' + offenders.join('\n      '));
   });
 
   check('sitemap.xml and robots.txt override CORP so Google can fetch them', () => {

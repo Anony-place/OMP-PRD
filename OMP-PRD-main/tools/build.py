@@ -28,7 +28,26 @@ from omp_build.pages_core import (  # noqa: E402
     generator_body, health_body, home_body, passphrase_body,
     random_string_body, tools_body,
 )
-from omp_build.pages_blog import articles_body, products_body  # noqa: E402
+from omp_build.pages_blog import articles_body, osint_body, products_body  # noqa: E402
+
+OSINT_FAQ = [
+    ("What is OSINT?",
+     "Open-source intelligence is the collection and analysis of publicly available information — social profiles, public records, metadata, breach data — for security research, journalism and investigations."),
+    ("Are these OSINT tools free?",
+     "Most tools in this hub are free and open source. Each listing is badged Free, Freemium or Paid, so you know the cost before you click."),
+    ("Do I need to install anything?",
+     "Web-app tools run entirely in your browser. Command-line tools usually need Python or Docker — every tool page includes exact install steps."),
+    ("Is using OSINT tools legal?",
+     "Reading publicly available information is generally lawful, but only investigate accounts, people or systems you have a legitimate reason to look into — and always verify findings before acting on them."),
+    ("Which OSINT tool should a beginner start with?",
+     "Start in the browser: WhatsMyName for usernames and Epieos for emails need zero setup. Move to Sherlock or Holehe on the command line once you want repeatable, scriptable checks."),
+    ("Do these tools notify the person being investigated?",
+     "The tools listed here use passive techniques — they query public pages and registration endpoints, not the target. Nothing is sent to the person, and no contact is made with their devices."),
+    ("Can OSINT find deleted accounts?",
+     "Usually not directly — a deleted profile stops resolving. What survives is citations: archives, screenshots, breach data and other sites referencing the same username or email."),
+    ("How do I verify an OSINT finding?",
+     "Never trust a single hit. Confirm the same identifier across two or more independent sources, compare profile photos, bios and timestamps, and treat an unmatched result as a lead — not a conclusion."),
+]
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
     security_body, sitemap_body, terms_body, )
@@ -288,6 +307,14 @@ def main():
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Products", "/products")]),
         scripts_=["sanitize.js", "markdown.js", "products.js"],
     ))
+    write("osint.html", page(
+        path="/osint", active="/osint",
+        title="OSINT Hub — Free Username, Email & Domain Tools | OopsMyPassword",
+        desc="Browse OSINT tools by category — username, email, domain, phone, image, all-in-one. Filter by free/paid and web/CLI, with install guides and links.",
+        body=osint_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("OSINT Hub", "/osint")]), jsonld_faq(OSINT_FAQ)],
+        scripts_=["sanitize.js", "markdown.js", "osint.js"],
+    ))
     # NOTE: Anony.su/index.html is intentionally NOT generated here.
     # The admin panel is hand-maintained (Supabase Auth) — regenerating it
     # from this script would clobber the live page. See omp_build/pages_blog.py.
@@ -367,8 +394,8 @@ def main():
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in routes:
         pri = ("1.0" if u == "/" else
-               "0.9" if u in ("/articles", "/products") else
-               "0.7" if u.startswith("/articles/") or u.startswith("/products/") else
+               "0.9" if u in ("/articles", "/products", "/osint") else
+               "0.7" if u.startswith("/articles/") or u.startswith("/products/") or u.startswith("/osint/") else
                "0.5" if u == "/sitemap" else "0.8")
         # static_lastmod is empty by design: there is no honest per-page
         # modification date for a generated page, so the optional element is

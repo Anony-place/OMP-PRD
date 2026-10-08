@@ -161,6 +161,7 @@ if [ "$VERIFY_ONLY" = 0 ]; then
   fi
   # /articles/<slug> resolves to articles/ for database-published articles and
   # to guides/ for the hand-authored ones, so both directories count.
+  # /osint/<slug> resolves to osint/ (built by build-static-seo.mjs).
   MISSING=()
   for slug in "${SLUGS[@]}"; do
     if [ ! -f "articles/$slug.html" ] && [ ! -f "guides/$slug.html" ]; then
@@ -174,6 +175,21 @@ if [ "$VERIFY_ONLY" = 0 ]; then
     printf '      /articles/%s.html\n' "${MISSING[@]}" | sed 's/^/      /'
     die "${#MISSING[@]} article page(s) missing; the build did not cover every published article"
   fi
+  mapfile -t OSINT_SLUGS < <(grep -oP '/osint/[a-z0-9-]+(?=</loc>)' sitemap.xml \
+                        | sed 's|^/osint/||' | sort -u || true)
+  MISSING_OSINT=()
+  for slug in "${OSINT_SLUGS[@]:-}"; do
+    if [ ! -f "osint/$slug.html" ]; then
+      MISSING_OSINT+=("$slug")
+    fi
+  done
+  if [ "${#MISSING_OSINT[@]}" -eq 0 ]; then
+    ok "all ${#OSINT_SLUGS[@]} osint pages in the sitemap exist on disk"
+  else
+    printf '    %s!%s listed in the sitemap but not built:\n' "$Y" "$Z"
+    printf '      /osint/%s.html\n' "${MISSING_OSINT[@]}" | sed 's/^/      /'
+    die "${#MISSING_OSINT[@]} osint page(s) missing; the build did not cover every published tool"
+  fi
 fi
 
 # ------------------------------------------------------------------ gate ----
@@ -185,7 +201,7 @@ if [ "$VERIFY_ONLY" = 0 ] && [ "$SKIP_TESTS" = 0 ]; then
     test_academy_backend.js test_academy_concurrency.js test_academy_migrations.js
     test_academy_course_database.js test_academy_multisubject.mjs test_academy_local.mjs
     test_site_contracts.js test_site_database.js test_functions.cjs
-    admin_products_harness.js products_app_harness.js test_release_verifier.mjs
+    admin_products_harness.js products_app_harness.js osint_app_harness.js test_release_verifier.mjs
     audit_academy_publishing.mjs test_academy_build.mjs test_academy_seo.mjs
     test_sitemap.js test_runtime.js
   )

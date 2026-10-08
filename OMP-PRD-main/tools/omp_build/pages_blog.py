@@ -68,6 +68,84 @@ def products_body():
 """
 
 
+def osint_body():
+    cats = [
+        ("Username OSINT", "username-osint",
+         "A username is often the single thread that ties a person's entire online life together — most people reuse handles across platforms. Username OSINT tools take one handle and check it against hundreds or thousands of sites, from mainstream networks like Instagram, GitHub and Reddit to forums, gaming profiles and niche communities. Sherlock covers 400+ sites with a simple command, Maigret goes deeper with 3000+ sites and full HTML or PDF reports, and WhatsMyName gives beginners the same answers instantly in a browser with nothing to install."),
+        ("Email OSINT", "email-osint",
+         "An email address is a key that unlocks account after account, because almost every online service uses it as a login and recovery identifier. Email OSINT tools test whether an address is registered on 120+ platforms, surface linked Google and social profiles, and flag appearances in breach data. Holehe is the free command-line standard for registration checks, while Epieos adds a polished web interface with reverse lookup for both email addresses and phone numbers."),
+        ("Domain & IP OSINT", "domain-osint",
+         "Domains and IP addresses expose far more than their owners intend: subdomains, mail servers, certificates, open ports and forgotten staging sites. Domain and IP OSINT starts with passive collection — theHarvester harvests emails, subdomains and employee names from certificate transparency logs and search engines — and continues with Shodan, the search engine for internet-connected devices, which indexes banners, open ports and known vulnerabilities across the whole IPv4 space."),
+        ("Phone OSINT", "phone-osint",
+         "A phone number links identity, messaging apps and two-factor authentication, which makes it one of the highest-value starting points in an investigation. Phone OSINT tools identify the carrier and country, check the number against leak databases, and search public mentions and linked messenger accounts. PhoneInfoga performs the full workflow free and open source, with both a terminal interface and a local web UI."),
+        ("Image & Metadata OSINT", "image-osint",
+         "Every photo carries a hidden second layer: EXIF metadata with camera model, timestamps and sometimes exact GPS coordinates, plus visual clues like landmarks, uniforms and license plates. Image OSINT combines metadata extraction with reverse image search to verify where and when a picture was taken. ExifTool is the reference standard — it reads and writes metadata across dozens of formats, and most other tools are built on top of it."),
+        ("All-in-One OSINT", "all-in-one",
+         "Real investigations never use one tool: a username leads to an email, the email to a domain, the domain to infrastructure. All-in-one platforms automate that chain — you enter a single target and 200+ modules query threat feeds, DNS records, breach data and social sources, then correlate everything into one report. SpiderFoot does exactly this, free and open source, from a self-hosted web interface."),
+    ]
+    cat_blocks = "\n".join(
+        f'<div class="card card-pad"><h3 class="h-3">{name}</h3><p class="muted">{desc}</p>'
+        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/osint#/c/{slug}">Open {name} →</a></p></div>'
+        for name, slug, desc in cats
+    )
+    return f"""
+<section class="page-hero">
+  <div class="container container-wide osint-hero">
+    <span class="chip chip-accent">{icon("radar","icon-16")} Username · Email · Domain · Phone · Image · All-in-One</span>
+    <h1 class="h-1 mt-16">OSINT Hub</h1>
+    <p class="lead">Open-source intelligence tools, organized by investigation type. Pick a category, filter by free or paid, web or command-line — then open any tool for its overview, install steps and official links.</p>
+    <p class="hero-meta" data-osint-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:8px">
+  <div class="osint-fluid">
+    <div id="osint-app" data-osint>
+      <span class="sr-only" role="status" aria-live="polite">Loading OSINT tools…</span>
+      <div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main"><div class="skel skel-title"></div><div class="skel skel-meta"></div><div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>
+      <div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main"><div class="skel skel-title skel-w70"></div><div class="skel skel-meta"></div><div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>
+    </div>
+    <noscript>
+      <div class="notice-band mt-24">{icon("info","icon-20")}<p>The OSINT catalog needs JavaScript to load. Start with <a href="/articles/best-free-osint-tools-for-beginners" style="color:var(--purple)">Best Free OSINT Tools for Beginners</a> — it works without JavaScript.</p></div>
+    </noscript>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="osint-fluid">
+    <div class="section-head left"><span class="eyebrow">Investigation guide</span><h2 class="h-2">Start from what you have</h2><p class="muted" style="margin-top:10px;max-width:80ch">Every investigation starts with one identifier. Find yours below — each section explains what that identifier reveals, which tools to reach for first, and what to verify before trusting a result.</p></div>
+    <div class="grid grid-3">
+      {cat_blocks}
+    </div>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="osint-fluid">
+    <div class="section-head left"><span class="eyebrow">How the hub works</span><h2 class="h-2">From question to tool in three steps</h2></div>
+    <div class="grid grid-3">
+      <div class="card card-pad"><h3 class="h-3">1. Pick your starting point</h3><p class="muted">Username, email, domain, phone number, image or nothing-but-a-hunch — each category holds the tools built for that identifier.</p></div>
+      <div class="card card-pad"><h3 class="h-3">2. Filter to your setup</h3><p class="muted">Free or paid, web app or command line. The sidebar narrows the catalog to tools you can actually run today.</p></div>
+      <div class="card card-pad"><h3 class="h-3">3. Install and verify</h3><p class="muted">Every tool page carries an overview, copy-paste install steps and official links — plus a reminder to verify each finding by hand.</p></div>
+    </div>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="container container-narrow">
+    <div class="section-head left"><span class="eyebrow">FAQ</span><h2 class="h-2">OSINT questions, answered</h2></div>
+    <div class="grid" style="gap:14px">
+      <div class="card card-pad"><h3 class="h-3">What is OSINT?</h3><p class="muted">Open-source intelligence is the collection and analysis of publicly available information — social profiles, public records, metadata, breach data — for security research, journalism and investigations.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Are these OSINT tools free?</h3><p class="muted">Most tools in this hub are free and open source. Each listing is badged Free, Freemium or Paid, so you know the cost before you click.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Do I need to install anything?</h3><p class="muted">Web-app tools run entirely in your browser. Command-line tools usually need Python or Docker — every tool page includes exact install steps.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Is using OSINT tools legal?</h3><p class="muted">Reading publicly available information is generally lawful, but only investigate accounts, people or systems you have a legitimate reason to look into — and always verify findings before acting on them.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Which OSINT tool should a beginner start with?</h3><p class="muted">Start in the browser: WhatsMyName for usernames and Epieos for emails need zero setup. Move to Sherlock or Holehe on the command line once you want repeatable, scriptable checks.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Do these tools notify the person being investigated?</h3><p class="muted">The tools listed here use passive techniques — they query public pages and registration endpoints, not the target. Nothing is sent to the person, and no contact is made with their devices.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Can OSINT find deleted accounts?</h3><p class="muted">Usually not directly — a deleted profile stops resolving. What survives is citations: archives, screenshots, breach data and other sites referencing the same username or email. Pivot on those instead.</p></div>
+      <div class="card card-pad"><h3 class="h-3">How do I verify an OSINT finding?</h3><p class="muted">Never trust a single hit. Confirm the same identifier across two or more independent sources, compare profile photos, bios and timestamps, and treat an unmatched result as a lead — not a conclusion.</p></div>
+    </div>
+    <p class="muted small" style="margin-top:20px">New to this? Read <a href="/articles/best-free-osint-tools-for-beginners" style="color:var(--purple)">Best Free OSINT Tools for Beginners</a> first.</p>
+  </div>
+</section>
+"""
+
+
 # Back-compat alias used by older call sites / tests.
 blog_body = lambda: articles_body([])  # noqa: E731
 

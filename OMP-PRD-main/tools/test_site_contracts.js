@@ -29,7 +29,11 @@ test("Parser-based publication sanitizer blocks encoded schemes, events and dang
     );
     for (const el of d.querySelectorAll("*"))
       for (const a of el.attributes) {
-        assert.ok(!/^on|^style$|^id$/i.test(a.name));
+        assert.ok(!/^on|^style$/i.test(a.name));
+        /* Author ids are intentional (in-article anchors): strict charset
+           only — anything else must not survive. */
+        if (/^id$/i.test(a.name))
+          assert.ok(/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(a.value));
         if (["href", "src"].includes(a.name))
           assert.ok(
             !/^(?:javascript|vbscript|data):/i.test(a.value.replace(/\s/g, "")),

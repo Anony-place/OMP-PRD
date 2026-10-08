@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "tools/mcp-supabase.sh"
+      ],
+      "description": "Supabase MCP server for the OMP Academy project (omp-academy). Requires SUPABASE_ACCESS_TOKEN in .env.mcp — see .env.mcp.example.",
+      "timeout": 30,
+      "env": {}
+    }
+  }
+}

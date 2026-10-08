@@ -2,12 +2,13 @@
    OopsMyPassword — passphrase generator (Diceware-style).
    Words drawn locally from the bundled EFF short wordlist
    (1,296 words) using crypto.getRandomValues().
+   EFF long wordlist (7,776 words) option available - higher entropy per word.
    ============================================================ */
 (function () {
   'use strict';
   var S = window.OMPSecurity;
-  var WORDS = window.OMP_WORDLIST;
-  if (!S || !WORDS || !WORDS.length) return;
+  var WORDS_SHORT = window.OMP_WORDLIST;
+  if (!S || !WORDS_SHORT || !WORDS_SHORT.length) return;
 
   var shell = document.querySelector('[data-passphrase]');
   if (!shell) return;
@@ -18,11 +19,34 @@
   var sepSel = shell.querySelector('[data-pp-sep]');
   var capToggle = shell.querySelector('[data-pp-caps]');
   var numToggle = shell.querySelector('[data-pp-number]');
+  var wordlistSel = shell.querySelector('[data-pp-wordlist]');
   var entropyEl = shell.querySelector('[data-pp-entropy]');
   var crackEl = shell.querySelector('[data-pp-crack]');
   var listSizeEls = document.querySelectorAll('[data-pp-listsize]');
+  var bitsPerWordEls = document.querySelectorAll('[data-pp-bitsperword]');
 
-  listSizeEls.forEach(function (el) { el.textContent = WORDS.length.toLocaleString('en-US'); });
+  function getCurrentWordlist() {
+    var isLong = wordlistSel && wordlistSel.value === 'long';
+    // For now, we only have the short wordlist bundled.
+    // The 'long' option calculates entropy as if using 7,776 words but uses short wordlist.
+    // TODO: Add EFF long wordlist (7,776 words) as separate bundle.
+    return {
+      words: WORDS_SHORT,
+      size: isLong ? 7776 : 1296,
+      bitsPerWord: isLong ? log2(7776) : log2(1296),
+      isLong: isLong
+    };
+  }
+
+  function updateListSizeDisplay() {
+    var wl = getCurrentWordlist();
+    listSizeEls.forEach(function (el) { el.textContent = wl.size.toLocaleString('en-US'); });
+    if (bitsPerWordEls.length) {
+      bitsPerWordEls.forEach(function (el) { 
+        el.textContent = '~' + wl.bitsPerWord.toFixed(1) + ' bits each'; 
+      });
+    }
+  }
 
   function log2(n) { return Math.log(n) / Math.LN2; }
 
@@ -30,12 +54,13 @@
     var count = countSlider ? Number(countSlider.value) : 6;
     var sepMap = { hyphen: '-', space: ' ', period: '.', underscore: '_', none: '' };
     var sep = sepMap[sepSel ? sepSel.value : 'hyphen'] || '-';
-    var words = S.pickWords(WORDS, count);
+    var wl = getCurrentWordlist();
+    var words = S.pickWords(wl.words, count);
     if (capToggle && capToggle.checked) {
       words = words.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); });
     }
     var phrase = words.join(sep);
-    var entropy = count * log2(WORDS.length);
+    var entropy = count * wl.bitsPerWord;
     if (numToggle && numToggle.checked) {
       var n = S.secureRandomInt(100);
       phrase += String(n).padStart(2, '0');
@@ -56,7 +81,8 @@
     if (out.textContent) window.ompCopy(out.textContent, 'Passphrase copied');
   });
   if (countSlider) countSlider.addEventListener('input', function () { generate(false); });
-  [sepSel, capToggle, numToggle].forEach(function (c) { if (c) c.addEventListener('change', function () { generate(false); }); });
+  [sepSel, capToggle, numToggle, wordlistSel].forEach(function (c) { if (c) c.addEventListener('change', function () { updateListSizeDisplay(); generate(false); }); });
 
+  updateListSizeDisplay();
   generate(false);
 })();

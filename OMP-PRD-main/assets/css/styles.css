@@ -133,6 +133,12 @@ ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
 
 /* ---------- Layout helpers ---------- */
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 24px; }
+.container-wide { max-width: 1400px; }
+/* OSINT hub listing stretches edge to edge — directories breathe on wide screens. */
+.osint-fluid { width: 100%; margin-inline: auto; padding-inline: 40px; }
+@media (max-width: 640px) {
+  .osint-fluid { padding-inline: 20px; }
+}
 .container-narrow { max-width: 860px; }
 .section { padding: 88px 0; }
 .section-tight { padding: 56px 0; }
@@ -1162,4 +1168,139 @@ main p a:not(.btn) { text-decoration: underline; text-underline-offset: .18em; }
 @media (max-width: 540px) {
   .gen-actions, .slider-head { flex-wrap: wrap; gap: 10px; }
   .opt-row > div { min-width: 0; overflow-wrap: anywhere; }
+}
+
+/* ============================================================
+   OSINT Hub — sidebar layout, filter groups, badges, detail
+   ============================================================ */
+.osint-layout {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr);
+  gap: 32px; align-items: start; margin-top: 6px;
+}
+.osint-sidebar {
+  position: sticky; top: 76px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--card); padding: 18px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.osint-filter-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.osint-search input, .osint-fgroup select {
+  width: 100%;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); font: inherit; padding: 10px 12px; outline: none;
+}
+.osint-search input:focus, .osint-fgroup select:focus {
+  border-color: var(--border-strong); box-shadow: 0 0 0 3px var(--brand-grad-soft);
+}
+.osint-search input::placeholder { color: var(--muted-2); }
+.osint-fgroup { display: flex; flex-direction: column; gap: 8px; }
+.osint-fname { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.osint-fname label { color: inherit; font: inherit; }
+.osint-check {
+  display: flex; align-items: center; gap: 9px;
+  font-size: .9rem; color: var(--text); cursor: pointer;
+  padding: 5px 8px; border-radius: var(--radius-sm);
+}
+.osint-check:hover { background: var(--bg-soft); }
+.osint-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--purple); flex: none; }
+.osint-results { min-width: 0; }
+.osint-results .product-grid { margin-top: 12px; }
+
+/* Pricing + access badges (product .ptype base reused) */
+.ptype.t-free     { color: #A7F3D0; background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.3); }
+.ptype.t-freemium { color: #FDE68A; background: rgba(234,179,8,.12);  border-color: rgba(234,179,8,.3); }
+.ptype.t-paid     { color: #FCA5A5; background: rgba(239,68,68,.12);  border-color: rgba(239,68,68,.3); }
+.ptype.t-access   { color: #A5B4FC; background: rgba(99,102,241,.14); border-color: rgba(99,102,241,.32); }
+[data-theme="light"] .ptype.t-free     { color: #047857; }
+[data-theme="light"] .ptype.t-freemium { color: #A16207; }
+[data-theme="light"] .ptype.t-paid     { color: #B91C1C; }
+[data-theme="light"] .ptype.t-access   { color: #4F46E5; }
+
+/* Detail page: content + sticky facts rail (uses the full card width). */
+.osint-detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; align-items: start; margin-top: 26px; }
+.osint-detail-grid .prose { max-width: none; }
+.osint-facts { position: sticky; top: 76px; display: flex; flex-direction: column; gap: 10px; }
+.osint-facts h2 { margin: 0 0 4px; font-size: .95rem; }
+.osint-fact { display: flex; justify-content: space-between; gap: 12px; font-size: .86rem; padding: 8px 0; border-top: 1px solid var(--border); }
+.osint-fact dt { color: var(--muted); flex: none; }
+.osint-fact dd { margin: 0; text-align: right; font-weight: 600; }
+.osint-facts .btn { width: 100%; justify-content: center; margin-top: 4px; }
+@media (max-width: 960px) {
+  .osint-detail-grid { grid-template-columns: 1fr; }
+  .osint-facts { position: static; }
+}
+.osint-detail-head { display: flex; gap: 18px; align-items: flex-start; margin-top: 8px; }
+.osint-install { position: relative; }
+.osint-install .osint-copy { position: absolute; top: 8px; right: 8px; z-index: 1; }
+
+/* OSINT hub hero spans the full width — directories read better wide. */
+.osint-hero .lead { max-width: 960px; }
+.osint-hero .hero-meta { max-width: none; }
+
+/* Hero live-stats line (filled by the hub app once the catalog loads). */
+.hero-meta {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: .82rem; color: var(--muted-2);
+}
+
+/* Per-category tile hues for the OSINT hub cards. */
+.osint-cats > .osint-cat:nth-child(6n+1) .osint-tile { color: #A78BFA; border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.08); }
+.osint-cats > .osint-cat:nth-child(6n+2) .osint-tile { color: #67E8F9; border-color: rgba(103,232,249,.3); background: rgba(103,232,249,.07); }
+.osint-cats > .osint-cat:nth-child(6n+3) .osint-tile { color: #FCD34D; border-color: rgba(252,211,77,.3); background: rgba(252,211,77,.07); }
+.osint-cats > .osint-cat:nth-child(6n+4) .osint-tile { color: #6EE7B7; border-color: rgba(110,231,183,.3); background: rgba(110,231,183,.07); }
+.osint-cats > .osint-cat:nth-child(6n+5) .osint-tile { color: #F9A8D4; border-color: rgba(249,168,212,.3); background: rgba(249,168,212,.07); }
+.osint-cats > .osint-cat:nth-child(6n) .osint-tile { color: #93C5FD; border-color: rgba(147,197,253,.3); background: rgba(147,197,253,.07); }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n+1) .osint-tile { color: #7C3AED; }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n+2) .osint-tile { color: #0E7490; }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n+3) .osint-tile { color: #A16207; }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n+4) .osint-tile { color: #047857; }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n+5) .osint-tile { color: #BE185D; }
+[data-theme="light"] .osint-cats > .osint-cat:nth-child(6n) .osint-tile { color: #1D4ED8; }
+.osint-row { display: flex; gap: 16px; align-items: flex-start; }
+.osint-tile {
+  width: 52px; height: 52px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; font-weight: 800; color: var(--purple);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden;
+}
+.osint-tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.osint-tile-lg { width: 72px; height: 72px; font-size: 1.7rem; border-radius: 16px; }
+img.osint-tile { padding: 6px; }
+
+/* Category cards: site .card surface, compact hub navigation */
+.osint-cats {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px; margin: 4px 0 6px;
+}
+.osint-cat {
+  display: flex; gap: 14px; align-items: flex-start; text-align: left;
+  padding: 18px; cursor: pointer; font: inherit; color: var(--text); width: 100%;
+  transition: border-color .15s var(--ease), transform .15s var(--ease);
+}
+.osint-cat:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.osint-cat-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.osint-cat-title { display: flex; align-items: center; gap: 8px; }
+.osint-cat-title strong { font-size: 1rem; line-height: 1.35; }
+.osint-cat-title .cat-count { flex: none; }
+.osint-cat-main small { color: var(--muted); font-size: .83rem; line-height: 1.5; }
+.osint-cat .tool-cta {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-weight: 600; font-size: .88rem; color: var(--purple);
+}
+.osint-cat:hover .tool-cta { gap: 11px; }
+.osint-cat .tool-cta { transition: gap .2s var(--ease); }
+
+/* Active-category header: back button + title + description */
+.osint-activecat { margin: 4px 0 2px; }
+.osint-activecat .h-2 { margin: 10px 0 0; display: flex; align-items: center; gap: 10px; }
+.osint-activecat p { margin: 6px 0 0; max-width: 70ch; }
+
+@media (max-width: 900px) {
+  .osint-layout { grid-template-columns: 1fr; }
+  .osint-sidebar { position: static; }
+  .osint-detail-head { flex-direction: column; }
 }

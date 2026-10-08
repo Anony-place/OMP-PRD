@@ -1,0 +1,708 @@
+/* OopsMyPassword — public OSINT Hub app.
+   Public URL: /osint (hub) and /osint/<tool-slug> (detail page).
+   Internal implementation: this client-side app reading the Supabase
+   `osint_tools` + `osint_categories` tables (public read-only via
+   publishable key, RLS-gated to published rows). Tool detail URLs are
+   real files at osint/<slug>.html (written at deploy by
+   scripts/build-static-seo.mjs). Unknown slugs 404 — they must not
+   rewrite to the hub or Google reports a soft 404.
+
+   Category filtering is in-page state (#/c/<category-slug>, mirroring the
+   Articles hub): categories are a filter dimension, not separate pages.
+
+   Security contract (mirrors products.js):
+     - slugs must match the admin slugify charset before they form URLs
+     - official/github/docs/logo URLs pass the canonical scheme validator
+     - overview + install guide render through OMPMarkdown.renderSafe —
+       never raw HTML
+     - skeleton while loading, hard 10s timeout, error banner + Retry,
+       and a genuine empty state distinct from a fetch failure. */
+(function () {
+  'use strict';
+  var root = document.querySelector('[data-osint]');
+  if (!root) return;
+
+  var SUPABASE_URL = 'https://aeehfulikupskyrvcpzb.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
+  var SITE_ORIGIN = 'https://oopsmypassword.web.app';
+  var HUB_PATH = '/osint';
+  var BASE_TITLE = 'OSINT Hub — OopsMyPassword';
+  var PAGE_LIMIT = 200;
+  var FETCH_TIMEOUT_MS = 10000;
+
+  var PRICING = [
+    { value: 'free', label: 'Free' },
+    { value: 'freemium', label: 'Freemium' },
+    { value: 'paid', label: 'Paid' }
+  ];
+  var ACCESS = [
+    { value: 'web', label: 'Web app' },
+    { value: 'cli', label: 'Command line' },
+    { value: 'desktop-app', label: 'Desktop app' },
+    { value: 'browser-extension', label: 'Browser ext.' },
+    { value: 'mobile-app', label: 'Mobile app' },
+    { value: 'api', label: 'API' }
+  ];
+
+  var SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  function safeSlug(v) {
+    var s = String(v == null ? '' : v).trim().toLowerCase();
+    return (SLUG_RE.test(s) && s.length <= 200) ? s : '';
+  }
+  function toolPath(slug) {
+    var s = safeSlug(slug);
+    return s ? HUB_PATH + '/' + s : '';
+  }
+  function safePricing(v) {
+    var t = String(v == null ? '' : v).trim().toLowerCase();
+    return PRICING.some(function (x) { return x.value === t; }) ? t : '';
+  }
+  function safeAccessList(v) {
+    if (!Array.isArray(v)) return [];
+    var allowed = ACCESS.map(function (x) { return x.value; });
+    return v.filter(function (x) { return allowed.indexOf(String(x)) !== -1; });
+  }
+  function pricingLabel(v) {
+    for (var i = 0; i < PRICING.length; i++) if (PRICING[i].value === v) return PRICING[i].label;
+    return v || '—';
+  }
+  function accessLabel(v) {
+    for (var i = 0; i < ACCESS.length; i++) if (ACCESS[i].value === v) return ACCESS[i].label;
+    return v;
+  }
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+  function attr(s) { return esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+  function plainText(source) {
+    if (window.OMPMarkdown && window.OMPMarkdown.plainText) return window.OMPMarkdown.plainText(source);
+    try {
+      var parsed = new DOMParser().parseFromString(String(source || ''), 'text/html');
+      return (parsed.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch (e) {
+      return String(source || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+  function renderContent(source) {
+    if (window.OMPMarkdown && window.OMPMarkdown.renderSafe) return window.OMPMarkdown.renderSafe(source || '');
+    return window.OMPSanitize ? window.OMPSanitize(source || '') : esc(source || '');
+  }
+  function safeUrl(value, opts) {
+    var v = String(value == null ? '' : value).trim();
+    if (!v || /["'<>\u0000-\u0020]/.test(v)) return '';
+    if (window.OMPUrl && window.OMPUrl.safeUrl) {
+      var u = window.OMPUrl.safeUrl(v, opts || { attrSafe: true, noUpLevel: true, allowMailto: false });
+      return u === null ? '' : u;
+    }
+    return /^(https?:\/\/|\/)/i.test(v) ? v : '';
+  }
+  function logoUrl(value) {
+    var raw = String(value == null ? '' : value).trim();
+    if (!raw) return '';
+    var https = safeUrl(raw);
+    if (https) return https;
+    if (/\.\.|\\|[\u0000-\u0020]/.test(raw)) return '';
+    var path = raw.replace(/^\/+/, '');
+    if (/^storage\/v1\/object\/public\/osint-logos\//i.test(path)) {
+      return SUPABASE_URL + '/' + path;
+    }
+    if (/^(logos\/)?[A-Za-z0-9._/-]+\.(png|jpe?g|webp|gif|svg)$/i.test(path)) {
+      if (path.indexOf('logos/') !== 0) path = 'logos/' + path;
+      return SUPABASE_URL + '/storage/v1/object/public/osint-logos/' + path;
+    }
+    return '';
+  }
+
+  /* ---------- document meta ---------- */
+  function upsertMeta(sel, value) {
+    var el = document.head.querySelector(sel);
+    if (!el) {
+      el = document.createElement('meta');
+      var m = sel.match(/^meta\[(property|name)="([^"]+)"\]$/);
+      if (m) el.setAttribute(m[1], m[2]);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', value);
+  }
+  function setMetaTags(o) {
+    o = o || {};
+    var url = SITE_ORIGIN + (o.path || HUB_PATH);
+    var link = document.head.querySelector('link[rel="canonical"]');
+    if (link) link.setAttribute('href', url);
+    upsertMeta('meta[property="og:url"]', url);
+    upsertMeta('meta[property="og:type"]', o.ogType || 'website');
+    if (o.title != null) {
+      document.title = o.title;
+      upsertMeta('meta[property="og:title"]', o.title);
+      upsertMeta('meta[name="twitter:title"]', o.title);
+    }
+    if (o.description != null) {
+      upsertMeta('meta[property="og:description"]', o.description);
+      upsertMeta('meta[name="twitter:description"]', o.description);
+    }
+    if (o.image) {
+      upsertMeta('meta[property="og:image"]', o.image);
+      upsertMeta('meta[name="twitter:image"]', o.image);
+    }
+    var robots = document.head.querySelector('meta[name="robots"]');
+    if (o.noindex) {
+      if (!robots) { robots = document.createElement('meta'); robots.setAttribute('name', 'robots'); document.head.appendChild(robots); }
+      robots.setAttribute('content', 'noindex');
+    } else if (robots && robots.parentNode) {
+      robots.parentNode.removeChild(robots);
+    }
+  }
+  function setToolJsonLd(t, path, catName) {
+    var old = document.getElementById('omp-osint-ld');
+    if (old) old.parentNode.removeChild(old);
+    if (!t) return;
+    var data = {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: String(t.name || ''),
+      description: (t.summary || plainText(t.overview)).slice(0, 400),
+      url: SITE_ORIGIN + path,
+      applicationCategory: 'SecurityApplication',
+      operatingSystem: (t.access_types || []).join(', '),
+      author: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE_ORIGIN + '/' },
+      publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE_ORIGIN + '/' },
+      inLanguage: 'en'
+    };
+    var img = logoUrl(t.logo_url);
+    if (/^https?:/i.test(img)) data.image = img;
+    var link = safeUrl(t.official_url) || safeUrl(t.github_url);
+    if (/^https?:/i.test(link)) data.downloadUrl = link;
+    if (t.pricing === 'free') data.offers = { '@type': 'Offer', price: '0', priceCurrency: 'USD' };
+    var crumbs = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ORIGIN + '/' },
+        { '@type': 'ListItem', position: 2, name: 'OSINT Hub', item: SITE_ORIGIN + HUB_PATH }
+      ]
+    };
+    if (catName) crumbs.itemListElement.push({ '@type': 'ListItem', position: 3, name: catName, item: SITE_ORIGIN + HUB_PATH + '#/c/' + t.category_slug });
+    crumbs.itemListElement.push({ '@type': 'ListItem', position: crumbs.itemListElement.length + 1, name: String(t.name || ''), item: SITE_ORIGIN + path });
+    [data, crumbs].forEach(function (obj, i) {
+      var script = document.createElement('script');
+      script.type = 'application/ld+json';
+      if (i === 0) script.id = 'omp-osint-ld';
+      script.textContent = JSON.stringify(obj);
+      document.head.appendChild(script);
+    });
+  }
+
+  /* ---------- loading / error states ---------- */
+  function renderSkeleton() {
+    var rows = '';
+    for (var i = 0; i < 3; i++) {
+      rows += '<div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main">' +
+        '<div class="skel skel-title' + (i % 2 ? ' skel-w70' : '') + '"></div><div class="skel skel-meta"></div>' +
+        '<div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>';
+    }
+    root.innerHTML = '<div class="sr-only" role="status" aria-live="polite">Loading OSINT tools…</div>' + rows;
+    document.title = BASE_TITLE;
+  }
+  function errorBanner(kind) {
+    var detail = kind === 'timeout'
+      ? 'The OSINT catalog didn’t respond within ' + Math.round(FETCH_TIMEOUT_MS / 1000) + ' seconds.'
+      : 'The OSINT catalog could not be reached right now.';
+    return '<div class="notice-band notice-error" role="alert">' +
+      '<svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>' +
+      '<div><strong>OSINT tools are temporarily unavailable</strong><p>' + detail + ' <a href="' + HUB_PATH + '" style="color:var(--purple)" data-retry="1">Retry</a></p></div></div>';
+  }
+
+  /* ---------- filter state ---------- */
+  var filterState = { q: '', category: '', access: [], pricing: [], sort: 'recommended' };
+  function readHashCategory() {
+    var h = String(location.hash || '');
+    var m = h.match(/^#\/c\/([^/]+)\/?$/);
+    if (!m) return '';
+    var slug = '';
+    try { slug = decodeURIComponent(m[1]); } catch (e) { slug = m[1]; }
+    return safeSlug(slug);
+  }
+
+  function categoryBySlug(slug) {
+    for (var i = 0; i < lastCategories.length; i++) {
+      if (lastCategories[i].slug === slug) return lastCategories[i];
+    }
+    return null;
+  }
+
+  function applyFilters(tools) {
+    var q = filterState.q;
+    return tools.filter(function (t) {
+      if (filterState.category && t.category_slug !== filterState.category) return false;
+      if (filterState.pricing.length && filterState.pricing.indexOf(safePricing(t.pricing)) === -1) return false;
+      if (filterState.access.length) {
+        var has = safeAccessList(t.access_types).some(function (a) { return filterState.access.indexOf(a) !== -1; });
+        if (!has) return false;
+      }
+      if (q) {
+        var hay = [t.name, t.slug, t.summary, t.category_name, pricingLabel(safePricing(t.pricing))].join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    }).sort(function (a, b) {
+      if (filterState.sort === 'az') return String(a.name || '').localeCompare(String(b.name || ''));
+      var fa = a.featured ? 0 : 1, fb = b.featured ? 0 : 1;
+      if (fa !== fb) return fa - fb;
+      var sa = Number(a.sort_order) || 0, sb = Number(b.sort_order) || 0;
+      if (sa !== sb) return sa - sb;
+      return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+    });
+  }
+
+  /* ---------- hub view ---------- */
+  function badgeHtml(t) {
+    var out = '<span class="ptype t-' + attr(safePricing(t.pricing) || 'free') + '">' + esc(pricingLabel(safePricing(t.pricing))) + '</span>';
+    safeAccessList(t.access_types).forEach(function (a) {
+      out += '<span class="ptype t-access">' + esc(accessLabel(a)) + '</span>';
+    });
+    if (t.featured) out += '<span class="ptype t-featured">★ Featured</span>';
+    return out;
+  }
+
+  function cardHtml(t) {
+    var path = toolPath(t.slug);
+    var logo = logoUrl(t.logo_url);
+    var initial = esc(String(t.name || '?').trim().charAt(0).toUpperCase());
+    var tileHtml = logo
+      ? '<img src="' + attr(logo) + '" alt="' + attr(t.name) + ' logo" loading="lazy" data-osint-logo data-fallback="' + initial + '">'
+      : initial;
+    var head = path
+      ? '<h2 class="feed-title"><a href="' + attr(path) + '">' + esc(t.name) + '</a></h2>'
+      : '<h2 class="feed-title">' + esc(t.name) + '</h2>';
+    return '<article class="feed-row osint-row">' +
+      '<span class="osint-tile" aria-hidden="true">' + tileHtml + '</span>' +
+      '<div class="feed-row-main">' +
+      '<div class="feed-meta"><span class="badge badge-demo">' + esc(t.category_name || 'OSINT') + '</span>' + badgeHtml(t) + '</div>' +
+      head +
+      (t.summary ? '<p class="feed-excerpt">' + esc(t.summary) + '</p>' : '') +
+      '</div></article>';
+  }
+
+  function wireBrokenLogos(scope) {
+    (scope || root).querySelectorAll('img[data-osint-logo]').forEach(function (img) {
+      img.addEventListener('error', function () {
+        if (img.classList.contains('osint-tile')) {
+          /* Detail header: the image IS the tile — swap it for an initial tile. */
+          var tile = document.createElement('span');
+          tile.className = img.className;
+          tile.setAttribute('aria-hidden', 'true');
+          tile.textContent = img.getAttribute('data-fallback') || '?';
+          if (img.parentNode) img.parentNode.replaceChild(tile, img);
+        } else if (img.parentNode && img.parentNode.classList.contains('osint-tile')) {
+          /* Hub row: the tile wraps the image — keep the tile, drop the image. */
+          img.parentNode.textContent = img.getAttribute('data-fallback') || '?';
+          if (img.parentNode) img.parentNode.removeChild(img);
+        }
+      });
+    });
+  }
+
+  function categoryCards(counts) {
+    return lastCategories.map(function (c) {
+      var n = counts[c.slug] || 0;
+      var initial = esc(String(c.name || '?').trim().charAt(0).toUpperCase());
+      return '<button type="button" class="card osint-cat" data-cat="' + attr(c.slug) + '">' +
+        '<span class="osint-tile" aria-hidden="true">' + initial + '</span>' +
+        '<span class="osint-cat-main"><span class="osint-cat-title"><strong>' + esc(c.name) + '</strong>' + (n ? '<span class="cat-count">' + n + '</span>' : '') + '</span>' +
+        (c.description ? '<small>' + esc(c.description) + '</small>' : '') +
+        '<span class="tool-cta">Explore <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></span></button>';
+    }).join('');
+  }
+
+  function checkGroup(name, options, selected) {
+    return options.map(function (o) {
+      var on = selected.indexOf(o.value) !== -1;
+      var id = 'osint-' + name + '-' + o.value;
+      return '<label class="osint-check" for="' + attr(id) + '">' +
+        '<input type="checkbox" id="' + attr(id) + '" data-f="' + attr(name) + '" value="' + attr(o.value) + '"' + (on ? ' checked' : '') + '> ' +
+        esc(o.label) + '</label>';
+    }).join('');
+  }
+
+  function activeFilterCount() {
+    return (filterState.q ? 1 : 0) + (filterState.category ? 1 : 0) +
+      filterState.access.length + filterState.pricing.length;
+  }
+
+  function hubView(tools, errorKind) {
+    var html = '';
+    if (errorKind) html += errorBanner(errorKind);
+
+    if (!tools.length && !errorKind) {
+      html += '<div class="feed-empty">' +
+        '<h2 class="h-3">No OSINT tools yet</h2>' +
+        '<p class="muted">Tools published from the admin panel will appear here. Start with <a href="/articles/best-free-osint-tools-for-beginners" style="color:var(--purple)">Best Free OSINT Tools for Beginners</a>.</p></div>';
+      root.innerHTML = html;
+      wireRetry();
+      setToolJsonLd(null);
+      setMetaTags({ path: HUB_PATH, title: BASE_TITLE, noindex: true });
+      return;
+    }
+    if (!tools.length) {
+      html += '<div class="feed-empty"><h2 class="h-3">Can’t load OSINT tools right now</h2><p class="muted">The catalog is unreachable — that’s a connection problem, not an empty catalog. Use Retry above.</p></div>';
+      root.innerHTML = html;
+      wireRetry();
+      setToolJsonLd(null);
+      setMetaTags({ path: HUB_PATH, title: BASE_TITLE, noindex: false });
+      return;
+    }
+
+    var counts = {};
+    tools.forEach(function (t) { counts[t.category_slug] = (counts[t.category_slug] || 0) + 1; });
+    var visible = applyFilters(tools);
+    var nActive = activeFilterCount();
+    var isDefaultView = !filterState.q && !filterState.category && !filterState.access.length && !filterState.pricing.length;
+    var activeCat = categoryBySlug(filterState.category);
+
+    if (isDefaultView && lastCategories.length) {
+      html += '<div class="osint-cats">' + categoryCards(counts) + '</div>';
+    } else if (activeCat) {
+      var catTotal = counts[activeCat.slug] || 0;
+      html += '<div class="osint-activecat"><button type="button" class="btn btn-ghost btn-sm" data-cat="">← All categories</button>' +
+        '<h2 class="h-2">' + esc(activeCat.name) + ' <span class="cat-count">' + catTotal + '</span></h2>' +
+        (activeCat.description ? '<p class="muted">' + esc(activeCat.description) + '</p>' : '') + '</div>';
+    }
+    html += '<div class="osint-layout">';
+    html += '<aside class="osint-sidebar" aria-label="Filters">' +
+      '<div class="osint-filter-head"><strong>Filters</strong>' +
+      (nActive ? '<button type="button" class="btn btn-ghost btn-sm" data-clear-filters>Clear all (' + nActive + ')</button>' : '') + '</div>' +
+      '<div class="osint-search"><label class="sr-only" for="osint-search">Search tools</label>' +
+      '<input id="osint-search" type="search" placeholder="Search tools…" autocomplete="off" value="' + attr(filterState.q) + '"></div>' +
+      '<div class="osint-fgroup"><div class="osint-fname">Access</div>' + checkGroup('access', ACCESS, filterState.access) + '</div>' +
+      '<div class="osint-fgroup"><div class="osint-fname">Pricing</div>' + checkGroup('pricing', PRICING, filterState.pricing) + '</div>' +
+      '<div class="osint-fgroup"><div class="osint-fname"><label for="osint-sort">Sort</label></div>' +
+      '<select id="osint-sort" data-sort><option value="recommended"' + (filterState.sort === 'recommended' ? ' selected' : '') + '>Recommended</option>' +
+      '<option value="az"' + (filterState.sort === 'az' ? ' selected' : '') + '>Name A–Z</option></select></div>' +
+      '</aside>';
+    html += '<div class="osint-results">';
+    html += '<p class="muted small" role="status">' + (activeCat ? esc(activeCat.name) + ' — ' : '') + visible.length + ' of ' + tools.length + ' tools shown</p>';
+    if (!visible.length) {
+      html += '<div class="feed-empty"><h2 class="h-3">No tools match</h2><p class="muted">Nothing matches ' + (filterState.q ? '“' + esc(filterState.q) + '”' : 'those filters') + '. Try clearing the search or removing a filter.</p></div>';
+    } else {
+      html += '<div class="feed-list">' + visible.map(cardHtml).join('') + '</div>';
+    }
+    html += '</div></div>';
+
+    root.innerHTML = html;
+    wireRetry();
+    wireBrokenLogos(root);
+
+    var search = root.querySelector('#osint-search');
+    if (search) {
+      search.addEventListener('input', function () {
+        filterState.q = String(search.value || '').trim().toLowerCase().slice(0, 80);
+        hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+        var fresh = root.querySelector('#osint-search');
+        if (fresh) { fresh.focus(); try { fresh.setSelectionRange(fresh.value.length, fresh.value.length); } catch (e) { /* ignore */ } }
+      });
+    }
+    root.querySelectorAll('[data-cat]').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var c = chip.getAttribute('data-cat') || '';
+        filterState.category = c;
+        try {
+          if (c) history.replaceState(null, '', HUB_PATH + '#/c/' + encodeURIComponent(c));
+          else history.replaceState(null, '', HUB_PATH);
+        } catch (e) { /* ignore */ }
+        hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+      });
+    });
+    root.querySelectorAll('[data-f]').forEach(function (box) {
+      box.addEventListener('change', function () {
+        var kind = box.getAttribute('data-f');
+        var arr = kind === 'access' ? filterState.access : filterState.pricing;
+        var i = arr.indexOf(box.value);
+        if (box.checked && i === -1) arr.push(box.value);
+        if (!box.checked && i !== -1) arr.splice(i, 1);
+        hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+      });
+    });
+    var sort = root.querySelector('[data-sort]');
+    if (sort) sort.addEventListener('change', function () {
+      filterState.sort = sort.value === 'az' ? 'az' : 'recommended';
+      hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+    });
+    var clear = root.querySelector('[data-clear-filters]');
+    if (clear) clear.addEventListener('click', function () {
+      filterState = { q: '', category: '', access: [], pricing: [], sort: 'recommended' };
+      try { history.replaceState(null, '', HUB_PATH); } catch (e) { /* ignore */ }
+      hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+    });
+
+    var cat = categoryBySlug(filterState.category);
+    setToolJsonLd(null);
+    setMetaTags({
+      path: filterState.category ? HUB_PATH + '#/c/' + filterState.category : HUB_PATH,
+      title: cat ? cat.name + ' Tools — OSINT Hub | OopsMyPassword' : BASE_TITLE,
+      noindex: false
+    });
+  }
+
+  function fmtDate(value) {
+    if (!value) return '';
+    try { return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
+    catch (e) { return ''; }
+  }
+
+  /* ---------- detail view (article flow, like the guides) ---------- */
+  function detailView(t) {
+    var path = toolPath(t.slug) || HUB_PATH;
+    var logo = logoUrl(t.logo_url);
+    var cat = categoryBySlug(t.category_slug);
+    var official = safeUrl(t.official_url);
+    var github = safeUrl(t.github_url);
+    var docs = safeUrl(t.docs_url);
+    var description = (t.summary && String(t.summary).trim()) || plainText(t.overview).slice(0, 300);
+    var updated = fmtDate(t.updated_at || t.published_at);
+    var initial = esc(String(t.name || '?').trim().charAt(0).toUpperCase());
+
+    var links = '';
+    if (official) links += '<a class="btn btn-primary" href="' + attr(official) + '" target="_blank" rel="noopener noreferrer">Open official site →</a>';
+    if (github) links += '<a class="btn btn-secondary" href="' + attr(github) + '" target="_blank" rel="noopener noreferrer">GitHub</a>';
+    if (docs) links += '<a class="btn btn-ghost" href="' + attr(docs) + '" target="_blank" rel="noopener noreferrer">Docs</a>';
+
+    /* Sections drive both the article body and the sticky table of contents,
+       so they can never drift apart. Empty fields simply vanish. */
+    var sections = [{ id: 'sec-overview', label: 'Overview', html: renderContent(t.overview) }];
+    if (t.key_features && String(t.key_features).trim()) {
+      sections.push({ id: 'sec-features', label: 'Key features', html: renderContent(t.key_features) });
+    }
+    if (t.install_guide && String(t.install_guide).trim()) {
+      sections.push({ id: 'sec-install', label: 'Install & first run', install: true, html: renderContent(t.install_guide) });
+    }
+    if (t.use_case && String(t.use_case).trim()) {
+      sections.push({ id: 'sec-example', label: 'Real-world example', html: renderContent(t.use_case) });
+    }
+    if (t.faqs && String(t.faqs).trim()) {
+      sections.push({ id: 'sec-faq', label: 'Common questions', html: renderContent(t.faqs) });
+    }
+    var related = lastTools.filter(function (x) { return x.category_slug && x.category_slug === t.category_slug && x.slug !== t.slug; }).slice(0, 3);
+    if (related.length) sections.push({ id: 'sec-related', label: 'Related tools', related: true });
+
+    var toc = '<aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul>' +
+      sections.map(function (s) { return '<li><a href="#' + s.id + '">' + esc(s.label) + '</a></li>'; }).join('') + '</ul></aside>';
+
+    var body = sections.map(function (s) {
+      if (s.related) {
+        return '<h2 id="' + s.id + '">Related tools</h2><div class="feed-list">' + related.map(function (r) {
+          var rp = toolPath(r.slug);
+          var rInit = esc(String(r.name || '?').trim().charAt(0).toUpperCase());
+          var rLogo = logoUrl(r.logo_url);
+          return '<article class="feed-row osint-row">' +
+            '<span class="osint-tile" aria-hidden="true">' + (rLogo ? '<img src="' + attr(rLogo) + '" alt="' + attr(r.name) + ' logo" loading="lazy" data-osint-logo data-fallback="' + rInit + '">' : rInit) + '</span>' +
+            '<div class="feed-row-main"><div class="feed-meta">' + badgeHtml(r) + '</div>' +
+            (rp ? '<h3 class="feed-title"><a href="' + attr(rp) + '">' + esc(r.name) + '</a></h3>'
+                : '<h3 class="feed-title">' + esc(r.name) + '</h3>') +
+            (r.summary ? '<p class="feed-excerpt">' + esc(r.summary) + '</p>' : '') + '</div></article>';
+        }).join('') + '</div>';
+      }
+      if (s.install) {
+        return '<h2 id="' + s.id + '">' + esc(s.label) + '</h2>' +
+          '<div class="osint-install"><button type="button" class="btn btn-ghost btn-sm osint-copy" data-copy-install>Copy</button>' +
+          '<div data-install-body>' + s.html + '</div></div>';
+      }
+      return '<h2 id="' + s.id + '">' + esc(s.label) + '</h2>' + s.html;
+    }).join('');
+
+    root.innerHTML =
+      '<p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="' + HUB_PATH + '">← Back to hub</a></p>' +
+      '<section class="article-hero" style="padding-top:18px">' +
+      '<nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="' + HUB_PATH + '" style="color:var(--purple)">OSINT Hub</a>' +
+      (cat ? ' <span class="divider-dot">/</span> <a href="' + HUB_PATH + '#/c/' + attr(cat.slug) + '" style="color:var(--purple)">' + esc(cat.name) + '</a>' : '') + '</nav>' +
+      '<div class="osint-detail-head" style="margin-top:16px">' +
+      (logo ? '<img src="' + attr(logo) + '" alt="' + attr(t.name) + ' logo" data-osint-logo data-fallback="' + initial + '" class="osint-tile osint-tile-lg">' : '<span class="osint-tile osint-tile-lg" aria-hidden="true">' + initial + '</span>') +
+      '<div><h1 class="h-1" style="margin:0">' + esc(t.name) + '</h1></div></div>' +
+      (t.summary ? '<p class="lead" style="margin-top:16px">' + esc(t.summary) + '</p>' : '') +
+      '<div class="article-meta"><span class="chip">' + esc(cat ? cat.name : 'OSINT') + '</span><span class="chip">' + esc(pricingLabel(safePricing(t.pricing))) + '</span>' +
+      safeAccessList(t.access_types).map(function (a) { return '<span class="chip">' + esc(accessLabel(a)) + '</span>'; }).join('') +
+      (t.featured ? '<span class="chip">★ Featured</span>' : '') +
+      (updated ? '<span class="chip">Updated ' + esc(updated) + '</span>' : '') + '</div>' +
+      (links ? '<div class="flex gap-12 wrap" style="margin-top:20px">' + links + '</div>' : '') +
+      '</section>' +
+      '<div class="article-layout" style="margin-top:8px">' + toc +
+      '<article class="prose">' + body +
+      '<hr class="hr-fade" style="margin-top:48px">' +
+      '<div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every investigation type in the <a href="' + HUB_PATH + '">OSINT Hub</a>.</p></div>' +
+      '<p class="muted small" style="margin-top:20px">Use OSINT tools responsibly — only investigate accounts, people or systems you have a legitimate reason to look into.</p>' +
+      '</article></div>';
+    if (window.OMPMarkdown && window.OMPMarkdown.demoteHeadings) {
+      root.querySelectorAll('.prose').forEach(function (el) { window.OMPMarkdown.demoteHeadings(el, 1); });
+    }
+    wireBrokenLogos(root);
+    var copyBtn = root.querySelector('[data-copy-install]');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      var body = root.querySelector('[data-install-body]');
+      var text = body ? body.textContent : '';
+      var done = function (ok) { copyBtn.textContent = ok ? 'Copied ✓' : 'Copy failed'; setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else { done(false); }
+    });
+    setToolJsonLd(t, path, cat ? cat.name : '');
+    setMetaTags({
+      path: path,
+      ogType: 'article',
+      title: String(t.name || 'OSINT tool') + ' — OSINT Hub | OopsMyPassword',
+      description: description,
+      image: logo || undefined,
+      noindex: false
+    });
+  }
+
+  function notFoundView(requested) {
+    root.innerHTML = '<div class="feed-empty">' +
+      '<svg class="icon-28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>' +
+      '<h2 class="h-3">Tool not found</h2>' +
+      '<p class="muted" style="margin-top:8px">There’s no OSINT tool at <code>/osint/' + esc(safeSlug(requested) || String(requested).slice(0, 60)) + '</code>. <a href="' + HUB_PATH + '" style="color:var(--purple)">Back to the hub</a>.</p></div>';
+    setToolJsonLd(null);
+    setMetaTags({ path: location.pathname, title: 'Tool not found — OopsMyPassword', noindex: true });
+  }
+
+  function slugErrorView(kind) {
+    root.innerHTML = errorBanner(kind) +
+      '<div class="feed-empty"><h2 class="h-3">Can’t load this tool right now</h2>' +
+      '<p class="muted" style="margin-top:8px">The catalog is unreachable — that’s a connection problem, not a missing tool. <a href="' + HUB_PATH + '" style="color:var(--purple)">Back to the hub</a>.</p></div>';
+    wireRetry();
+    document.title = 'OSINT tools are temporarily unavailable — OopsMyPassword';
+    setMetaTags({ path: location.pathname });
+  }
+
+  function wireRetry() {
+    var btn = root.querySelector('[data-retry]');
+    if (!btn || btn.getAttribute('data-retry') === 'off') return;
+    btn.setAttribute('data-retry', 'off');
+    btn.addEventListener('click', function (ev) { ev.preventDefault(); retry(); });
+  }
+
+  /* ---------- data ---------- */
+  var clientPromise = null;
+  function getClient() {
+    if (!clientPromise) {
+      clientPromise = import('https://esm.sh/@supabase/supabase-js@2.115.0')
+        .then(function (mod) { return mod.createClient(SUPABASE_URL, SUPABASE_KEY, { global: { fetch: timedFetch } }); })
+        .catch(function (e) { clientPromise = null; throw e; });
+    }
+    return clientPromise;
+  }
+  function timedFetch(input, init) {
+    if (typeof AbortController === 'undefined' || typeof fetch !== 'function') return fetch(input, init);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { try { ctrl.abort(); } catch (e) { /* ignore */ } }, FETCH_TIMEOUT_MS);
+    var p = fetch(input, Object.assign({}, init || {}, { signal: ctrl.signal }));
+    var clear = function () { clearTimeout(timer); };
+    p.then(clear, clear);
+    return p;
+  }
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var settled = false;
+      var timer = setTimeout(function () { if (!settled) { settled = true; reject({ isTimeout: true }); } }, ms);
+      promise.then(function (v) { if (!settled) { settled = true; clearTimeout(timer); resolve(v); } },
+                    function (e) { if (!settled) { settled = true; clearTimeout(timer); reject(e); } });
+    });
+  }
+  function isTimeoutError(e) {
+    return !!(e && (e.isTimeout || e.name === 'AbortError' || (e.message && /aborted|timeout/i.test(String(e.message)))));
+  }
+
+  var CAT_FIELDS = 'id,name,slug,description,status,sort_order';
+  var TOOL_FIELDS = 'id,slug,name,summary,overview,install_guide,key_features,faqs,use_case,category_id,pricing,access_types,official_url,github_url,docs_url,logo_url,featured,status,sort_order,published_at,created_at';
+
+  async function fetchHub() {
+    var client = await getClient();
+    var results = await Promise.all([
+      client.from('osint_categories').select(CAT_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).limit(PAGE_LIMIT),
+      client.from('osint_tools').select(TOOL_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).order('created_at', { ascending: false }).limit(PAGE_LIMIT)
+    ]);
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    var cats = (results[0].data || []).filter(function (c) { return c && c.slug && safeSlug(c.slug); });
+    var catName = {};
+    cats.forEach(function (c) { catName[c.id] = c.name; });
+    var tools = (results[1].data || [])
+      .filter(function (t) { return t && t.slug && String(t.name || '').trim() && safeSlug(t.slug); })
+      .map(function (t) {
+        var cat = null;
+        for (var i = 0; i < cats.length; i++) if (cats[i].id === t.category_id) cat = cats[i];
+        t.category_slug = cat ? cat.slug : '';
+        t.category_name = cat ? cat.name : (catName[t.category_id] || '');
+        return t;
+      });
+    return { categories: cats, tools: tools };
+  }
+
+  function paintStats() {
+    var el = document.querySelector('[data-osint-stats]');
+    if (!el || !lastTools.length) return;
+    el.textContent = lastTools.length + ' tools · ' + lastCategories.length + ' categories · every listing carries install steps and official links.';
+  }
+
+  /* ---------- controller ---------- */
+  var lastTools = [];
+  var lastCategories = [];
+  var loadState = 'idle';
+  var lastErrorKind = '';
+
+  function route() {
+    var m = (location.pathname || '').match(/^\/osint\/([^/]+)\/?$/);
+    if (!m) return { slug: '' };
+    var slug = '';
+    try { slug = decodeURIComponent(m[1]); } catch (e) { slug = m[1]; }
+    return { slug: slug, invalid: !safeSlug(slug) };
+  }
+
+  function render() {
+    var r = route();
+    if (r.slug && !r.invalid) {
+      var t = lastTools.find(function (x) { return x.slug === r.slug; });
+      if (t) detailView(t);
+      else if (loadState === 'error') slugErrorView(lastErrorKind);
+      else notFoundView(r.slug);
+      return;
+    }
+    if (r.invalid) { notFoundView(r.slug); return; }
+    var hashCat = readHashCategory();
+    if (hashCat && categoryBySlug(hashCat)) filterState.category = hashCat;
+    else if (hashCat) filterState.category = '';
+    hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
+  }
+
+  async function load() {
+    if (loadState === 'loading') return;
+    loadState = 'loading';
+    renderSkeleton();
+    try {
+      var hub = await withTimeout(fetchHub(), FETCH_TIMEOUT_MS);
+      lastCategories = hub.categories;
+      lastTools = hub.tools;
+      loadState = 'ready';
+      paintStats();
+      render();
+    } catch (error) {
+      console.error('OSINT catalog error:', error);
+      lastErrorKind = isTimeoutError(error) ? 'timeout' : 'network';
+      loadState = 'error';
+      lastTools = [];
+      lastCategories = [];
+      render();
+    }
+  }
+  function retry() { clientPromise = null; load(); }
+
+  window.addEventListener('popstate', function () { if (loadState !== 'loading') render(); });
+  window.addEventListener('hashchange', function () {
+    if (loadState !== 'loading' && !route().slug) render();
+  });
+
+  filterState.category = readHashCategory();
+  load();
+})();

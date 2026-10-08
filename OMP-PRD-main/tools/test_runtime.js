@@ -417,6 +417,30 @@ const $ = (d, s) => d.querySelector(s);
     // 12. non-string / null input
     ok(S(null) === '' && S(undefined) === '' && S(123) === '123', 'null/undefined/number inputs handled');
 
+    // 13. recognized video embeds become safe links, not live frames
+    out = S('<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>');
+    ok(!out.includes('<iframe') && out.includes('youtube.com/watch?v=dQw4w9WgXcQ') && out.includes('i.ytimg.com'), 'YouTube iframe converted to a thumbnail link');
+    out = S('<iframe src="https://player.vimeo.com/video/123456789"></iframe>');
+    ok(!out.includes('<iframe') && out.includes('vimeo.com/123456789'), 'Vimeo iframe converted to a watch link');
+    out = S('<iframe src="https://evil.example/x"></iframe>');
+    ok(!out.includes('iframe') && !out.includes('evil.example'), 'unrecognized iframes still dropped with content');
+
+    // 14. native media survives with controls, without autoplay or handlers
+    out = S('<video src="https://cdn.example/v.mp4" autoplay onclick="x()"><source src="https://cdn.example/v.webm" type="video/webm"></video>');
+    ok(out.includes('<video') && out.includes('controls') && !out.includes('autoplay') && noExec(out), 'video kept with controls, autoplay/handlers stripped');
+    ok(out.includes('<source') && out.includes('type="video/webm"'), 'source child kept with MIME type');
+    out = S('<video src="javascript:alert(1)"></video>');
+    ok(!out.includes('<video'), 'video with unsafe src removed entirely');
+
+    // 15. author ids survive (strict charset), classes/styles still die
+    out = S('<h2 id="my-section">T</h2><p id="bad id!">x</p>');
+    ok(out.includes('id="my-section"') && !out.includes('bad id'), 'safe ids kept for in-article anchors');
+
+    // 16. the filter reports what it changed (admin preview notice)
+    S('<script>x</scr' + 'ipt><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>');
+    var st = w.OMPSanitize.stats();
+    ok(st && st.dropped && st.dropped.script === 1 && st.converted && st.converted['iframe→link'] === 1, 'stats() reports drops + conversions');
+
     dom.window.close();
   }
 
@@ -587,17 +611,18 @@ const $ = (d, s) => d.querySelector(s);
       ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
     }
 
-    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, Academy, Breach Check
+    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, OSINT Hub, Academy, Breach Check
        (+ the JS-injected Search trigger in nav-actions). */
     const blog = rootHtml.find(x => x.f === 'articles.html').s;
     const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
     const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
-    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'Academy', 'Breach Check']),
-       `desktop navbar is exactly the 8 target items — got [${navLabels.join(', ')}]`);
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'OSINT Hub', 'Academy', 'Breach Check']),
+       `desktop navbar is exactly the 9 target items — got [${navLabels.join(', ')}]`);
     const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
     ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
     ok(mobile.includes('/articles">Articles<'), 'mobile menu links Articles to the hub');
     ok(mobile.includes('/products">Products<'), 'mobile menu links Products to its own hub');
+    ok(mobile.includes('/osint">OSINT Hub<'), 'mobile menu links OSINT Hub to its own hub');
 
     /* The legacy hub is a redirect, not a destination. */
     const stub = fs.readFileSync(path.join(ROOT, 'guides.html'), 'utf8');
@@ -850,6 +875,74 @@ const $ = (d, s) => d.querySelector(s);
        'static Hosting deployment does not require a Cloud Functions deployment');
   }
 
+  /* ================= OSINT Hub (osint.js + admin OSINT tab + schema) ====== */
+  {
+    console.log('osint hub (catalog, filters, detail, admin, schema)');
+    const ojs = fs.readFileSync(path.join(ROOT, 'assets/js/osint.js'), 'utf8');
+    const ajs = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+    const sjs = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    const ohtml = fs.readFileSync(path.join(ROOT, 'osint.html'), 'utf8');
+    const oschema = fs.readFileSync(path.join(ROOT, 'supabase/migrations/20261007120000_osint_hub.sql'), 'utf8');
+
+    /* --- schema: pricing, access types, RLS, public logos bucket --- */
+    ok(oschema.includes("check (pricing in ('free','freemium','paid'))"),
+       'osint_tools.pricing is constrained to free/freemium/paid');
+    ok(oschema.includes('osint_tools_access_types_check') && oschema.includes("'web','cli','desktop-app','browser-extension','mobile-app','api'"),
+       'osint_tools.access_types is constrained to the six canonical access types');
+    ok(oschema.includes('osint_tools_select_published') && oschema.includes("for select to anon, authenticated using (status = 'published')"),
+       'anon reads published osint tools only (RLS)');
+    ok(oschema.includes('osint_tools_admin_insert') && oschema.includes('osint_tools_admin_update') && oschema.includes('osint_tools_admin_delete'),
+       'osint tool writes are admin-only (RLS)');
+    ok(oschema.includes("values ('osint-logos', 'osint-logos', true)"),
+       'tool logos live in a public bucket (marketing assets)');
+    ok(oschema.includes('osint_categories_touch_updated_at') && oschema.includes('osint_tools_touch_updated_at'),
+       'osint tables maintain updated_at via trigger');
+
+    /* --- public app: filters, guards, states --- */
+    ok(ojs.includes('SLUG_RE') && ojs.includes('safeSlug'), 'osint slugs are charset-guarded before URLs are built');
+    ok(ojs.includes('OMPUrl') && ojs.includes('safeUrl'), 'osint.js safeUrl delegates to the canonical OMPUrl validator');
+    ok(ojs.includes('renderSafe'), 'overview + install guide render through the sanitized pipeline');
+    ok(ojs.includes('osint-sidebar') && ojs.includes('filterState.access') && ojs.includes('filterState.pricing'),
+       'sidebar carries access + pricing filter groups');
+    ok(ojs.includes('#/c/') && ojs.includes('data-cat'), 'category filtering is in-page hash state, not separate pages');
+    ok(ojs.includes('SoftwareApplication'), 'tool detail pages emit schema.org/SoftwareApplication JSON-LD');
+    ok(ojs.includes('data-copy-install'), 'install blocks offer a Copy button');
+    ok(ojs.includes('target="_blank" rel="noopener noreferrer"'), 'official links open in a safe context');
+    ok(ojs.includes('renderSkeleton') && ojs.includes('FETCH_TIMEOUT_MS') && ojs.includes('data-retry'),
+       'skeleton + hard timeout + Retry all present');
+    ok(/No OSINT tools yet/.test(ojs) && /Can.t load this tool right now/.test(ojs) && /No tools match/.test(ojs),
+       'empty catalog, fetch failure and filter miss are three distinct states');
+    ok(ojs.includes('noindex') && ojs.includes('Tool not found'),
+       'invalid slugs render a not-found view marked noindex');
+    ok(!/from\('articles'\)/.test(ojs) && !/from\('products'\)/.test(ojs),
+       'osint app never queries the articles/products tables (no mixing)');
+
+    /* --- admin: OSINT tab with category + tool CRUD --- */
+    ok(ajs.includes('data-tab="osint"'), 'admin dashboard has an OSINT tab');
+    ok(ajs.includes("tab === 'osint'"), 'admin loads the osint section');
+    ok(/data-publish-osint/.test(ajs) && /data-feature-osint/.test(ajs) && /data-delete-osint/.test(ajs) && /data-edit-osint/.test(ajs),
+       'admin osint list offers publish/unpublish, feature/unfeature, edit, delete');
+    ok(/function osintCategoryForm/.test(ajs) && /function osintToolForm/.test(ajs),
+       'admin has separate category + tool forms');
+    for (const field of ['name="pricing"', 'name="category_id"', 'name="official_url"', 'name="github_url"', 'name="overview"', 'name="install_guide"', 'name="key_features"', 'name="faqs"', 'name="use_case"', 'access_'])
+      ok(ajs.includes(field), `admin osint tool form has ${field.replace('name="', '').replace('"', '')}`);
+    ok(ojs.includes('article-layout') && ojs.includes('On this page') && ojs.includes('sec-example'),
+       'tool detail follows the article flow: sticky TOC, sections, real-world example');
+    ok(ajs.includes('name="use_case"'), 'admin osint tool form has a real-world example field');
+    ok(ajs.includes("from('osint-logos')"), 'logo uploads target the public osint-logos bucket');
+
+    /* --- wiring: shell, search, sitemap --- */
+    ok(ohtml.includes('data-osint') && ohtml.includes('/assets/js/osint.js'),
+       'osint.html mounts the osint app');
+    ok(ohtml.includes('"@type":"FAQPage"') && ohtml.includes('What is OSINT?'),
+       'osint hub ships indexable FAQ content with FAQPage JSON-LD');
+    ok(sjs.includes('/rest/v1/osint_tools?select=slug,name,summary,pricing&status=eq.published'), 'live search queries published osint tools');
+    ok(sjs.includes("'/osint/' + encodeURIComponent(o.slug)"),
+       'live osint results link to /osint/<slug> with encoded slugs');
+    ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('https://oopsmypassword.web.app/osint</loc>'),
+       'sitemap.xml lists /osint');
+  }
+
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
   {
     console.log('search.js (poisoned live rows, dedup, mobile button, modal a11y)');
@@ -983,6 +1076,16 @@ const $ = (d, s) => d.querySelector(s);
     ok(/aria-pressed/.test(src), 'tab buttons expose their active state');
     ok(!/alert\(`Delete/.test(src), 'no alert()-only error reporting on destructive actions');
     ok(/Route must start with/.test(src), 'tool routes are validated as on-site paths');
+    ok(/function extractTitleFromContent/.test(src) && (src.match(/extractTitleFromContent\(/g) || []).length >= 4,
+       'admin auto-fills empty titles from the body heading (articles, products, osint)');
+    ok(/function stripExtractedHeading/.test(src), 'auto-filled titles are stripped from the body (no double title)');
+    ok(/function contentChecklist/.test(src) && /function paintChecklist/.test(src), 'pre-publish SEO/a11y checklist in content forms');
+    ok(/requestSubmit/.test(src), 'Ctrl/Cmd+S saves the open form');
+    ok(/assertSlugFree/.test(src), 'duplicate slugs fail with a friendly message, not a DB error');
+    ok(/sanitizeNoticeText/.test(src), 'live previews report what the safety filter stripped');
+    ok(/maxlength="300"/.test(src), 'article summary is length-capped like products');
+    ok(/keeps both/.test(src), 'PDF import appends instead of wiping existing content');
+    ok(/session missing\|no session\|not authenticated/.test(src), 'signed-out visitors get a clean login, not a database-error banner');
 
     const acss = fs.readFileSync(path.join(ROOT, 'assets/css/admin.css'), 'utf8');
     ok(/\.unsaved-dot\[hidden\]\s*\{\s*display:\s*none/.test(acss),
@@ -996,7 +1099,7 @@ const $ = (d, s) => d.querySelector(s);
     const css = fs.readFileSync(path.join(ROOT, 'assets/css/styles.css'), 'utf8');
 
     /* .page-hero::before bleeds past the box with inset:-30% -20%; without a
-       clip it made all 19 inner pages wider than the viewport. */
+       clip it made all 20 inner pages wider than the viewport. */
     const heroRule = (css.match(/\.page-hero\s*\{[^}]*\}/) || [''])[0];
     ok(/overflow:\s*hidden/.test(heroRule), '.page-hero clips its ::before glow (overflow:hidden)');
     for (const sel of ['.hero', '.cta-band']) {
@@ -1006,10 +1109,10 @@ const $ = (d, s) => d.querySelector(s);
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
     /* guides.html is a redirect stub and is deliberately excluded. The hosted
-       email-preferences page went away with the newsletter, so the count is 19
-       and that page must not be regenerated. */
-    ok(heroPages.length === 19 && !heroPages.includes('email-preferences.html'),
-      '19 inner pages use .page-hero and the retired email-preferences page is not regenerated — got '
+       email-preferences page went away with the newsletter, so the count is 20
+       (19 + osint.html) and that page must not be regenerated. */
+    ok(heroPages.length === 20 && !heroPages.includes('email-preferences.html'),
+      '20 inner pages use .page-hero and the retired email-preferences page is not regenerated — got '
       + heroPages.length + ' [' + heroPages.join(', ') + ']');
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
@@ -1243,9 +1346,10 @@ const $ = (d, s) => d.querySelector(s);
 
     const articlesSrc = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
     const productsSrc = fs.readFileSync(path.join(ROOT, 'assets/js/products.js'), 'utf8');
+    const osintSrc = fs.readFileSync(path.join(ROOT, 'assets/js/osint.js'), 'utf8');
     const pinned = /@supabase\/supabase-js@\d+\.\d+\.\d+/;
     const v = (s) => (s.match(pinned) || [''])[0];
-    ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(src),
+    ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && pinned.test(osintSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(osintSrc) && v(articlesSrc) === v(src),
        'every module loads the same pinned Supabase SDK version');
 
     const adminHtml = fs.readFileSync(path.join(ROOT, 'Anony.su/index.html'), 'utf8');

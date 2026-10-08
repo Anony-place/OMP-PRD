@@ -3588,6 +3588,14 @@
   color: var(--text);
   border-color: var(--border-strong);
 }
+/* The inline academy nav links only drop out at 860px, so keep the
+   hamburger hidden while they are still on screen (styles.css would
+   otherwise reveal it from 1200px down via .site-nav .nav-toggle). */
+@media (min-width: 861px) {
+  .academy-page .nav-toggle {
+    display: none;
+  }
+}
 
 /* Single-row footer instead of a four-column link wall. */
 .academy-footer {
@@ -3781,6 +3789,20 @@
 @media (max-width: 600px) {
   .academy-page .academy-content {
     padding: 22px 16px 32px;
+  }
+  /* At 320px the brand + action buttons exceeded the viewport by 1px
+     (scrollWidth 321): tighten the gutter and let the brand truncate
+     instead of pushing the row past the right edge. */
+  .academy-page .academy-topnav-inner {
+    gap: 10px;
+  }
+  .academy-topnav-inner {
+    padding-inline: 12px;
+  }
+  .academy-topnav-brand {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .academy-topnav-name {
     font-size: 0.9rem;

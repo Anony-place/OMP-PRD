@@ -42,6 +42,7 @@ export const STATIC_ROUTES = [
   '/tools',
   '/articles',
   '/products',
+  '/osint',
   '/breach-check',
   '/about',
   '/privacy',
@@ -133,7 +134,7 @@ export function isPublished(row) {
  * and a DB row can legitimately share a slug, and a sitemap must never
  * list the same URL twice.
  */
-export function buildUrls({ articles = [], products = [], site = DEFAULT_SITE, staticLastmod = STATIC_LASTMOD } = {}) {
+export function buildUrls({ articles = [], products = [], osint = [], site = DEFAULT_SITE, staticLastmod = STATIC_LASTMOD } = {}) {
   const origin = String(site || DEFAULT_SITE).replace(/\/+$/, '');
   const urls = [];
   const seen = new Set();
@@ -174,14 +175,24 @@ export function buildUrls({ articles = [], products = [], site = DEFAULT_SITE, s
     );
   }
 
+  for (const row of osint || []) {
+    if (!isPublished(row) || !isValidSlug(row.slug)) continue;
+    push(
+      `${origin}/osint/${row.slug}`,
+      row.published_at || row.updated_at || row.created_at,
+      'monthly',
+      '0.7'
+    );
+  }
+
   return urls.slice(0, MAX_URLS);
 }
 
 export function priorityForRoute(route) {
   if (route === '/') return '1.0';
-  if (route === '/articles' || route === '/products') return '0.9';
+  if (route === '/articles' || route === '/products' || route === '/osint') return '0.9';
   if (route === '/sitemap') return '0.5';
-  if (route.startsWith('/articles/') || route.startsWith('/products/')) return '0.7';
+  if (route.startsWith('/articles/') || route.startsWith('/products/') || route.startsWith('/osint/')) return '0.7';
   return '0.8';
 }
 
@@ -235,6 +246,7 @@ export function buildSitemapJson(options = {}) {
     static: STATIC_ROUTES.map((route) => ({ url: `${site}${route}` })),
     articles: live(options.articles, '/articles'),
     products: live(options.products, '/products'),
+    osint: live(options.osint, '/osint'),
     count: buildUrls(options).length
   };
 }

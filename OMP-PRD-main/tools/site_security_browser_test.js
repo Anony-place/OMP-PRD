@@ -19,7 +19,13 @@ const issues = [], observations = [];
   }
   const browser = await chromium.launch(launch);
   try {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    /* Production pages register /sw.js (main.js); a controlled page's
+       cross-origin requests are owned by the service worker and bypass
+       context.route mocks, so the esm.sh fixture would never apply and
+       the admin panel would boot against the real CDN. The sweep audits
+       headers/axe/overflow, not SW caching — block SW so the fixtures
+       below are deterministic. */
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
     await ctx.route(/^https:\/\//, r => r.abort());
     await ctx.route('https://esm.sh/@supabase/supabase-js@*', r => r.fulfill({ contentType: 'text/javascript', body: `export function createClient(){return {
       auth:{getUser:async()=>({data:{user:null},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},

@@ -11,6 +11,11 @@
    In a production deployment the prefix would be sent to a
    k-anonymity range API which returns matching hash suffixes for
    local comparison — the password itself never leaves the device.
+   
+   SECURITY NOTE: SHA-1 is used here ONLY for prefix compatibility
+   with the HIBP Pwned Passwords k-anonymity API model.
+   This is NOT for collision resistance. The demo corpus contains
+   only ~330 famous compromised passwords — "Not found" proves nothing.
    ============================================================ */
 (function () {
   'use strict';
@@ -65,8 +70,15 @@
     p.appendChild(strong);
     p.appendChild(document.createTextNode(type === 'found'
       ? 'This password (or one sharing its hash prefix) appears in the small built-in list of well-known compromised passwords. Treat it as burned: change it everywhere you have ever used it.'
-      : 'The demo list is tiny on purpose. "Not found" here is NOT evidence a password is safe — only a live breach database lookup can say more.'));
+      : 'The demo list is tiny on purpose (~330 passwords). "Not found" here is NOT evidence a password is safe — only a live breach database lookup (e.g., HIBP Pwned Passwords) can say more.'));
     div.appendChild(p);
+    
+    // Add educational note about SHA-1 usage
+    var note = document.createElement('p');
+    note.className = 'tiny muted mt-8';
+    note.textContent = 'Note: SHA-1 is used only for k-anonymity prefix compatibility with HIBP\'s API model — not for cryptographic security.';
+    div.appendChild(note);
+    
     statusEl.appendChild(div);
   }
 

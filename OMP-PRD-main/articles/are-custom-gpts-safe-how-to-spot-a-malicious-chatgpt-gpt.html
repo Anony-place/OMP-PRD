@@ -1,0 +1,596 @@
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT</title><meta name="description" content="Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…"><meta name="theme-color" content="#050811"><meta name="color-scheme" content="dark light"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT"><meta property="og:description" content="Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…"><meta property="og:url" content="https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT"><meta name="twitter:description" content="Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT","description":"Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…","mainEntityOfPage":"https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-10-08T06:00:53.287331+00:00","dateModified":"2026-10-08T06:00:53.287331+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT","item":"https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt"}]}</script><meta property="article:published_time" content="2026-10-08T06:00:53.287331+00:00"><meta property="article:modified_time" content="2026-10-08T06:00:53.287331+00:00"></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/generator">Generator</a><a href="/tools">Tools</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a><a href="/osint">OSINT Hub</a><a href="/learning">Academy</a><a href="/breach-check">Breach Check</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT</h1><p class="lead mt-8">Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-10-08</span></div></div></section><section class="section-tight"><div class="container"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#what-is-a-custom-gpt">What Is a Custom GPT?</a></li><li><a href="#can-a-custom-gpt-be-malicious">Can a Custom GPT Be Malicious?</a></li><li><a href="#how-can-a-malicious-gpt-be-on-the-real-chatgpt-website">How Can a Malicious GPT Be on the Real ChatGPT Website?</a></li><li><a href="#the-most-important-red-flag">The Most Important Red Flag</a></li><li><a href="#the-backup-website-trick">The “Backup Website” Trick</a></li><li><a href="#why-it-was-on-chatgpt-com-is-not-enough">Why “It Was on ChatGPT.com” Is Not Enough</a></li><li><a href="#what-information-should-you-avoid-giving-to-an-unknown-custom-gpt">What Information Should You Avoid Giving to an Unknown Custom GPT?</a></li><li><a href="#can-a-custom-gpt-steal-your-password">Can a Custom GPT Steal Your Password?</a></li><li><a href="#what-about-uploaded-files">What About Uploaded Files?</a></li><li><a href="#how-to-check-who-created-a-custom-gpt">How to Check Who Created a Custom GPT</a></li><li><a href="#do-reviews-make-a-custom-gpt-safe">Do Reviews Make a Custom GPT Safe?</a></li><li><a href="#why-attackers-are-interested-in-ai-platforms">Why Attackers Are Interested in AI Platforms</a></li><li><a href="#the-2026-custom-gpt-malware-campaign">The 2026 Custom GPT Malware Campaign</a></li><li><a href="#does-this-mean-you-should-stop-using-custom-gpts">Does This Mean You Should Stop Using Custom GPTs?</a></li><li><a href="#five-rules-for-safer-custom-gpt-use">Five Rules for Safer Custom GPT Use</a></li><li><a href="#rule-1-never-share-authentication-secrets">Rule 1: Never share authentication secrets</a></li><li><a href="#rule-2-treat-external-links-cautiously">Rule 2: Treat external links cautiously</a></li><li><a href="#rule-3-never-run-commands-from-a-gpt">Rule 3: Never run commands from a GPT</a></li><li><a href="#rule-4-verify-the-creator">Rule 4: Verify the creator</a></li><li><a href="#rule-5-use-a-separate-security-mindset-for-files">Rule 5: Use a separate security mindset for files</a></li><li><a href="#what-if-a-custom-gpt-tells-you-to-verify-you-are-human">What If a Custom GPT Tells You to “Verify You Are Human”?</a></li><li><a href="#what-if-you-already-followed-a-suspicious-gpt-s-instructions">What If You Already Followed a Suspicious GPT&#39;s Instructions?</a></li><li><a href="#if-you-only-chatted-with-the-gpt">If you only chatted with the GPT</a></li><li><a href="#if-you-clicked-an-external-link">If you clicked an external link</a></li><li><a href="#if-you-downloaded-a-file">If you downloaded a file</a></li><li><a href="#if-you-executed-a-command">If you executed a command</a></li><li><a href="#why-a-password-reset-may-not-be-enough-after-malware">Why a Password Reset May Not Be Enough After Malware</a></li><li><a href="#the-bigger-lesson-trust-the-behavior-not-just-the-domain">The Bigger Lesson: Trust the Behavior, Not Just the Domain</a></li><li><a href="#quick-custom-gpt-safety-checklist">Quick Custom GPT Safety Checklist</a></li><li><a href="#bottom-line">Bottom Line</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks.</p>
+
+  <p>But there is an important security question that more users should be asking:</p>
+
+  <p><strong>Can a Custom GPT be malicious even when it appears on the real ChatGPT website?</strong></p>
+
+  <p>Yes.</p>
+
+  <p>A Custom GPT is not automatically trustworthy simply because its page is hosted on <code>chatgpt.com</code>.</p>
+
+  <p>This became a very practical concern in September 2026, when security researchers documented a campaign in which attackers created malicious Custom GPTs and used them as the first stage of a malware-delivery chain. The malicious GPTs were hosted on the legitimate ChatGPT domain and were designed to send users toward a fake verification page that eventually attempted to install remote-access malware.</p>
+
+  <p>The incident highlights a broader security lesson:</p>
+
+  <blockquote>
+    <p><strong>A trusted platform can host user-created content that is not trustworthy.</strong></p>
+  </blockquote>
+
+  <p>That does not mean Custom GPTs are inherently dangerous.</p>
+
+  <p>It means users need to understand the difference between <strong>the platform</strong> and <strong>the content created by users on that platform</strong>.</p>
+
+  <h2 id="what-is-a-custom-gpt">What Is a Custom GPT?</h2>
+
+  <p>A Custom GPT is a customized version of ChatGPT created for a particular purpose.</p>
+
+  <p>Depending on the platform and configuration, a creator can provide a Custom GPT with things such as:</p>
+
+  <ul>
+    <li>custom instructions</li>
+    <li>specialized behavior</li>
+    <li>knowledge files</li>
+    <li>specific workflows</li>
+    <li>available tools or capabilities</li>
+    <li>connections to external services in supported configurations</li>
+  </ul>
+
+  <p>That makes Custom GPTs useful for specialized tasks.</p>
+
+  <p>For example, someone might create a GPT that helps explain programming concepts or summarize documents.</p>
+
+  <p>Another creator might build one for marketing, mathematics, cybersecurity, language learning, or business analysis.</p>
+
+  <p>The important point is that <strong>the creator controls the GPT's configuration</strong>.</p>
+
+  <p>When you use a GPT created by someone else, you are interacting with something that another person configured.</p>
+
+  <h2 id="can-a-custom-gpt-be-malicious">Can a Custom GPT Be Malicious?</h2>
+
+  <p>A Custom GPT can be abused as part of a malicious workflow.</p>
+
+  <p>That does not necessarily mean the GPT itself is exploiting a vulnerability in ChatGPT.</p>
+
+  <p>In the September 2026 campaign investigated by Huntress, attackers created Custom GPTs with names designed to look like legitimate ChatGPT offerings.</p>
+
+  <p>One malicious GPT was called <strong>“Plus 5.6.”</strong></p>
+
+  <p>Victims could encounter it through sponsored Google search results while looking for ChatGPT.</p>
+
+  <p>The GPT was hosted on the legitimate ChatGPT website.</p>
+
+  <p>When users interacted with it, the GPT displayed a fake service-availability message and directed them toward a supposed backup website.</p>
+
+  <p>The external site then presented a fake Cloudflare-style verification page.</p>
+
+  <p>Instead of performing a normal CAPTCHA, the page instructed the victim to copy and execute a command.</p>
+
+  <p>That command started a malware-delivery chain that eventually deployed a remote-access trojan.</p>
+
+  <p>Huntress investigated at least 40 related incidents and confirmed two incidents that originated from the malicious Custom GPT lure.</p>
+
+  <h2 id="how-can-a-malicious-gpt-be-on-the-real-chatgpt-website">How Can a Malicious GPT Be on the Real ChatGPT Website?</h2>
+
+  <p>This is the part that confuses many users.</p>
+
+  <p>You may have learned:</p>
+
+  <blockquote>
+    <p>“Check the domain. If it says chatgpt.com, it is safe.”</p>
+  </blockquote>
+
+  <p>That rule is too simple.</p>
+
+  <p>The correct mental model is:</p>
+
+  <p><strong>Trusted platform does not automatically mean trusted user-created content.</strong></p>
+
+  <p>Consider a hypothetical example.</p>
+
+  <p>You visit:</p>
+
+  <p><code>https://chatgpt.com/</code></p>
+
+  <p>The domain is legitimate.</p>
+
+  <p>You open a Custom GPT created by another user.</p>
+
+  <p>The page is still legitimately hosted by ChatGPT.</p>
+
+  <p>But the content and instructions of that Custom GPT may have been created by an unrelated person.</p>
+
+  <p>The domain is real.</p>
+
+  <p>The creator may still be untrusted.</p>
+
+  <p>This is similar to other platforms where users can publish content under a trusted domain.</p>
+
+  <p>A legitimate marketplace can contain a malicious application.</p>
+
+  <p>A legitimate social network can contain a malicious post.</p>
+
+  <p>A legitimate file-sharing service can contain a malicious file.</p>
+
+  <p>And a legitimate AI platform can contain user-created content that is designed to manipulate users.</p>
+
+  <h2 id="the-most-important-red-flag">The Most Important Red Flag</h2>
+
+  <p>If a Custom GPT tells you to leave ChatGPT and perform a dangerous action on your computer, stop.</p>
+
+  <p>Especially if it asks you to:</p>
+
+  <ul>
+    <li>open Windows Run</li>
+    <li>open PowerShell</li>
+    <li>open Command Prompt</li>
+    <li>open Terminal</li>
+    <li>paste a command</li>
+    <li>download an unknown installer</li>
+    <li>disable antivirus protection</li>
+    <li>disable Windows Defender</li>
+    <li>install a browser extension from an unknown source</li>
+    <li>visit an unfamiliar “backup” website</li>
+  </ul>
+
+  <p>A chatbot should not need you to execute an unknown operating-system command just to continue a normal conversation.</p>
+
+  <p><strong>This is one of the strongest practical warning signs.</strong></p>
+
+  <h2 id="the-backup-website-trick">The “Backup Website” Trick</h2>
+
+  <p>The recent malicious Custom GPT campaign used an especially effective social-engineering pattern.</p>
+
+  <p>The GPT claimed that the normal service was experiencing limited availability.</p>
+
+  <p>It then offered the user a supposed alternative or backup domain.</p>
+
+  <p>This creates a believable explanation for why the user is leaving the trusted platform.</p>
+
+  <p>The sequence looks something like this:</p>
+
+  <pre>
+Google Search
+     |
+     v
+Sponsored result
+     |
+     v
+Real chatgpt.com
+     |
+     v
+Malicious Custom GPT
+     |
+     | "Service unavailable"
+     v
+Fake backup website
+     |
+     v
+Fake verification page
+     |
+     v
+ClickFix command
+     |
+     v
+Malware
+  </pre>
+
+  <p>Notice the psychological trick.</p>
+
+  <p>The attacker does not need to make the first website look fake.</p>
+
+  <p>The first step can be the real ChatGPT website.</p>
+
+  <p>The malicious behavior begins with the user-created content and the external destination.</p>
+
+  <h2 id="why-it-was-on-chatgpt-com-is-not-enough">Why “It Was on ChatGPT.com” Is Not Enough</h2>
+
+  <p>Domain reputation is useful, but it is only one security signal.</p>
+
+  <p>Imagine three different situations.</p>
+
+  <table tabindex="0">
+    <thead>
+      <tr>
+        <th>Situation</th>
+        <th>What you know</th>
+        <th>Risk question</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Official ChatGPT conversation</td>
+        <td>You are interacting directly with the core service</td>
+        <td>What information are you sharing?</td>
+      </tr>
+      <tr>
+        <td>Third-party Custom GPT</td>
+        <td>A user created the configuration</td>
+        <td>Who created it and what does it ask you to do?</td>
+      </tr>
+      <tr>
+        <td>External website linked by a GPT</td>
+        <td>You have left the original platform</td>
+        <td>Is the destination legitimate and necessary?</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Each step introduces a different trust boundary.</p>
+
+  <h2 id="what-information-should-you-avoid-giving-to-an-unknown-custom-gpt">What Information Should You Avoid Giving to an Unknown Custom GPT?</h2>
+
+  <p>Even when there is no malware involved, you should be careful about the information you provide to third-party AI tools.</p>
+
+  <p>Avoid sharing highly sensitive information with an unfamiliar Custom GPT unless you have a clear reason to trust its creator and understand the applicable data handling.</p>
+
+  <p>Examples include:</p>
+
+  <ul>
+    <li>passwords</li>
+    <li>one-time authentication codes</li>
+    <li>private API keys</li>
+    <li>recovery codes</li>
+    <li>cryptocurrency seed phrases</li>
+    <li>banking credentials</li>
+    <li>government identity documents</li>
+    <li>private company secrets</li>
+    <li>confidential customer information</li>
+    <li>unpublished source code containing secrets</li>
+  </ul>
+
+  <p>A good security rule is:</p>
+
+  <blockquote>
+    <p><strong>If you would not paste the information into an unknown third-party website, do not casually give it to an unknown third-party GPT.</strong></p>
+  </blockquote>
+
+  <h2 id="can-a-custom-gpt-steal-your-password">Can a Custom GPT Steal Your Password?</h2>
+
+  <p>A Custom GPT should not be treated as a trusted password manager or authentication system.</p>
+
+  <p>Never give a GPT your password simply because it asks for one.</p>
+
+  <p>The same applies to:</p>
+
+  <ul>
+    <li>MFA codes</li>
+    <li>recovery codes</li>
+    <li>private keys</li>
+    <li>session tokens</li>
+    <li>API secrets</li>
+  </ul>
+
+  <p>There is almost never a legitimate reason for a chatbot to need your actual authentication secret.</p>
+
+  <p>If a GPT says:</p>
+
+  <blockquote>
+    <p>“Send me your password so I can verify your account.”</p>
+  </blockquote>
+
+  <p>stop immediately.</p>
+
+  <p>That is not normal account verification.</p>
+
+  <h2 id="what-about-uploaded-files">What About Uploaded Files?</h2>
+
+  <p>Files deserve the same caution as passwords.</p>
+
+  <p>If you upload a document to an unfamiliar GPT, consider what information is contained in it.</p>
+
+  <p>A document might include:</p>
+
+  <ul>
+    <li>personal information</li>
+    <li>customer records</li>
+    <li>financial information</li>
+    <li>internal company information</li>
+    <li>source code</li>
+    <li>API credentials</li>
+    <li>internal URLs</li>
+    <li>security configuration</li>
+  </ul>
+
+  <p>Do not assume that a GPT created by an unknown person should be trusted with confidential files.</p>
+
+  <h2 id="how-to-check-who-created-a-custom-gpt">How to Check Who Created a Custom GPT</h2>
+
+  <p>Before trusting a Custom GPT, inspect its creator information where available.</p>
+
+  <p>Ask:</p>
+
+  <ul>
+    <li>Who created it?</li>
+    <li>Is the creator identifiable?</li>
+    <li>Is the creator associated with a real organization?</li>
+    <li>Does the organization have an official website?</li>
+    <li>Does the GPT have a clear purpose?</li>
+    <li>Does its behavior match its stated purpose?</li>
+  </ul>
+
+  <p>Be particularly careful with names that appear to imitate official products.</p>
+
+  <p>A name such as:</p>
+
+  <p><code>ChatGPT Plus 5.6 Official</code></p>
+
+  <p>does not automatically mean that it was created by OpenAI.</p>
+
+  <p>Attackers deliberately choose names that exploit current product names, model releases, subscriptions, and popular searches.</p>
+
+  <h2 id="do-reviews-make-a-custom-gpt-safe">Do Reviews Make a Custom GPT Safe?</h2>
+
+  <p>No.</p>
+
+  <p>Reviews can be useful, but they should not be treated as a security guarantee.</p>
+
+  <p>Reviews can be fake.</p>
+
+  <p>They can also be outdated.</p>
+
+  <p>A previously harmless GPT can change behavior if its creator changes its configuration.</p>
+
+  <p>Therefore, evaluate the actual behavior of the GPT rather than relying entirely on its popularity.</p>
+
+  <h2 id="why-attackers-are-interested-in-ai-platforms">Why Attackers Are Interested in AI Platforms</h2>
+
+  <p>AI platforms have become extremely familiar to internet users.</p>
+
+  <p>People increasingly use them for:</p>
+
+  <ul>
+    <li>research</li>
+    <li>coding</li>
+    <li>writing</li>
+    <li>education</li>
+    <li>productivity</li>
+    <li>data analysis</li>
+    <li>business workflows</li>
+  </ul>
+
+  <p>That creates a powerful social-engineering opportunity.</p>
+
+  <p>If an attacker can make malicious instructions appear inside a platform the victim already trusts, the victim may be less suspicious.</p>
+
+  <p>This is the same basic psychological principle behind many successful phishing attacks:</p>
+
+  <p><strong>Borrow trust from a familiar brand.</strong></p>
+
+  <p>The difference is that AI platforms can provide an interactive interface rather than a simple static phishing page.</p>
+
+  <h2 id="the-2026-custom-gpt-malware-campaign">The 2026 Custom GPT Malware Campaign</h2>
+
+  <p>The September 2026 campaign is a useful example of how this works in practice.</p>
+
+  <p>Attackers created a Custom GPT called “Plus 5.6” and promoted it through sponsored search results for ChatGPT-related searches.</p>
+
+  <p>The malicious GPT was hosted on the legitimate ChatGPT domain.</p>
+
+  <p>When users interacted with it, the GPT returned a scripted service-availability message.</p>
+
+  <p>The message directed victims to a supposed backup site.</p>
+
+  <p>The external page displayed a fake Cloudflare verification experience.</p>
+
+  <p>The victim was then instructed to perform a ClickFix-style action involving a command.</p>
+
+  <p>Running the command began an infection chain that eventually deployed a remote-access trojan.</p>
+
+  <p>Huntress reported that the malware could collect extensive information from an infected Windows system and provide attackers with capabilities such as remote access and additional payload execution.</p>
+
+  <p>The important lesson is not the specific malware family.</p>
+
+  <p>The important lesson is the trust chain:</p>
+
+  <p><strong>Google → ChatGPT → Custom GPT → Google-hosted page → fake Cloudflare → malware.</strong></p>
+
+  <p>Several trusted brands were used in sequence.</p>
+
+  <h2 id="does-this-mean-you-should-stop-using-custom-gpts">Does This Mean You Should Stop Using Custom GPTs?</h2>
+
+  <p>No.</p>
+
+  <p>That would be an unnecessary conclusion.</p>
+
+  <p>Custom GPTs can be useful tools.</p>
+
+  <p>The correct approach is to use them with appropriate trust boundaries.</p>
+
+  <p>Think of an unfamiliar Custom GPT like an unfamiliar browser extension or third-party application.</p>
+
+  <p>You do not automatically assume it is malicious.</p>
+
+  <p>But you also do not automatically give it sensitive information or follow instructions that affect your operating system.</p>
+
+  <h2 id="five-rules-for-safer-custom-gpt-use">Five Rules for Safer Custom GPT Use</h2>
+
+  <h3 id="rule-1-never-share-authentication-secrets">Rule 1: Never share authentication secrets</h3>
+
+  <p>Do not give a GPT passwords, MFA codes, recovery codes, API keys, or private keys.</p>
+
+  <h3 id="rule-2-treat-external-links-cautiously">Rule 2: Treat external links cautiously</h3>
+
+  <p>If a GPT suddenly tells you to leave ChatGPT and visit another website, stop and evaluate why.</p>
+
+  <h3 id="rule-3-never-run-commands-from-a-gpt">Rule 3: Never run commands from a GPT</h3>
+
+  <p>If an AI tool tells you to paste a command into PowerShell, Command Prompt, Terminal, or Windows Run, do not execute it blindly.</p>
+
+  <h3 id="rule-4-verify-the-creator">Rule 4: Verify the creator</h3>
+
+  <p>Prefer GPTs from creators or organizations you can independently identify and trust.</p>
+
+  <h3 id="rule-5-use-a-separate-security-mindset-for-files">Rule 5: Use a separate security mindset for files</h3>
+
+  <p>Do not upload confidential documents to unfamiliar GPTs simply because the GPT claims to perform a useful analysis.</p>
+
+  <h2 id="what-if-a-custom-gpt-tells-you-to-verify-you-are-human">What If a Custom GPT Tells You to “Verify You Are Human”?</h2>
+
+  <p>Be extremely cautious.</p>
+
+  <p>A normal CAPTCHA may ask you to:</p>
+
+  <ul>
+    <li>click a checkbox</li>
+    <li>select images</li>
+    <li>solve a visual challenge</li>
+  </ul>
+
+  <p>A CAPTCHA should not require you to:</p>
+
+  <ul>
+    <li>open PowerShell</li>
+    <li>open Command Prompt</li>
+    <li>press Windows + R and paste a command</li>
+    <li>disable security software</li>
+    <li>download an unknown executable</li>
+    <li>execute code to “prove you are human”</li>
+  </ul>
+
+  <p>If you see such a request, close the page.</p>
+
+  <p>This is one of the clearest signs of a ClickFix-style attack.</p>
+
+  <h2 id="what-if-you-already-followed-a-suspicious-gpt-s-instructions">What If You Already Followed a Suspicious GPT's Instructions?</h2>
+
+  <p>The response depends on what you did.</p>
+
+  <h3 id="if-you-only-chatted-with-the-gpt">If you only chatted with the GPT</h3>
+
+  <p>Review what information you shared.</p>
+
+  <p>If you provided sensitive information, take appropriate steps to protect it.</p>
+
+  <h3 id="if-you-clicked-an-external-link">If you clicked an external link</h3>
+
+  <p>Close the page and do not download or execute anything it requests.</p>
+
+  <h3 id="if-you-downloaded-a-file">If you downloaded a file</h3>
+
+  <p>Do not open it.</p>
+
+  <p>Delete or quarantine it and scan the system using reputable security software.</p>
+
+  <h3 id="if-you-executed-a-command">If you executed a command</h3>
+
+  <p>Treat the device as potentially compromised.</p>
+
+  <p>Disconnect it from the network if appropriate and use a separate trusted device to secure important accounts.</p>
+
+  <p>Review active sessions and change exposed credentials.</p>
+
+  <p>If it is a work computer, contact your organization's security or IT team immediately.</p>
+
+  <h2 id="why-a-password-reset-may-not-be-enough-after-malware">Why a Password Reset May Not Be Enough After Malware</h2>
+
+  <p>If malicious software executed on your computer, the attacker may have attempted to steal more than your password.</p>
+
+  <p>Depending on the malware, attackers may target:</p>
+
+  <ul>
+    <li>browser passwords</li>
+    <li>authentication cookies</li>
+    <li>session tokens</li>
+    <li>saved payment data</li>
+    <li>browser autofill information</li>
+    <li>cryptocurrency wallets</li>
+    <li>local documents</li>
+  </ul>
+
+  <p>That is why a suspected malware infection should not be treated as a simple password-reset event.</p>
+
+  <p>Secure the affected accounts, revoke sessions where possible, investigate the computer, and determine whether additional credentials were exposed.</p>
+
+  <h2 id="the-bigger-lesson-trust-the-behavior-not-just-the-domain">The Bigger Lesson: Trust the Behavior, Not Just the Domain</h2>
+
+  <p>Security advice often tells people to look at the URL.</p>
+
+  <p>That remains useful.</p>
+
+  <p>But modern attacks increasingly exploit legitimate services.</p>
+
+  <p>An attacker may use:</p>
+
+  <ul>
+    <li>a legitimate social network</li>
+    <li>a legitimate cloud-storage service</li>
+    <li>a legitimate advertising platform</li>
+    <li>a legitimate AI platform</li>
+    <li>a legitimate code-hosting service</li>
+  </ul>
+
+  <p>The infrastructure can be real while the content is malicious.</p>
+
+  <p>Therefore, security decisions should also consider <strong>what the content is asking you to do</strong>.</p>
+
+  <p>If a Custom GPT suddenly asks you to install software, execute a command, disable security controls, or enter an authentication secret, the behavior itself is a warning sign.</p>
+
+  <h2 id="quick-custom-gpt-safety-checklist">Quick Custom GPT Safety Checklist</h2>
+
+  <ul>
+    <li>Check who created the GPT.</li>
+    <li>Do not assume <code>chatgpt.com</code> means every user-created GPT is official.</li>
+    <li>Do not share passwords or MFA codes.</li>
+    <li>Do not upload confidential documents to unknown GPTs.</li>
+    <li>Be cautious about external links.</li>
+    <li>Never run commands provided by a GPT without independently verifying them.</li>
+    <li>Never disable antivirus or security controls because a GPT asks you to.</li>
+    <li>Be suspicious of fake service-outage or “backup domain” explanations.</li>
+    <li>Treat unexpected CAPTCHA instructions involving Windows commands as a major red flag.</li>
+    <li>Prefer verified creators and organizations for sensitive tasks.</li>
+  </ul>
+
+  <h2 id="bottom-line">Bottom Line</h2>
+
+  <p>Custom GPTs are not inherently malicious.</p>
+
+  <p>But they should not automatically be treated as trusted simply because they are hosted on the real ChatGPT website.</p>
+
+  <p>The September 2026 “Plus 5.6” campaign demonstrated why. Attackers were able to use a legitimate ChatGPT-hosted Custom GPT as the first stage of a malware campaign without needing to compromise the ChatGPT domain itself.</p>
+
+  <p>The most important distinction is:</p>
+
+  <blockquote>
+    <p><strong>Trust the platform separately from the content created on the platform.</strong></p>
+  </blockquote>
+
+  <p>If an unfamiliar Custom GPT asks for your password, MFA code, private key, confidential document, software installation, or operating-system command, stop.</p>
+
+  <p>Do not follow the instruction simply because the GPT appears inside a legitimate AI service.</p>
+
+  <p>And if a supposed AI assistant tells you that you must open PowerShell, Windows Run, Terminal, or Command Prompt and paste something to “verify,” “fix,” or “activate” the service, treat that as a serious malware warning.</p>
+
+  <p>The safest approach is simple:</p>
+
+  <p><strong>Use AI tools for information and assistance. Do not let an unfamiliar AI tool become the authority that tells you what executable code to run on your computer.</strong></p>
+<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/roadmap#all-courses-h">Course order</a></li><li><a href="/learning/roadmap#how-it-works">How learning works</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>

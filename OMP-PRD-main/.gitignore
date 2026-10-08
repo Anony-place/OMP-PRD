@@ -8,6 +8,7 @@ __pycache__/
 tools/audit-report.json
 .env
 .env.local
+.env.mcp
 functions/.env
 supabase/functions/.env.local
 supabase/.branches

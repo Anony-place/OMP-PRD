@@ -1,0 +1,23 @@
+# OopsMyPassword
+
+> Privacy-first password tools, security guides, courses and an OSINT tools directory. No account needed.
+
+## OSINT Hub
+
+Browse OSINT tools by investigation type at https://oopsmypassword.web.app/osint — username, email, domain, phone, image and all-in-one, filterable by free/paid and web/command-line, each with install steps and official links.
+
+- [Epieos](https://oopsmypassword.web.app/osint/epieos): Reverse-lookup an email or phone number to uncover linked social accounts. Freemium web app.
+- [ExifTool](https://oopsmypassword.web.app/osint/exiftool): Read, write and strip metadata from images, video, PDFs and documents. Free, the metadata standard.
+- [Holehe](https://oopsmypassword.web.app/osint/holehe): Check whether an email address is registered on 120+ platforms. Free, open-source, command line.
+- [Maigret](https://oopsmypassword.web.app/osint/maigret): Username search across 3000+ sites with HTML/PDF reports. Free, open-source.
+- [PhoneInfoga](https://oopsmypassword.web.app/osint/phoneinfoga): Scan a phone number for carrier, country, linked accounts and mentions. Free, open-source.
+- [Sherlock](https://oopsmypassword.web.app/osint/sherlock): Hunt down a username across 400+ social networks and websites. Free, open-source, runs on your machine.
+- [Shodan](https://oopsmypassword.web.app/osint/shodan): The search engine for internet-connected devices, services and exposures. Freemium web app plus API.
+- [SpiderFoot](https://oopsmypassword.web.app/osint/spiderfoot): Automate OSINT collection across 200+ modules from one web interface. Free, open-source.
+- [theHarvester](https://oopsmypassword.web.app/osint/theharvester): Gather emails, subdomains, IPs and employee names for a domain. Free, open-source, command line.
+- [WhatsMyName](https://oopsmypassword.web.app/osint/whatsmyname): Check a username across hundreds of sites instantly in your browser. Free web app, nothing to install.
+
+## Guides
+
+- [Best Free OSINT Tools for Beginners](https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners): the starting lineup this hub is built on.
+- [Articles hub](https://oopsmypassword.web.app/articles): security news, deep dives and how-tos.

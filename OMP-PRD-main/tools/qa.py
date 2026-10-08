@@ -113,6 +113,12 @@ def resolve(path, base_file):
         if os.path.exists(catalog):
             return catalog, frag
 
+    # /osint and /osint/<slug> → osint.html
+    if p == "/osint" or p.startswith("/osint/"):
+        catalog = os.path.join(ROOT, "osint.html")
+        if os.path.exists(catalog):
+            return catalog, frag
+
     return target, frag
 
 
@@ -131,7 +137,7 @@ for dirpath, dirnames, filenames in os.walk(ROOT):
 # The generated pages are covered by scripts/verify-seo.mjs instead (canonical,
 # title, description, H1, heading order, img alt, JSON-LD, routability), which
 # is designed to tolerate injected content.
-GENERATED_DIRS = {"articles", "products"}
+GENERATED_DIRS = {"articles", "products", "osint"}
 html_files = [f for f in html_files
               if os.path.dirname(f).split(os.sep)[0] not in GENERATED_DIRS]
 

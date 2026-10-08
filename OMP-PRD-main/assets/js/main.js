@@ -10,10 +10,29 @@
   /* ---------- Theme ---------- */
   function applyTheme(t) {
     document.documentElement.dataset.theme = t;
-    try { localStorage.setItem('omp-theme', t); } catch (e) { /* private mode */ }
+    // Try localStorage first, fall back to sessionStorage for private/incognito mode
+    try { 
+      localStorage.setItem('omp-theme', t); 
+    } catch (e) { 
+      try { sessionStorage.setItem('omp-theme', t); } catch (e2) { /* private mode */ } 
+    }
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', t === 'light' ? '#F6F8FC' : '#050811');
   }
+  
+  // Load theme from localStorage or sessionStorage on page load
+  (function initTheme() {
+    var stored = null;
+    try { stored = localStorage.getItem('omp-theme'); } catch (e) {}
+    if (!stored) {
+      try { stored = sessionStorage.getItem('omp-theme'); } catch (e) {}
+    }
+    if (stored) {
+      applyTheme(stored);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      applyTheme('light');
+    }
+  })();
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('[data-theme-toggle]');
     if (!btn) return;
@@ -173,5 +192,16 @@
     searchScript.src = '/assets/js/search.js';
     searchScript.defer = true;
     document.head.appendChild(searchScript);
+  }
+
+  /* ---------- Service Worker Registration ---------- */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').then(function (reg) {
+        console.log('[OMP] Service Worker registered:', reg.scope);
+      }).catch(function (err) {
+        console.log('[OMP] Service Worker registration failed:', err);
+      });
+    });
   }
 })();

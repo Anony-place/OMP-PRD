@@ -1,0 +1,8 @@
+Contact: https://oopsmypassword.web.app/contact
+Contact: mailto:security@oopsmypassword.web.app
+Expires: 2027-12-31T23:59:59.000Z
+Encryption: https://oopsmypassword.web.app/assets/keys/security-pgp.txt
+Acknowledgments: https://oopsmypassword.web.app/security#acknowledgments
+Policy: https://oopsmypassword.web.app/security
+Preferred-Languages: en
+Canonical: https://oopsmypassword.web.app/.well-known/security.txt

@@ -15,14 +15,33 @@ let failing = false, badPublicResponse = false;
 const fixture = JSON.parse(
   await readFile(join(root, "assets/data/academy-reading.json"), "utf8"),
 );
+/* The OSINT hub links its companion beginner guide, so the sandbox needs
+   that row to exist — otherwise verify-seo (correctly) reports osint.html
+   as linking to a missing page. Shared by the initial tables and every
+   later replacement below. */
+const BEST_FREE_OSINT = {
+  slug: 'best-free-osint-tools-for-beginners',
+  title: 'Best Free OSINT Tools for Beginners',
+  summary: 'A practical beginner guide to free OSINT tools.',
+  content: '<p>Fixture article.</p>',
+  status: 'published',
+  published_at: '2026-10-01T00:00:00Z',
+  updated_at: '2026-10-01T00:00:00Z',
+  created_at: '2026-10-01T00:00:00Z',
+  featured_image: ''
+};
 const tables = {
   learning_categories: fixture.categories,
   learning_paths: fixture.paths,
   learning_modules: fixture.modules,
   learning_topics: fixture.topics,
   learning_labs: fixture.labs,
-  articles: [],
+  articles: [BEST_FREE_OSINT],
   products: [],
+  /* The static publisher also reads the OSINT catalog; a fresh project
+     has these tables but zero published rows — not a 404. */
+  osint_tools: [],
+  osint_categories: [],
 };
 const seen = new Set();
 const server = createServer((req, res) => {
@@ -130,9 +149,9 @@ try {
     summary: 'Private pagination fixture ' + i + ', never written to the real site.',
     content: '<h2>Fixture content</h2><p>This article exists only in a temporary test directory.</p>',
     status: 'published', published_at: '2026-09-28T00:00:00Z',
-  }));
+  })).concat([BEST_FREE_OSINT]);
   await run("node", ["scripts/build-static-seo.mjs"]);
-  for (const row of tables.articles) assert.match(await readFile(join(cwd, 'articles', row.slug + '.html'), 'utf8'), /Fixture content/);
+  for (const row of tables.articles.slice(0, 3)) assert.match(await readFile(join(cwd, 'articles', row.slug + '.html'), 'utf8'), /Fixture content/);
   console.log("✓ Article publisher paginates through server-capped responses without misusing publishable keys as JWTs");
   const lastArticle = join(cwd, 'articles', tables.articles[2].slug + '.html');
   const retainedArticle = await readFile(lastArticle, 'utf8');

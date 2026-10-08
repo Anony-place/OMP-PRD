@@ -15,9 +15,9 @@ import {
 } from "./academy-views.mjs";
 import { esc, icon, safeHttpUrl } from "./academy-ui.mjs";
 /* No learner authentication. Names, progress and self-check results stay on this device. */
-const SUPABASE_URL = "https://aeehfulikupskyrvcpzb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR";
+import { ACADEMY_CONFIG } from "./academy-config.mjs";
+const SUPABASE_URL = ACADEMY_CONFIG.supabaseUrl;
+const SUPABASE_PUBLISHABLE_KEY = ACADEMY_CONFIG.supabasePublishableKey;
 const app = document.querySelector("#learning-app");
 let browserStorage;
 try {
