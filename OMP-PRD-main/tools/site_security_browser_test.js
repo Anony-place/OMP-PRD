@@ -19,10 +19,10 @@ const issues = [], observations = [];
   }
   const browser = await chromium.launch(launch);
   try {
-    /* Production pages register /sw.js (main.js); a controlled page's
-       cross-origin requests are owned by the service worker and bypass
-       context.route mocks, so the esm.sh fixture would never apply and
-       the admin panel would boot against the real CDN. The sweep audits
+    /* Production pages register /sw.js (main.js), but the worker never
+       intercepts cross-origin requests (it returns without respondWith),
+       so the esm.sh fixture below applies and the admin panel boots
+       against the local CDN mock, not the real one. The sweep audits
        headers/axe/overflow, not SW caching — block SW so the fixtures
        below are deterministic. */
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });

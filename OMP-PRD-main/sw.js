@@ -122,9 +122,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip cross-origin requests
+  // Skip cross-origin requests entirely: do NOT intercept them. A fetch
+  // relayed through the worker is checked against the page CSP
+  // (connect-src), which broke every esm.sh/supabase import for repeat
+  // visitors while first visits worked. The browser handles these
+  // natively under script-src/connect-src instead.
   if (url.origin !== location.origin) {
-    event.respondWith(networkOnly(event.request));
     return;
   }
   

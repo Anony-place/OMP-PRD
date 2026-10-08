@@ -213,7 +213,7 @@
       : 'The OSINT catalog could not be reached right now.';
     return '<div class="notice-band notice-error" role="alert">' +
       '<svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>' +
-      '<div><strong>OSINT tools are temporarily unavailable</strong><p>' + detail + ' <a href="' + HUB_PATH + '" style="color:var(--purple)" data-retry="1">Retry</a></p></div></div>';
+      '<div><strong>OSINT tools are temporarily unavailable</strong><p>' + detail + ' <a href="' + HUB_PATH + '" style="color:var(--purple)" data-retry="1">Retry</a></p><p class="tiny muted">Still failing? An ad-blocker, VPN or network filter may be blocking our database (supabase.co) or library host (esm.sh) — try disabling them for this site.</p></div></div>';
   }
 
   /* ---------- filter state ---------- */

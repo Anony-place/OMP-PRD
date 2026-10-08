@@ -1389,6 +1389,21 @@ const $ = (d, s) => d.querySelector(s);
     const sitemapPage = fs.readFileSync(path.join(ROOT, 'sitemap.html'), 'utf8');
     ok(/data-sitemap-live/.test(sitemapPage) && /sitemap\.js/.test(sitemapPage),
        'HTML sitemap page progressively lists live articles/products');
+
+    /* Repeat visitors broke: the SW relayed esm.sh/supabase fetches through
+       networkOnly(), and worker-relayed fetches are checked against the
+       page CSP connect-src — which lacked esm.sh. First visits worked
+       (SW not yet controlling), so no test ever caught it. */
+    const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+    const crossOrigin = sw.slice(sw.indexOf('Skip cross-origin requests'), sw.indexOf('Skip non-GET requests'));
+    ok(!/respondWith/.test(crossOrigin), 'SW never intercepts cross-origin requests (browser handles natively)');
+    const cspBlocks = firebase.hosting.headers.filter(h =>
+      (h.headers || []).some(x => x.key === 'Content-Security-Policy' && /supabase\.co/.test(String(x.value))));
+    ok(cspBlocks.length > 0, 'CSP blocks with supabase connect-src exist');
+    for (const b of cspBlocks) {
+      const csp = b.headers.find(x => x.key === 'Content-Security-Policy').value;
+      ok(/connect-src[^;]*https:\/\/esm\.sh/.test(csp), `connect-src allows esm.sh on ${b.source}`);
+    }
   }
 
   /* ================= supabase security model ================= */
