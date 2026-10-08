@@ -151,9 +151,12 @@ const $ = (d, s) => d.querySelector(s);
     const firstPw = out.textContent;
     click(w, qg.querySelector('[data-gen-btn]'));
     ok(out.textContent !== firstPw && out.textContent.length === 20, 'regenerate produces new value');
-    // theme toggle
+    // theme toggle (default is light)
+    ok(d.documentElement.dataset.theme === 'light', 'light theme by default');
     click(w, d.querySelector('[data-theme-toggle]'));
-    ok(d.documentElement.dataset.theme === 'light', 'theme toggle to light');
+    ok(d.documentElement.dataset.theme === 'dark', 'theme toggle to dark');
+    click(w, d.querySelector('[data-theme-toggle]'));
+    ok(d.documentElement.dataset.theme === 'light', 'theme toggle back to light');
     // mobile menu
     click(w, d.querySelector('[data-nav-toggle]'));
     ok(d.getElementById('mobile-menu').classList.contains('open'), 'mobile menu opens');
@@ -340,8 +343,11 @@ const $ = (d, s) => d.querySelector(s);
     console.log('theme persistence');
     const dom = await loadPage('about');
     const w = dom.window, d = w.document;
+    ok(d.documentElement.dataset.theme === 'light', 'light theme by default');
     click(w, d.querySelector('[data-theme-toggle]'));
-    ok(w.localStorage.getItem('omp-theme') === 'light', 'theme saved to localStorage');
+    ok(w.localStorage.getItem('omp-theme') === 'dark', 'theme saved to localStorage');
+    click(w, d.querySelector('[data-theme-toggle]'));
+    ok(w.localStorage.getItem('omp-theme') === 'light', 'theme toggle back saves light');
     dom.window.close();
   }
 

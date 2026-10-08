@@ -170,7 +170,7 @@ def guide_page(g):
 # Legacy /guides.html is a noindex redirect stub (Firebase also 301s it).
 # Unique title so it does not collide with the Articles hub in SEO crawls.
 GUIDES_REDIRECT_STUB = f"""<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
