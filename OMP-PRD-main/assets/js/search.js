@@ -36,6 +36,7 @@
     { type: 'Page', title: 'Articles', desc: 'Every read in one hub: security news, deep dives, how-tos and guides.', url: '/articles', kw: 'blog articles posts news updates guides learn tutorials help content hub' },
     { type: 'Product Page', title: 'Products', desc: 'Books, courses, tools and resources from OopsMyPassword.', url: '/products', kw: 'products shop store buy purchase book books course template resource pricing' },
     { type: 'Page', title: 'OSINT Hub', desc: 'OSINT tools by category — username, email, domain, phone, image and all-in-one — with install guides and official links.', url: '/osint', kw: 'osint hub investigation username email domain phone image sherlock holehe tools catalog' },
+    { type: 'Page', title: 'Pentest Hub', desc: 'Pentest tools by phase — network scanning, web testing, password auditing, wireless, vuln scanning and frameworks. Authorized testing only.', url: '/pentest', kw: 'pentest hub penetration testing nmap burp metasploit hashcat tools kali authorized' },
     { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about', kw: 'about team mission privacy first who' },
     { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact', kw: 'contact email support feedback report' },
     { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq', kw: 'faq questions answers help common' },
@@ -137,6 +138,7 @@
       var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
       var qP = SUPABASE_URL + '/rest/v1/products?select=slug,name,summary,product_type&status=eq.published&order=sort_order.asc&limit=100';
       var qO = SUPABASE_URL + '/rest/v1/osint_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
+      var qPT = SUPABASE_URL + '/rest/v1/pentest_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
       /* A non-OK response is a FAILURE, not an empty table. Treating it
          as [] used to cache "no articles" for 10 minutes. */
       function safeJson(r) {
@@ -147,7 +149,8 @@
         fetch(qA, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
         fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
         fetch(qP, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qO, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
+        fetch(qO, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
+        fetch(qPT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
       ]).then(function (res) {
         var seen = {};
         /* URLs already covered by the baked-in index — skip duplicates
@@ -192,6 +195,16 @@
           if (seen[normalizeUrl(url)]) return;
           seen[normalizeUrl(url)] = 1;
           items.push({ type: 'OSINT tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'osint ' + String(o.pricing || '') });
+        });
+        /* Pentest catalog — slug-guarded like articles, routed to
+           /pentest/<slug>. */
+        (res[4] || []).forEach(function (o) {
+          if (!o || !o.slug) return;
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(o.slug))) return;
+          var url = '/pentest/' + encodeURIComponent(o.slug);
+          if (seen[normalizeUrl(url)]) return;
+          seen[normalizeUrl(url)] = 1;
+          items.push({ type: 'Pentest tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'pentest ' + String(o.pricing || '') });
         });
         /* Only cache a successful, non-empty lookup. */
         if (!failed && items.length) {

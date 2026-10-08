@@ -38,6 +38,9 @@ const tables = {
   learning_labs: fixture.labs,
   articles: [BEST_FREE_OSINT],
   products: [],
+  /* The static publisher also reads the pentest catalog; same rule. */
+  pentest_tools: [],
+  pentest_categories: [],
   /* The static publisher also reads the OSINT catalog; a fresh project
      has these tables but zero published rows — not a 404. */
   osint_tools: [],

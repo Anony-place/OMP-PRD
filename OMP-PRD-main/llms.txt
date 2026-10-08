@@ -21,3 +21,19 @@ Browse OSINT tools by investigation type at https://oopsmypassword.web.app/osint
 
 - [Best Free OSINT Tools for Beginners](https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners): the starting lineup this hub is built on.
 - [Articles hub](https://oopsmypassword.web.app/articles): security news, deep dives and how-tos.
+
+## Pentest Hub
+
+Browse pentest tools by assessment phase at https://oopsmypassword.web.app/pentest — network scanning, web testing, password auditing, wireless, vulnerability scanning and frameworks. Authorized testing only, each with install steps and official links.
+
+- [Aircrack-ng](https://oopsmypassword.web.app/pentest/aircrack-ng): Wi-Fi security auditing for networks you own: capture handshakes and test encryption strength. Free.
+- [Burp Suite](https://oopsmypassword.web.app/pentest/burp-suite): The standard web app testing proxy: intercept, inspect and modify traffic for apps you are authorized to test. Freemium.
+- [Hashcat](https://oopsmypassword.web.app/pentest/hashcat): The fastest password recovery and auditing tool: measure hash-cracking resistance on your own hashes. Free, open source.
+- [Hydra](https://oopsmypassword.web.app/pentest/hydra): Online login auditing against your own services: test credential strength where you are authorized. Free.
+- [John the Ripper](https://oopsmypassword.web.app/pentest/john-the-ripper): Classic password auditing suite, best at slow hashes and encrypted files you own. Free, open source.
+- [Masscan](https://oopsmypassword.web.app/pentest/masscan): The fastest internet-scale port scanner: sweep entire ranges in minutes on your authorized targets. Free, open source.
+- [Metasploit](https://oopsmypassword.web.app/pentest/metasploit): Modular exploitation framework for authorized engagements and labs. Framework free; Pro paid.
+- [Nikto](https://oopsmypassword.web.app/pentest/nikto): Fast web-server vulnerability scanner: outdated software, misconfigurations and dangerous files on your hosts. Free.
+- [Nmap](https://oopsmypassword.web.app/pentest/nmap): The standard network scanner: discover hosts, ports and services on networks you are authorized to test. Free, open source.
+- [OWASP ZAP](https://oopsmypassword.web.app/pentest/owasp-zap): Free, open-source web app scanner and proxy from OWASP. Automate baseline scans of your own apps. Free forever.
+- [SQLMap](https://oopsmypassword.web.app/pentest/sqlmap): Automatic SQL injection detection and exploitation testing for your own apps and labs. Free, open source.

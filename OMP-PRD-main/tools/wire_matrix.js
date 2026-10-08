@@ -39,6 +39,7 @@ isFile('/tools', '/tools.html', 'tools hub');
 isFile('/articles', '/articles.html', 'articles hub');
 isFile('/products', '/products.html', 'products hub');
 isFile('/osint', '/osint.html', 'osint hub');
+isFile('/pentest', '/pentest.html', 'pentest hub');
 isFile('/breach-check', '/breach-check.html', 'breach check');
 isFile('/about', '/about.html', 'about');
 /* Search is a site-wide modal injected by assets/js/search.js — not a page. */
@@ -56,6 +57,11 @@ isFile('/sitemap.xml', '/sitemap.xml', 'sitemap');
     'unknown osint slug → custom 404 (got ' + r.type + ' ' + (r.file || r.location || '') + ')');
 }
 {
+  const r = resolve('/pentest/this-slug-is-not-a-real-tool');
+  ok(r.type === 'notfound' && r.file === '/404.html',
+    'unknown pentest slug → custom 404 (got ' + r.type + ' ' + (r.file || r.location || '') + ')');
+}
+{
   const r = resolve('/products/passphrase-book/chapters');
   ok(r.type === 'notfound' && r.file === '/404.html',
     'nested unknown product path → 404, not the hub (got ' + r.type + ' ' + (r.file || '') + ')');
@@ -64,9 +70,11 @@ isFile('/sitemap.xml', '/sitemap.xml', 'sitemap');
 /* --- cleanUrls + trailingSlash --- */
 isRedirect('/products.html', '/products', 'cleanUrls strips .html');
 isRedirect('/osint.html', '/osint', 'cleanUrls strips .html (osint)');
+isRedirect('/pentest.html', '/pentest', 'cleanUrls strips .html (pentest)');
 isRedirect('/articles.html', '/articles', 'cleanUrls strips .html (articles)');
 isRedirect('/products/', '/products', 'trailing slash collapses');
 isRedirect('/osint/', '/osint', 'trailing slash collapses (osint)');
+isRedirect('/pentest/', '/pentest', 'trailing slash collapses (pentest)');
 isRedirect('/articles/', '/articles', 'trailing slash collapses (articles)');
 
 /* --- legacy redirects --- */
@@ -93,8 +101,8 @@ isFile('/articles/create-strong-password', '/guides/create-strong-password.html'
 
 /* --- no redirect loops on any public entry --- */
 const entries = ['/', '/checker', '/generator', '/tools', '/articles', '/articles/passkeys-explained',
-  '/products', '/products/some-slug', '/osint', '/osint/some-slug', '/breach-check', '/about', '/blog', '/guides',
-  '/guides/passkeys-explained.html', '/products.html', '/osint.html', '/Anony.su/'];
+  '/products', '/products/some-slug', '/osint', '/osint/some-slug', '/pentest', '/pentest/some-slug', '/breach-check', '/about', '/blog', '/guides',
+  '/guides/passkeys-explained.html', '/products.html', '/osint.html', '/pentest.html', '/Anony.su/'];
 for (const e of entries) {
   const { end, hops } = follow(e);
   ok(end.type !== 'loop', `no redirect loop for ${e}${hops.length ? ' (hops: ' + hops.map(h => h.to).join(' → ') + ')' : ''}`);

@@ -119,6 +119,12 @@ def resolve(path, base_file):
         if os.path.exists(catalog):
             return catalog, frag
 
+    # /pentest and /pentest/<slug> → pentest.html
+    if p == "/pentest" or p.startswith("/pentest/"):
+        catalog = os.path.join(ROOT, "pentest.html")
+        if os.path.exists(catalog):
+            return catalog, frag
+
     return target, frag
 
 
@@ -137,7 +143,7 @@ for dirpath, dirnames, filenames in os.walk(ROOT):
 # The generated pages are covered by scripts/verify-seo.mjs instead (canonical,
 # title, description, H1, heading order, img alt, JSON-LD, routability), which
 # is designed to tolerate injected content.
-GENERATED_DIRS = {"articles", "products", "osint"}
+GENERATED_DIRS = {"articles", "products", "osint", "pentest"}
 html_files = [f for f in html_files
               if os.path.dirname(f).split(os.sep)[0] not in GENERATED_DIRS]
 

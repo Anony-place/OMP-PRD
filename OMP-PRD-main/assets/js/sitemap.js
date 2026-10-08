@@ -75,17 +75,20 @@
     var articles = [];
     var products = [];
     var osint = [];
+    var pentest = [];
     try {
       if (data && Array.isArray(data.articles)) articles = data.articles;
       if (data && Array.isArray(data.products)) products = data.products;
       if (data && Array.isArray(data.osint)) osint = data.osint;
+      if (data && Array.isArray(data.pentest)) pentest = data.pentest;
     } catch (e) { /* malformed payload — nothing to add */ }
 
-    if (!articles.length && !products.length && !osint.length) return;
+    if (!articles.length && !products.length && !osint.length && !pentest.length) return;
 
     grid.appendChild(groupCard('Articles', articles));
     grid.appendChild(groupCard('Products', products));
     grid.appendChild(groupCard('OSINT tools', osint));
+    grid.appendChild(groupCard('Pentest tools', pentest));
     section.hidden = false;
   }
 

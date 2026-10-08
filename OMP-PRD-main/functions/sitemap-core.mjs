@@ -43,6 +43,7 @@ export const STATIC_ROUTES = [
   '/articles',
   '/products',
   '/osint',
+  '/pentest',
   '/breach-check',
   '/about',
   '/privacy',
@@ -134,7 +135,7 @@ export function isPublished(row) {
  * and a DB row can legitimately share a slug, and a sitemap must never
  * list the same URL twice.
  */
-export function buildUrls({ articles = [], products = [], osint = [], site = DEFAULT_SITE, staticLastmod = STATIC_LASTMOD } = {}) {
+export function buildUrls({ articles = [], products = [], osint = [], pentest = [], site = DEFAULT_SITE, staticLastmod = STATIC_LASTMOD } = {}) {
   const origin = String(site || DEFAULT_SITE).replace(/\/+$/, '');
   const urls = [];
   const seen = new Set();
@@ -185,14 +186,24 @@ export function buildUrls({ articles = [], products = [], osint = [], site = DEF
     );
   }
 
+  for (const row of pentest || []) {
+    if (!isPublished(row) || !isValidSlug(row.slug)) continue;
+    push(
+      `${origin}/pentest/${row.slug}`,
+      row.published_at || row.updated_at || row.created_at,
+      'monthly',
+      '0.7'
+    );
+  }
+
   return urls.slice(0, MAX_URLS);
 }
 
 export function priorityForRoute(route) {
   if (route === '/') return '1.0';
-  if (route === '/articles' || route === '/products' || route === '/osint') return '0.9';
+  if (route === '/articles' || route === '/products' || route === '/osint' || route === '/pentest') return '0.9';
   if (route === '/sitemap') return '0.5';
-  if (route.startsWith('/articles/') || route.startsWith('/products/') || route.startsWith('/osint/')) return '0.7';
+  if (route.startsWith('/articles/') || route.startsWith('/products/') || route.startsWith('/osint/') || route.startsWith('/pentest/')) return '0.7';
   return '0.8';
 }
 
@@ -247,6 +258,7 @@ export function buildSitemapJson(options = {}) {
     articles: live(options.articles, '/articles'),
     products: live(options.products, '/products'),
     osint: live(options.osint, '/osint'),
+    pentest: live(options.pentest, '/pentest'),
     count: buildUrls(options).length
   };
 }

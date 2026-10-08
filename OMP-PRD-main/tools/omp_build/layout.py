@@ -99,6 +99,7 @@ NAV_LINKS = [
     ("Articles", "/articles"),
     ("Products", "/products"),
     ("OSINT Hub", "/osint"),
+    ("Pentest Hub", "/pentest"),
     ("Academy", "/learning"),
     ("Breach Check", "/breach-check"),
 ]
@@ -218,6 +219,7 @@ def footer():
             ("Articles", "/articles"),
             ("Products", "/products"),
             ("OSINT Hub", "/osint"),
+            ("Pentest Hub", "/pentest"),
             ("Security Checklist", "/security-checklist"),
             ("FAQ", "/faq"),
             ("Glossary", "/glossary"),

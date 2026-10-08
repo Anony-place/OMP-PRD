@@ -617,18 +617,19 @@ const $ = (d, s) => d.querySelector(s);
       ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
     }
 
-    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, OSINT Hub, Academy, Breach Check
+    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, OSINT Hub, Pentest Hub, Academy, Breach Check
        (+ the JS-injected Search trigger in nav-actions). */
     const blog = rootHtml.find(x => x.f === 'articles.html').s;
     const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
     const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
-    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'OSINT Hub', 'Academy', 'Breach Check']),
-       `desktop navbar is exactly the 9 target items — got [${navLabels.join(', ')}]`);
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'OSINT Hub', 'Pentest Hub', 'Academy', 'Breach Check']),
+       `desktop navbar is exactly the 10 target items — got [${navLabels.join(', ')}]`);
     const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
     ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
     ok(mobile.includes('/articles">Articles<'), 'mobile menu links Articles to the hub');
     ok(mobile.includes('/products">Products<'), 'mobile menu links Products to its own hub');
     ok(mobile.includes('/osint">OSINT Hub<'), 'mobile menu links OSINT Hub to its own hub');
+    ok(mobile.includes('/pentest">Pentest Hub<'), 'mobile menu links Pentest Hub to its own hub');
 
     /* The legacy hub is a redirect, not a destination. */
     const stub = fs.readFileSync(path.join(ROOT, 'guides.html'), 'utf8');
@@ -949,6 +950,60 @@ const $ = (d, s) => d.querySelector(s);
        'sitemap.xml lists /osint');
   }
 
+  /* ================= Pentest Hub (pentest.js + admin Pentest tab + schema) ====== */
+  {
+    console.log('pentest hub (catalog, filters, detail, admin, schema)');
+    const pjs = fs.readFileSync(path.join(ROOT, 'assets/js/pentest.js'), 'utf8');
+    const ajs = fs.readFileSync(path.join(ROOT, 'assets/js/admin.js'), 'utf8');
+    const sjs = fs.readFileSync(path.join(ROOT, 'assets/js/search.js'), 'utf8');
+    const phtml = fs.readFileSync(path.join(ROOT, 'pentest.html'), 'utf8');
+    const pschema = fs.readFileSync(path.join(ROOT, 'supabase/migrations/20261008120000_pentest_hub.sql'), 'utf8');
+
+    /* --- schema: pricing, access types, RLS, public logos bucket --- */
+    ok(pschema.includes("check (pricing in ('free','freemium','paid'))"),
+       'pentest_tools.pricing is constrained to free/freemium/paid');
+    ok(pschema.includes('pentest_tools_access_types_check'),
+       'pentest_tools.access_types is constrained to the canonical access types');
+    ok(pschema.includes('pentest_tools_select_published') && pschema.includes("for select to anon, authenticated using (status = 'published')"),
+       'anon reads published pentest tools only (RLS)');
+    ok(pschema.includes('pentest_tools_admin_insert') && pschema.includes('pentest_tools_admin_update') && pschema.includes('pentest_tools_admin_delete'),
+       'pentest tool writes are admin-only (RLS)');
+    ok(pschema.includes("values ('pentest-logos', 'pentest-logos', true)"),
+       'pentest logos live in a public bucket (marketing assets)');
+    ok(pschema.includes('grant select, insert, update, delete on public.pentest_categories to authenticated') &&
+       pschema.includes('grant select, insert, update, delete on public.pentest_tools to authenticated'),
+       'authenticated role holds grants so RLS policies can evaluate (no permission-denied gap)');
+
+    /* --- public app: filters, guards, states, authorized-use framing --- */
+    ok(pjs.includes('SLUG_RE') && pjs.includes('safeSlug'), 'pentest slugs are charset-guarded before URLs are built');
+    ok(pjs.includes("HUB_PATH = '/pentest'") && pjs.includes('/^\\/pentest\\/'), 'pentest app routes its own hub, not /osint');
+    ok(pjs.includes('Authorized testing only'), 'detail pages carry the authorized-testing notice');
+    ok(pjs.includes('authorisation-scope-and-the-law') && pjs.includes('home-lab-and-safe-practice'),
+       'hub links the Academy scope/law and safe-lab lessons');
+    ok(pjs.includes('article-layout') && pjs.includes('On this page') && pjs.includes('sec-example'),
+       'pentest detail follows the article flow like osint');
+    ok(!/from\('osint_tools'\)/.test(pjs) && !/from\('articles'\)/.test(pjs),
+       'pentest app never queries the osint/articles tables (no mixing)');
+
+    /* --- admin: Pentest tab with category + tool CRUD --- */
+    ok(ajs.includes('data-tab="pentest"'), 'admin dashboard has a Pentest tab');
+    ok(ajs.includes("tab === 'pentest'"), 'admin loads the pentest section');
+    ok(/function pentestCategoryForm/.test(ajs) && /function pentestToolForm/.test(ajs),
+       'admin has separate pentest category + tool forms');
+    ok(ajs.includes("from('pentest-logos')"), 'pentest logo uploads target the public pentest-logos bucket');
+
+    /* --- wiring: shell, search, sitemap --- */
+    ok(phtml.includes('data-pentest') && phtml.includes('/assets/js/pentest.js'),
+       'pentest.html mounts the pentest app');
+    ok(phtml.includes('"@type":"FAQPage"') && phtml.includes('Is it legal to use these tools?'),
+       'pentest hub ships indexable FAQ content with FAQPage JSON-LD');
+    ok(sjs.includes('/rest/v1/pentest_tools?select=slug,name,summary,pricing&status=eq.published'), 'live search queries published pentest tools');
+    ok(sjs.includes("'/pentest/' + encodeURIComponent(o.slug)"),
+       'live pentest results link to /pentest/<slug> with encoded slugs');
+    ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('https://oopsmypassword.web.app/pentest</loc>'),
+       'sitemap.xml lists /pentest');
+  }
+
   /* ================= search.js — unsafe URLs, cache, mobile button ========= */
   {
     console.log('search.js (poisoned live rows, dedup, mobile button, modal a11y)');
@@ -1105,7 +1160,7 @@ const $ = (d, s) => d.querySelector(s);
     const css = fs.readFileSync(path.join(ROOT, 'assets/css/styles.css'), 'utf8');
 
     /* .page-hero::before bleeds past the box with inset:-30% -20%; without a
-       clip it made all 20 inner pages wider than the viewport. */
+       clip it made all 21 inner pages wider than the viewport. */
     const heroRule = (css.match(/\.page-hero\s*\{[^}]*\}/) || [''])[0];
     ok(/overflow:\s*hidden/.test(heroRule), '.page-hero clips its ::before glow (overflow:hidden)');
     for (const sel of ['.hero', '.cta-band']) {
@@ -1115,10 +1170,10 @@ const $ = (d, s) => d.querySelector(s);
     const heroPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'))
       .filter(f => fs.readFileSync(path.join(ROOT, f), 'utf8').includes('class="page-hero"'));
     /* guides.html is a redirect stub and is deliberately excluded. The hosted
-       email-preferences page went away with the newsletter, so the count is 20
-       (19 + osint.html) and that page must not be regenerated. */
-    ok(heroPages.length === 20 && !heroPages.includes('email-preferences.html'),
-      '20 inner pages use .page-hero and the retired email-preferences page is not regenerated — got '
+       email-preferences page went away with the newsletter, so the count is 21
+       (19 + osint.html + pentest.html) and that page must not be regenerated. */
+    ok(heroPages.length === 21 && !heroPages.includes('email-preferences.html'),
+      '21 inner pages use .page-hero and the retired email-preferences page is not regenerated — got '
       + heroPages.length + ' [' + heroPages.join(', ') + ']');
 
     /* Contrast: every text token must clear 4.5:1 on every surface it can sit on. */
@@ -1353,9 +1408,10 @@ const $ = (d, s) => d.querySelector(s);
     const articlesSrc = fs.readFileSync(path.join(ROOT, 'assets/js/articles.js'), 'utf8');
     const productsSrc = fs.readFileSync(path.join(ROOT, 'assets/js/products.js'), 'utf8');
     const osintSrc = fs.readFileSync(path.join(ROOT, 'assets/js/osint.js'), 'utf8');
+    const pentestSrc = fs.readFileSync(path.join(ROOT, 'assets/js/pentest.js'), 'utf8');
     const pinned = /@supabase\/supabase-js@\d+\.\d+\.\d+/;
     const v = (s) => (s.match(pinned) || [''])[0];
-    ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && pinned.test(osintSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(osintSrc) && v(articlesSrc) === v(src),
+    ok(pinned.test(articlesSrc) && pinned.test(productsSrc) && pinned.test(osintSrc) && pinned.test(pentestSrc) && v(articlesSrc) === v(productsSrc) && v(articlesSrc) === v(osintSrc) && v(articlesSrc) === v(pentestSrc) && v(articlesSrc) === v(src),
        'every module loads the same pinned Supabase SDK version');
 
     const adminHtml = fs.readFileSync(path.join(ROOT, 'Anony.su/index.html'), 'utf8');

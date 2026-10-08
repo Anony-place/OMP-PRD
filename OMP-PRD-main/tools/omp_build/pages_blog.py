@@ -146,6 +146,85 @@ def osint_body():
 """
 
 
+def pentest_body():
+    cats = [
+        ("Network Scanning", "network-scanning",
+         "The first step of any authorized assessment is mapping: which hosts are alive, which ports answer, what services run. Nmap fingerprints each host in depth while Masscan sweeps entire ranges in minutes — discover first with Masscan, examine closely with Nmap, and keep every probe inside your written scope."),
+        ("Web App Testing", "web-testing",
+         "Modern applications break at the trust boundary between browser and server: injection, broken access control, misconfiguration. Burp Suite proxies and replays real traffic for methodical manual testing, OWASP ZAP automates baseline scans and CI gates free forever, and SQLMap proves injection findings rigorously."),
+        ("Password Auditing", "password-auditing",
+         "The honest way to measure password strength is to attack your own hashes the way criminals would. Hashcat brings GPU speed to fast hashes, John the Ripper owns encrypted files and slow hashes, and Hydra audits live logins on staging — every cracked credential becomes policy: longer minimums, MFA, breached-password screening."),
+        ("Wireless Testing", "wireless-testing",
+         "A short shared Wi-Fi key is an open door with extra steps. Aircrack-ng audits networks you own: capture your own handshake, test its strength offline, and prove weak encryption before move-in day — then replace it with unique credentials and a guest network."),
+        ("Vulnerability Scanning", "vulnerability-scanning",
+         "Known CVEs and misconfigurations are the lowest-hanging fruit on both sides. Nikto sweeps your web servers for outdated software, default files and dangerous endpoints in minutes — a noisy hygiene pass that belongs on a schedule, verified by hand before ticketing."),
+        ("Exploitation Frameworks", "exploitation-frameworks",
+         "A confirmed vulnerability becomes demonstrated impact here. The Metasploit Framework turns findings into proof — a shell, a screenshot, a dumped hash from your own lab — which is the narrative that converts scan printouts into patching budgets. Learn in isolated labs, scope in writing, never outside it."),
+    ]
+    cat_blocks = "\n".join(
+        f'<div class="card card-pad"><h3 class="h-3">{name}</h3><p class="muted">{desc}</p>'
+        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest#/c/{slug}">Open {name} →</a></p></div>'
+        for name, slug, desc in cats
+    )
+    return f"""
+<section class="page-hero">
+  <div class="container container-wide osint-hero">
+    <span class="chip chip-accent">{icon("shield","icon-16")} Scan · Intercept · Audit · Verify — authorized testing only</span>
+    <h1 class="h-1 mt-16">Pentest Hub</h1>
+    <p class="lead">Professional security testing tools, organized by assessment phase. Pick a category, filter by free or paid, desktop or command-line — then open any tool for its overview, install steps and official links.</p>
+    <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
+    <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Start with the <a href="/learning" style="color:var(--purple)">Academy</a> safe-testing track and the <a href="/learning/roadmap" style="color:var(--purple)">learning roadmap</a> first.</p></div>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:8px">
+  <div class="osint-fluid">
+    <div id="pentest-app" data-pentest>
+      <span class="sr-only" role="status" aria-live="polite">Loading pentest tools…</span>
+      <div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main"><div class="skel skel-title"></div><div class="skel skel-meta"></div><div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>
+      <div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main"><div class="skel skel-title skel-w70"></div><div class="skel skel-meta"></div><div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>
+    </div>
+    <noscript>
+      <div class="notice-band mt-24">{icon("info","icon-20")}<p>The pentest catalog needs JavaScript to load. Start with the <a href="/learning" style="color:var(--purple)">OMP Academy</a> — it works without JavaScript.</p></div>
+    </noscript>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="osint-fluid">
+    <div class="section-head left"><span class="eyebrow">Assessment guide</span><h2 class="h-2">Start from your phase</h2><p class="muted" style="margin-top:10px;max-width:80ch">Every authorized assessment follows the same arc: map, test, prove, fix. Find your phase below — each section explains what it reveals, which tools to reach for first, and where the legal lines sit.</p></div>
+    <div class="grid grid-3">
+      {cat_blocks}
+    </div>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="osint-fluid">
+    <div class="section-head left"><span class="eyebrow">How the hub works</span><h2 class="h-2">From scope to report in three steps</h2></div>
+    <div class="grid grid-3">
+      <div class="card card-pad"><h3 class="h-3">1. Get authorized, build a lab</h3><p class="muted">Written scope for client work, an isolated home lab for learning. No scope, no scan — that rule is the whole profession.</p></div>
+      <div class="card card-pad"><h3 class="h-3">2. Map, then test deeply</h3><p class="muted">Discover with scanners, confirm by hand. Automated findings are leads; a manually verified proof is a finding.</p></div>
+      <div class="card card-pad"><h3 class="h-3">3. Report and remediate</h3><p class="muted">Every tool page carries the install steps and official docs you need to reproduce, document and fix each issue.</p></div>
+    </div>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:4px">
+  <div class="container container-narrow">
+    <div class="section-head left"><span class="eyebrow">FAQ</span><h2 class="h-2">Pentest questions, answered</h2></div>
+    <div class="grid" style="gap:14px">
+      <div class="card card-pad"><h3 class="h-3">What is penetration testing?</h3><p class="muted">Authorized, simulated attacks against systems you own or are contracted to test — done to find weaknesses before criminals do, and documented so they get fixed.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Are these pentest tools free?</h3><p class="muted">Nearly all tools in this hub are free and open source. Burp Suite and Metasploit offer paid tiers for professional features — each listing is badged so you know before you click.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Is it legal to use these tools?</h3><p class="muted">Only against systems you own or have explicit written permission to test. Unauthorized scanning and testing is illegal in most places — when in doubt, use a home lab.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Where can I practice legally?</h3><p class="muted">Your own home lab, plus purpose-built targets: Metasploitable VMs, OWASP Juice Shop, and the HackTheBox and TryHackMe training platforms.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Which tool should a beginner start with?</h3><p class="muted">Nmap for network fundamentals and OWASP ZAP for web testing — both free, both with enormous tutorial ecosystems. Add Burp Suite Community once manual proxy work clicks.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Do I need Kali Linux?</h3><p class="muted">No — every tool here installs on ordinary Linux, macOS or Windows. Kali is convenient packaging, not a requirement, and learning on your daily OS teaches more.</p></div>
+      <div class="card card-pad"><h3 class="h-3">Scanner says vulnerable — now what?</h3><p class="muted">Verify by hand. Version-based findings are frequently wrong against backported patches; reproduce the issue safely, then report with exact steps and remediation advice.</p></div>
+      <div class="card card-pad"><h3 class="h-3">How do I turn findings into a career?</h3><p class="muted">Document everything you do in labs as write-ups, publish them, and study for hands-on certifications. Employers hire demonstrated methodology, not tool lists.</p></div>
+    </div>
+    <p class="muted small" style="margin-top:20px">New to this? Start with the <a href="/learning" style="color:var(--purple)">Academy</a> and follow the <a href="/learning/roadmap" style="color:var(--purple)">learning roadmap</a>.</p>
+  </div>
+</section>
+"""
+
+
 # Back-compat alias used by older call sites / tests.
 blog_body = lambda: articles_body([])  # noqa: E731
 

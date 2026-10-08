@@ -13,6 +13,7 @@ const PRODUCTS_DIR = join(ROOT, 'products');
 const PRODUCT_FIELDS = 'slug,name,summary,description,product_type,price,currency,cta_label,featured,featured_image,external_url,status,published_at,updated_at,created_at';
 const PRODUCT_TYPES = { book: 'Book', course: 'Course', tool: 'Tool', template: 'Template', resource: 'Resource', other: 'Resource' };
 const OSINT_FIELDS = 'slug,name,summary,overview,install_guide,key_features,faqs,use_case,category_id,pricing,access_types,official_url,github_url,docs_url,logo_url,featured,status,published_at,updated_at,created_at';
+const PENTEST_FIELDS = OSINT_FIELDS;
 const OSINT_PRICING = { free: 'Free', freemium: 'Freemium', paid: 'Paid' };
 const OSINT_ACCESS = { web: 'Web app', cli: 'Command line', 'desktop-app': 'Desktop app', 'browser-extension': 'Browser ext.', 'mobile-app': 'Mobile app', api: 'API' };
 
@@ -121,11 +122,11 @@ const ICON_ARROW = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke=
 const ICON_BOOK = '<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg>';
 
 function siteHeader(active = '') {
-  const nav = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['OSINT Hub','/osint'],['Academy','/learning'],['Breach Check','/breach-check']];
+  const nav = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['OSINT Hub','/osint'],['Pentest Hub','/pentest'],['Academy','/learning'],['Breach Check','/breach-check']];
   return `<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary">${nav.map(([name,url]) => `<a href="${url}"${active === url ? ' aria-current="page"' : ''}>${esc(name)}</a>`).join('')}</nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>`;
 }
 function siteMobileMenu(active = '') {
-  const items = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['OSINT Hub','/osint'],['Academy','/learning'],['Breach Check','/breach-check'],['About','/about'],['Password Health','/password-health'],['Security Checklist','/security-checklist'],['FAQ','/faq'],['Privacy Policy','/privacy'],['Contact','/contact']];
+  const items = [['Home','/'],['Checker','/checker'],['Generator','/generator'],['Tools','/tools'],['Articles','/articles'],['Products','/products'],['OSINT Hub','/osint'],['Pentest Hub','/pentest'],['Academy','/learning'],['Breach Check','/breach-check'],['About','/about'],['Password Health','/password-health'],['Security Checklist','/security-checklist'],['FAQ','/faq'],['Privacy Policy','/privacy'],['Contact','/contact']];
   return `<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">${items.map(([name,url]) => `<a href="${url}"${active === url ? ' aria-current="page"' : ''}>${esc(name)}${ICON_ARROW}</a>`).join('')}<a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>`;
 }
 function siteFooter() { return sharedFooter; }
@@ -202,13 +203,18 @@ function productHtml(product) {
   const head = commonHead({ title: documentTitle(name, 'OopsMyPassword'), description: summary, canonical, ogType: 'product', ogImage: image, jsonld: [productSchema, breadcrumb] });
   return `${head}<body>${siteHeader('/products')}${siteMobileMenu('/products')}<main id="main"><section class="page-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/products" style="color:var(--purple)">Products</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><h1 class="h-1 mt-16">${esc(name)}</h1><p class="lead mt-8">${esc(summary)}</p></div></section><section class="section-tight"><div class="container container-narrow"><div class="card card-pad"><span class="ptype t-${esc(product.product_type || 'other')}">${esc(typeLabel)}</span>${ctaHtml}<div class="prose" style="margin-top:24px">${content}</div></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
-function osintHtml(tool, catName, related) {
+const HUBS = {
+  osint: { base: '/osint', hubName: 'OSINT Hub', brand: 'OSINT Hub | OopsMyPassword', fallbackName: 'OSINT tool', fallbackCat: 'OSINT', keepExploring: 'browse every investigation type', footerNote: 'Use OSINT tools responsibly — only investigate accounts, people or systems you have a legitimate reason to look into.' },
+  pentest: { base: '/pentest', hubName: 'Pentest Hub', brand: 'Pentest Hub | OopsMyPassword', fallbackName: 'Pentest tool', fallbackCat: 'Pentest', keepExploring: 'browse every assessment phase', footerNote: 'Authorized testing only — only ever test systems you own or have explicit written permission to assess.' }
+};
+function hubToolHtml(hub, tool, catName, related) {
+  const cfg = HUBS[hub] || HUBS.osint;
   const slug = String(tool.slug || '').trim();
-  const name = String(tool.name || 'OSINT tool').trim();
+  const name = String(tool.name || cfg.fallbackName).trim();
   const rawSummary = String(tool.summary || '').trim()
     || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const summary = metaDescription(rawSummary);
-  const canonical = `${SITE}/osint/${encodeURIComponent(slug)}`;
+  const canonical = `${SITE}${cfg.base}/${encodeURIComponent(slug)}`;
   const published = tool.published_at || tool.created_at || '';
   const modified = tool.updated_at || published;
   const overview = normalizeInjected(sanitizeHtml(tool.overview || '')).html;
@@ -228,8 +234,8 @@ function osintHtml(tool, catName, related) {
   const toolSchema = { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name, description: summary, url: canonical, image: [image], applicationCategory: 'SecurityApplication', operatingSystem: access.join(', ') || 'Web', author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en' };
   if (official) toolSchema.downloadUrl = official;
   if (String(tool.pricing || 'free') === 'free') toolSchema.offers = { '@type': 'Offer', price: '0', priceCurrency: 'USD' };
-  const crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'OSINT Hub', item: `${SITE}/osint` }];
-  if (catName) crumbs.push({ '@type': 'ListItem', position: 3, name: catName, item: `${SITE}/osint#/c/${encodeURIComponent(tool.category_slug || '')}` });
+  const crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: cfg.hubName, item: `${SITE}${cfg.base}` }];
+  if (catName) crumbs.push({ '@type': 'ListItem', position: 3, name: catName, item: `${SITE}${cfg.base}#/c/${encodeURIComponent(tool.category_slug || '')}` });
   crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name, item: canonical });
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs };
   const links = [official ? `<a class="btn btn-primary" href="${esc(official)}" rel="noopener noreferrer">Open official site →</a>` : '', github ? `<a class="btn btn-secondary" href="${esc(github)}" rel="noopener noreferrer">GitHub</a>` : '', docs ? `<a class="btn btn-ghost" href="${esc(docs)}" rel="noopener noreferrer">Docs</a>` : ''].filter(Boolean).join('');
@@ -250,7 +256,7 @@ function osintHtml(tool, catName, related) {
   const relatedCards = (related || []).filter((r) => r && r.slug !== slug && isValidSlug(r.slug)).slice(0, 3).map((r) => {
     const rName = String(r.name || r.slug).trim();
     const rSummary = metaDescription(String(r.summary || '').trim());
-    return `<article class="feed-row osint-row"><span class="osint-tile" aria-hidden="true">${esc(rName.charAt(0).toUpperCase())}</span><div class="feed-row-main"><h3 class="feed-title"><a href="/osint/${encodeURIComponent(r.slug)}">${esc(rName)}</a></h3>${rSummary ? `<p class="feed-excerpt">${esc(rSummary)}</p>` : ''}</div></article>`;
+    return `<article class="feed-row osint-row"><span class="osint-tile" aria-hidden="true">${esc(rName.charAt(0).toUpperCase())}</span><div class="feed-row-main"><h3 class="feed-title"><a href="${cfg.base}/${encodeURIComponent(r.slug)}">${esc(rName)}</a></h3>${rSummary ? `<p class="feed-excerpt">${esc(rSummary)}</p>` : ''}</div></article>`;
   }).join('');
   if (relatedCards) sections.push({ id: 'sec-related', label: 'Related tools', related: true });
   const toc = `<aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul>${sections.map((s) => `<li><a href="#${s.id}">${esc(s.label)}</a></li>`).join('')}</ul></aside>`;
@@ -258,12 +264,18 @@ function osintHtml(tool, catName, related) {
     if (s.related) return `<h2 id="${s.id}">Related tools</h2><div class="feed-list" style="margin-top:14px">${relatedCards}</div>`;
     return `<h2 id="${s.id}">${esc(s.label)}</h2>${s.html}`;
   }).join('');
-  const metaChips = [`<span class="chip">${esc(catName || 'OSINT')}</span>`, `<span class="chip">${esc(pricing)}</span>`, ...access.map((a) => `<span class="chip">${esc(a)}</span>`), ...(tool.featured ? ['<span class="chip">★ Featured</span>'] : []), ...(updated ? [`<span class="chip">Updated ${esc(updated)}</span>`] : [])].join('');
-  const head = commonHead({ title: documentTitle(name, 'OSINT Hub | OopsMyPassword'), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [toolSchema, breadcrumb], published, modified });
-  return `${head}<body>${siteHeader('/osint')}${siteMobileMenu('/osint')}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="/osint">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/osint" style="color:var(--purple)">OSINT Hub</a>${catName ? ` <span class="divider-dot">/</span> <span>${esc(catName)}</span>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every investigation type in the <a href="/osint">OSINT Hub</a>.</p></div><p class="muted small" style="margin-top:20px">Use OSINT tools responsibly — only investigate accounts, people or systems you have a legitimate reason to look into.</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  const metaChips = [`<span class="chip">${esc(catName || cfg.fallbackCat)}</span>`, `<span class="chip">${esc(pricing)}</span>`, ...access.map((a) => `<span class="chip">${esc(a)}</span>`), ...(tool.featured ? ['<span class="chip">★ Featured</span>'] : []), ...(updated ? [`<span class="chip">Updated ${esc(updated)}</span>`] : [])].join('');
+  const head = commonHead({ title: documentTitle(name, cfg.brand), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [toolSchema, breadcrumb], published, modified });
+  return `${head}<body>${siteHeader(cfg.base)}${siteMobileMenu(cfg.base)}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="${cfg.base}">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/osint" style="color:var(--purple)">${cfg.hubName}</a>${catName ? ` <span class="divider-dot">/</span> <span>${esc(catName)}</span>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every ${cfg.keepExploring} in the <a href="${cfg.base}">${cfg.hubName}</a>.</p></div><p class="muted small" style="margin-top:20px">${cfg.footerNote}</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+}
+function osintHtml(tool, catName, related) {
+  return hubToolHtml('osint', tool, catName, related);
+}
+function pentestHtml(tool, catName, related) {
+  return hubToolHtml('pentest', tool, catName, related);
 }
 function dateOnly(value) { if (!value) return ''; const ms = Date.parse(value); return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
-function sitemapXml({ articles, products, osint = [] }) {
+function sitemapXml({ articles, products, osint = [], pentest = [] }) {
   const urls = new Map();
   const urlFor = (route) => route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`;
   const add = (loc, lastmod, route) => { if (!urls.has(loc)) urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') }); };
@@ -271,15 +283,18 @@ function sitemapXml({ articles, products, osint = [] }) {
   for (const article of articles) if (isValidSlug(article.slug)) add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(article.updated_at || article.published_at || article.created_at), `/articles/${article.slug}`);
   for (const product of products) if (isValidSlug(product.slug)) add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(product.updated_at || product.published_at || product.created_at), `/products/${product.slug}`);
   for (const tool of osint) if (isValidSlug(tool.slug)) add(urlFor(`/osint/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/osint/${tool.slug}`);
+  for (const tool of pentest) if (isValidSlug(tool.slug)) add(urlFor(`/pentest/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/pentest/${tool.slug}`);
   const body = [...urls.entries()].map(([loc, meta]) => `<url><loc>${esc(loc)}</loc>${meta.lastmod ? `<lastmod>${meta.lastmod}</lastmod>` : ''}<priority>${meta.priority}</priority></url>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
 }
 async function main() {
-  const [articles, products, osintTools, osintCats] = await Promise.all([
+  const [articles, products, osintTools, osintCats, pentestTools, pentestCats] = await Promise.all([
     fetchRows('articles', 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image'),
     fetchRows('products', PRODUCT_FIELDS),
     fetchRows('osint_tools', OSINT_FIELDS),
     fetchRows('osint_categories', 'id,name,slug,status'),
+    fetchRows('pentest_tools', PENTEST_FIELDS),
+    fetchRows('pentest_categories', 'id,name,slug,status'),
   ]);
   await rm(ARTICLES_DIR, { recursive: true, force: true });
   await mkdir(ARTICLES_DIR, { recursive: true });
@@ -301,7 +316,19 @@ async function main() {
     await writeFile(join(OSINT_DIR, `${tool.slug}.html`), osintHtml({ ...tool, category_slug: cat ? cat.slug : '' }, cat ? cat.name : '', siblings), 'utf8');
     osintPages++;
   }
-  const xml = sitemapXml({ articles, products, osint: osintTools });
+  const PENTEST_DIR = join(ROOT, 'pentest');
+  await rm(PENTEST_DIR, { recursive: true, force: true });
+  await mkdir(PENTEST_DIR, { recursive: true });
+  const pcatById = new Map((pentestCats || []).map((c) => [c.id, c]));
+  let pentestPages = 0;
+  for (const tool of pentestTools) {
+    if (!isValidSlug(tool.slug)) continue;
+    const cat = pcatById.get(tool.category_id);
+    const siblings = pentestTools.filter((o) => o && o.category_id && o.category_id === tool.category_id && o.slug !== tool.slug && isValidSlug(o.slug));
+    await writeFile(join(PENTEST_DIR, `${tool.slug}.html`), pentestHtml({ ...tool, category_slug: cat ? cat.slug : '' }, cat ? cat.name : '', siblings), 'utf8');
+    pentestPages++;
+  }
+  const xml = sitemapXml({ articles, products, osint: osintTools, pentest: pentestTools });
   await writeFile(join(ROOT, 'sitemap.xml'), xml, 'utf8');
   await writeFile(join(ROOT, 'google-sitemap.xml'), xml, 'utf8');
 
@@ -320,6 +347,22 @@ async function main() {
       url: `${SITE}/osint/${encodeURIComponent(t.slug)}`
     }))
   };
+  const pentestItemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Pentest Hub — OopsMyPassword',
+    numberOfItems: pentestTools.filter((t) => isValidSlug(t.slug)).length,
+    itemListElement: pentestTools.filter((t) => isValidSlug(t.slug)).map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: String(t.name || t.slug).trim(),
+      url: `${SITE}/pentest/${encodeURIComponent(t.slug)}`
+    }))
+  };
+  const pentestHubPath = join(ROOT, 'pentest.html');
+  let phub = await readFile(pentestHubPath, 'utf8');
+  phub = phub.replace(/<script type="application\/ld\+json" id="omp-pentest-itemlist">[\s\S]*?<\/script>/, '').replace('</head>', `<script type="application/ld+json" id="omp-pentest-itemlist">${escJson(pentestItemList)}</script></head>`);
+  await writeFile(pentestHubPath, phub, 'utf8');
   const hubPath = join(ROOT, 'osint.html');
   let hub = await readFile(hubPath, 'utf8');
   hub = hub.replace(/<script type="application\/ld\+json" id="omp-osint-itemlist">[\s\S]*?<\/script>/, '').replace('</head>', `<script type="application/ld+json" id="omp-osint-itemlist">${escJson(itemList)}</script></head>`);
@@ -343,9 +386,15 @@ async function main() {
     '',
     '- [Best Free OSINT Tools for Beginners](https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners): the starting lineup this hub is built on.',
     '- [Articles hub](https://oopsmypassword.web.app/articles): security news, deep dives and how-tos.',
+    '',
+    '## Pentest Hub',
+    '',
+    'Browse pentest tools by assessment phase at https://oopsmypassword.web.app/pentest — network scanning, web testing, password auditing, wireless, vulnerability scanning and frameworks. Authorized testing only, each with install steps and official links.',
+    '',
+    ...pentestTools.filter((t) => isValidSlug(t.slug)).map((t) => `- [${String(t.name || t.slug).trim()}](${SITE}/pentest/${encodeURIComponent(t.slug)}): ${metaDescription(String(t.summary || '').trim())}`),
     ''
   ].join('\n');
   await writeFile(join(ROOT, 'llms.txt'), llms, 'utf8');
-  console.log(`Built ${articlePages} article pages, ${productPages} product pages and ${osintPages} osint pages; sitemap has ${(xml.match(/<loc>/g) || []).length} URLs at ${SITE}.`);
+  console.log(`Built ${articlePages} article pages, ${productPages} product pages and ${osintPages} osint pages and ${pentestPages} pentest pages; sitemap has ${(xml.match(/<loc>/g) || []).length} URLs at ${SITE}.`);
 }
 main().catch((error) => { console.error(error); process.exit(1); });

@@ -781,7 +781,7 @@
         ]
       },
       {
-        "source": "/@(checker|generator|tools|articles|products|osint|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
+        "source": "/@(checker|generator|tools|articles|products|osint|pentest|learning|certificate|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -808,6 +808,15 @@
         ]
       },
       {
+        "source": "/pentest{,/**}",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
         "source": "/products{,/**}",
         "headers": [
           {
@@ -826,7 +835,25 @@
         ]
       },
       {
+        "source": "/pentest",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co https://esm.sh; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; block-all-mixed-content"
+          }
+        ]
+      },
+      {
         "source": "/osint.html",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co https://esm.sh; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; block-all-mixed-content"
+          }
+        ]
+      },
+      {
+        "source": "/pentest.html",
         "headers": [
           {
             "key": "Content-Security-Policy",

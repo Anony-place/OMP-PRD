@@ -28,7 +28,7 @@ from omp_build.pages_core import (  # noqa: E402
     generator_body, health_body, home_body, passphrase_body,
     random_string_body, tools_body,
 )
-from omp_build.pages_blog import articles_body, osint_body, products_body  # noqa: E402
+from omp_build.pages_blog import articles_body, osint_body, pentest_body, products_body  # noqa: E402
 
 OSINT_FAQ = [
     ("What is OSINT?",
@@ -47,6 +47,25 @@ OSINT_FAQ = [
      "Usually not directly — a deleted profile stops resolving. What survives is citations: archives, screenshots, breach data and other sites referencing the same username or email."),
     ("How do I verify an OSINT finding?",
      "Never trust a single hit. Confirm the same identifier across two or more independent sources, compare profile photos, bios and timestamps, and treat an unmatched result as a lead — not a conclusion."),
+]
+
+PENTEST_FAQ = [
+    ("What is penetration testing?",
+     "Authorized, simulated attacks against systems you own or are contracted to test — done to find weaknesses before criminals do, and documented so they get fixed."),
+    ("Are these pentest tools free?",
+     "Nearly all tools in this hub are free and open source. Burp Suite and Metasploit offer paid tiers for professional features — each listing is badged so you know before you click."),
+    ("Is it legal to use these tools?",
+     "Only against systems you own or have explicit written permission to test. Unauthorized scanning and testing is illegal in most places — when in doubt, use a home lab."),
+    ("Where can I practice legally?",
+     "Your own home lab, plus purpose-built targets: Metasploitable VMs, OWASP Juice Shop, and the HackTheBox and TryHackMe training platforms."),
+    ("Which tool should a beginner start with?",
+     "Nmap for network fundamentals and OWASP ZAP for web testing — both free, both with enormous tutorial ecosystems. Add Burp Suite Community once manual proxy work clicks."),
+    ("Do I need Kali Linux?",
+     "No — every tool here installs on ordinary Linux, macOS or Windows. Kali is convenient packaging, not a requirement, and learning on your daily OS teaches more."),
+    ("Scanner says vulnerable — now what?",
+     "Verify by hand. Version-based findings are frequently wrong against backported patches; reproduce the issue safely, then report with exact steps and remediation advice."),
+    ("How do I turn findings into a career?",
+     "Document everything you do in labs as write-ups, publish them, and study for hands-on certifications. Employers hire demonstrated methodology, not tool lists."),
 ]
 from omp_build.pages_info import (  # noqa: E402
     about_body, contact_body, faq_body, glossary_body, privacy_body,
@@ -315,6 +334,14 @@ def main():
         jsonld=[jsonld_breadcrumb([("Home", "/"), ("OSINT Hub", "/osint")]), jsonld_faq(OSINT_FAQ)],
         scripts_=["sanitize.js", "markdown.js", "osint.js"],
     ))
+    write("pentest.html", page(
+        path="/pentest", active="/pentest",
+        title="Pentest Hub — Free Nmap, Burp Suite & Hacking Tools | OopsMyPassword",
+        desc="Browse pentest tools by phase — network scanning, web testing, password auditing, wireless, vuln scanning and frameworks. Authorized testing only, with install guides and links.",
+        body=pentest_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("Pentest Hub", "/pentest")]), jsonld_faq(PENTEST_FAQ)],
+        scripts_=["sanitize.js", "markdown.js", "pentest.js"],
+    ))
     # NOTE: Anony.su/index.html is intentionally NOT generated here.
     # The admin panel is hand-maintained (Supabase Auth) — regenerating it
     # from this script would clobber the live page. See omp_build/pages_blog.py.
@@ -394,8 +421,8 @@ def main():
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in routes:
         pri = ("1.0" if u == "/" else
-               "0.9" if u in ("/articles", "/products", "/osint") else
-               "0.7" if u.startswith("/articles/") or u.startswith("/products/") or u.startswith("/osint/") else
+               "0.9" if u in ("/articles", "/products", "/osint", "/pentest") else
+               "0.7" if u.startswith("/articles/") or u.startswith("/products/") or u.startswith("/osint/") or u.startswith("/pentest/") else
                "0.5" if u == "/sitemap" else "0.8")
         # static_lastmod is empty by design: there is no honest per-page
         # modification date for a generated page, so the optional element is

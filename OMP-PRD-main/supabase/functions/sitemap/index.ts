@@ -32,6 +32,7 @@ const ROW_LIMIT = 2000;
 const ARTICLE_FIELDS = 'slug,status,published_at,updated_at,created_at';
 const PRODUCT_FIELDS = 'slug,name,status,published_at,updated_at,created_at';
 const OSINT_FIELDS = 'slug,name,status,published_at,updated_at,created_at';
+const PENTEST_FIELDS = 'slug,name,status,published_at,updated_at,created_at';
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = { 'Vary': 'Origin' };
@@ -103,19 +104,22 @@ async function loadContent(): Promise<{
   articles: Record<string, unknown>[];
   products: Record<string, unknown>[];
   osint: Record<string, unknown>[];
+  pentest: Record<string, unknown>[];
   degraded: boolean;
 }> {
-  const [articles, products, osint] = await Promise.all([
+  const [articles, products, osint, pentest] = await Promise.all([
     fetchRows('articles', ARTICLE_FIELDS),
     fetchRows('products', PRODUCT_FIELDS),
-    fetchRows('osint_tools', OSINT_FIELDS)
+    fetchRows('osint_tools', OSINT_FIELDS),
+    fetchRows('pentest_tools', PENTEST_FIELDS)
   ]);
 
   return {
     articles: articles ?? [],
     products: products ?? [],
     osint: osint ?? [],
-    degraded: articles === null || products === null || osint === null
+    pentest: pentest ?? [],
+    degraded: articles === null || products === null || osint === null || pentest === null
   };
 }
 
@@ -138,12 +142,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
   const wantsJson = new URL(req.url).searchParams.get('format') === 'json';
 
   try {
-    const { articles, products, osint, degraded } = await loadContent();
+    const { articles, products, osint, pentest, degraded } = await loadContent();
 
     const options = {
       articles,
       products,
       osint,
+      pentest,
       site: SITE,
       staticLastmod: STATIC_LASTMOD_VALUE,
       generatedAt: new Date().toISOString()

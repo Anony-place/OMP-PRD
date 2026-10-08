@@ -242,7 +242,7 @@ async function dashboard() {
   shell(`<div class="card card-pad">
     <div class="admin-topbar"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Content, products, tools and support in one place.</p></div><div class="admin-top-actions"><span class="tiny muted" id="admin-session-label">Signed in</span><button id="logout" class="btn btn-ghost">Sign out</button></div></div>
     <div id="admin-kpis" class="admin-kpis" aria-label="Admin overview"></div>
-    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
+    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="pentest">Pentest</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
     <section id="panel" class="admin-panel" aria-live="polite"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
@@ -484,6 +484,91 @@ async function loadTab(tab) {
     };
     paintList('');
     document.querySelector('#osint-filter').addEventListener('input', e => paintList(e.target.value));
+  } else if (tab === 'pentest') {
+    const [{ data: tools, error }, { data: categories, error: catError }] = await Promise.all([
+      supabase.from('pentest_tools').select('id,name,slug,pricing,status,featured,sort_order,category_id,logo_url,updated_at').order('sort_order').order('name').limit(ADMIN_ROW_LIMIT),
+      supabase.from('pentest_categories').select('id,name,slug,description,status,sort_order').order('sort_order').order('name')
+    ]);
+    if (stale()) return;
+    if (error) return panel.innerHTML = notice(error.message);
+    if (catError) return panel.innerHTML = notice(catError.message);
+    const rows = tools || [];
+    const cats = categories || [];
+    const catName = id => (cats.find(c => c.id === id) || {}).name || '—';
+    panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Pentest Hub</h2><div class="flex gap-8"><button id="new-pentest-cat" type="button" class="btn btn-secondary btn-sm">+ New category</button><button id="new-pentest-tool" type="button" class="btn btn-primary btn-sm">+ New tool</button></div></div>
+      <p class="tiny muted" style="margin-top:6px">Public pages: <code>/pentest</code> (hub) and <code>/pentest/&lt;slug&gt;</code> (detail). Publish a tool and it appears after the next deploy turns the row into a page.</p>
+      <h3 class="h-3" style="margin-top:20px">Categories</h3>
+      <div id="pentest-cat-editor"></div>
+      <div class="admin-list" id="pentest-cat-list" style="margin-top:12px">${cats.map(c => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(c.name)}</div><div class="meta">/pentest#/c/${esc(c.slug)} · ${esc(c.status)}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-publish-pentest-cat="${esc(c.id)}" data-on="${c.status === 'published' ? '1' : ''}">${c.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-pentest-cat="${esc(c.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-pentest-cat="${esc(c.id)}" style="color:var(--red)">Delete</button></div></div>`).join('') || '<div class="admin-empty"><p class="muted">No categories yet — create the first one.</p></div>'}</div>
+      <h3 class="h-3" style="margin-top:24px">Tools</h3>
+      <div class="form-field" style="margin-top:10px;max-width:380px"><label for="pentest-filter">Filter</label><input id="pentest-filter" type="search" placeholder="Search name, slug, pricing or status…" autocomplete="off"></div>
+      <div id="pentest-tool-editor"></div>
+      <div class="admin-list" id="pentest-tool-list" style="margin-top:18px"></div>`;
+    const catEditor = document.querySelector('#pentest-cat-editor');
+    const toolEditor = document.querySelector('#pentest-tool-editor');
+    document.querySelector('#new-pentest-cat').onclick = () => { pentestCategoryForm(catEditor, null); catEditor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    document.querySelector('#new-pentest-tool').onclick = () => { pentestToolForm(toolEditor, cats, null); toolEditor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    document.querySelectorAll('[data-publish-pentest-cat]').forEach(btn => btn.onclick = async () => {
+      btn.disabled = true;
+      const publish = btn.dataset.on !== '1';
+      const { error: e2 } = await supabase.from('pentest_categories').update(publish ? { status: 'published', published_at: new Date().toISOString() } : { status: 'draft' }).eq('id', btn.dataset.publishPentestCat);
+      if (e2) { btn.disabled = false; return flash(panel, `Update failed: ${e2.message}`); }
+      loadTab('pentest');
+    });
+    document.querySelectorAll('[data-edit-pentest-cat]').forEach(btn => btn.onclick = async () => {
+      btn.disabled = true;
+      const { data, error: e2 } = await supabase.from('pentest_categories').select('*').eq('id', btn.dataset.editPentestCat).single();
+      btn.disabled = false;
+      if (e2 || !data) return flash(panel, e2 ? e2.message : 'That category could not be loaded.');
+      pentestCategoryForm(catEditor, data);
+      catEditor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.querySelectorAll('[data-delete-pentest-cat]').forEach(btn => btn.onclick = async () => {
+      if (!confirm('Delete this category? Its tools stay published but become uncategorized.')) return;
+      btn.disabled = true;
+      const { error: e2 } = await supabase.from('pentest_categories').delete().eq('id', btn.dataset.deletePentestCat);
+      if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+      loadTab('pentest');
+    });
+    const listEl = document.querySelector('#pentest-tool-list');
+    const paintList = filter => {
+      const q = String(filter || '').trim().toLowerCase();
+      const shown = q ? rows.filter(t => [t.name, t.slug, t.pricing, t.status, catName(t.category_id)].some(v => String(v || '').toLowerCase().includes(q))) : rows;
+      listEl.innerHTML = shown.map(t => `<div class="admin-row">${safeHref(t.logo_url) ? `<img src="${esc(safeHref(t.logo_url))}" alt="" width="48" height="32" style="width:48px;height:32px;object-fit:contain;border-radius:6px;flex:none;background:var(--bg-soft)">` : ''}<div class="grow"><div class="ttl">${esc(t.name)} ${t.featured ? '<span class="ptype t-featured">★</span>' : ''}</div><div class="meta">/pentest/${esc(t.slug)} · ${esc(catName(t.category_id))} · ${esc(t.pricing)} · ${esc(t.status)}${t.logo_url ? ' · 🖼 logo' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-feature-pentest="${esc(t.id)}" data-on="${t.featured ? '1' : ''}">${t.featured ? 'Unfeature' : 'Feature'}</button><button type="button" class="btn btn-secondary btn-sm" data-publish-pentest="${esc(t.id)}" data-on="${t.status === 'published' ? '1' : ''}">${t.status === 'published' ? 'Unpublish' : 'Publish'}</button><button type="button" class="btn btn-secondary btn-sm" data-edit-pentest="${esc(t.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-pentest="${esc(t.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+        || `<div class="admin-empty"><p class="muted">${rows.length ? 'No tools match that filter.' : 'No Pentest tools yet — create the first one.'}</p></div>`;
+      const patch = async (btn, id, set) => {
+        btn.disabled = true;
+        const { error: e2 } = await supabase.from('pentest_tools').update(set).eq('id', id);
+        if (e2) { btn.disabled = false; return flash(panel, `Update failed: ${e2.message}`); }
+        loadTab('pentest');
+      };
+      listEl.querySelectorAll('[data-publish-pentest]').forEach(btn => btn.onclick = () => {
+        const publish = btn.dataset.on !== '1';
+        patch(btn, btn.dataset.publishPentest, publish ? { status: 'published', published_at: new Date().toISOString() } : { status: 'draft' });
+      });
+      listEl.querySelectorAll('[data-feature-pentest]').forEach(btn => btn.onclick = () => {
+        patch(btn, btn.dataset.featurePentest, { featured: btn.dataset.on !== '1' });
+      });
+      listEl.querySelectorAll('[data-edit-pentest]').forEach(btn => btn.onclick = async () => {
+        btn.disabled = true;
+        const { data, error: e2 } = await supabase.from('pentest_tools').select('*').eq('id', btn.dataset.editPentest).single();
+        btn.disabled = false;
+        if (e2 || !data) return flash(panel, e2 ? e2.message : 'That tool could not be loaded.');
+        pentestToolForm(toolEditor, cats, data);
+        toolEditor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      listEl.querySelectorAll('[data-delete-pentest]').forEach(btn => btn.onclick = async () => {
+        if (!confirm('Delete this Pentest tool permanently?')) return;
+        btn.disabled = true;
+        const { data: row } = await supabase.from('pentest_tools').select('id,logo_url').eq('id', btn.dataset.deletePentest).maybeSingle();
+        const { error: e2 } = await supabase.from('pentest_tools').delete().eq('id', btn.dataset.deletePentest);
+        if (e2) { btn.disabled = false; return flash(panel, `Delete failed: ${e2.message}`); }
+        await removeStorageObjects([bucketPathFromUrl(row && row.logo_url)]);
+        loadTab('pentest');
+      });
+    };
+    paintList('');
+    document.querySelector('#pentest-filter').addEventListener('input', e => paintList(e.target.value));
   } else {
     const [{ data: msgs, error }, { data: profiles, error: profileError }] = await Promise.all([
       supabase.from('contact_messages').select('id,name,email,message,status,created_at,read_at,sender_user_id').order('created_at',{ascending:false}).limit(300),
@@ -1500,6 +1585,69 @@ function osintCategoryForm(host, category) {
   });
 }
 
+
+function pentestCategoryForm(host, category) {
+  const c = category || { name: '', slug: '', description: '', icon: '', sort_order: 0, status: 'draft' };
+  const uid = category ? String(category.id).slice(0, 8) : 'new';
+  const id = n => `oc-${uid}-${n}`;
+  host.innerHTML = `<form id="pentest-cat-form" class="card card-pad" style="margin-top:18px">
+    <div class="preview-head"><h3 class="h-3">${category ? 'Edit category' : 'New category'} <span class="unsaved-dot" data-unsaved title="Unsaved changes" hidden></span></h3></div>
+    <div class="editor-row-2" style="margin-top:16px">
+      <div class="form-field"><label for="${id('name')}">Name</label><input id="${id('name')}" name="name" required value="${esc(c.name)}" placeholder="Username Pentest"></div>
+      <div class="form-field"><label for="${id('slug')}">Slug</label><input id="${id('slug')}" name="slug" required value="${esc(c.slug)}" placeholder="auto-from-name"></div>
+    </div>
+    <div class="editor-row-2">
+      <div class="form-field"><label for="${id('status')}">Status</label><select id="${id('status')}" name="status"><option value="draft" ${c.status === 'draft' ? 'selected' : ''}>Draft</option><option value="published" ${c.status === 'published' ? 'selected' : ''}>Published</option><option value="archived" ${c.status === 'archived' ? 'selected' : ''}>Archived</option></select></div>
+      <div class="form-field"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(c.sort_order) || 0}"></div>
+    </div>
+    <div class="form-field"><label for="${id('desc')}">Description</label><textarea id="${id('desc')}" name="description" rows="2" maxlength="300">${esc(c.description || '')}</textarea></div>
+    <div class="flex gap-8" style="margin-top:18px"><button class="btn btn-primary" type="submit">${category ? 'Save category' : 'Create category'}</button><button class="btn btn-ghost" type="button" id="cancel-pentest-cat">Cancel</button></div>
+  </form>`;
+  const form = document.querySelector('#pentest-cat-form');
+  const nameInput = document.querySelector(`#${id('name')}`);
+  const slugInput = document.querySelector(`#${id('slug')}`);
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('input', () => setDirty(form, true)));
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
+  let slugTouched = !!(category && category.slug);
+  slugInput.addEventListener('input', () => { slugTouched = true; });
+  nameInput.addEventListener('input', () => { setDirty(form, true); if (!slugTouched) slugInput.value = slugify(nameInput.value); });
+  document.querySelector('#cancel-pentest-cat').onclick = () => {
+    if (isDirty(form) && !confirm('Discard unsaved changes to this category?')) return;
+    dirtyForms.delete(form);
+    host.innerHTML = '';
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const f = new FormData(e.currentTarget);
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
+    try {
+      const name = String(f.get('name') || '').trim();
+      if (!name) throw new Error('A name is required.');
+      const slug = slugify(f.get('slug')) || slugify(name);
+      if (!slug) throw new Error('A slug is required.');
+      const status = String(f.get('status') || 'draft');
+      if (!['draft', 'published', 'archived'].includes(status)) throw new Error('Invalid status.');
+      await assertSlugFree('pentest_categories', slug, category?.id);
+      const payload = {
+        name, slug,
+        description: String(f.get('description') || '').trim() || null,
+        sort_order: Number(f.get('sort_order')) || 0,
+        status,
+        updated_at: new Date().toISOString(),
+        published_at: status === 'published' ? (c.published_at || new Date().toISOString()) : null
+      };
+      const result = category ? await supabase.from('pentest_categories').update(payload).eq('id', category.id) : await supabase.from('pentest_categories').insert(payload);
+      if (result.error) throw result.error;
+      clearDirty(form);
+      loadTab('pentest');
+    } catch (err) {
+      submitBtn.disabled = false; submitBtn.textContent = category ? 'Save category' : 'Create category';
+      flash(form, err?.message || String(err));
+    }
+  });
+}
+
 function osintToolForm(host, categories, tool) {
   const t = tool || { name: '', slug: '', summary: '', overview: '', install_guide: '', category_id: null, pricing: 'free', access_types: ['web'], official_url: '', github_url: '', docs_url: '', logo_url: '', featured: false, status: 'draft', sort_order: 0 };
   const uid = tool ? String(tool.id).slice(0, 8) : 'new';
@@ -1713,6 +1861,225 @@ function osintToolForm(host, categories, tool) {
       loadTab('osint');
     } catch (err) {
       if (uploadedLogoPath) await removeStorageObjects([{ bucket: 'osint-logos', path: uploadedLogoPath }]);
+      submitBtn.disabled = false; submitBtn.textContent = tool ? 'Save tool' : 'Create tool';
+      flash(form, err?.message || String(err));
+    }
+  });
+}
+
+function pentestToolForm(host, categories, tool) {
+  const t = tool || { name: '', slug: '', summary: '', overview: '', install_guide: '', category_id: null, pricing: 'free', access_types: ['web'], official_url: '', github_url: '', docs_url: '', logo_url: '', featured: false, status: 'draft', sort_order: 0 };
+  const uid = tool ? String(tool.id).slice(0, 8) : 'new';
+  const id = n => `ot-${uid}-${n}`;
+  const access = Array.isArray(t.access_types) && t.access_types.length ? t.access_types : ['web'];
+  host.innerHTML = `<form id="pentest-tool-form" class="card card-pad" style="margin-top:18px">
+    <div class="preview-head">
+      <h3 class="h-3">${tool ? 'Edit Pentest tool' : 'New Pentest tool'} <span class="unsaved-dot" data-unsaved title="Unsaved changes" hidden></span></h3>
+      <span class="tiny muted">Overview + install accept <strong>Markdown</strong> or HTML</span>
+    </div>
+    <div class="editor-row-2" style="margin-top:16px">
+      <div class="form-field"><label for="${id('name')}">Name (auto-filled from your first heading if left blank)</label><input id="${id('name')}" name="name" value="${esc(t.name)}" placeholder="Sherlock"></div>
+      <div class="form-field"><label for="${id('slug')}">Slug (public URL: /pentest/&lt;slug&gt;)</label><input id="${id('slug')}" name="slug" required value="${esc(t.slug)}" placeholder="auto-from-name"></div>
+    </div>
+    <div class="editor-row-3" style="margin-top:4px">
+      <div class="form-field"><label for="${id('cat')}">Category</label><select id="${id('cat')}" name="category_id"><option value="">Uncategorized</option>${categories.map(c => `<option value="${esc(c.id)}" ${String(c.id) === String(t.category_id) ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
+      <div class="form-field"><label for="${id('pricing')}">Pricing</label><select id="${id('pricing')}" name="pricing">${Pentest_PRICING.map(p => `<option value="${p.value}" ${t.pricing === p.value ? 'selected' : ''}>${p.label}</option>`).join('')}</select></div>
+      <div class="form-field"><label for="${id('status')}">Status</label><select id="${id('status')}" name="status"><option value="draft" ${t.status === 'draft' ? 'selected' : ''}>Draft</option><option value="published" ${t.status === 'published' ? 'selected' : ''}>Published</option><option value="archived" ${t.status === 'archived' ? 'selected' : ''}>Archived</option></select></div>
+    </div>
+    <fieldset style="margin-top:12px;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px"><legend class="tiny muted" style="padding:0 6px">Access — how the tool runs (pick all that apply)</legend>
+      <div class="flex gap-12 wrap">${Pentest_ACCESS.map(a => `<label style="display:inline-flex;gap:6px;align-items:center;font-size:.9rem"><input type="checkbox" name="access_${a.value}" ${access.includes(a.value) ? 'checked' : ''}> ${a.label}</label>`).join('')}</div>
+    </fieldset>
+    <div class="opt-row" style="margin-top:12px"><div><div class="opt-name">Featured</div><div class="opt-desc">Pin this tool to the Featured row on /pentest.</div></div><span class="switch"><input name="featured" type="checkbox" aria-label="Featured" ${t.featured ? 'checked' : ''}><span class="track"></span></span></div>
+    <div class="editor-row-3" style="margin-top:12px">
+      <div class="form-field"><label for="${id('official')}">Official site URL</label><input id="${id('official')}" name="official_url" type="url" inputmode="url" value="${esc(t.official_url || '')}" placeholder="https://…"></div>
+      <div class="form-field"><label for="${id('github')}">GitHub URL</label><input id="${id('github')}" name="github_url" type="url" inputmode="url" value="${esc(t.github_url || '')}" placeholder="https://github.com/…"></div>
+      <div class="form-field"><label for="${id('docs')}">Docs URL</label><input id="${id('docs')}" name="docs_url" type="url" inputmode="url" value="${esc(t.docs_url || '')}" placeholder="https://…"></div>
+    </div>
+    <div class="form-field" style="margin-top:4px">
+      <label for="${id('logo')}">Logo image URL</label>
+      <input id="${id('logo')}" name="logo_url" value="${esc(t.logo_url || '')}" placeholder="https://… or upload below">
+      <input id="${id('logo-file')}" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.png,.jpg,.jpeg,.webp,.gif,.svg" style="margin-top:8px;padding:8px" aria-label="Upload logo image">
+      <div id="${id('logo-preview')}" class="product-cover" style="max-width:200px;max-height:120px;margin-top:10px;border-radius:var(--radius);overflow:hidden" hidden></div>
+      <p class="tiny muted" style="margin-top:6px">PNG/JPG/WebP/GIF/SVG up to 5 MB — uploaded to the public <code>pentest-logos</code> bucket.</p>
+    </div>
+    <div class="form-field" style="margin-top:4px"><label for="${id('summary')}">Short summary (cards + search, max 300)</label><textarea id="${id('summary')}" name="summary" rows="2" maxlength="300">${esc(t.summary || '')}</textarea></div>
+    <div class="editor-grid" style="margin-top:8px">
+      <div class="editor-fields">
+        <label for="${id('overview')}">Overview</label>
+        <div class="toolbar" role="toolbar" aria-label="Formatting" aria-controls="${id('overview')}">${TOOLBAR.map((x, i) => `<button type="button" data-mk="${i}" title="${esc(x.title)}" aria-label="${esc(x.title)}">${esc(x.label)}</button>`).join('')}</div>
+        <textarea id="${id('overview')}" name="overview" class="body-editor" rows="10" spellcheck="true">${esc(t.overview || '')}</textarea>
+        <label for="${id('install')}" style="margin-top:14px">Install &amp; first run (code blocks get a Copy button)</label>
+        <textarea id="${id('install')}" name="install_guide" class="body-editor" rows="8" spellcheck="false" placeholder="Paste install commands — fenced code blocks render with a copy button. Web-only tools: write 2-3 numbered steps instead.">${esc(t.install_guide || '')}</textarea>
+        <label for="${id('features')}" style="margin-top:14px">Key features (one per line — use "* " bullets)</label>
+        <textarea id="${id('features')}" name="key_features" class="body-editor" rows="6" spellcheck="true" placeholder="* First standout capability&#10;* Second standout capability">${esc(t.key_features || '')}</textarea>
+        <label for="${id('faqs')}" style="margin-top:14px">Common questions (each question as "### " heading, answer below it)</label>
+        <textarea id="${id('faqs')}" name="faqs" class="body-editor" rows="8" spellcheck="true" placeholder="### Is this tool free?&#10;Yes — …&#10;&#10;### How do I install it?&#10;…">${esc(t.faqs || '')}</textarea>
+        <label for="${id('usecase')}" style="margin-top:14px">Real-world example (a concrete lawful scenario, 100-150 words)</label>
+        <textarea id="${id('usecase')}" name="use_case" class="body-editor" rows="8" spellcheck="true" placeholder="A marketplace seller contacts you on Telegram… Before sending money, run the handle through…">${esc(t.use_case || '')}</textarea>
+      </div>
+      <div>
+        <div class="preview-head"><span class="tiny muted"><strong>Live preview</strong> — exactly what /pentest renders</span><button type="button" class="btn btn-ghost btn-sm" id="refresh-pentest-preview">Refresh</button></div>
+        <div class="preview-frame" style="padding:20px;overflow:auto"><div class="prose" id="pentest-preview" style="max-width:none"></div></div>
+      </div>
+    </div>
+    <div class="form-field" style="margin-top:12px;max-width:200px"><label for="${id('sort')}">Sort order</label><input id="${id('sort')}" name="sort_order" type="number" value="${Number(t.sort_order) || 0}"></div>
+    <div data-checklist></div>
+    <div class="flex gap-8" style="margin-top:18px"><button class="btn btn-primary" type="submit">${tool ? 'Save tool' : 'Create tool'}</button><button class="btn btn-ghost" type="button" id="cancel-pentest-tool">Cancel</button></div>
+  </form>`;
+
+  const form = document.querySelector('#pentest-tool-form');
+  const nameInput = document.querySelector(`#${id('name')}`);
+  const slugInput = document.querySelector(`#${id('slug')}`);
+  const logoInput = document.querySelector(`#${id('logo')}`);
+  const logoPreview = document.querySelector(`#${id('logo-preview')}`);
+  const overviewTa = document.querySelector(`#${id('overview')}`);
+  const installTa = document.querySelector(`#${id('install')}`);
+  const featuresTa = document.querySelector(`#${id('features')}`);
+  const faqsTa = document.querySelector(`#${id('faqs')}`);
+  const useCaseTa = document.querySelector(`#${id('usecase')}`);
+  const preview = document.querySelector('#pentest-preview');
+
+  const logoSrc = raw => {
+    const v = String(raw || '').trim();
+    if (!v) return '';
+    if (window.OMPUrl?.safeUrl) return window.OMPUrl.safeUrl(v, { attrSafe: true }) || '';
+    return /^(https?:|\/)/i.test(v) ? v : '';
+  };
+  const paintLogo = () => {
+    const src = logoSrc(logoInput.value);
+    if (!src) { logoPreview.hidden = true; logoPreview.replaceChildren(); return; }
+    logoPreview.hidden = false;
+    logoPreview.innerHTML = `<img src="${esc(src)}" alt="Logo preview" style="width:100%;height:100%;object-fit:contain">`;
+  };
+  const paintPreview = () => {
+    const name = nameInput.value.trim();
+    preview.innerHTML = (name ? `<h1 class="h-1" style="font-size:1.7rem">${esc(name)}</h1>` : '') + renderBody(overviewTa.value) + (featuresTa.value.trim() ? `<h2>Key features</h2>` + renderBody(featuresTa.value) : '') + (installTa.value.trim() ? `<h2>Install &amp; first run</h2>` + renderBody(installTa.value) : '') + (useCaseTa.value.trim() ? `<h2>Real-world example</h2>` + renderBody(useCaseTa.value) : '') + (faqsTa.value.trim() ? `<h2>Common questions</h2>` + renderBody(faqsTa.value) : '') + sanitizeNoticeText();
+    paintChecklist(form, contentChecklist({ title: name, slug: slugInput.value, summary: document.querySelector(`#${id('summary')}`).value, body: overviewTa.value, needCategory: true, categoryId: document.querySelector(`#${id('cat')}`).value }));
+    if (window.OMPMarkdown?.demoteHeadings) window.OMPMarkdown.demoteHeadings(preview, 1);
+    if (!name && !overviewTa.value.trim() && !installTa.value.trim() && !featuresTa.value.trim() && !faqsTa.value.trim() && !useCaseTa.value.trim()) preview.innerHTML = '<p class="muted">Nothing to preview yet.</p>';
+  };
+  paintLogo();
+  paintPreview();
+  let previewTimer = null;
+  const queuePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(paintPreview, 180); };
+  [overviewTa, installTa, featuresTa, faqsTa, useCaseTa].forEach(ta => {
+    ta.addEventListener('input', () => { setDirty(form, true); queuePreview(); });
+  });
+  form.querySelectorAll('.toolbar [data-mk]').forEach(btn => btn.onclick = () => applyMarkup(overviewTa, TOOLBAR[Number(btn.dataset.mk)]));
+  logoInput.addEventListener('input', () => { setDirty(form, true); paintLogo(); });
+  form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
+  document.querySelector('#refresh-pentest-preview').onclick = paintPreview;
+
+  let slugTouched = !!(tool && tool.slug);
+  slugInput.addEventListener('input', () => { slugTouched = true; });
+  nameInput.addEventListener('input', () => {
+    setDirty(form, true);
+    if (!slugTouched) slugInput.value = slugify(nameInput.value);
+    queuePreview();
+  });
+
+  let uploadedLogoPath = null;
+  document.querySelector(`#${id('logo-file')}`).addEventListener('change', async e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const v = window.OMPFileValidate
+        ? await window.OMPFileValidate.validateImage(file)
+        : (() => {
+            if (!/^image\/(png|jpe?g|webp|gif|svg\+xml)$/i.test(file.type)) throw new Error('Logo must be a PNG, JPG, WebP, GIF or SVG image.');
+            if (file.size > 5 * 1024 * 1024) throw new Error('Logo image is larger than the 5 MB limit.');
+            return { ok: true, contentType: file.type };
+          })();
+      if (!v || !v.ok) throw new Error((v && v.error) || 'Logo image validation failed.');
+      const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `logos/${Date.now()}-${safeName}`;
+      const { error: upErr } = await supabase.storage.from('pentest-logos').upload(path, file, {
+        cacheControl: '3600', upsert: false, contentType: v.contentType || file.type
+      });
+      if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+      uploadedLogoPath = path;
+      const { data: pub } = supabase.storage.from('pentest-logos').getPublicUrl(path);
+      if (!pub?.publicUrl) throw new Error('Upload succeeded but no public URL was returned.');
+      logoInput.value = pub.publicUrl;
+      setDirty(form, true);
+      paintLogo();
+      flash(form, 'Logo uploaded — remember to save.');
+    } catch (err) {
+      flash(form, err?.message || String(err));
+    }
+  });
+
+  document.querySelector('#cancel-pentest-tool').onclick = () => {
+    if (isDirty(form) && !confirm('Discard unsaved changes to this tool?')) return;
+    dirtyForms.delete(form);
+    host.innerHTML = '';
+  };
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const f = new FormData(e.currentTarget);
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
+    try {
+      const name = String(f.get('name') || '').trim() || extractTitleFromContent(f.get('overview'));
+      if (!name) throw new Error('A name is required — type one, or start the overview with a "# Heading" / <h1>.');
+      const slug = slugify(f.get('slug')) || slugify(name);
+      if (!slug) throw new Error('A slug is required.');
+      await assertSlugFree('pentest_tools', slug, tool?.id);
+      const absUrl = raw => {
+        const v = String(raw || '').trim();
+        if (!v) return null;
+        const safe = window.OMPUrl ? window.OMPUrl.safeUrl(v, { allowMailto: false }) : (/^https?:\/\//i.test(v) ? v : null);
+        if (safe === null) throw new Error(`URL must be a full http(s) URL: ${v.slice(0, 60)}`);
+        if (!/^https?:\/\//i.test(safe)) throw new Error('Links must be absolute http(s) URLs (they open in a new tab).');
+        return safe;
+      };
+      const rawLogo = String(f.get('logo_url') || '').trim();
+      const logo = rawLogo ? (window.OMPUrl ? window.OMPUrl.safeUrl(rawLogo) : (/^(https?:|\/)/i.test(rawLogo) ? rawLogo : null)) : null;
+      if (logo === null && rawLogo) throw new Error('Logo URL must be an http(s) or site-relative URL.');
+      const access = Pentest_ACCESS.map(a => a.value).filter(v => f.get(`access_${v}`) === 'on');
+      if (!access.length) throw new Error('Pick at least one access type (Web app, Command line, …).');
+      const pricing = String(f.get('pricing') || 'free');
+      if (!Pentest_PRICING.some(p => p.value === pricing)) throw new Error('Invalid pricing.');
+      const status = String(f.get('status') || 'draft');
+      if (!['draft', 'published', 'archived'].includes(status)) throw new Error('Invalid status.');
+      const catId = String(f.get('category_id') || '').trim() || null;
+      if (catId && !categories.some(c => String(c.id) === catId)) throw new Error('Unknown category.');
+      const orphans = [];
+      const previousLogo = bucketPathFromUrl(t.logo_url);
+      if (previousLogo && previousLogo.bucket === 'pentest-logos') orphans.push(previousLogo);
+      const payload = {
+        name, slug,
+        summary: String(f.get('summary') || '').trim().slice(0, 300) || null,
+        overview: stripExtractedHeading(String(f.get('overview') || ''), name, !String(f.get('name') || '').trim()),
+        install_guide: String(f.get('install_guide') || ''),
+        key_features: String(f.get('key_features') || ''),
+        faqs: String(f.get('faqs') || ''),
+        use_case: String(f.get('use_case') || ''),
+        category_id: catId,
+        pricing, access_types: access,
+        official_url: absUrl(f.get('official_url')),
+        github_url: absUrl(f.get('github_url')),
+        docs_url: absUrl(f.get('docs_url')),
+        logo_url: logo,
+        featured: f.get('featured') === 'on',
+        status,
+        sort_order: Number(f.get('sort_order')) || 0,
+        updated_at: new Date().toISOString(),
+        published_at: status === 'published' ? (t.published_at || new Date().toISOString()) : null
+      };
+      const result = tool ? await supabase.from('pentest_tools').update(payload).eq('id', tool.id) : await supabase.from('pentest_tools').insert(payload);
+      if (result.error) throw result.error;
+      if (logo === (t.logo_url || null)) {
+        for (let i = orphans.length - 1; i >= 0; i--) {
+          if (orphans[i] === previousLogo) orphans.splice(i, 1);
+        }
+      }
+      await removeStorageObjects(orphans);
+      clearDirty(form);
+      loadTab('pentest');
+    } catch (err) {
+      if (uploadedLogoPath) await removeStorageObjects([{ bucket: 'pentest-logos', path: uploadedLogoPath }]);
       submitBtn.disabled = false; submitBtn.textContent = tool ? 'Save tool' : 'Create tool';
       flash(form, err?.message || String(err));
     }

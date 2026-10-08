@@ -114,8 +114,12 @@ function group(name) {
     { slug: 'live-tool', name: 'Live Tool', status: 'published', published_at: '2026-09-02T10:00:00Z' },
     { slug: 'hidden-tool', name: 'Hidden Tool', status: 'draft', published_at: '2026-09-02T10:00:00Z' }
   ];
+  const PENTEST = [
+    { slug: 'live-pentest', name: 'Live Pentest', status: 'published', published_at: '2026-09-02T10:00:00Z' },
+    { slug: 'hidden-pentest', name: 'Hidden Pentest', status: 'draft', published_at: '2026-09-02T10:00:00Z' }
+  ];
 
-  const OPTS = { articles: ARTICLES, products: PRODUCTS, osint: OSINT, site: SITE };
+  const OPTS = { articles: ARTICLES, products: PRODUCTS, osint: OSINT, pentest: PENTEST, site: SITE };
 
   group('sitemap-core.mjs (shared generator)');
 
@@ -124,6 +128,7 @@ function group(name) {
     assert(xml.includes('/articles/published-one'), 'missing published article');
     assert(xml.includes('/products/live-product'), 'missing published product');
     assert(xml.includes('/osint/live-tool'), 'missing published osint tool');
+    assert(xml.includes('/pentest/live-pentest'), 'missing published pentest tool');
   });
 
   check('drafts and archived rows are never listed', () => {
@@ -132,6 +137,7 @@ function group(name) {
     assert(!xml.includes('archived-one'), 'archived leaked into sitemap');
     assert(!xml.includes('hidden-product'), 'draft product leaked into sitemap');
     assert(!xml.includes('hidden-tool'), 'draft osint tool leaked into sitemap');
+    assert(!xml.includes('hidden-pentest'), 'draft pentest tool leaked into sitemap');
   });
 
   check('invalid slugs are dropped before a URL is built', () => {
@@ -206,7 +212,7 @@ function group(name) {
 
   check('static route set is complete', () => {
     const xml = core.buildSitemapXml({ site: SITE });
-    ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/osint', '/breach-check', '/about',
+    ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/osint', '/pentest', '/breach-check', '/about',
       '/privacy', '/terms', '/contact', '/faq', '/glossary', '/security', '/sitemap',
       '/password-health', '/entropy', '/passphrase', '/random-string', '/security-checklist'
     ].forEach((r) => assert(xml.includes(`<loc>${SITE}${r}</loc>`), 'missing ' + r));
@@ -233,6 +239,8 @@ function group(name) {
     assert(data.products.length === 1 && data.products[0].title === 'Live', 'bad product entry');
     assert(data.osint.length === 1 && data.osint[0].title === 'Live Tool', 'bad osint entry');
     assert(data.osint[0].url.endsWith('/osint/live-tool'), 'bad osint url');
+    assert(data.pentest.length === 1 && data.pentest[0].title === 'Live Pentest', 'bad pentest entry');
+    assert(data.pentest[0].url.endsWith('/pentest/live-pentest'), 'bad pentest url');
     assert(typeof data.count === 'number' && data.count > 0, 'missing count');
   });
 
@@ -422,6 +430,19 @@ function group(name) {
     const catchAll = (cfg.hosting.rewrites || []).find((rule) =>
       /osint\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/osint/**');
     assert(!catchAll, '/osint catch-all rewrite would 200 every fake slug');
+  });
+
+  check('unknown /pentest/<slug> URLs 404 instead of serving the hub (no soft 404)', () => {
+    const createRouter = require(path.join(ROOT, 'tools', 'hosting_router.js'));
+    const router = createRouter(ROOT, FIREBASE_JSON);
+    const r = router.resolve('/pentest/this-slug-does-not-exist-for-seo', 0);
+    assert(r.type === 'notfound',
+      'unknown pentest URL resolved as ' + r.type + (r.file ? ' (' + r.file + ')' : '') +
+      ' — a 200 of pentest.html is a soft 404');
+    const cfg = JSON.parse(fs.readFileSync(FIREBASE_JSON, 'utf8'));
+    const catchAll = (cfg.hosting.rewrites || []).find((rule) =>
+      /pentest\s*\{/.test(String(rule.source || '')) || String(rule.source || '') === '/pentest/**');
+    assert(!catchAll, '/pentest catch-all rewrite would 200 every fake slug');
   });
 
   check('no unmaintained SRI integrity hashes on local assets', () => {
