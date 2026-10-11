@@ -284,11 +284,11 @@ function pentestCategoryHtml(shell, category, tools) {
   const cards = tools.map((tool) => {
     const toolSlug = String(tool.slug || '').trim();
     const toolName = String(tool.name || toolSlug).trim();
-    const summary = metaDescription(String(tool.summary || '').trim() || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim());
+    const summary = metaDescription(String(tool.summary || '').trim() || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
     const links = [
-      /^https?:\\/\\//i.test(String(tool.official_url || '')) ? `<a href="${esc(tool.official_url)}" target="_blank" rel="noopener noreferrer">Official site</a>` : '',
-      /^https?:\\/\\//i.test(String(tool.github_url || '')) ? `<a href="${esc(tool.github_url)}" target="_blank" rel="noopener noreferrer">Source</a>` : '',
-      /^https?:\\/\\//i.test(String(tool.docs_url || '')) ? `<a href="${esc(tool.docs_url)}" target="_blank" rel="noopener noreferrer">Documentation</a>` : ''
+      /^https?:\/\//i.test(String(tool.official_url || '')) ? `<a href="${esc(tool.official_url)}" target="_blank" rel="noopener noreferrer">Official site</a>` : '',
+      /^https?:\/\//i.test(String(tool.github_url || '')) ? `<a href="${esc(tool.github_url)}" target="_blank" rel="noopener noreferrer">Source</a>` : '',
+      /^https?:\/\//i.test(String(tool.docs_url || '')) ? `<a href="${esc(tool.docs_url)}" target="_blank" rel="noopener noreferrer">Documentation</a>` : ''
     ].filter(Boolean).join(' · ');
     return `<article class="card card-pad"><h2 class="h-3"><a href="/pentest/${encodeURIComponent(toolSlug)}">${esc(toolName)}</a></h2>${summary ? `<p class="muted">${esc(summary)}</p>` : ''}<p class="tag-list mt-16"><span class="chip">${esc(pricingLabel(tool.pricing))}</span>${accessLabels(tool.access_types).map((x) => ` <span class="chip">${esc(x)}</span>`).join('')}</p><p class="small" style="margin-top:12px">${links}</p><p style="margin-top:12px"><a href="/pentest/${encodeURIComponent(toolSlug)}">Read tool guide and installation steps →</a></p></article>`;
   }).join('');
@@ -301,7 +301,7 @@ function pentestCategoryHtml(shell, category, tools) {
     itemListElement: tools.map((tool, i) => ({ '@type': 'ListItem', position: i + 1, name: String(tool.name || tool.slug).trim(), url: `${SITE}/pentest/${encodeURIComponent(String(tool.slug || '').trim())}` }))
   };
   let html = shell;
-  html = html.replace(/<title>[\\s\\S]*?<\\/title>/i, `<title>${esc(`${name} Tools — Official Downloads & Docs | OopsMyPassword`)}</title>`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(`${name} Tools — Official Downloads & Docs | OopsMyPassword`)}</title>`);
   html = html.replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${esc(description)}">`);
   html = html.replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${esc(canonical)}">`);
   html = html.replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
@@ -309,10 +309,10 @@ function pentestCategoryHtml(shell, category, tools) {
   html = html.replace(/<meta property="og:url" content="[^"]*">/i, `<meta property="og:url" content="${esc(canonical)}">`);
   html = html.replace(/<meta name="twitter:title" content="[^"]*">/i, `<meta name="twitter:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
   html = html.replace(/<meta name="twitter:description" content="[^"]*">/i, `<meta name="twitter:description" content="${esc(description)}">`);
-  html = html.replace(/<script type="application\\/ld\\+json"[^>]*>[\\s\\S]*?<\\/script>/gi, '');
+  html = html.replace(/<script type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/gi, '');
   const main = `<main id="main"><section class="page-hero"><div class="container container-wide"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/pentest" style="color:var(--purple)">Pentest Hub</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><span class="chip chip-accent mt-16">Authorized security testing only</span><h1 class="h-1 mt-16">${esc(name)} Tools</h1><p class="lead">${esc(String(category.description || '').trim())}</p><p class="muted">${tools.length} tools with official project links, documentation and individual installation guides. Only test systems you own or are explicitly authorized to assess.</p></div></section><section class="section-tight"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse tools</span><h2 class="h-2">${esc(name)} tools and official resources</h2><p class="muted">Compare each tool's purpose and access type, then use its official documentation to confirm current installation requirements.</p></div><div class="grid grid-2">${cards}</div><p style="margin-top:28px"><a class="btn btn-secondary" href="/pentest">← Browse all penetration testing tools</a></p></div></section><section class="section-tight"><div class="container container-narrow"><h2 class="h-2">How to use these tools responsibly</h2><ul><li>Confirm written authorization and the exact scope before testing a target.</li><li>Read the official documentation and understand whether a tool sends active probes or changes application state.</li><li>Prefer an isolated lab or staging environment while learning.</li><li>Manually verify scanner results before treating them as confirmed findings.</li><li>Protect reports because they may contain sensitive environment details.</li></ul></div></section></main>`;
-  html = html.replace(/<main id="main">[\\s\\S]*?<\\/main>/i, main);
-  html = html.replace(/<script src="\\/assets\\/js\\/pentest\\.js" defer><\\/script>/i, '');
+  html = html.replace(/<main id="main">[\s\S]*?<\/main>/i, main);
+  html = html.replace(/<script src="\/assets\/js\/pentest\.js" defer><\/script>/i, '');
   html = html.replace('</head>', `<script type="application/ld+json">${escJson(breadcrumb)}</script><script type="application/ld+json">${escJson(itemList)}</script></head>`);
   return html;
 }
