@@ -163,7 +163,7 @@ def pentest_body():
     ]
     cat_blocks = "\n".join(
         f'<div class="card card-pad"><h3 class="h-3">{name}</h3><p class="muted">{desc}</p>'
-        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest#/c/{slug}">Open {name} →</a></p></div>'
+        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest/category/{slug}">Open {name} →</a></p></div>'
         for name, slug, desc in cats
     )
     return f"""
