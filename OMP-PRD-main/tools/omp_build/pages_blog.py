@@ -112,9 +112,11 @@ def osint_body():
 <section class="section-tight" style="padding-top:4px">
   <div class="osint-fluid">
     <div class="section-head left"><span class="eyebrow">Investigation guide</span><h2 class="h-2">Start from what you have</h2><p class="muted" style="margin-top:10px;max-width:80ch">Every investigation starts with one identifier. Find yours below — each section explains what that identifier reveals, which tools to reach for first, and what to verify before trusting a result.</p></div>
+    <!-- PENTEST_CATEGORY_INDEX_START -->
     <div class="grid grid-3">
       {cat_blocks}
     </div>
+    <!-- PENTEST_CATEGORY_INDEX_END -->
   </div>
 </section>
 <section class="section-tight" style="padding-top:4px">
@@ -163,7 +165,7 @@ def pentest_body():
     ]
     cat_blocks = "\n".join(
         f'<div class="card card-pad"><h3 class="h-3">{name}</h3><p class="muted">{desc}</p>'
-        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest#/c/{slug}">Open {name} →</a></p></div>'
+        f'<p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest/category/{slug}">Open {name} →</a></p></div>'
         for name, slug, desc in cats
     )
     return f"""
@@ -171,7 +173,7 @@ def pentest_body():
   <div class="container container-wide osint-hero">
     <span class="chip chip-accent">{icon("shield","icon-16")} Scan · Intercept · Audit · Verify — authorized testing only</span>
     <h1 class="h-1 mt-16">Pentest Hub</h1>
-    <p class="lead">Professional security testing tools, organized by assessment phase. Pick a category, filter by free or paid, desktop or command-line — then open any tool for its overview, install steps and official links.</p>
+    <p class="lead">Explore penetration testing tools by assessment phase. Compare purpose, pricing and access type, then open a dedicated tool guide for official websites, installation instructions and documentation.</p>
     <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
     <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Start with the <a href="/learning" style="color:var(--purple)">Academy</a> safe-testing track and the <a href="/learning/roadmap" style="color:var(--purple)">learning roadmap</a> first.</p></div>
   </div>
