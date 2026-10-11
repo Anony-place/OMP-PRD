@@ -405,8 +405,8 @@ async function main() {
   const pentestHubPath = join(ROOT, 'pentest.html');
   let phub = await readFile(pentestHubPath, 'utf8');
   phub = phub
-    .replace(/<script type="application\\/ld\\+json" id="omp-pentest-itemlist">[\\s\\S]*?<\\/script>/, '')
-    .replace(/<title>[\\s\\S]*?<\\/title>/i, '<title>Penetration Testing Tools &amp; Official Downloads | OopsMyPassword</title>')
+    .replace(/<script type="application\/ld\+json" id="omp-pentest-itemlist">[\s\S]*?<\/script>/, '')
+    .replace(/<title>[\s\S]*?<\/title>/i, '<title>Penetration Testing Tools &amp; Official Downloads | OopsMyPassword</title>')
     .replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
     .replace(/<meta property="og:title" content="[^"]*">/i, '<meta property="og:title" content="Penetration Testing Tools &amp; Official Downloads | OopsMyPassword">')
     .replace(/<meta property="og:description" content="[^"]*">/i, '<meta property="og:description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
@@ -418,7 +418,7 @@ async function main() {
     .filter((category) => isValidSlug(category.slug) && pentestTools.some((tool) => tool.category_id === category.id && isValidSlug(tool.slug)))
     .sort((a, b) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0));
   const categoryDirectoryHtml = `<section class="section-tight" aria-labelledby="pentest-category-directory"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse by assessment task</span><h2 class="h-2" id="pentest-category-directory">Penetration testing tools by category</h2><p class="muted" style="max-width:78ch">Start with the task you need to perform. Each category brings together relevant tools, official project resources, documentation and individual installation guides.</p></div><div class="grid grid-3">${livePentestCategories.map((category) => { const categoryTools = pentestTools.filter((tool) => tool.category_id === category.id && isValidSlug(tool.slug)); return `<article class="card card-pad"><h3 class="h-3"><a href="/pentest/category/${encodeURIComponent(category.slug)}">${esc(category.name)}</a> <span class="cat-count">${categoryTools.length}</span></h3><p class="muted">${esc(category.description || `Browse ${category.name} tools and official resources.`)}</p><ul class="small">${categoryTools.slice(0, 5).map((tool) => `<li><a href="/pentest/${encodeURIComponent(tool.slug)}">${esc(tool.name || tool.slug)}</a></li>`).join('')}</ul><p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest/category/${encodeURIComponent(category.slug)}">Explore category →</a></p></article>`; }).join('')}</div><p class="muted small" style="margin-top:20px">Tool availability, installation commands and supported platforms can change. Confirm current details in the official project documentation before installing.</p></div></section>`;
-  if (!phub.includes('id="pentest-category-directory"')) phub = phub.replace(/<\\/main>/i, `${categoryDirectoryHtml}</main>`);
+  if (!phub.includes('id="pentest-category-directory"')) phub = phub.replace(/<\/main>/i, `${categoryDirectoryHtml}</main>`);
   await writeFile(pentestHubPath, phub, 'utf8');
   // Generate static category pages from the same published catalogue.
   const pentestCategoryDir = join(PENTEST_DIR, 'category');
