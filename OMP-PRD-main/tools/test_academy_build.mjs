@@ -30,6 +30,33 @@ const BEST_FREE_OSINT = {
   created_at: '2026-10-01T00:00:00Z',
   featured_image: ''
 };
+const PENTEST_CATS = [
+  'network-scanning', 'web-testing', 'password-auditing', 'wireless-testing',
+  'vulnerability-scanning', 'exploitation-frameworks', 'active-directory-internal-network',
+  'api-security-testing', 'cloud-container-security', 'mobile-app-security',
+  'reconnaissance-osint', 'source-code-secret-scanning', 'traffic-analysis-forensics'
+].map((slug, i) => ({
+  id: 'pcat-' + i,
+  slug,
+  name: slug.replace(/-/g, ' '),
+  description: 'Security testing tools and resources for ' + slug.replace(/-/g, ' ') + ' assessments.',
+  status: 'published',
+  published_at: '2026-10-01T00:00:00Z'
+}));
+
+const PENTEST_FIXTURE_TOOLS = PENTEST_CATS.map((c, i) => ({
+  id: 'ptool-' + i,
+  slug: 'fixture-tool-' + i,
+  name: 'Fixture Tool ' + i,
+  summary: 'A fixture testing tool guide and installation reference for ' + c.slug + '.',
+  overview: 'Overview for fixture tool ' + i,
+  category_id: c.id,
+  status: 'published',
+  published_at: '2026-10-01T00:00:00Z',
+  updated_at: '2026-10-01T00:00:00Z',
+  created_at: '2026-10-01T00:00:00Z'
+}));
+
 const tables = {
   learning_categories: fixture.categories,
   learning_paths: fixture.paths,
@@ -38,11 +65,8 @@ const tables = {
   learning_labs: fixture.labs,
   articles: [BEST_FREE_OSINT],
   products: [],
-  /* The static publisher also reads the pentest catalog; same rule. */
-  pentest_tools: [],
-  pentest_categories: [],
-  /* The static publisher also reads the OSINT catalog; a fresh project
-     has these tables but zero published rows — not a 404. */
+  pentest_tools: PENTEST_FIXTURE_TOOLS,
+  pentest_categories: PENTEST_CATS,
   osint_tools: [],
   osint_categories: [],
 };

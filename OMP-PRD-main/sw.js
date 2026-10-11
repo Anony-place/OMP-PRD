@@ -116,9 +116,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Never cache password-related pages or API calls
+  // Password-related pages: network-first with cache fallback so tool shells work offline
   if (NEVER_CACHE.some(path => url.pathname.startsWith(path))) {
-    event.respondWith(networkOnly(event.request));
+    event.respondWith(networkFirst(event.request));
     return;
   }
   

@@ -25,7 +25,9 @@ const SITEMAP_XML = path.join(ROOT, 'sitemap.xml');
 const GOOGLE_SITEMAP_XML = path.join(ROOT, 'google-sitemap.xml');
 const ROBOTS_TXT = path.join(ROOT, 'robots.txt');
 const FIREBASE_JSON = path.join(ROOT, 'firebase.json');
-const WORKFLOW = path.join(ROOT, '..', '.github', 'workflows', 'firebase-static-hosting.yml');
+const WORKFLOW = fs.existsSync(path.join(ROOT, '.github', 'workflows', 'firebase-static-hosting.yml'))
+  ? path.join(ROOT, '.github', 'workflows', 'firebase-static-hosting.yml')
+  : path.join(ROOT, '..', '.github', 'workflows', 'firebase-static-hosting.yml');
 
 /* jsdom is a dev dependency that is not always installed. The XML assertions
    only need well-formedness + element access, so fall back to a small reader

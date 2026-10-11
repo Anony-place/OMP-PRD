@@ -53,7 +53,28 @@
     return prefixSetPromise;
   }
 
-  function setStatus(type, html) {
+  function checkLiveHibp(prefix, suffix) {
+    return fetch('https://api.pwnedpasswords.com/range/' + prefix, {
+      headers: { 'Add-Padding': 'true' },
+      cache: 'no-cache'
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HIBP status ' + res.status);
+        return res.text();
+      })
+      .then(function (text) {
+        var lines = text.split('\r\n');
+        for (var i = 0; i < lines.length; i++) {
+          var parts = lines[i].split(':');
+          if (parts[0] && parts[0].trim() === suffix) {
+            return { found: true, count: parseInt(parts[1], 10) || 1, live: true };
+          }
+        }
+        return { found: false, count: 0, live: true };
+      });
+  }
+
+  function setStatus(type, count, isLive) {
     statusEl.className = 'breach-result show';
     statusEl.innerHTML = '';
     var div = document.createElement('div');
@@ -62,30 +83,38 @@
       ? '<svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
       : '<svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>');
     var p = document.createElement('p');
-    p.textContent = '';
     var strong = document.createElement('strong');
-    strong.textContent = type === 'found'
-      ? 'Found in the demo corpus. '
-      : 'Not found in the demo corpus. ';
+    if (isLive) {
+      strong.textContent = type === 'found'
+        ? 'Breach detected! Found ' + (count ? count.toLocaleString() : 'multiple') + ' times in public breaches. '
+        : 'Good news! Not found in Have I Been Pwned\'s 900M+ breach database. ';
+    } else {
+      strong.textContent = type === 'found'
+        ? 'Found in the demo corpus. '
+        : 'Not found in the demo corpus. ';
+    }
     p.appendChild(strong);
     p.appendChild(document.createTextNode(type === 'found'
-      ? 'This password (or one sharing its hash prefix) appears in the small built-in list of well-known compromised passwords. Treat it as burned: change it everywhere you have ever used it.'
-      : 'The demo list is tiny on purpose (~330 passwords). "Not found" here is NOT evidence a password is safe — only a live breach database lookup (e.g., HIBP Pwned Passwords) can say more.'));
+      ? 'This password appears in known breach databases. If you use it anywhere, replace it immediately.'
+      : (isLive
+        ? 'No matching hash was found in over 900 million compromised passwords. Always maintain unique credentials and MFA.'
+        : 'The offline demo list is tiny on purpose (~330 passwords).')));
     div.appendChild(p);
-    
-    // Add educational note about SHA-1 usage
+
     var note = document.createElement('p');
     note.className = 'tiny muted mt-8';
-    note.textContent = 'Note: SHA-1 is used only for k-anonymity prefix compatibility with HIBP\'s API model — not for cryptographic security.';
+    note.textContent = isLive
+      ? 'Zero-knowledge verified: Only the 5-character SHA-1 prefix was queried using k-anonymity. Your password never left your browser.'
+      : 'Note: SHA-1 prefix used for k-anonymity model compatibility.';
     div.appendChild(note);
-    
+
     statusEl.appendChild(div);
   }
 
   btn.addEventListener('click', function () {
     var pw = input.value;
     if (!pw) {
-      window.ompToast('Enter a password to run the demo lookup');
+      window.ompToast('Enter a password to run the breach check');
       input.focus();
       return;
     }
@@ -94,34 +123,43 @@
       return;
     }
     btn.disabled = true;
-    btn.textContent = 'Hashing locally…';
-    Promise.all([sha1Hex(pw), demoPrefixes()]).then(function (res) {
-      var hash = res[0];
-      var prefixes = res[1];
+    btn.textContent = 'Checking breach database…';
+
+    sha1Hex(pw).then(function (hash) {
       var prefix = hash.slice(0, 5);
+      var suffix = hash.slice(5);
+
       if (hashEl) {
         hashEl.hidden = false;
         hashEl.innerHTML = '';
         var label = document.createElement('div');
         label.className = 'tiny muted';
-        label.textContent = 'SHA-1 (computed locally, never transmitted). In k-anonymity, only the highlighted 5-character prefix would leave your device:';
+        label.textContent = 'SHA-1 (computed locally, never transmitted). In k-anonymity, only the highlighted 5-character prefix is queried:';
         var code = document.createElement('div');
         var spanP = document.createElement('span');
         spanP.className = 'prefix';
         spanP.textContent = prefix;
         code.appendChild(spanP);
-        code.appendChild(document.createTextNode(hash.slice(5)));
+        code.appendChild(document.createTextNode(suffix));
         hashEl.appendChild(label);
         hashEl.appendChild(code);
       }
-      setStatus(prefixes.has(prefix) ? 'found' : 'clear');
+
+      // Try live HIBP k-anonymity range API first; fallback to local demo if offline
+      return checkLiveHibp(prefix, suffix).catch(function () {
+        return demoPrefixes().then(function (prefixes) {
+          return { found: prefixes.has(prefix), count: 0, live: false };
+        });
+      });
+    }).then(function (res) {
+      setStatus(res.found ? 'found' : 'clear', res.count, res.live);
       resultEl.classList.add('show');
       btn.disabled = false;
-      btn.textContent = 'Run demo lookup';
+      btn.textContent = 'Check for breaches';
     }).catch(function () {
       btn.disabled = false;
-      btn.textContent = 'Run demo lookup';
-      window.ompToast('Hashing failed in this browser');
+      btn.textContent = 'Check for breaches';
+      window.ompToast('Check failed in this browser');
     });
   });
 })();

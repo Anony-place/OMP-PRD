@@ -432,7 +432,9 @@ def main():
                   f'<changefreq>{"weekly" if u == "/" else "monthly"}</changefreq>'
                   f"<priority>{pri}</priority></url>")
     sm.append("</urlset>")
-    write("sitemap.xml", "\n".join(sm) + "\n")
+    sitemap_content = "\n".join(sm) + "\n"
+    write("sitemap.xml", sitemap_content)
+    write("google-sitemap.xml", sitemap_content)
 
     # IndexNow: a real, generated key file must be publicly served at
     # /<key>.txt for Bing/Yandex to accept URL submissions. The key is public

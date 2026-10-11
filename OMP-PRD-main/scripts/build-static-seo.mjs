@@ -301,7 +301,7 @@ function pentestCategoryHtml(shell, category, tools) {
     itemListElement: tools.map((tool, i) => ({ '@type': 'ListItem', position: i + 1, name: String(tool.name || tool.slug).trim(), url: `${SITE}/pentest/${encodeURIComponent(String(tool.slug || '').trim())}` }))
   };
   let html = shell;
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(`${name} Tools — Official Downloads & Docs | OopsMyPassword`)}</title>`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(`${name} Tools | OopsMyPassword`)}</title>`);
   html = html.replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${esc(description)}">`);
   html = html.replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${esc(canonical)}">`);
   html = html.replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
@@ -406,11 +406,11 @@ async function main() {
   let phub = await readFile(pentestHubPath, 'utf8');
   phub = phub
     .replace(/<script type="application\/ld\+json" id="omp-pentest-itemlist">[\s\S]*?<\/script>/, '')
-    .replace(/<title>[\s\S]*?<\/title>/i, '<title>Penetration Testing Tools Directory &amp; Official Downloads | OopsMyPassword</title>')
+    .replace(/<title>[\s\S]*?<\/title>/i, '<title>Penetration Testing Tools &amp; Downloads | OopsMyPassword</title>')
     .replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
-    .replace(/<meta property="og:title" content="[^"]*">/i, '<meta property="og:title" content="Penetration Testing Tools Directory &amp; Official Downloads | OopsMyPassword">')
+    .replace(/<meta property="og:title" content="[^"]*">/i, '<meta property="og:title" content="Penetration Testing Tools &amp; Downloads | OopsMyPassword">')
     .replace(/<meta property="og:description" content="[^"]*">/i, '<meta property="og:description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
-    .replace(/<meta name="twitter:title" content="[^"]*">/i, '<meta name="twitter:title" content="Penetration Testing Tools Directory &amp; Official Downloads | OopsMyPassword">')
+    .replace(/<meta name="twitter:title" content="[^"]*">/i, '<meta name="twitter:title" content="Penetration Testing Tools &amp; Downloads | OopsMyPassword">')
     .replace(/<meta name="twitter:description" content="[^"]*">/i, '<meta name="twitter:description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
     .replace('<h1 class="h-1 mt-16">Pentest Hub</h1>', '<h1 class="h-1 mt-16">Penetration Testing Tools Directory</h1>')
     .replace('</head>', `<script type="application/ld+json" id="omp-pentest-itemlist">${escJson(pentestItemList)}</script></head>`);

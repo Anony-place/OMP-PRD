@@ -43,7 +43,7 @@ const SKIP_DIRS = new Set(['.git', 'node_modules', 'tools', 'functions', 'supaba
 /* Generated from the database at build time: they are deployed, but they are
    linked from JavaScript, not from static HTML, so they are exempt from the
    orphan check (not from any other check). */
-const GENERATED_DIRS = new Set(['articles', 'products', 'osint', 'pentest']);
+const GENERATED_DIRS = new Set(['articles', 'products', 'osint', 'pentest', 'pentest/category']);
 
 const failures = [];
 const warnings = [];
@@ -218,7 +218,7 @@ function checkSitemap(file, routes, noindexRoutes) {
     const isDbBacked = /^\/articles\/[^/]+$/.test(loc.slice(SITE.length)) ||
                        /^\/products\/[^/]+$/.test(loc.slice(SITE.length)) ||
                        /^\/osint\/[^/]+$/.test(loc.slice(SITE.length)) ||
-                       /^\/pentest\/[^/]+$/.test(loc.slice(SITE.length));
+                       /^\/pentest\/(?:category\/)?[^/]+$/.test(loc.slice(SITE.length));
     const isStaticGuide = loc.slice(SITE.length).startsWith('/guides/');
     if (!isDbBacked && !isStaticGuide) {
       fail(`${file}: ${loc} asserts <lastmod> ${lm}, but generated pages have no real modification date`);

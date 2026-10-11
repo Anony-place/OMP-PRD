@@ -162,6 +162,20 @@ def pentest_body():
          "Known CVEs and misconfigurations are the lowest-hanging fruit on both sides. Nikto sweeps your web servers for outdated software, default files and dangerous endpoints in minutes — a noisy hygiene pass that belongs on a schedule, verified by hand before ticketing."),
         ("Exploitation Frameworks", "exploitation-frameworks",
          "A confirmed vulnerability becomes demonstrated impact here. The Metasploit Framework turns findings into proof — a shell, a screenshot, a dumped hash from your own lab — which is the narrative that converts scan printouts into patching budgets. Learn in isolated labs, scope in writing, never outside it."),
+        ("Active Directory & Internal Network", "active-directory-internal-network",
+         "Assess Windows domain environments, identity relationships and internal network exposures in an authorized lab or engagement."),
+        ("API Security Testing", "api-security-testing",
+         "Validate REST schemas, fuzz endpoints and identify broken object level authorization and input-handling weaknesses in APIs."),
+        ("Cloud & Container Security", "cloud-container-security",
+         "Audit cloud IAM configurations, container images and infrastructure-as-code for excessive permissions and exposed services."),
+        ("Mobile App Security", "mobile-app-security",
+         "Inspect Android and iOS applications for insecure local storage, exposed secrets, weak transport security and runtime issues."),
+        ("Reconnaissance & OSINT", "reconnaissance-osint",
+         "Discover public assets, subdomains, certificates and open-source intelligence during initial passive reconnaissance."),
+        ("Source Code & Secret Scanning", "source-code-secret-scanning",
+         "Detect hardcoded credentials, API keys, insecure dependencies and code flaws before they reach production repositories."),
+        ("Traffic Analysis & Forensics", "traffic-analysis-forensics",
+         "Capture and inspect packet-level network traffic, examine protocol behavior and analyze digital forensics artifacts."),
     ]
     cat_blocks = "\n".join(
         f'<div class="card card-pad"><h3 class="h-3">{name}</h3><p class="muted">{desc}</p>'

@@ -16,6 +16,9 @@ concurrency:
 # the gate is opt-in: dispatch it from the Actions tab when you want the full
 # regression suite before a deploy.
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
