@@ -316,9 +316,17 @@
     var html = looksLikeHtml(src) ? String(src == null ? '' : src) : toHtml(src);
     try {
       var doc = new DOMParser().parseFromString(html, 'text/html');
+      var nonText = doc.querySelectorAll('style, script, head');
+      for (var i = 0; i < nonText.length; i++) nonText[i].remove();
       return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
     } catch (e) {
-      return String(src == null ? '' : src).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      return String(src == null ? '' : src)
+        .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, ' ')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
   }
 

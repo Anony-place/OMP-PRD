@@ -713,6 +713,61 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .callout-info { background: rgba(99, 102, 241, .07); border-color: rgba(99, 102, 241, .28); }
 .callout-info svg { color: var(--blue); }
 
+/* Article resource cards, notices & action buttons */
+.prose .book,
+.prose section.book,
+.prose section[id^="book"] {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 28px 0;
+  background: var(--surface);
+  transition: border-color .16s var(--ease), box-shadow .16s var(--ease);
+}
+.prose .book:hover,
+.prose section.book:hover,
+.prose section[id^="book"]:hover {
+  border-color: var(--border-strong);
+}
+.prose .notice,
+.prose div.notice,
+.prose #notice {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--purple);
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  margin: 20px 0;
+}
+.prose .download,
+.prose a.download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #7C3AED, #4F46E5);
+  color: #fff !important;
+  text-decoration: none !important;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: .95rem;
+  transition: transform .16s var(--ease), box-shadow .2s var(--ease);
+  box-shadow: 0 4px 16px -4px rgba(124, 92, 246, .4);
+}
+.prose .download:hover,
+.prose a.download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -6px rgba(124, 92, 246, .55);
+  text-decoration: none !important;
+}
+.prose .small,
+.prose p.small {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .article-hero { padding: 64px 0 8px; }
 .article-meta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; color: var(--muted-2); font-size: .85rem; font-weight: 600; margin-top: 16px; }
 

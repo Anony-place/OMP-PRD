@@ -129,8 +129,22 @@ function markdownToHtml(md) {
   return out.join('\n');
 }
 
+function extractPlainText(html) {
+  return String(html || '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function sanitizeArticleHtml(input) {
-  const source = String(input || '');
+  const source = String(input || '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<!doctype[^>]*>/gi, '')
+    .replace(/<\/?(html|head|body|article|header|footer)\b[^>]*>/gi, '');
   if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(source));
   return safeArticleHTML(source);
 }
@@ -160,7 +174,7 @@ function renderArticlePage(article) {
   const slug = String(article.slug || '').trim();
   const summary = metaDescription(
     String(article.summary || '').trim()
-    || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    || extractPlainText(article.content)
   );
   const canonical = SITE + '/articles/' + encodeURIComponent(slug);
   const published = article.published_at || article.created_at || '';

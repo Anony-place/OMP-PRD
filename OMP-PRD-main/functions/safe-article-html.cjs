@@ -28,7 +28,7 @@ function convertEmbeds(html) {
     });
 }
 
-const BASE_ATTRS = {table:['tabindex'],a:['href','title','rel'],img:['src','alt','width','height','loading'],code:['class'],th:['colspan','rowspan','scope'],td:['colspan','rowspan'],ol:['start']};
+const BASE_ATTRS = {table:['tabindex'],a:['href','title','rel','class'],img:['src','alt','width','height','loading'],code:['class'],th:['colspan','rowspan','scope'],td:['colspan','rowspan'],ol:['start'],div:['class'],section:['class'],p:['class']};
 /* Author ids (strict shape is enforced by the live renderer; here the
  * library safely escapes any value, and an id alone cannot execute). */
 const TAGS_WITH_ID = ['p','h1','h2','h3','h4','h5','h6','ul','ol','li','div','span','figure','figcaption','details','summary','dl','dt','dd','table','video','audio','section','article'];
@@ -44,9 +44,15 @@ for (const t of TAGS_WITH_ID) {
 
 module.exports = function safeArticleHTML(html) {
   return sanitize(convertEmbeds(html), {
-    allowedTags: ['p','h1','h2','h3','h4','h5','h6','ul','ol','li','strong','em','b','i','u','s','sup','sub','br','hr','pre','code','blockquote','a','img','table','thead','tbody','tfoot','tr','th','td','caption','figure','figcaption','details','summary','div','span','video','audio','source','track'],
+    allowedTags: ['p','h1','h2','h3','h4','h5','h6','ul','ol','li','strong','em','b','i','u','s','sup','sub','br','hr','pre','code','blockquote','a','img','table','thead','tbody','tfoot','tr','th','td','caption','figure','figcaption','details','summary','div','span','video','audio','source','track','section','article'],
     allowedAttributes,
-    allowedClasses: {code:[/^language-[a-z0-9-]+$/]},
+    allowedClasses: {
+      code: [/^language-[a-z0-9-]+$/],
+      a: ['download', 'btn', 'btn-primary', 'btn-secondary', 'btn-sm'],
+      div: ['notice', 'callout', 'callout-info', 'callout-warn', 'callout-tip'],
+      section: ['book'],
+      p: ['small', 'lead', 'notice']
+    },
     allowedSchemes: ['https','http'],
     allowedSchemesByTag: {img:['https'],video:['https','http'],audio:['https','http'],source:['https','http']},
     allowProtocolRelative: false,

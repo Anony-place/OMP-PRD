@@ -107,9 +107,17 @@
     if (window.OMPMarkdown && window.OMPMarkdown.plainText) return window.OMPMarkdown.plainText(source);
     try {
       var parsed = new DOMParser().parseFromString(String(source || ''), 'text/html');
+      var nonText = parsed.querySelectorAll('style, script, head');
+      for (var i = 0; i < nonText.length; i++) nonText[i].remove();
       return (parsed.body.textContent || '').replace(/\s+/g, ' ').trim();
     } catch (e) {
-      return String(source || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      return String(source || '')
+        .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, ' ')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
   }
 

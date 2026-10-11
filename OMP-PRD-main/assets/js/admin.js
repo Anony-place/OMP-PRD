@@ -194,6 +194,36 @@ async function checkAdmin() {
   return { state: 'admin', user };
 }
 
+const tabPaging = {
+  articles: { page: 1, pageSize: 20 },
+  tools: { page: 1, pageSize: 20 },
+  products: { page: 1, pageSize: 20 },
+  osint: { page: 1, pageSize: 20 },
+  pentest: { page: 1, pageSize: 20 },
+  messages: { page: 1, pageSize: 20 },
+  media: { page: 1, pageSize: 24 }
+};
+
+function renderPagination(totalCount, currentPaging, onPageChange) {
+  const page = currentPaging.page;
+  const pageSize = currentPaging.pageSize;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const start = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
+  const end = Math.min(totalCount, page * pageSize);
+  const container = document.createElement('div');
+  container.className = 'admin-pagination';
+  container.innerHTML = `<div class="admin-pagination-info">Showing <strong>${start}–${end}</strong> of <strong>${totalCount}</strong> items (Page ${page} of ${totalPages})</div>
+    <div class="admin-pagination-btns">
+      <button type="button" class="btn btn-secondary btn-sm" data-page-prev ${page <= 1 ? 'disabled' : ''}>← Previous</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-page-next ${page >= totalPages ? 'disabled' : ''}>Next →</button>
+    </div>`;
+  const prevBtn = container.querySelector('[data-page-prev]');
+  const nextBtn = container.querySelector('[data-page-next]');
+  if (prevBtn) prevBtn.onclick = () => { if (page > 1) { currentPaging.page--; onPageChange(); } };
+  if (nextBtn) nextBtn.onclick = () => { if (page < totalPages) { currentPaging.page++; onPageChange(); } };
+  return container;
+}
+
 let activeTab = 'articles';
 
 function markActiveTab() {
@@ -240,9 +270,9 @@ async function refreshAdminStats() {
 async function dashboard() {
   authUi = 'dashboard';
   shell(`<div class="card card-pad">
-    <div class="admin-topbar"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Content, products, tools and support in one place.</p></div><div class="admin-top-actions"><span class="tiny muted" id="admin-session-label">Signed in</span><button id="logout" class="btn btn-ghost">Sign out</button></div></div>
+    <div class="admin-topbar"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Content, products, tools, media and support in one place.</p></div><div class="admin-top-actions"><span class="tiny muted" id="admin-session-label">Signed in</span><button id="logout" class="btn btn-ghost">Sign out</button></div></div>
     <div id="admin-kpis" class="admin-kpis" aria-label="Admin overview"></div>
-    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="pentest">Pentest</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
+    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="pentest">Pentest</button><button class="btn btn-secondary" type="button" data-tab="media">Media Library</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
     <section id="panel" class="admin-panel" aria-live="polite"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
@@ -280,14 +310,27 @@ async function loadTab(tab) {
     panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Articles</h2><button id="new-article" type="button" class="btn btn-primary btn-sm">+ New article</button></div>
       <div class="form-field" style="margin-top:14px;max-width:380px"><label for="article-filter">Filter</label><input id="article-filter" type="search" placeholder="Search title, slug or status…" autocomplete="off"></div>
       <div id="article-editor"></div>
-      <div class="admin-list" id="article-list" style="margin-top:18px"></div>`;
+      <div class="admin-list" id="article-list" style="margin-top:18px"></div>
+      <div id="article-paging-slot"></div>`;
     const editor = document.querySelector('#article-editor');
     const listEl = document.querySelector('#article-list');
+    const pagingSlot = document.querySelector('#article-paging-slot');
     const paintList = filter => {
       const q = String(filter || '').trim().toLowerCase();
-      const shown = q ? rows.filter(a => [a.title, a.slug, a.status].some(v => String(v || '').toLowerCase().includes(q))) : rows;
-      listEl.innerHTML = shown.map(a => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · ${esc(a.status)}${a.document_url ? ' · 📄 doc' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-edit-article="${esc(a.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-article="${esc(a.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+      const filtered = q ? rows.filter(a => [a.title, a.slug, a.status].some(v => String(v || '').toLowerCase().includes(q))) : rows;
+      const pageSize = tabPaging.articles.pageSize;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (tabPaging.articles.page > totalPages) tabPaging.articles.page = 1;
+      const start = (tabPaging.articles.page - 1) * pageSize;
+      const shown = filtered.slice(start, start + pageSize);
+      listEl.innerHTML = shown.map(a => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · <span class="admin-chip ${a.status === 'published' ? 'is-success' : ''}">${esc(a.status)}</span>${a.document_url ? ' · 📄 doc' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-edit-article="${esc(a.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-article="${esc(a.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
         || `<div class="admin-empty"><p class="muted">${rows.length ? 'No articles match that filter.' : 'No articles yet.'}</p></div>`;
+      
+      pagingSlot.innerHTML = '';
+      if (filtered.length > pageSize) {
+        pagingSlot.appendChild(renderPagination(filtered.length, tabPaging.articles, () => paintList(document.querySelector('#article-filter').value)));
+      }
+
       listEl.querySelectorAll('[data-edit-article]').forEach(btn => btn.onclick = async () => {
         btn.disabled = true;
         const { data, error: e2 } = await supabase.from('articles').select('*').eq('id',btn.dataset.editArticle).single();
@@ -569,6 +612,131 @@ async function loadTab(tab) {
     };
     paintList('');
     document.querySelector('#pentest-filter').addEventListener('input', e => paintList(e.target.value));
+  } else if (tab === 'media') {
+    const BUCKETS = [
+      { id: 'articles', label: 'Articles (Documents & Images)', public: true },
+      { id: 'osint-logos', label: 'OSINT Logos', public: true },
+      { id: 'pentest-logos', label: 'Pentest Logos', public: true },
+      { id: 'products', label: 'Product Covers', public: true },
+      { id: 'product-files', label: 'Product Deliverables (Secure)', public: false }
+    ];
+    let selectedBucket = 'articles';
+
+    const renderMediaView = async () => {
+      panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12">
+          <div><h2 class="h-3">Media & Asset Library</h2><p class="tiny muted" style="margin-top:4px">Browse, upload, and audit cloud storage assets across OopsMyPassword storage buckets.</p></div>
+          <div class="flex gap-8 items-center">
+            <label class="btn btn-primary btn-sm" style="cursor:pointer;margin:0">
+              + Upload to ${esc(selectedBucket)}
+              <input id="media-upload-input" type="file" style="display:none">
+            </label>
+            <button id="refresh-media" type="button" class="btn btn-secondary btn-sm">Refresh</button>
+          </div>
+        </div>
+        <div class="admin-actions" style="margin-top:16px;gap:8px" role="tablist" aria-label="Buckets">
+          ${BUCKETS.map(b => `<button type="button" class="btn btn-sm ${b.id === selectedBucket ? 'btn-primary' : 'btn-secondary'}" data-bucket="${b.id}">${esc(b.label)}</button>`).join('')}
+        </div>
+        <div id="media-content-host" style="margin-top:18px"><div class="admin-empty"><p class="muted">Loading storage objects…</p></div></div>`;
+
+      document.querySelector('#refresh-media').onclick = () => renderMediaView();
+      panel.querySelectorAll('[data-bucket]').forEach(btn => btn.onclick = () => {
+        selectedBucket = btn.dataset.bucket;
+        renderMediaView();
+      });
+
+      const uploadInput = document.querySelector('#media-upload-input');
+      uploadInput.onchange = async () => {
+        const file = uploadInput.files && uploadInput.files[0];
+        if (!file) return;
+        uploadInput.disabled = true;
+        flash(panel, `Validating and uploading ${file.name} to ${selectedBucket}…`);
+        try {
+          const v = window.OMPFileValidate ? await window.OMPFileValidate.validateFile(file) : { ok: true, contentType: file.type };
+          if (v && !v.ok) throw new Error(v.error || 'File validation failed.');
+          const safeName = String(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+          const targetPath = `${Date.now()}-${safeName}`;
+          const { error: upErr } = await supabase.storage.from(selectedBucket).upload(targetPath, file, {
+            contentType: v.contentType || undefined,
+            upsert: false
+          });
+          if (upErr) throw upErr;
+          flash(panel, `File "${file.name}" uploaded successfully.`);
+          renderMediaView();
+        } catch (err) {
+          flash(panel, `Upload failed: ${err.message || String(err)}`);
+        }
+      };
+
+      const host = document.querySelector('#media-content-host');
+      const { data: objects, error: listErr } = await supabase.storage.from(selectedBucket).list('', {
+        limit: 100,
+        sortBy: { column: 'created_at', order: 'desc' }
+      });
+      if (stale()) return;
+      if (listErr) {
+        host.innerHTML = notice(`Could not list objects in bucket "${selectedBucket}": ${listErr.message}`);
+        return;
+      }
+
+      const files = (objects || []).filter(o => o.name && o.name !== '.emptyFolderPlaceholder');
+      if (!files.length) {
+        host.innerHTML = `<div class="admin-empty"><p class="muted">No files in bucket <strong>${esc(selectedBucket)}</strong> yet.</p></div>`;
+        return;
+      }
+
+      const currentBucketConfig = BUCKETS.find(b => b.id === selectedBucket);
+      const isPublic = currentBucketConfig ? currentBucketConfig.public : true;
+
+      host.innerHTML = `<div class="admin-media-grid">${files.map(f => {
+        let publicUrl = '';
+        if (isPublic) {
+          const { data: pub } = supabase.storage.from(selectedBucket).getPublicUrl(f.name);
+          publicUrl = pub?.publicUrl || '';
+        }
+        const isImg = /\.(png|jpe?g|webp|gif|svg)$/i.test(f.name);
+        const formatSize = bytes => {
+          if (!bytes) return '';
+          if (bytes < 1024) return bytes + ' B';
+          if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+          return (bytes / 1048576).toFixed(1) + ' MB';
+        };
+        return `<div class="admin-media-card">
+          <div class="admin-media-thumb">
+            ${isImg && publicUrl ? `<img src="${esc(publicUrl)}" alt="${esc(f.name)}" loading="lazy">` : (isImg ? '🖼' : '📄')}
+          </div>
+          <div class="admin-media-name" title="${esc(f.name)}">${esc(f.name)}</div>
+          <div class="admin-media-meta">${esc(formatSize(f.metadata?.size))} · ${f.created_at ? esc(new Date(f.created_at).toLocaleDateString()) : ''}</div>
+          <div class="admin-media-actions">
+            ${publicUrl ? `<button type="button" class="btn btn-secondary btn-sm" style="flex:1" data-copy-media-url="${esc(publicUrl)}">Copy URL</button>` : ''}
+            <button type="button" class="btn btn-ghost btn-sm" data-delete-media-file="${esc(f.name)}" style="color:var(--red)">Delete</button>
+          </div>
+        </div>`;
+      }).join('')}</div>`;
+
+      host.querySelectorAll('[data-copy-media-url]').forEach(btn => btn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copyMediaUrl);
+          flash(panel, 'Public URL copied to clipboard.');
+        } catch {
+          flash(panel, 'Could not copy URL automatically.');
+        }
+      });
+
+      host.querySelectorAll('[data-delete-media-file]').forEach(btn => btn.onclick = async () => {
+        const fileName = btn.dataset.deleteMediaFile;
+        if (!confirm(`Delete "${fileName}" from ${selectedBucket}?`)) return;
+        btn.disabled = true;
+        const { error: delErr } = await supabase.storage.from(selectedBucket).remove([fileName]);
+        if (delErr) {
+          btn.disabled = false;
+          return flash(panel, `Delete failed: ${delErr.message}`);
+        }
+        flash(panel, `Deleted "${fileName}".`);
+        renderMediaView();
+      });
+    };
+
+    renderMediaView();
   } else {
     const [{ data: msgs, error }, { data: profiles, error: profileError }] = await Promise.all([
       supabase.from('contact_messages').select('id,name,email,message,status,created_at,read_at,sender_user_id').order('created_at',{ascending:false}).limit(300),

@@ -60,8 +60,21 @@ function markdownToHtml(md) {
   flushParagraph(); flushList();
   return out.join('\n');
 }
+function extractPlainText(html) {
+  return String(html || '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 function sanitizeHtml(input) {
-  const source = String(input || '');
+  const source = String(input || '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<!doctype[^>]*>/gi, '')
+    .replace(/<\/?(html|head|body|article|header|footer)\b[^>]*>/gi, '');
   if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(source));
   return safeArticleHTML(source);
 }
@@ -138,7 +151,7 @@ function commonHead({ title, description, canonical, ogType, ogImage, jsonld = [
 function articleHtml(article) {
   const title = String(article.title || 'Article').trim();
   const slug = String(article.slug || '').trim();
-  const summary = metaDescription(String(article.summary || '').trim() || String(article.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+  const summary = metaDescription(String(article.summary || '').trim() || extractPlainText(article.content));
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
@@ -185,7 +198,7 @@ function productHtml(product) {
   // Previously the 160-char cut only applied to the description fallback, so a
   // long `summary` was emitted verbatim and truncated by search results.
   const rawSummary = String(product.summary || '').trim()
-    || String(product.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    || extractPlainText(product.description);
   const summary = metaDescription(rawSummary);
   const canonical = `${SITE}/products/${encodeURIComponent(slug)}`;
   const content = normalizeInjected(sanitizeHtml(product.description || '')).html;
@@ -212,7 +225,7 @@ function hubToolHtml(hub, tool, catName, related) {
   const slug = String(tool.slug || '').trim();
   const name = String(tool.name || cfg.fallbackName).trim();
   const rawSummary = String(tool.summary || '').trim()
-    || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    || extractPlainText(tool.overview);
   const summary = metaDescription(rawSummary);
   const canonical = `${SITE}${cfg.base}/${encodeURIComponent(slug)}`;
   const published = tool.published_at || tool.created_at || '';
@@ -284,7 +297,7 @@ function pentestCategoryHtml(shell, category, tools) {
   const cards = tools.map((tool) => {
     const toolSlug = String(tool.slug || '').trim();
     const toolName = String(tool.name || toolSlug).trim();
-    const summary = metaDescription(String(tool.summary || '').trim() || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+    const summary = metaDescription(String(tool.summary || '').trim() || extractPlainText(tool.overview));
     const links = [
       /^https?:\/\//i.test(String(tool.official_url || '')) ? `<a href="${esc(tool.official_url)}" target="_blank" rel="noopener noreferrer">Official site</a>` : '',
       /^https?:\/\//i.test(String(tool.github_url || '')) ? `<a href="${esc(tool.github_url)}" target="_blank" rel="noopener noreferrer">Source</a>` : '',

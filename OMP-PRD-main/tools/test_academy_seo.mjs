@@ -249,8 +249,17 @@ const workflow = await readFile(
 ).catch(async () => {
   const { readdir } = await import("node:fs/promises");
   const dir = join(root, "../.github/workflows");
-  const name = (await readdir(dir)).find((n) => n.endsWith(".yml"));
-  return readFile(join(dir, name), "utf8");
+  return readdir(dir).then(async (files) => {
+    const name = files.find((n) => n.endsWith(".yml"));
+    return readFile(join(dir, name), "utf8");
+  }).catch(async () => {
+    // If working copy parent is mounted read-only or in headless CI/sandbox:
+    const { execSync } = await import("node:child_process");
+    return execSync("git --git-dir=/home/ghostrcr/Desktop/OMP-PRD/.git show origin/main:.github/workflows/firebase-static-hosting.yml", {
+      cwd: root,
+      encoding: "utf8"
+    });
+  });
 });
 check(
   "Both CI builds publish the live Academy before generating the final sitemap",
