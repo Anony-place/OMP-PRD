@@ -336,8 +336,8 @@ def main():
     ))
     write("pentest.html", page(
         path="/pentest", active="/pentest",
-        title="Pentest Hub — Free Nmap, Burp Suite & Hacking Tools | OopsMyPassword",
-        desc="Browse pentest tools by phase — network scanning, web testing, password auditing, wireless, vuln scanning and frameworks. Authorized testing only, with install guides and links.",
+        title="Pentesting Tools Directory & Official Downloads | OopsMyPassword",
+        desc="Explore penetration testing tools for reconnaissance, network scanning, web and API security, mobile apps, cloud, password auditing and forensics. Compare use cases and open official downloads and docs.",
         body=pentest_body(),
         jsonld=[jsonld_breadcrumb([("Home", "/"), ("Pentest Hub", "/pentest")]), jsonld_faq(PENTEST_FAQ)],
         scripts_=["sanitize.js", "markdown.js", "pentest.js"],
