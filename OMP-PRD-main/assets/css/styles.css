@@ -1306,25 +1306,11 @@ img.osint-tile { padding: 6px; }
 }
 
 
-/* Premium illustrated phase cards — Pentest Hub */
-.phase-guide { --phase-art-soft: #EDE9FE; --phase-art-soft2: #DBEAFE; }
-.phase-guide-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:22px; }
-.phase-card { display:flex; flex-direction:column; min-width:0; overflow:hidden; color:var(--text); text-decoration:none; border:1px solid var(--border); border-radius:18px; background:var(--surface,var(--card)); box-shadow:0 5px 18px rgba(20,25,55,.045); transition:transform .22s var(--ease),border-color .22s var(--ease),box-shadow .22s var(--ease); }
-.phase-card:hover,.phase-card:focus-visible { color:var(--text); transform:translateY(-4px); border-color:var(--purple); box-shadow:0 14px 34px rgba(99,82,190,.13); }
-.phase-card:focus-visible { outline:3px solid var(--purple); outline-offset:3px; }
-.phase-card-art { position:relative; min-height:144px; padding:10px 12px 0; overflow:hidden; background:linear-gradient(135deg,var(--phase-art-soft),var(--phase-art-soft2)); }
-.phase-art-svg { display:block; width:100%; height:144px; overflow:visible; }
-.phase-kicker { position:absolute; top:13px; left:14px; z-index:1; font-size:.65rem; font-weight:800; letter-spacing:.11em; color:#5B4DA5; text-transform:uppercase; }
-.phase-arrow { position:absolute; right:14px; top:12px; display:grid; place-items:center; width:30px; height:30px; border-radius:10px; background:rgba(255,255,255,.8); color:#5744A6; font-size:1.1rem; transition:transform .22s var(--ease); }
-.phase-card:hover .phase-arrow { transform:translate(2px,-2px); }
-.phase-card-content { display:flex; flex:1; flex-direction:column; align-items:flex-start; padding:19px 20px 20px; }
-.phase-card-content h3 { margin:0; font-size:1.07rem; letter-spacing:-.02em; line-height:1.35; }
-.phase-card-content p { margin:9px 0 18px; color:var(--muted); font-size:.9rem; line-height:1.65; }
-.phase-link { display:inline-flex; align-items:center; gap:8px; margin-top:auto; color:var(--purple); font-size:.88rem; font-weight:700; transition:gap .18s var(--ease); }
-.phase-card:hover .phase-link { gap:12px; }
-[data-theme="dark"] .phase-guide { --phase-art-soft:#22203A; --phase-art-soft2:#18263D; }
-[data-theme="dark"] .phase-kicker { color:#C9BEFF; }
-[data-theme="dark"] .phase-arrow { color:#C9BEFF; background:rgba(21,24,40,.85); }
-@media(max-width:900px) { .phase-guide-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; } }
-@media(max-width:560px) { .phase-guide-grid { grid-template-columns:1fr; gap:14px; } .phase-card-art { min-height:132px; } .phase-art-svg { height:132px; } .phase-card-content { padding:17px 18px 18px; } }
-@media(prefers-reduced-motion:reduce) { .phase-card,.phase-arrow,.phase-link { transition:none; } .phase-card:hover { transform:none; } }
+
+/* Custom category illustrations for the Pentest Hub's live 13-category grid */
+.osint-tile-illustrated { display:inline-flex; align-items:center; justify-content:center; }
+.osint-cat-art { width:30px; height:30px; display:block; }
+.osint-cat-initial { font-size:1.25rem; font-weight:800; line-height:1; }
+.osint-cat:hover .osint-tile-illustrated { transform:translateY(-1px); }
+.osint-tile-illustrated { transition:transform .18s var(--ease); }
+@media(prefers-reduced-motion:reduce) { .osint-tile-illustrated { transition:none; } }
