@@ -274,8 +274,50 @@ function osintHtml(tool, catName, related) {
 function pentestHtml(tool, catName, related) {
   return hubToolHtml('pentest', tool, catName, related);
 }
+function pentestCategoryHtml(shell, category, tools) {
+  const slug = String(category.slug || '').trim();
+  const name = String(category.name || 'Pentest tools').trim();
+  const canonical = `${SITE}/pentest/category/${encodeURIComponent(slug)}`;
+  const description = metaDescription(`${String(category.description || '').trim()} Browse these tools with official project links, documentation and individual installation guides.`);
+  const pricingLabel = (v) => OSINT_PRICING[String(v || 'free')] || 'Free';
+  const accessLabels = (v) => Array.isArray(v) ? v.filter((x) => OSINT_ACCESS[x]).map((x) => OSINT_ACCESS[x]) : [];
+  const cards = tools.map((tool) => {
+    const toolSlug = String(tool.slug || '').trim();
+    const toolName = String(tool.name || toolSlug).trim();
+    const summary = metaDescription(String(tool.summary || '').trim() || String(tool.overview || '').replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim());
+    const links = [
+      /^https?:\\/\\//i.test(String(tool.official_url || '')) ? `<a href="${esc(tool.official_url)}" target="_blank" rel="noopener noreferrer">Official site</a>` : '',
+      /^https?:\\/\\//i.test(String(tool.github_url || '')) ? `<a href="${esc(tool.github_url)}" target="_blank" rel="noopener noreferrer">Source</a>` : '',
+      /^https?:\\/\\//i.test(String(tool.docs_url || '')) ? `<a href="${esc(tool.docs_url)}" target="_blank" rel="noopener noreferrer">Documentation</a>` : ''
+    ].filter(Boolean).join(' · ');
+    return `<article class="card card-pad"><h2 class="h-3"><a href="/pentest/${encodeURIComponent(toolSlug)}">${esc(toolName)}</a></h2>${summary ? `<p class="muted">${esc(summary)}</p>` : ''}<p class="tag-list mt-16"><span class="chip">${esc(pricingLabel(tool.pricing))}</span>${accessLabels(tool.access_types).map((x) => ` <span class="chip">${esc(x)}</span>`).join('')}</p><p class="small" style="margin-top:12px">${links}</p><p style="margin-top:12px"><a href="/pentest/${encodeURIComponent(toolSlug)}">Read tool guide and installation steps →</a></p></article>`;
+  }).join('');
+  const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name: 'Pentest Hub', item: `${SITE}/pentest` },
+    { '@type': 'ListItem', position: 3, name, item: canonical }
+  ]};
+  const itemList = { '@context': 'https://schema.org', '@type': 'ItemList', name: `${name} tools`, numberOfItems: tools.length,
+    itemListElement: tools.map((tool, i) => ({ '@type': 'ListItem', position: i + 1, name: String(tool.name || tool.slug).trim(), url: `${SITE}/pentest/${encodeURIComponent(String(tool.slug || '').trim())}` }))
+  };
+  let html = shell;
+  html = html.replace(/<title>[\\s\\S]*?<\\/title>/i, `<title>${esc(`${name} Tools — Official Downloads & Docs | OopsMyPassword`)}</title>`);
+  html = html.replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${esc(description)}">`);
+  html = html.replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${esc(canonical)}">`);
+  html = html.replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
+  html = html.replace(/<meta property="og:description" content="[^"]*">/i, `<meta property="og:description" content="${esc(description)}">`);
+  html = html.replace(/<meta property="og:url" content="[^"]*">/i, `<meta property="og:url" content="${esc(canonical)}">`);
+  html = html.replace(/<meta name="twitter:title" content="[^"]*">/i, `<meta name="twitter:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
+  html = html.replace(/<meta name="twitter:description" content="[^"]*">/i, `<meta name="twitter:description" content="${esc(description)}">`);
+  html = html.replace(/<script type="application\\/ld\\+json"[^>]*>[\\s\\S]*?<\\/script>/gi, '');
+  const main = `<main id="main"><section class="page-hero"><div class="container container-wide"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/pentest" style="color:var(--purple)">Pentest Hub</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><span class="chip chip-accent mt-16">Authorized security testing only</span><h1 class="h-1 mt-16">${esc(name)} Tools</h1><p class="lead">${esc(String(category.description || '').trim())}</p><p class="muted">${tools.length} tools with official project links, documentation and individual installation guides. Only test systems you own or are explicitly authorized to assess.</p></div></section><section class="section-tight"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse tools</span><h2 class="h-2">${esc(name)} tools and official resources</h2><p class="muted">Compare each tool's purpose and access type, then use its official documentation to confirm current installation requirements.</p></div><div class="grid grid-2">${cards}</div><p style="margin-top:28px"><a class="btn btn-secondary" href="/pentest">← Browse all penetration testing tools</a></p></div></section><section class="section-tight"><div class="container container-narrow"><h2 class="h-2">How to use these tools responsibly</h2><ul><li>Confirm written authorization and the exact scope before testing a target.</li><li>Read the official documentation and understand whether a tool sends active probes or changes application state.</li><li>Prefer an isolated lab or staging environment while learning.</li><li>Manually verify scanner results before treating them as confirmed findings.</li><li>Protect reports because they may contain sensitive environment details.</li></ul></div></section></main>`;
+  html = html.replace(/<main id="main">[\\s\\S]*?<\\/main>/i, main);
+  html = html.replace(/<script src="\\/assets\\/js\\/pentest\\.js" defer><\\/script>/i, '');
+  html = html.replace('</head>', `<script type="application/ld+json">${escJson(breadcrumb)}</script><script type="application/ld+json">${escJson(itemList)}</script></head>`);
+  return html;
+}
 function dateOnly(value) { if (!value) return ''; const ms = Date.parse(value); return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : ''; }
-function sitemapXml({ articles, products, osint = [], pentest = [] }) {
+function sitemapXml({ articles, products, osint = [], pentest = [], pentestCategories = [] }) {
   const urls = new Map();
   const urlFor = (route) => route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`;
   const add = (loc, lastmod, route) => { if (!urls.has(loc)) urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') }); };
@@ -284,6 +326,7 @@ function sitemapXml({ articles, products, osint = [], pentest = [] }) {
   for (const product of products) if (isValidSlug(product.slug)) add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(product.updated_at || product.published_at || product.created_at), `/products/${product.slug}`);
   for (const tool of osint) if (isValidSlug(tool.slug)) add(urlFor(`/osint/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/osint/${tool.slug}`);
   for (const tool of pentest) if (isValidSlug(tool.slug)) add(urlFor(`/pentest/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/pentest/${tool.slug}`);
+  for (const category of pentestCategories) if (isValidSlug(category.slug) && pentest.some((tool) => tool.category_id === category.id && isValidSlug(tool.slug))) add(urlFor(`/pentest/category/${encodeURIComponent(category.slug)}`), dateOnly(category.updated_at || category.published_at || category.created_at), `/pentest/category/${category.slug}`);
   const body = [...urls.entries()].map(([loc, meta]) => `<url><loc>${esc(loc)}</loc>${meta.lastmod ? `<lastmod>${meta.lastmod}</lastmod>` : ''}<priority>${meta.priority}</priority></url>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
 }
@@ -294,7 +337,7 @@ async function main() {
     fetchRows('osint_tools', OSINT_FIELDS),
     fetchRows('osint_categories', 'id,name,slug,status'),
     fetchRows('pentest_tools', PENTEST_FIELDS),
-    fetchRows('pentest_categories', 'id,name,slug,status'),
+    fetchRows('pentest_categories', 'id,name,slug,description,status,sort_order,published_at,updated_at'),
   ]);
   await rm(ARTICLES_DIR, { recursive: true, force: true });
   await mkdir(ARTICLES_DIR, { recursive: true });
@@ -328,7 +371,7 @@ async function main() {
     await writeFile(join(PENTEST_DIR, `${tool.slug}.html`), pentestHtml({ ...tool, category_slug: cat ? cat.slug : '' }, cat ? cat.name : '', siblings), 'utf8');
     pentestPages++;
   }
-  const xml = sitemapXml({ articles, products, osint: osintTools, pentest: pentestTools });
+  const xml = sitemapXml({ articles, products, osint: osintTools, pentest: pentestTools, pentestCategories: pentestCats });
   await writeFile(join(ROOT, 'sitemap.xml'), xml, 'utf8');
   await writeFile(join(ROOT, 'google-sitemap.xml'), xml, 'utf8');
 
@@ -361,8 +404,33 @@ async function main() {
   };
   const pentestHubPath = join(ROOT, 'pentest.html');
   let phub = await readFile(pentestHubPath, 'utf8');
-  phub = phub.replace(/<script type="application\/ld\+json" id="omp-pentest-itemlist">[\s\S]*?<\/script>/, '').replace('</head>', `<script type="application/ld+json" id="omp-pentest-itemlist">${escJson(pentestItemList)}</script></head>`);
+  phub = phub
+    .replace(/<script type="application\\/ld\\+json" id="omp-pentest-itemlist">[\\s\\S]*?<\\/script>/, '')
+    .replace(/<title>[\\s\\S]*?<\\/title>/i, '<title>Penetration Testing Tools &amp; Official Downloads | OopsMyPassword</title>')
+    .replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
+    .replace(/<meta property="og:title" content="[^"]*">/i, '<meta property="og:title" content="Penetration Testing Tools &amp; Official Downloads | OopsMyPassword">')
+    .replace(/<meta property="og:description" content="[^"]*">/i, '<meta property="og:description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
+    .replace(/<meta name="twitter:title" content="[^"]*">/i, '<meta name="twitter:title" content="Penetration Testing Tools &amp; Official Downloads | OopsMyPassword">')
+    .replace(/<meta name="twitter:description" content="[^"]*">/i, '<meta name="twitter:description" content="Browse penetration testing tools by category, compare use cases, and find official downloads, documentation and installation guides for authorized security testing.">')
+    .replace('<h1 class="h-1 mt-16">Pentest Hub</h1>', '<h1 class="h-1 mt-16">Penetration Testing Tools Directory</h1>')
+    .replace('</head>', `<script type="application/ld+json" id="omp-pentest-itemlist">${escJson(pentestItemList)}</script></head>`);
+  const livePentestCategories = pentestCats
+    .filter((category) => isValidSlug(category.slug) && pentestTools.some((tool) => tool.category_id === category.id && isValidSlug(tool.slug)))
+    .sort((a, b) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0));
+  const categoryDirectoryHtml = `<section class="section-tight" aria-labelledby="pentest-category-directory"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse by assessment task</span><h2 class="h-2" id="pentest-category-directory">Penetration testing tools by category</h2><p class="muted" style="max-width:78ch">Start with the task you need to perform. Each category brings together relevant tools, official project resources, documentation and individual installation guides.</p></div><div class="grid grid-3">${livePentestCategories.map((category) => { const categoryTools = pentestTools.filter((tool) => tool.category_id === category.id && isValidSlug(tool.slug)); return `<article class="card card-pad"><h3 class="h-3"><a href="/pentest/category/${encodeURIComponent(category.slug)}">${esc(category.name)}</a> <span class="cat-count">${categoryTools.length}</span></h3><p class="muted">${esc(category.description || `Browse ${category.name} tools and official resources.`)}</p><ul class="small">${categoryTools.slice(0, 5).map((tool) => `<li><a href="/pentest/${encodeURIComponent(tool.slug)}">${esc(tool.name || tool.slug)}</a></li>`).join('')}</ul><p style="margin-top:12px"><a class="btn btn-secondary btn-sm" href="/pentest/category/${encodeURIComponent(category.slug)}">Explore category →</a></p></article>`; }).join('')}</div><p class="muted small" style="margin-top:20px">Tool availability, installation commands and supported platforms can change. Confirm current details in the official project documentation before installing.</p></div></section>`;
+  if (!phub.includes('id="pentest-category-directory"')) phub = phub.replace(/<\\/main>/i, `${categoryDirectoryHtml}</main>`);
   await writeFile(pentestHubPath, phub, 'utf8');
+  // Generate static category pages from the same published catalogue.
+  const pentestCategoryDir = join(PENTEST_DIR, 'category');
+  await mkdir(pentestCategoryDir, { recursive: true });
+  let pentestCategoryPages = 0;
+  for (const category of livePentestCategories) {
+    const categoryTools = pentestTools.filter((tool) => tool.category_id === category.id && isValidSlug(tool.slug));
+    await writeFile(join(pentestCategoryDir, `${category.slug}.html`), pentestCategoryHtml(phub, category, categoryTools), 'utf8');
+    pentestCategoryPages++;
+  }
+  console.log(`Built ${pentestCategoryPages} static Pentest Hub category pages.`);
+
   const hubPath = join(ROOT, 'osint.html');
   let hub = await readFile(hubPath, 'utf8');
   hub = hub.replace(/<script type="application\/ld\+json" id="omp-osint-itemlist">[\s\S]*?<\/script>/, '').replace('</head>', `<script type="application/ld+json" id="omp-osint-itemlist">${escJson(itemList)}</script></head>`);
@@ -390,6 +458,8 @@ async function main() {
     '## Pentest Hub',
     '',
     'Browse pentest tools by assessment phase at https://oopsmypassword.web.app/pentest — network scanning, web testing, password auditing, wireless, vulnerability scanning and frameworks. Authorized testing only, each with install steps and official links.',
+    '',
+    ...pentestCats.filter((category) => isValidSlug(category.slug) && pentestTools.some((tool) => tool.category_id === category.id && isValidSlug(tool.slug))).sort((a, b) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0)).map((category) => `- [${String(category.name || category.slug).trim()} tools](${SITE}/pentest/category/${encodeURIComponent(category.slug)}): ${metaDescription(String(category.description || '').trim())}`),
     '',
     ...pentestTools.filter((t) => isValidSlug(t.slug)).map((t) => `- [${String(t.name || t.slug).trim()}](${SITE}/pentest/${encodeURIComponent(t.slug)}): ${metaDescription(String(t.summary || '').trim())}`),
     ''
