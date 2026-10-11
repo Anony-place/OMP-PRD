@@ -26,14 +26,54 @@ Browse OSINT tools by investigation type at https://oopsmypassword.web.app/osint
 
 Browse pentest tools by assessment phase at https://oopsmypassword.web.app/pentest — network scanning, web testing, password auditing, wireless, vulnerability scanning and frameworks. Authorized testing only, each with install steps and official links.
 
+- [Network Scanning tools](https://oopsmypassword.web.app/pentest/category/network-scanning): Map networks, discover hosts and enumerate open ports and services — the first step of any authorized assessment.
+- [Web App Testing tools](https://oopsmypassword.web.app/pentest/category/web-testing): Intercept, inspect and test web applications for injection, broken access control and misconfiguration.
+- [Password Auditing tools](https://oopsmypassword.web.app/pentest/category/password-auditing): Audit password strength on your own systems and recovery files — measure cracking resistance before attackers do.
+- [Wireless Testing tools](https://oopsmypassword.web.app/pentest/category/wireless-testing): Assess Wi-Fi networks you own or are authorized to test — capture handshakes and audit encryption.
+- [Vulnerability Scanning tools](https://oopsmypassword.web.app/pentest/category/vulnerability-scanning): Detect known CVEs, misconfigurations and outdated software across hosts and web servers.
+- [Exploitation Frameworks tools](https://oopsmypassword.web.app/pentest/category/exploitation-frameworks): Modular platforms for authorized exploitation and post-exploitation in lab and client engagements.
+- [Reconnaissance & OSINT tools](https://oopsmypassword.web.app/pentest/category/reconnaissance-osint): Discover assets, subdomains, DNS records and publicly exposed information during an authorized security assessment. Includes passive reconnaissance and…
+- [API Security Testing tools](https://oopsmypassword.web.app/pentest/category/api-security-testing): Tools for testing REST and other APIs, validating schemas, fuzzing endpoints and finding authorization or input-handling weaknesses in APIs you own or are…
+- [Mobile App Security tools](https://oopsmypassword.web.app/pentest/category/mobile-app-security): Inspect Android and iOS applications for insecure storage, exposed secrets, weak configuration and runtime security issues.
+- [Cloud & Container Security tools](https://oopsmypassword.web.app/pentest/category/cloud-container-security): Audit cloud configurations, container images and infrastructure-as-code for excessive permissions, exposed services and known vulnerabilities.
+- [Source Code & Secret Scanning tools](https://oopsmypassword.web.app/pentest/category/source-code-secret-scanning): Find insecure code patterns, vulnerable dependencies and accidentally committed credentials before they reach production.
+- [Traffic Analysis & Forensics tools](https://oopsmypassword.web.app/pentest/category/traffic-analysis-forensics): Capture and inspect network traffic, investigate packet-level behavior and analyze memory or forensic evidence during authorized investigations.
+- [Active Directory & Internal Network tools](https://oopsmypassword.web.app/pentest/category/active-directory-internal-network): Assess Windows domain environments, identity relationships and internal-network exposure in an explicitly authorized lab or engagement.
+
 - [Aircrack-ng](https://oopsmypassword.web.app/pentest/aircrack-ng): Wi-Fi security auditing for networks you own: capture handshakes and test encryption strength. Free.
+- [Autopsy](https://oopsmypassword.web.app/pentest/autopsy): Investigate disk images and digital evidence with a graphical forensic platform.
+- [BloodHound Community Edition](https://oopsmypassword.web.app/pentest/bloodhound-community-edition): Visualize identity relationships and privilege paths in supported directory environments.
 - [Burp Suite](https://oopsmypassword.web.app/pentest/burp-suite): The standard web app testing proxy: intercept, inspect and modify traffic for apps you are authorized to test. Freemium.
+- [dnsx](https://oopsmypassword.web.app/pentest/dnsx): Resolve and inspect DNS records with a pipeline-friendly security CLI.
+- [ffuf](https://oopsmypassword.web.app/pentest/ffuf): Discover web content and fuzz request inputs in authorized test environments.
+- [Frida](https://oopsmypassword.web.app/pentest/frida): Instrument applications at runtime for authorized dynamic analysis and debugging.
+- [Gitleaks](https://oopsmypassword.web.app/pentest/gitleaks): Detect secrets and credentials accidentally committed to Git repositories.
 - [Hashcat](https://oopsmypassword.web.app/pentest/hashcat): The fastest password recovery and auditing tool: measure hash-cracking resistance on your own hashes. Free, open source.
+- [httpx](https://oopsmypassword.web.app/pentest/httpx-probe): Probe HTTP services and identify responsive web endpoints during reconnaissance.
 - [Hydra](https://oopsmypassword.web.app/pentest/hydra): Online login auditing against your own services: test credential strength where you are authorized. Free.
+- [Impacket](https://oopsmypassword.web.app/pentest/impacket): Use protocol-focused Python tools for network protocol testing and Windows environment assessment.
+- [JADX](https://oopsmypassword.web.app/pentest/jadx): Decompile Android DEX and APK files into readable Java-like source for inspection.
 - [John the Ripper](https://oopsmypassword.web.app/pentest/john-the-ripper): Classic password auditing suite, best at slow hashes and encrypted files you own. Free, open source.
+- [Katana](https://oopsmypassword.web.app/pentest/katana): Crawl web applications to discover URLs and endpoints for authorized testing.
+- [Kiterunner](https://oopsmypassword.web.app/pentest/kiterunner): Discover API routes using route-focused content discovery techniques.
 - [Masscan](https://oopsmypassword.web.app/pentest/masscan): The fastest internet-scale port scanner: sweep entire ranges in minutes on your authorized targets. Free, open source.
 - [Metasploit](https://oopsmypassword.web.app/pentest/metasploit): Modular exploitation framework for authorized engagements and labs. Framework free; Pro paid.
+- [Mobile Security Framework (MobSF)](https://oopsmypassword.web.app/pentest/mobsf): Analyze Android and iOS apps with static and dynamic mobile security testing.
 - [Nikto](https://oopsmypassword.web.app/pentest/nikto): Fast web-server vulnerability scanner: outdated software, misconfigurations and dangerous files on your hosts. Free.
 - [Nmap](https://oopsmypassword.web.app/pentest/nmap): The standard network scanner: discover hosts, ports and services on networks you are authorized to test. Free, open source.
+- [Nuclei](https://oopsmypassword.web.app/pentest/nuclei): Run template-based security checks against authorized hosts, applications and APIs.
+- [OWASP Amass](https://oopsmypassword.web.app/pentest/owasp-amass): Map an organization’s external attack surface using asset discovery and reconnaissance.
 - [OWASP ZAP](https://oopsmypassword.web.app/pentest/owasp-zap): Free, open-source web app scanner and proxy from OWASP. Automate baseline scans of your own apps. Free forever.
+- [Prowler](https://oopsmypassword.web.app/pentest/prowler): Audit cloud security posture across supported providers using repeatable checks.
+- [Schemathesis](https://oopsmypassword.web.app/pentest/schemathesis): Fuzz-test API behavior from OpenAPI or GraphQL schemas.
+- [Semgrep](https://oopsmypassword.web.app/pentest/semgrep): Find risky code patterns and security issues with static analysis rules.
+- [SpiderFoot](https://oopsmypassword.web.app/pentest/spiderfoot): Automate OSINT collection across public sources for an organization or domain.
 - [SQLMap](https://oopsmypassword.web.app/pentest/sqlmap): Automatic SQL injection detection and exploitation testing for your own apps and labs. Free, open source.
+- [Subfinder](https://oopsmypassword.web.app/pentest/subfinder): Discover subdomains through passive online sources for authorized reconnaissance.
+- [tcpdump](https://oopsmypassword.web.app/pentest/tcpdump): Capture and filter network packets from the command line.
+- [testssl.sh](https://oopsmypassword.web.app/pentest/testssl-sh): Audit TLS and SSL configuration for supported protocols, ciphers and common weaknesses.
+- [theHarvester](https://oopsmypassword.web.app/pentest/theharvester): Collect public email, host and domain intelligence for reconnaissance.
+- [Trivy](https://oopsmypassword.web.app/pentest/trivy): Scan container images, repositories and cloud configurations for known risks.
+- [TruffleHog](https://oopsmypassword.web.app/pentest/trufflehog): Search repositories and supported data sources for exposed secrets and verify findings.
+- [Volatility 3](https://oopsmypassword.web.app/pentest/volatility-3): Analyze memory images for digital forensics and incident response.
+- [Wireshark](https://oopsmypassword.web.app/pentest/wireshark): Inspect and analyze network packets through a graphical protocol analyzer.
