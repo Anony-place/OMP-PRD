@@ -425,6 +425,31 @@
     return slug;
   }
 
+  /* Promote clearly standalone, short section-title paragraphs in plain-text
+     articles to semantic headings before building the TOC. Explicit Markdown
+     and HTML headings are left untouched. */
+  function promotePlainTextHeadings(prose) {
+    if (!prose || prose.querySelector('h2, h3, h4')) return;
+    var paragraphs = Array.prototype.slice.call(prose.querySelectorAll('p'));
+    var candidates = paragraphs.filter(function (p) {
+      var text = String(p.textContent || '').trim();
+      if (text.length < 8 || text.length > 90 || text.split(/\\s+/).length > 12) return false;
+      if (p.querySelector('a, code, pre, img, strong, em, ul, ol')) return false;
+      if (/^(?:note|important|warning|example|tip|disclaimer)\\s*:/i.test(text)) return false;
+      if (/[.!,:;]$/.test(text) && !/\\?$/.test(text)) return false;
+      return true;
+    });
+    /* Avoid converting an isolated short paragraph or a run of labels. */
+    if (candidates.length < 2) return;
+    candidates.forEach(function (p) {
+      var text = String(p.textContent || '').trim();
+      if (/^(?:table of contents|frequently asked questions)$/i.test(text)) return;
+      var heading = document.createElement('h2');
+      heading.textContent = text;
+      p.parentNode.replaceChild(heading, p);
+    });
+  }
+
   /* Build a TOC from the final, sanitized article DOM so Markdown and HTML
      articles get the same behaviour. IDs are deterministic and collision-safe. */
   function buildArticleToc(prose) {
@@ -482,6 +507,7 @@
     if (window.OMPMarkdown && window.OMPMarkdown.demoteHeadings) {
       window.OMPMarkdown.demoteHeadings(prose, 1);
     }
+    promotePlainTextHeadings(prose);
     var toc = buildArticleToc(prose);
     if (toc) root.querySelector('.article-toc-slot').innerHTML = toc;
     else {
