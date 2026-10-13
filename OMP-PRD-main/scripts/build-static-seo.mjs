@@ -69,36 +69,39 @@ function extractPlainText(html) {
     .replace(/\s+/g, ' ')
     .trim();
 }
-function promotePlainTextHeadings(source) {
+function promotePlainTextHeadings(source, title) {
   const lines = String(source || '').replace(/\r/g, '').split('\n');
   const nonEmpty = lines.map((line, index) => ({ line: line.trim(), index })).filter((x) => x.line);
   if (nonEmpty.length < 4) return source;
+  const normTitle = String(title || '').trim().toLowerCase();
   const headingLines = new Set();
   for (let n = 1; n < nonEmpty.length - 1; n++) {
     const item = nonEmpty[n];
     const line = item.line;
-    const separated = item.index > 0 && item.index < lines.length - 1
-      && !lines[item.index - 1].trim() && !lines[item.index + 1].trim();
-    const words = line.split(/\s+/).length;
-    const looksLikeHeading = line.length >= 4 && line.length <= 90
-      && words >= 2 && words <= 12
-      && !/[.!,:;]$/.test(line)
-      && !/^[-*#>\d]/.test(line)
+    const precededByEmpty = item.index === 0 || !lines[item.index - 1].trim();
+    const followedByEmpty = item.index === lines.length - 1 || !lines[item.index + 1].trim();
+    const separated = precededByEmpty && (followedByEmpty || (lines[item.index + 1].trim().length > line.length));
+    const words = line.split(/\s+/).filter(Boolean).length;
+    const looksLikeHeading = line.length >= 3 && line.length <= 90
+      && words >= 1 && words <= 14
+      && (!/[.!,:;]$/.test(line) || /\?$/.test(line))
       && !/^https?:\/\//i.test(line)
-      && !/^(?:note|important|warning|example)\s*:/i.test(line);
+      && !/^(?:note|important|warning|caution|example|tip|disclaimer)\s*:/i.test(line)
+      && !/^(?:table of contents|on this page)$/i.test(line)
+      && (!normTitle || line.toLowerCase() !== normTitle);
     if (separated && looksLikeHeading) headingLines.add(item.index);
   }
   if (!headingLines.size) return source;
-  return lines.map((line, index) => headingLines.has(index) ? '## ' + line.trim() : line).join('\n');
+  return lines.map((line, index) => headingLines.has(index) ? '## ' + line.trim().replace(/^#{1,6}\s*/, '') : line).join('\n');
 }
 
-function sanitizeHtml(input) {
+function sanitizeHtml(input, title) {
   const source = String(input || '')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<!doctype[^>]*>/gi, '')
     .replace(/<\/?(html|head|body|article|header|footer)\b[^>]*>/gi, '');
-  if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(promotePlainTextHeadings(source)));
+  if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(promotePlainTextHeadings(source, title)));
   return safeArticleHTML(source);
 }
 function slugifyHeading(text) {
@@ -110,14 +113,36 @@ function slugifyHeading(text) {
     .replace(/^-+|-+$/g, '')
     .slice(0, 70) || 'section';
 }
-function normalizeInjected(html) {
+function normalizeInjected(html, title) {
   const source = String(html || '').replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-  const levels = [...source.matchAll(/<h([1-6])[\s>]/gi)].map((m) => Number(m[1]));
+  let levels = [...source.matchAll(/<h([1-6])[\s>]/gi)].map((m) => Number(m[1]));
+  let shifted = source;
+  if (!levels.length) {
+    const normTitle = String(title || '').trim().toLowerCase();
+    const pMatches = [...source.matchAll(/<p>(\s*(?:<strong>|<b>)?\s*([^<>\n]{3,90}?)\s*(?:<\/strong>|<\/b>)?\s*)<\/p>/gi)];
+    const candidates = pMatches.filter((m) => {
+      const text = m[2].trim();
+      const words = text.split(/\s+/).filter(Boolean).length;
+      if (words < 1 || words > 14) return false;
+      if (normTitle && text.toLowerCase() === normTitle) return false;
+      if (/[.!,:;]$/.test(text) && !/\?$/.test(text)) return false;
+      if (/^(?:note|important|warning|caution|example|tip|disclaimer)\s*:/i.test(text)) return false;
+      if (/^(?:table of contents|on this page)$/i.test(text)) return false;
+      if (/^https?:\/\//i.test(text)) return false;
+      return true;
+    });
+    if (candidates.length >= 2) {
+      for (const c of candidates) {
+        shifted = shifted.replace(c[0], `<h2>${c[2].trim()}</h2>`);
+      }
+      levels = [2];
+    }
+  }
   const shift = levels.length ? Math.max(2 - Math.min(...levels), 0) : 0;
-  const shifted = shift ? source.replace(/<(\/?)h([1-6])(\s|>)/gi, (_, slash, level, tail) => `<${slash}h${Math.min(Number(level) + shift, 6)}${tail}`) : source;
+  const reShifted = shift ? shifted.replace(/<(\/?)h([1-6])(\s|>)/gi, (_, slash, level, tail) => `<${slash}h${Math.min(Number(level) + shift, 6)}${tail}`) : shifted;
   const used = new Map();
   const toc = [];
-  const withAnchors = shifted.replace(/<h([2-6])>([\s\S]*?)<\/h\1>/gi, (_, level, inner) => {
+  const withAnchors = reShifted.replace(/<h([2-6])>([\s\S]*?)<\/h\1>/gi, (_, level, inner) => {
     const base = slugifyHeading(inner);
     const count = used.get(base) || 0;
     used.set(base, count + 1);
@@ -178,7 +203,7 @@ function articleHtml(article) {
   const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
   const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
-  const normalized = normalizeInjected(sanitizeHtml(article.content || ''));
+  const normalized = normalizeInjected(sanitizeHtml(article.content || '', title), title);
   const content = normalized.html;
   const image = /^https?:\/\//i.test(String(article.featured_image || '')) ? String(article.featured_image) : `${SITE}/assets/images/og-image.jpg`;
   const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: summary, mainEntityOfPage: canonical, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en', image: [image] };

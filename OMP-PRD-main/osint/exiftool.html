@@ -6,7 +6,7 @@ sudo apt install libimage-exiftool-perl
 
 
 
-# macOS
+## macOS
 
 brew install exiftool
 
@@ -18,7 +18,7 @@ exiftool photo.jpg
 
 
 
-# GPS coordinates only
+## GPS coordinates only
 
 exiftool -gpslatitude -gpslongitude photo.jpg
 
@@ -31,9 +31,9 @@ exiftool -all= photo.jpg
 </code></pre><h2 id="sec-example">Real-world example</h2><p>A dramatic photo spreads online claiming to show last night's protest in your city. Save a copy and run ExifTool on it. The timestamps and any GPS data tell you when and where the camera actually was — if the metadata says noon three years ago in another country, the claim collapses without any further debate.</p>
 <p>Flip the workflow for your own photos: run ExifTool with the strip-all flag before posting, so your location and device details never travel with the image.</p><h2 id="sec-faq">Common questions</h2><h3 id="is-exiftool-free">Is ExifTool free?</h3>
 <p>Yes. ExifTool is free and open source.</p>
-<h3 id="which-files-can-it-read">Which files can it read?</h3>
+<h2 id="which-files-can-it-read">Which files can it read?</h2>
 <p>Images, video, audio, PDF and office documents — hundreds of formats in total.</p>
-<h3 id="how-do-i-remove-metadata-before-sharing">How do I remove metadata before sharing?</h3>
+<h2 id="how-do-i-remove-metadata-before-sharing">How do I remove metadata before sharing?</h2>
 <p>Run: exiftool -all= photo.jpg — this strips all metadata from the file.</p><hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every browse every investigation type in the <a href="/osint">OSINT Hub</a>.</p></div><p class="muted small" style="margin-top:20px">Use OSINT tools responsibly — only investigate accounts, people or systems you have a legitimate reason to look into.</p></article></div></div></section></main><footer class="site-footer">
   <div class="container">
     <div class="footer-grid">

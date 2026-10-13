@@ -10,22 +10,22 @@ pip install -r requirements.txt
 
 
 
-# Basic run against a domain
+## Basic run against a domain
 
 python3 theHarvester.py -d example.com -b all
 
 
 
-# Limit sources and save output
+## Limit sources and save output
 
 python3 theHarvester.py -d example.com -b crtsh,hackertarget -f results
 
 </code></pre><h2 id="sec-example">Real-world example</h2><p>You have just been authorized to test a company's public exposure. Start with theHarvester against their main domain: within minutes you hold a list of employee emails, subdomains and hostnames — the exact raw material an attacker would collect first.</p>
 <p>Hand the subdomain list to your DNS checks and the email list to a breach lookup. Every forgotten staging host or exposed webmail login you find becomes a finding in the report, with the remediation advice to inventory subdomains and enforce multi-factor authentication on everything public.</p><h2 id="sec-faq">Common questions</h2><h3 id="what-do-i-need-to-start">What do I need to start?</h3>
 <p>Only a domain name. API keys are optional — they unlock additional sources but the tool works without them.</p>
-<h3 id="does-theharvester-attack-the-target">Does theHarvester attack the target?</h3>
+<h2 id="does-theharvester-attack-the-target">Does theHarvester attack the target?</h2>
 <p>No. It is fully passive: it queries search engines, certificate transparency logs and DNS dumps, never the target itself.</p>
-<h3 id="is-theharvester-free">Is theHarvester free?</h3>
+<h2 id="is-theharvester-free">Is theHarvester free?</h2>
 <p>Yes. It is free and open source.</p><h2 id="sec-related">Related tools</h2><div class="feed-list" style="margin-top:14px"><article class="feed-row osint-row"><span class="osint-tile" aria-hidden="true">S</span><div class="feed-row-main"><h3 class="feed-title"><a href="/osint/shodan">Shodan</a></h3><p class="feed-excerpt">The search engine for internet-connected devices, services and exposures. Freemium web app plus API.</p></div></article></div><hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every browse every investigation type in the <a href="/osint">OSINT Hub</a>.</p></div><p class="muted small" style="margin-top:20px">Use OSINT tools responsibly — only investigate accounts, people or systems you have a legitimate reason to look into.</p></article></div></div></section></main><footer class="site-footer">
   <div class="container">
     <div class="footer-grid">

@@ -139,9 +139,10 @@
 
   /* Fail closed: without the renderer/sanitizer, show nothing rather
      than injecting untrusted HTML. */
-  function renderContent(source) {
-    if (window.OMPMarkdown && window.OMPMarkdown.renderSafe) return window.OMPMarkdown.renderSafe(source || '');
-    return window.OMPSanitize ? window.OMPSanitize(source || '') : '';
+  function renderContent(source, title) {
+    var text = promotePlainTextHeadingsSource(source, title);
+    if (window.OMPMarkdown && window.OMPMarkdown.renderSafe) return window.OMPMarkdown.renderSafe(text || '');
+    return window.OMPSanitize ? window.OMPSanitize(text || '') : '';
   }
 
   /* Only http(s), site-relative and # URLs are allowed. Delegates to the
@@ -425,27 +426,62 @@
     return slug;
   }
 
+  /* Promote standalone lines in raw-text articles to Markdown headings
+     before Markdown conversion so section titles become semantic <h2> elements. */
+  function promotePlainTextHeadingsSource(source, title) {
+    if (!source || /<[a-z][\s\S]*>/i.test(source) || /^#{1,6}\s+/m.test(source)) return source;
+    var lines = String(source).replace(/\r/g, '').split('\n');
+    var nonEmpty = lines.map(function (line, index) { return { line: line.trim(), index: index }; }).filter(function (x) { return x.line; });
+    if (nonEmpty.length < 4) return source;
+    var normTitle = String(title || '').trim().toLowerCase();
+    var headingLines = Object.create(null);
+    for (var n = 1; n < nonEmpty.length - 1; n++) {
+      var item = nonEmpty[n];
+      var line = item.line;
+      var precededByEmpty = item.index === 0 || !lines[item.index - 1].trim();
+      var followedByEmpty = item.index === lines.length - 1 || !lines[item.index + 1].trim();
+      var separated = precededByEmpty && (followedByEmpty || (lines[item.index + 1].trim().length > line.length));
+      var words = line.split(/\s+/).filter(Boolean).length;
+      var looksLikeHeading = line.length >= 3 && line.length <= 90
+        && words >= 1 && words <= 14
+        && (!/[.!,:;]$/.test(line) || /\?$/.test(line))
+        && !/^https?:\/\//i.test(line)
+        && !/^(?:note|important|warning|caution|example|tip|disclaimer)\s*:/i.test(line)
+        && !/^(?:table of contents|on this page)$/i.test(line)
+        && (!normTitle || line.toLowerCase() !== normTitle);
+      if (separated && looksLikeHeading) headingLines[item.index] = true;
+    }
+    var keys = Object.keys(headingLines);
+    if (!keys.length) return source;
+    return lines.map(function (line, index) {
+      return headingLines[index] ? '## ' + line.trim().replace(/^#{1,6}\s*/, '') : line;
+    }).join('\n');
+  }
+
   /* Promote clearly standalone, short section-title paragraphs in plain-text
-     articles to semantic headings before building the TOC. Explicit Markdown
+     or unheaded HTML articles to semantic headings before building the TOC. Explicit Markdown
      and HTML headings are left untouched. */
-  function promotePlainTextHeadings(prose) {
-    if (!prose || prose.querySelector('h2, h3, h4')) return;
+  function promotePlainTextHeadings(prose, title) {
+    if (!prose || prose.querySelector('h2, h3')) return;
+    var normTitle = String(title || '').trim().toLowerCase();
     var paragraphs = Array.prototype.slice.call(prose.querySelectorAll('p'));
     var candidates = paragraphs.filter(function (p) {
       var text = String(p.textContent || '').trim();
-      if (text.length < 8 || text.length > 90 || text.split(/\\s+/).length > 12) return false;
-      if (p.querySelector('a, code, pre, img, strong, em, ul, ol')) return false;
-      if (/^(?:note|important|warning|example|tip|disclaimer)\\s*:/i.test(text)) return false;
-      if (/[.!,:;]$/.test(text) && !/\\?$/.test(text)) return false;
+      if (text.length < 3 || text.length > 90) return false;
+      var words = text.split(/\s+/).filter(Boolean).length;
+      if (words < 1 || words > 14) return false;
+      if (normTitle && text.toLowerCase() === normTitle) return false;
+      if (p.querySelector('a, code, pre, img, ul, ol, table')) return false;
+      if (/^(?:note|important|warning|caution|example|tip|disclaimer)\s*:/i.test(text)) return false;
+      if (/^(?:table of contents|on this page)$/i.test(text)) return false;
+      if (/[.!,:;]$/.test(text) && !/\?$/.test(text)) return false;
       return true;
     });
     /* Avoid converting an isolated short paragraph or a run of labels. */
     if (candidates.length < 2) return;
     candidates.forEach(function (p) {
-      var text = String(p.textContent || '').trim();
-      if (/^(?:table of contents|frequently asked questions)$/i.test(text)) return;
       var heading = document.createElement('h2');
-      heading.textContent = text;
+      heading.textContent = String(p.textContent || '').trim();
       p.parentNode.replaceChild(heading, p);
     });
   }
@@ -461,7 +497,7 @@
     headings.forEach(function (heading, index) {
       var rawText = String(heading.textContent || '').toLowerCase();
       var normalized = typeof rawText.normalize === 'function' ? rawText.normalize('NFKD') : rawText;
-      var base = normalized.replace(/[\\u0300-\\u036f]/g, '')
+      var base = normalized.replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '') || 'section-' + (index + 1);
       var id = base;
@@ -481,6 +517,26 @@
     return '<aside class="toc" aria-label="On this page"><div class="subhead-sm">On this page</div><nav aria-label="Table of contents"><ul>' + links + '</ul></nav></aside>';
   }
 
+  function wireArticleToc(tocEl) {
+    if (!tocEl) return;
+    var links = Array.prototype.slice.call(tocEl.querySelectorAll('a[href^="#"]'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    var targets = links.map(function (a) {
+      return document.getElementById(a.getAttribute('href').slice(1));
+    }).filter(Boolean);
+    if (!targets.length) return;
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          links.forEach(function (a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    targets.forEach(function (t) { spy.observe(t); });
+  }
+
   function articleView(a) {
     var image = safeUrl(a.featured_image);
     var path = articlePath(a.slug) || HUB_PATH;
@@ -497,7 +553,7 @@
       (a.summary && String(a.summary).trim() ? '<p class="lead" style="margin-top:18px">' + esc(a.summary) + '</p>' : '') +
       '<div class="article-layout" style="margin-top:28px">' +
         '<div class="article-toc-slot"></div>' +
-        '<div class="prose">' + renderContent(a.content) + '</div>' +
+        '<div class="prose">' + renderContent(a.content, a.title) + '</div>' +
       '</div>' +
       (safeUrl(a.document_url) ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + attr(safeUrl(a.document_url)) + '" target="_blank" rel="noopener noreferrer">📄 Download document</a></p>' : '') +
       '</div></article>';
@@ -507,10 +563,12 @@
     if (window.OMPMarkdown && window.OMPMarkdown.demoteHeadings) {
       window.OMPMarkdown.demoteHeadings(prose, 1);
     }
-    promotePlainTextHeadings(prose);
+    promotePlainTextHeadings(prose, a.title);
     var toc = buildArticleToc(prose);
-    if (toc) root.querySelector('.article-toc-slot').innerHTML = toc;
-    else {
+    if (toc) {
+      root.querySelector('.article-toc-slot').innerHTML = toc;
+      wireArticleToc(root.querySelector('.toc'));
+    } else {
       var layout = root.querySelector('.article-layout');
       layout.classList.remove('article-layout');
       layout.style.display = 'block';
