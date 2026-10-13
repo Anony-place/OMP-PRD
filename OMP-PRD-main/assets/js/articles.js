@@ -425,6 +425,37 @@
     return slug;
   }
 
+  /* Build a TOC from the final, sanitized article DOM so Markdown and HTML
+     articles get the same behaviour. IDs are deterministic and collision-safe. */
+  function buildArticleToc(prose) {
+    if (!prose) return '';
+    var headings = Array.prototype.slice.call(prose.querySelectorAll('h2, h3'));
+    if (headings.length < 2) return '';
+
+    var used = Object.create(null);
+    headings.forEach(function (heading, index) {
+      var rawText = String(heading.textContent || '').toLowerCase();
+      var normalized = typeof rawText.normalize === 'function' ? rawText.normalize('NFKD') : rawText;
+      var base = normalized.replace(/[\\u0300-\\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'section-' + (index + 1);
+      var id = base;
+      var suffix = 2;
+      while (used[id] || document.getElementById(id)) {
+        id = base + '-' + suffix++;
+      }
+      used[id] = true;
+      heading.id = id;
+      heading.setAttribute('tabindex', '-1');
+    });
+
+    var links = headings.map(function (heading) {
+      var depth = heading.tagName.toLowerCase() === 'h3' ? ' class="toc-sub"' : '';
+      return '<li' + depth + '><a href="#' + attr(heading.id) + '">' + esc(heading.textContent.trim()) + '</a></li>';
+    }).join('');
+    return '<aside class="toc" aria-label="On this page"><div class="subhead-sm">On this page</div><nav aria-label="Table of contents"><ul>' + links + '</ul></nav></aside>';
+  }
+
   function articleView(a) {
     var image = safeUrl(a.featured_image);
     var path = articlePath(a.slug) || HUB_PATH;
@@ -439,13 +470,26 @@
       '<h1 class="h-1 mt-16">' + esc(a.title) + '</h1>' +
       '<div class="meta" style="margin-top:10px">' + esc(fmtDate(a.published_at)) + ' · ' + esc(a.minutes) + ' min read</div>' +
       (a.summary && String(a.summary).trim() ? '<p class="lead" style="margin-top:18px">' + esc(a.summary) + '</p>' : '') +
-      '<div class="prose" style="margin-top:28px">' + renderContent(a.content) + '</div>' +
+      '<div class="article-layout" style="margin-top:28px">' +
+        '<div class="article-toc-slot"></div>' +
+        '<div class="prose">' + renderContent(a.content) + '</div>' +
+      '</div>' +
       (safeUrl(a.document_url) ? '<p style="margin-top:24px"><a class="btn btn-secondary" href="' + attr(safeUrl(a.document_url)) + '" target="_blank" rel="noopener noreferrer">📄 Download document</a></p>' : '') +
       '</div></article>';
-    /* The article title above is the page's only <h1>; demote any "#" heading
-       the author put in the body so the outline stays valid. */
+    /* The article title above is the page's only <h1>; demote body headings,
+       then derive the TOC from the final sanitized DOM for HTML and Markdown alike. */
+    var prose = root.querySelector('.prose');
     if (window.OMPMarkdown && window.OMPMarkdown.demoteHeadings) {
-      window.OMPMarkdown.demoteHeadings(root.querySelector('.prose'), 1);
+      window.OMPMarkdown.demoteHeadings(prose, 1);
+    }
+    var toc = buildArticleToc(prose);
+    if (toc) root.querySelector('.article-toc-slot').innerHTML = toc;
+    else {
+      var layout = root.querySelector('.article-layout');
+      layout.classList.remove('article-layout');
+      layout.style.display = 'block';
+      root.querySelector('.article-toc-slot').remove();
+      prose.style.maxWidth = '720px';
     }
     setMetaTags({ path: path, title: title, description: description, noindex: false });
   }
