@@ -139,13 +139,36 @@ function extractPlainText(html) {
     .trim();
 }
 
+function promotePlainTextHeadings(source) {
+  const lines = String(source || '').replace(/\r/g, '').split('\n');
+  const nonEmpty = lines.map((line, index) => ({ line: line.trim(), index })).filter((x) => x.line);
+  if (nonEmpty.length < 4) return source;
+  const headingLines = new Set();
+  for (let n = 1; n < nonEmpty.length - 1; n++) {
+    const item = nonEmpty[n];
+    const line = item.line;
+    const separated = item.index > 0 && item.index < lines.length - 1
+      && !lines[item.index - 1].trim() && !lines[item.index + 1].trim();
+    const words = line.split(/\s+/).length;
+    const looksLikeHeading = line.length >= 4 && line.length <= 90
+      && words >= 2 && words <= 12
+      && !/[.!,:;]$/.test(line)
+      && !/^[-*#>\d]/.test(line)
+      && !/^https?:\/\//i.test(line)
+      && !/^(?:note|important|warning|example)\s*:/i.test(line);
+    if (separated && looksLikeHeading) headingLines.add(item.index);
+  }
+  if (!headingLines.size) return source;
+  return lines.map((line, index) => headingLines.has(index) ? '## ' + line.trim() : line).join('\n');
+}
+
 function sanitizeArticleHtml(input) {
   const source = String(input || '')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<!doctype[^>]*>/gi, '')
     .replace(/<\/?(html|head|body|article|header|footer)\b[^>]*>/gi, '');
-  if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(source));
+  if (!/<[a-z][\s\S]*>/i.test(source)) return safeArticleHTML(markdownToHtml(promotePlainTextHeadings(source)));
   return safeArticleHTML(source);
 }
 
