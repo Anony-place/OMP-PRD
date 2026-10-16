@@ -25,6 +25,13 @@ function ok(cond, name) {
   else console.log('  ✓', name);
 }
 
+async function waitFor(cond, timeoutMs = 6000) {
+  const deadline = Date.now() + timeoutMs;
+  while (!cond() && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 40));
+  }
+}
+
 const http = require('http');
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain' };
 const createRouter = require('./hosting_router.js');
@@ -264,12 +271,12 @@ const $ = (d, s) => d.querySelector(s);
     const btn = d.querySelector('[data-breach-btn]');
     type(w, input, 'password');
     click(w, btn);
-    await new Promise(r => setTimeout(r, 400));
+    await waitFor(() => !btn.disabled && d.querySelector('[data-breach-status]').textContent.trim() !== '', 8000);
     ok(d.querySelector('[data-breach-status]').textContent.includes('Found in the demo corpus') || d.querySelector('[data-breach-status]').textContent.includes('Breach detected!'), '"password" detected as breached');
     ok(/^[0-9A-F]{5}[0-9A-F]{35}$/.test(d.querySelector('[data-breach-hash] .prefix').parentElement.textContent.replace(/\s/g, '')), 'SHA-1 shown with prefix');
     type(w, input, 'W7$kQ2!vB9#mPz4@xL8d-unlikely');
     click(w, btn);
-    await new Promise(r => setTimeout(r, 400));
+    await waitFor(() => !btn.disabled && (d.querySelector('[data-breach-status]').textContent.includes('Not found') || d.querySelector('[data-breach-status]').textContent.includes('Good news')), 8000);
     ok(d.querySelector('[data-breach-status]').textContent.includes('Not found in the demo corpus') || d.querySelector('[data-breach-status]').textContent.includes('Good news! Not found in Have I Been Pwned'), 'random string not found, labeled correctly');
     dom.window.close();
   }

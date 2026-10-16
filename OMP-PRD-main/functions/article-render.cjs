@@ -99,8 +99,21 @@ function normalizeInjected(html, title) {
 const TITLE_MAX = 65;
 function documentTitle(title, brand) {
   const text = String(title || '').trim();
-  const branded = text + ' | ' + brand;
-  return branded.length <= TITLE_MAX ? branded : text;
+  const branded = `${text} | ${brand}`;
+  if (branded.length <= TITLE_MAX) return branded;
+  if (text.length <= TITLE_MAX) return text;
+  const separatorMatch = text.match(/^([^:?]+[:?])\s+(.+)$/);
+  if (separatorMatch) {
+    const firstPart = separatorMatch[1].replace(/[:]+$/, '');
+    const brandedFirst = `${firstPart} | ${brand}`;
+    if (brandedFirst.length <= TITLE_MAX) return brandedFirst;
+    if (firstPart.length <= TITLE_MAX) return firstPart;
+  }
+  const cut = text.slice(0, TITLE_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  const trimmed = (lastSpace > 30 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.-]+$/, '');
+  const brandedTrimmed = `${trimmed} | ${brand}`;
+  return brandedTrimmed.length <= TITLE_MAX ? brandedTrimmed : trimmed;
 }
 
 const META_DESCRIPTION_MAX = 160;

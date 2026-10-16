@@ -70,13 +70,56 @@
 </nav>
     <main id="main" class="academy-main">
       <div id="learning-app" aria-busy="false"><div class="academy-shell" data-rail="none"><div class="academy-workspace"><div class="academy-topbar"><span>Academy <span class="topbar-slash">/</span><strong>Learning paths</strong></span><span class="academy-account-btn"><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>No login · Local progress</span></span></div><div class="academy-content"><nav class="academy-breadcrumb" aria-label="Breadcrumb"><a href="/learning">Academy</a><span aria-hidden="true">/</span><span aria-current="page">Learning paths</span></nav>
-<header class="path-hero">
-  <p class="path-eyebrow">Academy</p>
+<header class="path-hero roadmap-hero">
+  <p class="path-eyebrow">Curriculum Roadmap</p>
   <h1>Learning paths</h1>
   <p class="path-lede">Every published course, in the order it is meant to be taken. Pick a path, read what you will learn, and start the first lesson.</p>
-  <p class="path-facts"><span>2 courses</span><span>110 lessons</span><span>1562 min of reading</span></p>
+  <div class="roadmap-facts-bar">
+    <span class="fact-item"><strong>2 domains</strong></span>
+    <span class="fact-item"><strong>2 courses</strong></span>
+    <span class="fact-item"><strong>110 lessons</strong></span>
+    <span class="fact-item"><strong>~26h total study</strong></span>
+    <span class="fact-item fact-privacy"><strong>100% Client-Side Privacy</strong></span>
+  </div>
 </header>
-<section class="path-single" aria-labelledby="how-to-choose">
+<nav class="roadmap-tracks-nav" aria-label="Roadmap domains">
+  <span class="tracks-nav-label">Jump to domain roadmap:</span>
+  <div class="tracks-nav-pills">
+    <a class="track-nav-pill" href="#track-cyber-security"><span class="track-pill-name">Cyber Security</span><span class="track-pill-count">1 course</span></a><a class="track-nav-pill" href="#track-web-application-security"><span class="track-pill-name">Web Application Security</span><span class="track-pill-count">1 course</span></a>
+  </div>
+</nav>
+<section class="roadmap-framework" aria-labelledby="framework-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">LEARNING ARCHITECTURE</span>
+      <h2 id="framework-heading">The 4-stage learning methodology</h2>
+      <p>Every track in the Academy follows a structured progression engineered for real-world mastery.</p>
+    </div>
+  </div>
+  <div class="roadmap-framework-grid">
+    <div class="framework-card">
+      <span class="framework-step">01</span>
+      <h3>Mental Models &amp; Architecture</h3>
+      <p>Build the fundamental model first: understand system components, trust boundaries, and communication flows before inspecting flaws.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">02</span>
+      <h3>Protocol Fluency</h3>
+      <p>Inspect raw request-response messages, HTTP headers, cookies, and tokens rather than relying on GUI assumptions.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">03</span>
+      <h3>Defensive Engineering</h3>
+      <p>Learn how server-side controls enforce authentication, authorization, and safe data handling at trusted boundaries.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">04</span>
+      <h3>Practical Verification</h3>
+      <p>Apply your skills in external practice labs and test your comprehension through local, private self-checks.</p>
+    </div>
+  </div>
+</section>
+<section class="path-single roadmap-decision-guide" aria-labelledby="how-to-choose">
   <div class="section-heading"><div><span class="academy-kicker">How to choose</span><h2 id="how-to-choose">Two questions decide it for you</h2></div></div>
   <div class="path-single-body">
     <div>
@@ -86,6 +129,69 @@
     <div>
       <h3>2. What do you want to be able to do?</h3>
       <p>Read the outcome list on each course. If those outcomes describe work you want to do, that is the course to take.</p>
+    </div>
+  </div>
+</section>
+<section class="roadmap-domain-groups" aria-label="Courses by domain">
+  <div class="roadmap-domain-block" id="track-cyber-security">
+    <div class="domain-block-header">
+      <div>
+        <span class="academy-kicker">DOMAIN TRACK</span>
+        <h2>Cyber Security</h2>
+        <p>A beginner-to-strong-foundation cyber security curriculum: twelve modules covering fundamentals, networks, cryptography, systems, web, offensive and defensive thinking.</p>
+      </div>
+      <div class="domain-block-actions">
+        <a class="btn btn-secondary" href="/learning/cyber-security/roadmap"><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="M8 5h8a4 4 0 0 1 0 8H8a3 3 0 0 0 0 6h8"/></svg> View track roadmap <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="course-index-grid">
+      <article class="course-card" data-course-card data-difficulty="Beginner">
+  <div class="course-card-main">
+    <p class="course-card-path">Cyber Security</p>
+    <h3>Fundamentals to Defence</h3>
+    <p class="course-card-desc">A broad introduction to security: how systems and networks work, how attackers think, and how defenders protect data and identity.</p>
+    <p class="course-card-facts">
+      <span>Beginner</span>
+      <span>12 modules</span>
+      <span>106 lessons</span>
+      <span>1472 min</span>
+    </p>
+  </div>
+  <div class="course-card-side">
+    
+    <a class="btn btn-primary" href="/learning/cyber-security/cyber-security-track">View course <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+  </div>
+</article>
+    </div>
+  </div><div class="roadmap-domain-block" id="track-web-application-security">
+    <div class="domain-block-header">
+      <div>
+        <span class="academy-kicker">DOMAIN TRACK</span>
+        <h2>Web Application Security</h2>
+        <p>Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.</p>
+      </div>
+      <div class="domain-block-actions">
+        <a class="btn btn-secondary" href="/learning/web-application-security/roadmap"><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="M8 5h8a4 4 0 0 1 0 8H8a3 3 0 0 0 0 6h8"/></svg> View track roadmap <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="course-index-grid">
+      <article class="course-card" data-course-card data-difficulty="Beginner">
+  <div class="course-card-main">
+    <p class="course-card-path">Web Application Security</p>
+    <h3>Web Security Foundations</h3>
+    <p class="course-card-desc">Start with how web applications work, then learn how identity, sessions, and access decisions keep users and data safe.</p>
+    <p class="course-card-facts">
+      <span>Beginner</span>
+      <span>2 modules</span>
+      <span>4 lessons</span>
+      <span>90 min</span>
+    </p>
+  </div>
+  <div class="course-card-side">
+    
+    <a class="btn btn-primary" href="/learning/web-application-security/foundations">View course <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+  </div>
+</article>
     </div>
   </div>
 </section>
@@ -128,7 +234,10 @@
 <section class="path-next" id="how-it-works">
   <h2>How a course is organised</h2>
   <p>Each course is split into modules. Each module has one clear goal, and each lesson is short enough to finish in one sitting. You can leave and come back: your progress is stored on this device only, with no account.</p>
-  <a class="text-button" href="#how-to-choose">Back to how to choose <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+  <div class="academy-actions">
+    <a class="btn btn-secondary" href="#how-to-choose">Back to how to choose <svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+    <a class="btn btn-ghost" href="/learning">Explore Academy home</a>
+  </div>
 </section></div></div></div></div>
       <noscript
         ><p class="static-reading-note" id="account">

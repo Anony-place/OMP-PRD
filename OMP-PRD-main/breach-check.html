@@ -61,26 +61,26 @@
 
 <section class="page-hero">
   <div class="container">
-    <span class="badge badge-demo">Educational demo</span>
+    <span class="badge badge-demo">Zero-knowledge k-anonymity</span>
     <h1 class="h-1 mt-16">Breach Check</h1>
-    <p class="lead">Learn how privacy-preserving breach lookup works — and try a transparent local demo. <strong>This page is not connected to a live breach database, and never claims to be.</strong></p>
+    <p class="lead">Check if your password has been exposed in public data breaches using zero-knowledge k-anonymity. Your password is hashed locally in your browser; only a 5-character prefix is queried against Have I Been Pwned. <strong>Your full password never leaves your device.</strong></p>
   </div>
 </section>
 
 <section class="section-tight" style="padding-top:16px">
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad" data-breach>
-      <h2 class="h-3">Try the demo lookup</h2>
-      <p class="muted small mt-8">Type any password. It is SHA-1-hashed locally; only the first 5 hash characters are compared against a tiny built-in demo corpus of known-compromised passwords. Nothing is transmitted.</p>
+      <h2 class="h-3">Check a password for breaches</h2>
+      <p class="muted small mt-8">Enter a password to test. It is hashed locally with SHA-1; only the first 5 characters of the hash are queried via Have I Been Pwned's range API. If offline or unreachable, it falls back to a built-in demo corpus.</p>
       <div class="pw-input-wrap mt-16">
-        <input class="pw-input" type="password" data-breach-input placeholder="Password to demo-check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to demo-check">
+        <input class="pw-input" type="password" data-breach-input placeholder="Password to check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to check">
       </div>
-      <button class="btn btn-primary mt-16" type="button" data-breach-btn>Run demo lookup</button>
+      <button class="btn btn-primary mt-16" type="button" data-breach-btn>Check for breaches</button>
       <div class="hash-view" data-breach-hash hidden></div>
       <div class="breach-result" data-breach-result>
         <div data-breach-status></div>
       </div>
-      <p class="disclaimer mt-16"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span><strong>Demo limitations.</strong> The built-in corpus contains only ~330 famous compromised passwords. "Not found" proves nothing. A production version would use a licensed breach-data API with k-anonymity range queries — and this page would say so explicitly.</span></p>
+      <p class="disclaimer mt-16"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span><strong>Zero-knowledge privacy.</strong> Queries use the industry-standard k-anonymity model: only the 5-character prefix is sent. Neither OopsMyPassword nor Have I Been Pwned ever receives your password or full hash. If the range API is unavailable, the local demo corpus (~330 passwords) is used as an offline fallback.</span></p>
     </div>
 
     <div class="grid" style="align-content:start">

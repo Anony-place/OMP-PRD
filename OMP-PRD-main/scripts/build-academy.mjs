@@ -133,14 +133,40 @@ let template = await readFile(join(ROOT, "tools/academy-shell.html"), "utf8");
 // The Academy ships its own minimal header and a single-row footer. The wider
 // marketing chrome would duplicate navigation and squeeze the reading column,
 // so the shared site footer is deliberately not injected into Academy pages.
-function documentHTML(data, page) {
-  // Legacy editorial titles already carry a site suffix. Never append a second
-  // brand, or lengthen a long descriptive title solely to repeat the site name.
+const TITLE_MAX = 65;
+function formatTitle(rawTitle) {
   const title =
-    page.title.replace(/\s*\|\s*(?:OopsMyPassword|OMP Academy)$/i, "").trim() ||
-    page.title;
+    rawTitle.replace(/\s*\|\s*(?:OopsMyPassword|OMP Academy)$/i, "").trim() ||
+    rawTitle;
   const brandedTitle = title + " | OMP Academy";
-  const documentTitle = brandedTitle.length <= 65 ? brandedTitle : title;
+  if (brandedTitle.length <= TITLE_MAX) return brandedTitle;
+  if (title.length <= TITLE_MAX) return title;
+  const separatorMatch = title.match(/^([^:?]+[:?])\s+(.+)$/);
+  if (separatorMatch) {
+    const firstPart = separatorMatch[1].replace(/[:]+$/, '');
+    const brandedFirst = `${firstPart} | OMP Academy`;
+    if (brandedFirst.length <= TITLE_MAX) return brandedFirst;
+    if (firstPart.length <= TITLE_MAX) return firstPart;
+  }
+  const cut = title.slice(0, TITLE_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  const trimmed = (lastSpace > 30 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.-]+$/, '');
+  const brandedTrimmed = `${trimmed} | OMP Academy`;
+  return brandedTrimmed.length <= TITLE_MAX ? brandedTrimmed : trimmed;
+}
+
+const META_DESCRIPTION_MAX = 160;
+function metaDescription(value) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (text.length <= META_DESCRIPTION_MAX) return text;
+  const cut = text.slice(0, META_DESCRIPTION_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 80 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.-]+$/, '') + '\u2026';
+}
+
+function documentHTML(data, page) {
+  const documentTitle = formatTitle(page.title);
+  const description = metaDescription(page.description);
   let html = template;
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(documentTitle)}</title>`)
@@ -155,12 +181,12 @@ function documentHTML(data, page) {
         .join("\n"),
     );
   for (const [attr, name, value] of [
-    ["name", "description", page.description],
+    ["name", "description", description],
     ["property", "og:title", documentTitle],
-    ["property", "og:description", page.description],
+    ["property", "og:description", description],
     ["property", "og:url", site + page.url],
     ["name", "twitter:title", documentTitle],
-    ["name", "twitter:description", page.description],
+    ["name", "twitter:description", description],
   ]) {
     html = html.replace(
       new RegExp(`<meta\\s+${attr}="${name}"[^>]*>`),

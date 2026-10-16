@@ -27,10 +27,10 @@ export function sidebarView(data, page) {
     (category) => category.id !== c?.id,
   );
   return `<aside class="academy-sidebar"><a class="academy-wordmark" href="${ROOT}"><span class="academy-symbol">${icon("book")}</span><span>Academy<small>STEP BY STEP</small></span></a>
-  <nav class="academy-navigation" aria-label="Academy"><a href="${ROOT}" ${page.type === "overview" ? 'aria-current="page"' : ""}>${icon("grid")}All courses</a>${data.paths.some((p) => p.modules.some((m) => m.topics.length)) > 1 ? `<a href="${ROOT}/roadmap" ${page.type === "roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Learning paths</a>` : ""}</nav>
+  <nav class="academy-navigation" aria-label="Academy"><a href="${ROOT}" ${page.type === "overview" ? 'aria-current="page"' : ""}>${icon("grid")}All courses</a>${data.paths.filter((p) => p.modules.some((m) => m.topics.length)).length > 1 ? `<a href="${ROOT}/roadmap" ${page.type === "roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Learning paths</a>` : ""}</nav>
 ${
   c
-    ? `<div class="sidebar-category-links sidebar-group--current"><span class="academy-nav-label" id="acad-nav-current">THIS LEARNING PATH</span><nav class="academy-navigation" aria-labelledby="acad-nav-current"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a>${c.paths.filter((p) => p.modules.some((m) => m.topics.length)).length > 1 ? `<a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Course order</a>` : ""}${c.paths
+    ? `<div class="sidebar-category-links sidebar-group--current"><span class="academy-nav-label" id="acad-nav-current">THIS LEARNING PATH</span><nav class="academy-navigation" aria-labelledby="acad-nav-current"><a href="${c.url}" ${page.type === "category" ? 'aria-current="page"' : ""}>${esc(c.name)}</a>${c.roadmapUrl ? `<a href="${c.roadmapUrl}" ${page.type === "category-roadmap" ? 'aria-current="page"' : ""}>${icon("path")}Course order</a>` : ""}${c.paths
         .slice(0, 6)
         .map(
           (p) =>
@@ -237,7 +237,71 @@ export function hubView(data, context = {}) {
       : ""
   }
 </section>
+<section class="academy-roadmap-callout" aria-labelledby="roadmap-callout-heading">
+  <div class="callout-card">
+    <div class="callout-copy">
+      <span class="academy-kicker">STRUCTURED LEARNING PATHS</span>
+      <h2 id="roadmap-callout-heading">Looking for a comprehensive, milestone-based roadmap?</h2>
+      <p>Follow a progressive path through our structured curriculum. View milestones, core competencies, prerequisite chains, and ordered modules.</p>
+    </div>
+    <div class="callout-action">
+      <a class="btn btn-primary btn-lg" href="${ROOT}/roadmap">${icon("path")} View learning roadmaps ${icon("arrow")}</a>
+    </div>
+  </div>
+</section>
 ${howItWorks()}`;
+}
+
+function categorySkills(c) {
+  if (c.slug === "web-application-security") {
+    return [
+      {
+        tag: "Architecture",
+        title: "Attack Surface & Boundaries",
+        desc: "Chart system assets, user inputs, and server-side defensive trust boundaries.",
+      },
+      {
+        tag: "Protocols",
+        title: "HTTP Inspection & Flow",
+        desc: "Evaluate methods, headers, cookies, status codes, and message parsing differences.",
+      },
+      {
+        tag: "Identity",
+        title: "Authentication & Sessions",
+        desc: "Safeguard logins, manage session lifecycles, and prevent account enumeration.",
+      },
+      {
+        tag: "Defense",
+        title: "Access Control & Authorization",
+        desc: "Enforce explicit server-side checks to eliminate IDOR and privilege escalation.",
+      },
+    ];
+  }
+  const skills = [];
+  for (const p of c.paths || []) {
+    for (const m of p.modules || []) {
+      if (m.name && m.outcome) {
+        skills.push({
+          tag: esc(p.name),
+          title: esc(m.name),
+          desc: esc(m.outcome),
+        });
+      }
+    }
+  }
+  if (skills.length) return skills.slice(0, 4);
+  return [
+    {
+      tag: "Foundations",
+      title: `${esc(c.name)} Core Concepts`,
+      desc: `Fundamental principles, architecture, and methodologies in ${esc(c.name)}.`,
+    },
+    {
+      tag: "Application",
+      title: "Practical Implementation",
+      desc: `Hands-on practice and defensive verification in ${esc(c.name)}.`,
+    },
+  ];
 }
 
 export function categoryView(data, page, context = {}) {
@@ -251,12 +315,14 @@ export function categoryView(data, page, context = {}) {
   const startLesson =
     single &&
     (single.topics.find((t) => !pmap.get(t.id)?.passed) || single.topics[0]);
+  const skills = categorySkills(c);
+
   return `${breadcrumbView(page)}
 <header class="path-hero">
   <p class="path-eyebrow">Learning path</p>
   <h1>${esc(c.name)}</h1>
   <p class="path-lede">${esc(c.description)}</p>
-  <p class="path-facts"><span>${plural(courses.length, "course")}</span><span>${plural(c.topics.length, "lesson")}</span><span>${minutes(c.topics)} min of reading</span></p>
+  <p class="path-facts"><span>${plural(courses.length, "course")}</span><span>${plural(c.topics.length, "lesson")}</span><span>${minutes(c.topics)} min of reading</span><span>100% Free · No Login</span></p>
 </header>
 ${
   single
@@ -282,6 +348,7 @@ ${
       ? `<div class="path-single-cta">
           <a class="btn btn-primary btn-lg" href="${startLesson.url}" title="${esc(startLesson.name)}">${icon("play")} Start the first lesson</a>
           <a class="btn btn-secondary" href="${single.url}">See the full course structure</a>
+          <a class="btn btn-ghost" href="${c.roadmapUrl}">View learning roadmap</a>
         </div>`
       : ""
   }
@@ -296,6 +363,23 @@ ${
   <div class="course-index-grid">${courses.map((p) => courseCard(p, pmap, context)).join("")}</div>
 </section>`
 }
+<section class="roadmap-skills-section" aria-labelledby="path-skills-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">CORE COMPETENCIES</span>
+      <h2 id="path-skills-heading">What you will master in ${esc(c.name)}</h2>
+      <p>Key practical skills and architectural understanding built through this learning path.</p>
+    </div>
+  </div>
+  <div class="roadmap-skills-grid">
+    ${skills
+      .map(
+        (s) =>
+          `<div class="roadmap-skill-card"><span class="skill-tag">${s.tag}</span><h3>${s.title}</h3><p>${s.desc}</p></div>`,
+      )
+      .join("")}
+  </div>
+</section>
 ${
   /* With a single course there is no choice to help with and no order to
      show, so both blocks would only restate the course inlined above. */
@@ -324,6 +408,14 @@ ${
   <a class="text-button" href="${c.roadmapUrl}">See the full path breakdown ${icon("arrow")}</a>
 </section>`
 }
+<section class="path-roadmap-banner">
+  <div class="banner-content">
+    <span class="academy-kicker">STRUCTURED MILESTONES</span>
+    <h2>Explore the detailed milestone roadmap for ${esc(c.name)}</h2>
+    <p>View the full sequence of modules, prerequisites, outcome goals, and lesson durations in an interactive visual timeline.</p>
+    <a class="btn btn-primary" href="${c.roadmapUrl}">${icon("path")} Open ${esc(c.name)} roadmap ${icon("arrow")}</a>
+  </div>
+</section>
 <section class="path-browse">
   <p>Looking for a different topic?</p>
   <a class="text-button" href="${ROOT}">Browse every learning path ${icon("arrow")}</a>
@@ -375,16 +467,63 @@ export function pathView(data, page, context = {}) {
 export function roadmapView(data, page, context = {}) {
   const pmap = context.pmap || new Map();
   const courses = data.paths.filter((p) => p.modules.some((m) => m.topics.length));
-  const totalLessons = data.pathics ? 0 : data.topics.length;
   const totalMinutes = data.topics.reduce((n, t) => n + Number(t.estimated_minutes || 0), 0);
   return `${breadcrumbView(page)}
-<header class="path-hero">
-  <p class="path-eyebrow">Academy</p>
+<header class="path-hero roadmap-hero">
+  <p class="path-eyebrow">Curriculum Roadmap</p>
   <h1>Learning paths</h1>
   <p class="path-lede">Every published course, in the order it is meant to be taken. Pick a path, read what you will learn, and start the first lesson.</p>
-  <p class="path-facts"><span>${plural(courses.length, "course")}</span><span>${plural(data.topics.length, "lesson")}</span><span>${totalMinutes} min of reading</span></p>
+  <div class="roadmap-facts-bar">
+    <span class="fact-item"><strong>${plural(data.categories.length, "domain")}</strong></span>
+    <span class="fact-item"><strong>${plural(courses.length, "course")}</strong></span>
+    <span class="fact-item"><strong>${plural(data.topics.length, "lesson")}</strong></span>
+    <span class="fact-item"><strong>~${Math.round(totalMinutes / 60)}h total study</strong></span>
+    <span class="fact-item fact-privacy"><strong>100% Client-Side Privacy</strong></span>
+  </div>
 </header>
-<section class="path-single" aria-labelledby="how-to-choose">
+<nav class="roadmap-tracks-nav" aria-label="Roadmap domains">
+  <span class="tracks-nav-label">Jump to domain roadmap:</span>
+  <div class="tracks-nav-pills">
+    ${data.categories
+      .map(
+        (c) =>
+          `<a class="track-nav-pill" href="#track-${c.slug}"><span class="track-pill-name">${esc(c.name)}</span><span class="track-pill-count">${plural(c.paths.length, "course")}</span></a>`,
+      )
+      .join("")}
+  </div>
+</nav>
+<section class="roadmap-framework" aria-labelledby="framework-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">LEARNING ARCHITECTURE</span>
+      <h2 id="framework-heading">The 4-stage learning methodology</h2>
+      <p>Every track in the Academy follows a structured progression engineered for real-world mastery.</p>
+    </div>
+  </div>
+  <div class="roadmap-framework-grid">
+    <div class="framework-card">
+      <span class="framework-step">01</span>
+      <h3>Mental Models &amp; Architecture</h3>
+      <p>Build the fundamental model first: understand system components, trust boundaries, and communication flows before inspecting flaws.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">02</span>
+      <h3>Protocol Fluency</h3>
+      <p>Inspect raw request-response messages, HTTP headers, cookies, and tokens rather than relying on GUI assumptions.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">03</span>
+      <h3>Defensive Engineering</h3>
+      <p>Learn how server-side controls enforce authentication, authorization, and safe data handling at trusted boundaries.</p>
+    </div>
+    <div class="framework-card">
+      <span class="framework-step">04</span>
+      <h3>Practical Verification</h3>
+      <p>Apply your skills in external practice labs and test your comprehension through local, private self-checks.</p>
+    </div>
+  </div>
+</section>
+<section class="path-single roadmap-decision-guide" aria-labelledby="how-to-choose">
   <div class="section-heading"><div><span class="academy-kicker">How to choose</span><h2 id="how-to-choose">Two questions decide it for you</h2></div></div>
   <div class="path-single-body">
     <div>
@@ -397,6 +536,27 @@ export function roadmapView(data, page, context = {}) {
     </div>
   </div>
 </section>
+<section class="roadmap-domain-groups" aria-label="Courses by domain">
+  ${data.categories
+    .map(
+      (c) => `<div class="roadmap-domain-block" id="track-${c.slug}">
+    <div class="domain-block-header">
+      <div>
+        <span class="academy-kicker">DOMAIN TRACK</span>
+        <h2>${esc(c.name)}</h2>
+        <p>${esc(c.description)}</p>
+      </div>
+      <div class="domain-block-actions">
+        <a class="btn btn-secondary" href="${c.roadmapUrl}">${icon("path")} View track roadmap ${icon("arrow")}</a>
+      </div>
+    </div>
+    <div class="course-index-grid">
+      ${c.paths.map((p) => courseCard(p, pmap, { ...context, categories: data.categories })).join("")}
+    </div>
+  </div>`,
+    )
+    .join("")}
+</section>
 <section class="path-courses" aria-labelledby="all-courses-h">
   <div class="section-heading"><div><span class="academy-kicker">Every course</span><h2 id="all-courses-h">Start here</h2></div></div>
   <div class="course-index-grid">${courses.map((p) => courseCard(p, pmap, { ...context, categories: data.categories })).join("")}</div>
@@ -404,14 +564,127 @@ export function roadmapView(data, page, context = {}) {
 <section class="path-next" id="how-it-works">
   <h2>How a course is organised</h2>
   <p>Each course is split into modules. Each module has one clear goal, and each lesson is short enough to finish in one sitting. You can leave and come back: your progress is stored on this device only, with no account.</p>
-  <a class="text-button" href="#how-to-choose">Back to how to choose ${icon("arrow")}</a>
+  <div class="academy-actions">
+    <a class="btn btn-secondary" href="#how-to-choose">Back to how to choose ${icon("arrow")}</a>
+    <a class="btn btn-ghost" href="${ROOT}">Explore Academy home</a>
+  </div>
 </section>`;
 }
 
 export function categoryRoadmapView(data, page) {
   const c = page.category,
     start = recommended(data, c.id);
-  return `${breadcrumbView(page)}<header class="academy-page-heading"><div><span class="academy-kicker">${esc(c.name)}</span><h1>Your roadmap in ${esc(c.name)}.</h1><p>Explore the courses in this learning path and the order of modules within each one.</p></div></header><section class="category-explainer"><span class="academy-kicker">RECOMMENDED STARTING COURSE</span><h2>${esc(start.name)}</h2><p>${esc(start.audience)}</p><h3>Before you start</h3>${list(start.prerequisites)}<a class="btn btn-primary" href="${start.url}">Start this course ${icon("arrow")}</a></section><section class="roadmap-order"><h2>Courses and their module order</h2>${c.paths.map((p) => `<div class="roadmap-path"><div class="section-heading"><h3><a href="${p.url}">${esc(p.name)}</a></h3><span class="small muted">${plural(p.topics.length, "lesson")}</span></div><p>${esc(p.description)}</p><ol class="roadmap-timeline">${p.modules.map((m, i) => `<li><span class="roadmap-stop" aria-hidden="true">${i + 1}</span><div><h4>${esc(m.name)}</h4><p>${esc(m.outcome)}</p><ul>${m.topics.map((t) => `<li><a href="${t.url}">${esc(t.name)} →</a></li>`).join("")}</ul></div></li>`).join("")}</ol><a class="text-button" href="${p.url}">See course details →</a></div>`).join("")}</section><section class="academy-next-note" id="next-steps"><h2>Choose your next course.</h2><p>Finish or review your current course's outcomes, then compare another course's prerequisites.</p><a class="text-button" href="${c.url}">Compare courses in ${esc(c.name)} →</a></section>`;
+  const skills = categorySkills(c);
+  const totalMinutes = c.topics.reduce((n, t) => n + Number(t.estimated_minutes || 0), 0);
+
+  return `${breadcrumbView(page)}
+<header class="academy-page-heading roadmap-hero">
+  <div>
+    <span class="academy-kicker">LEARNING PATH ROADMAP · ${esc(c.name)}</span>
+    <h1>Your roadmap in ${esc(c.name)}.</h1>
+    <p>Explore the courses in this learning path and the order of modules within each one.</p>
+    <div class="roadmap-facts-bar">
+      <span class="fact-item"><strong>${plural(c.paths.length, "course")}</strong></span>
+      <span class="fact-item"><strong>${plural(c.topics.length, "lesson")}</strong></span>
+      <span class="fact-item"><strong>~${totalMinutes} min reading</strong></span>
+      <span class="fact-item fact-privacy"><strong>Client-Side Progress</strong></span>
+    </div>
+  </div>
+</header>
+<section class="category-explainer roadmap-start">
+  <div>
+    <span class="academy-kicker">RECOMMENDED STARTING COURSE</span>
+    <h2>${esc(start.name)}</h2>
+    <p>${esc(start.audience)}</p>
+    <div class="roadmap-start-actions">
+      <a class="btn btn-primary btn-lg" href="${start.url}">${icon("play")} Start this course ${icon("arrow")}</a>
+      <a class="btn btn-secondary" href="${c.url}">View path overview</a>
+    </div>
+  </div>
+  <div>
+    <h3>Before you start</h3>
+    ${list(start.prerequisites)}
+  </div>
+</section>
+<section class="roadmap-skills-section" aria-labelledby="skills-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">CORE COMPETENCIES</span>
+      <h2 id="skills-heading">What you will master in this path</h2>
+      <p>Targeted capabilities and verifiable mental models you will build across each module.</p>
+    </div>
+  </div>
+  <div class="roadmap-skills-grid">
+    ${skills
+      .map(
+        (s) =>
+          `<div class="roadmap-skill-card"><span class="skill-tag">${s.tag}</span><h3>${s.title}</h3><p>${s.desc}</p></div>`,
+      )
+      .join("")}
+  </div>
+</section>
+<section class="roadmap-order" aria-labelledby="timeline-heading">
+  <div class="section-heading">
+    <div>
+      <span class="academy-kicker">CURRICULUM TIMELINE</span>
+      <h2 id="timeline-heading">Courses and their module order</h2>
+      <p>Follow modules in order. Each milestone cements foundational concepts before advancing.</p>
+    </div>
+  </div>
+  ${c.paths
+    .map(
+      (p) => `<div class="roadmap-path">
+    <div class="section-heading">
+      <div>
+        <span class="academy-kicker">COURSE MILESTONES</span>
+        <h3><a href="${p.url}">${esc(p.name)}</a></h3>
+      </div>
+      <span class="small muted">${plural(p.topics.length, "lesson")} · ${minutes(p.topics)} min</span>
+    </div>
+    <p class="roadmap-path-desc">${esc(p.description)}</p>
+    <ol class="roadmap-timeline">
+      ${p.modules
+        .map(
+          (m, i) => `<li>
+        <span class="roadmap-stop" aria-hidden="true">${i + 1}</span>
+        <div class="roadmap-milestone-content">
+          <div class="roadmap-milestone-header">
+            <h4>${esc(m.name)}</h4>
+            <span class="milestone-badge">Module ${i + 1}</span>
+          </div>
+          <div class="roadmap-milestone-goal">
+            <span class="goal-label">Milestone outcome:</span>
+            <p>${esc(m.outcome)}</p>
+          </div>
+          <p class="roadmap-milestone-desc">${esc(m.description)}</p>
+          <div class="roadmap-lessons-pill-grid">
+            ${m.topics
+              .map(
+                (t, idx) =>
+                  `<a class="roadmap-lesson-pill" href="${t.url}"><span class="pill-number">${idx + 1}</span><span class="pill-title">${esc(t.name)}</span><span class="pill-time">${Number(t.estimated_minutes)}m</span><span class="pill-arrow" aria-hidden="true">→</span></a>`,
+              )
+              .join("")}
+          </div>
+        </div>
+      </li>`,
+        )
+        .join("")}
+    </ol>
+    <div class="roadmap-path-footer">
+      <a class="btn btn-secondary" href="${p.url}">See full course structure ${icon("arrow")}</a>
+    </div>
+  </div>`,
+    )
+    .join("")}
+</section>
+<section class="academy-next-note" id="next-steps">
+  <h2>Choose your next course.</h2>
+  <p>Finish or review your current course's outcomes, then compare another course's prerequisites.</p>
+  <div class="academy-actions">
+    <a class="btn btn-primary" href="${c.url}">Compare courses in ${esc(c.name)} ${icon("arrow")}</a>
+    <a class="btn btn-ghost" href="${ROOT}/roadmap">Browse all domain roadmaps</a>
+  </div>
+</section>`;
 }
 export function blocksView(blocks) {
   return blocks

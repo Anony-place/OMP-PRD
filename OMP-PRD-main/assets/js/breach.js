@@ -54,9 +54,12 @@
   }
 
   function checkLiveHibp(prefix, suffix) {
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, 3500) : null;
     return fetch('https://api.pwnedpasswords.com/range/' + prefix, {
       headers: { 'Add-Padding': 'true' },
-      cache: 'no-cache'
+      cache: 'no-cache',
+      signal: controller ? controller.signal : undefined
     })
       .then(function (res) {
         if (!res.ok) throw new Error('HIBP status ' + res.status);
@@ -71,6 +74,9 @@
           }
         }
         return { found: false, count: 0, live: true };
+      })
+      .finally(function () {
+        if (timer) clearTimeout(timer);
       });
   }
 

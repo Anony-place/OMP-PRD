@@ -227,7 +227,20 @@ const TITLE_MAX = 65;
 function documentTitle(title, brand) {
   const text = String(title || '').trim();
   const branded = `${text} | ${brand}`;
-  return branded.length <= TITLE_MAX ? branded : text;
+  if (branded.length <= TITLE_MAX) return branded;
+  if (text.length <= TITLE_MAX) return text;
+  const separatorMatch = text.match(/^([^:?]+[:?])\s+(.+)$/);
+  if (separatorMatch) {
+    const firstPart = separatorMatch[1].replace(/[:]+$/, '');
+    const brandedFirst = `${firstPart} | ${brand}`;
+    if (brandedFirst.length <= TITLE_MAX) return brandedFirst;
+    if (firstPart.length <= TITLE_MAX) return firstPart;
+  }
+  const cut = text.slice(0, TITLE_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  const trimmed = (lastSpace > 30 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.-]+$/, '');
+  const brandedTrimmed = `${trimmed} | ${brand}`;
+  return brandedTrimmed.length <= TITLE_MAX ? brandedTrimmed : trimmed;
 }
 
 const META_DESCRIPTION_MAX = 160;
@@ -296,7 +309,13 @@ function hubToolHtml(hub, tool, catName, related) {
   if (official) toolSchema.downloadUrl = official;
   if (String(tool.pricing || 'free') === 'free') toolSchema.offers = { '@type': 'Offer', price: '0', priceCurrency: 'USD' };
   const crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: cfg.hubName, item: `${SITE}${cfg.base}` }];
-  if (catName) crumbs.push({ '@type': 'ListItem', position: 3, name: catName, item: `${SITE}${cfg.base}#/c/${encodeURIComponent(tool.category_slug || '')}` });
+  let catItemUrl = '';
+  if (catName) {
+    catItemUrl = hub === 'pentest' && tool.category_slug
+      ? `${cfg.base}/category/${encodeURIComponent(tool.category_slug)}`
+      : `${cfg.base}#/c/${encodeURIComponent(tool.category_slug || '')}`;
+    crumbs.push({ '@type': 'ListItem', position: 3, name: catName, item: `${SITE}${catItemUrl}` });
+  }
   crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name, item: canonical });
   const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs };
   const links = [official ? `<a class="btn btn-primary" href="${esc(official)}" rel="noopener noreferrer">Open official site →</a>` : '', github ? `<a class="btn btn-secondary" href="${esc(github)}" rel="noopener noreferrer">GitHub</a>` : '', docs ? `<a class="btn btn-ghost" href="${esc(docs)}" rel="noopener noreferrer">Docs</a>` : ''].filter(Boolean).join('');
@@ -327,7 +346,7 @@ function hubToolHtml(hub, tool, catName, related) {
   }).join('');
   const metaChips = [`<span class="chip">${esc(catName || cfg.fallbackCat)}</span>`, `<span class="chip">${esc(pricing)}</span>`, ...access.map((a) => `<span class="chip">${esc(a)}</span>`), ...(tool.featured ? ['<span class="chip">★ Featured</span>'] : []), ...(updated ? [`<span class="chip">Updated ${esc(updated)}</span>`] : [])].join('');
   const head = commonHead({ title: documentTitle(name, cfg.brand), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [toolSchema, breadcrumb], published, modified });
-  return `${head}<body>${siteHeader(cfg.base)}${siteMobileMenu(cfg.base)}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="${cfg.base}">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/osint" style="color:var(--purple)">${cfg.hubName}</a>${catName ? ` <span class="divider-dot">/</span> <span>${esc(catName)}</span>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every ${cfg.keepExploring} in the <a href="${cfg.base}">${cfg.hubName}</a>.</p></div><p class="muted small" style="margin-top:20px">${cfg.footerNote}</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  return `${head}<body>${siteHeader(cfg.base)}${siteMobileMenu(cfg.base)}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="${cfg.base}">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="${cfg.base}" style="color:var(--purple)">${cfg.hubName}</a>${catName ? ` <span class="divider-dot">/</span> <a href="${catItemUrl}" style="color:var(--purple)">${esc(catName)}</a>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every ${cfg.keepExploring} in the <a href="${cfg.base}">${cfg.hubName}</a>.</p></div><p class="muted small" style="margin-top:20px">${cfg.footerNote}</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 function osintHtml(tool, catName, related) {
   return hubToolHtml('osint', tool, catName, related);
@@ -416,7 +435,10 @@ async function main() {
   for (const tool of osintTools) {
     if (!isValidSlug(tool.slug)) continue;
     const cat = catById.get(tool.category_id);
-    const siblings = osintTools.filter((o) => o && o.category_id && o.category_id === tool.category_id && o.slug !== tool.slug && isValidSlug(o.slug));
+    let siblings = osintTools.filter((o) => o && o.category_id && o.category_id === tool.category_id && o.slug !== tool.slug && isValidSlug(o.slug));
+    if (!siblings.length) {
+      siblings = osintTools.filter((o) => o && o.slug !== tool.slug && isValidSlug(o.slug)).slice(0, 3);
+    }
     await writeFile(join(OSINT_DIR, `${tool.slug}.html`), osintHtml({ ...tool, category_slug: cat ? cat.slug : '' }, cat ? cat.name : '', siblings), 'utf8');
     osintPages++;
   }
