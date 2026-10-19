@@ -1,8 +1,43 @@
+# OopsMyPassword robots.txt
+# Allow all crawlers to access tools and guides
+# Block low-value article content that dilutes topical authority
+
 User-agent: *
 Allow: /
-Disallow: /Anony.su/
-Disallow: /functions/
+Allow: /checker
+Allow: /generator
+Allow: /breach-check
+Allow: /passphrase
+Allow: /entropy
+Allow: /random-string
+Allow: /password-health
+Allow: /security-checklist
+Allow: /guides/
+Allow: /learning/
+Allow: /products/
+Allow: /pentest/
+Allow: /osint/
+Allow: /about/
+Allow: /privacy/
+Allow: /terms/
+Allow: /contact/
+Allow: /faq/
+Allow: /glossary/
+Allow: /sitemap.html
+Allow: /sitemap.xml
+Allow: /google-sitemap.xml
 
-# Submit this exact URL in Google Search Console on the
-# https://oopsmypassword.web.app URL-prefix property.
+# Block off-brand article content that consumes crawl budget
+Disallow: /articles/
+
+# Block duplicate/parameter URLs
+Disallow: /*?
+Disallow: /*&
+Disallow: /*.html$
+
+# Crawl-delay for polite crawling
+Crawl-delay: 10
+
+# Sitemap
 Sitemap: https://oopsmypassword.web.app/sitemap.xml
+Sitemap: https://oopsmypassword.web.app/google-sitemap.xml
