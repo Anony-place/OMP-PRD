@@ -1,10 +1,8 @@
-# OopsMyPassword robots.txt
-
 User-agent: *
 Allow: /
-
-# Private or non-public application paths
 Disallow: /Anony.su/
 Disallow: /functions/
 
+# Submit this exact URL in Google Search Console on the
+# https://oopsmypassword.web.app URL-prefix property.
 Sitemap: https://oopsmypassword.web.app/sitemap.xml

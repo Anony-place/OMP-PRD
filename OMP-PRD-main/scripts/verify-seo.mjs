@@ -30,7 +30,7 @@ const require = createRequire(import.meta.url);
    sitemap is checked against how Hosting will actually route each URL. */
 const createRouter = require('../tools/hosting_router.js');
 
-const ROOT = process.cwd();
+const ROOT = fs.existsSync(path.join(process.cwd(), 'firebase.json')) ? process.cwd() : path.join(process.cwd(), 'OMP-PRD-main');
 const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '');
 /* The retired apex domain. It has no DNS record, so any canonical or sitemap
    URL pointing at it keeps that page out of the index. */

@@ -1,0 +1,12 @@
+{
+  "name": "omp-static-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "OopsMyPassword — Privacy-first password tools and cybersecurity Academy",
+  "scripts": {
+    "dev": "node OMP-PRD-main/tools/preview_server.js 3000",
+    "build": "node --check OMP-PRD-main/tools/preview_server.js",
+    "start": "node OMP-PRD-main/tools/preview_server.js 3000",
+    "lint": "node --check OMP-PRD-main/tools/preview_server.js"
+  }
+}

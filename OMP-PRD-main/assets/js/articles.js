@@ -746,6 +746,16 @@
     render();
   }
 
+  async function fetchSnapshotArticles() {
+    var res = await timedFetch('/assets/data/hubs-snapshot.json');
+    if (!res || !res.ok) throw new Error('Snapshot unavailable');
+    var snap = await res.json();
+    return {
+      articles: Array.isArray(snap && snap.articles) ? snap.articles : [],
+      categories: Array.isArray(snap && snap.article_categories) ? snap.article_categories : []
+    };
+  }
+
   async function load() {
     if (loadState === 'loading') return;
     loadState = 'loading';
@@ -766,6 +776,15 @@
       loadState = 'ready';
       render();
     } catch (error) {
+      try {
+        var snap = await fetchSnapshotArticles();
+        var snapItems = (snap.articles || []).filter(isRenderable).map(normalizeDbItem);
+        lastArticles = staticGuideItems().concat(snapItems).sort(byDateDesc);
+        lastCategories = mergeCategories(snap.categories);
+        loadState = 'ready';
+        render();
+        return;
+      } catch (snapErr) { /* fall through to error fallback */ }
       console.error('Article feed error:', error);
       lastErrorKind = isTimeoutError(error) ? 'timeout' : 'network';
       errorFallback();

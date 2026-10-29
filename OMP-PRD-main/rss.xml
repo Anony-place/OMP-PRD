@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OopsMyPassword — Cybersecurity, OSINT &amp; Privacy Feed</title>
+    <link>https://oopsmypassword.web.app/</link>
+    <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
+    <language>en-us</language>
+    <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Bitwarden vs 1Password: Security &amp; Vault Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/bitwarden-vs-1password</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/bitwarden-vs-1password</guid>
+      <category>Password Managers</category>
+      <description>Head-to-head comparison of Bitwarden and 1Password across encryption architecture, Secret Key defense, open-source auditing, self-hosting, and pricing.</description>
+    </item>
+    <item>
+      <title>Bitwarden vs Proton Pass: Privacy &amp; Encryption Guide</title>
+      <link>https://oopsmypassword.web.app/compare/bitwarden-vs-proton-pass</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/bitwarden-vs-proton-pass</guid>
+      <category>Password Managers</category>
+      <description>Compare Bitwarden and Proton Pass across end-to-end metadata encryption, hide-my-email aliases, Argon2id key derivation, and Swiss privacy laws.</description>
+    </item>
+    <item>
+      <title>KeePassXC vs Bitwarden: Offline Vault vs Cloud Sync</title>
+      <link>https://oopsmypassword.web.app/compare/keepassxc-vs-bitwarden</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/keepassxc-vs-bitwarden</guid>
+      <category>Password Managers</category>
+      <description>Should you store passwords in a local offline KDBX 4.1 file with KeePassXC or a zero-knowledge cloud vault with Bitwarden? Threat model comparison.</description>
+    </item>
+    <item>
+      <title>YubiKey vs Synced Passkeys: FIDO2 Auth Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/yubikey-vs-passkeys</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/yubikey-vs-passkeys</guid>
+      <category>Authentication</category>
+      <description>Compare hardware security keys (YubiKey 5 / FIDO2 device-bound passkeys) against cloud-synced passkeys in Apple iCloud Keychain, Google, and Bitwarden.</description>
+    </item>
+    <item>
+      <title>Nmap vs Masscan: Network Port Scanner Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/nmap-vs-masscan</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/nmap-vs-masscan</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Technical comparison of Nmap and Masscan across packet transmission architecture, service version fingerprinting, NSE scripting, and scan accuracy.</description>
+    </item>
+    <item>
+      <title>Burp Suite vs OWASP ZAP: Web Security Proxy Guide</title>
+      <link>https://oopsmypassword.web.app/compare/burp-suite-vs-owasp-zap</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/burp-suite-vs-owasp-zap</guid>
+      <category>Web App Security</category>
+      <description>Compare Burp Suite and OWASP ZAP for manual HTTP request tampering, automated DAST CI/CD scanning, Intruder fuzzing, and extension ecosystems.</description>
+    </item>
+    <item>
+      <title>ffuf vs Gobuster: Web Fuzzing &amp; Content Discovery</title>
+      <link>https://oopsmypassword.web.app/compare/ffuf-vs-gobuster</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/ffuf-vs-gobuster</guid>
+      <category>Web App Security</category>
+      <description>Compare ffuf and Gobuster for directory brute-forcing, virtual host enumeration, POST parameter fuzzing, auto-calibration, and response filtering.</description>
+    </item>
+    <item>
+      <title>sqlmap vs Manual SQL Injection Testing: Pentest Guide</title>
+      <link>https://oopsmypassword.web.app/compare/sqlmap-vs-manual-sqli</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/sqlmap-vs-manual-sqli</guid>
+      <category>Web App Security</category>
+      <description>When should pentesters use automated sqlmap versus manual Boolean, time-based, and UNION SQL injection verification in Burp Repeater?</description>
+    </item>
+    <item>
+      <title>Sherlock vs Maigret: Username OSINT Tool Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/sherlock-vs-maigret</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/sherlock-vs-maigret</guid>
+      <category>OSINT &amp; Recon</category>
+      <description>Compare Sherlock and Maigret for username OSINT investigations across site coverage, profile metadata parsing, recursive handle pivoting, and HTML/PDF reporting.</description>
+    </item>
+    <item>
+      <title>OWASP Amass vs Subfinder: Subdomain Recon Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/amass-vs-subfinder</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/amass-vs-subfinder</guid>
+      <category>OSINT &amp; Recon</category>
+      <description>Compare OWASP Amass and ProjectDiscovery Subfinder for passive subdomain discovery, ASN &amp; BGP mapping, DNS brute-forcing, and Unix pipeline speed.</description>
+    </item>
+    <item>
+      <title>Shodan vs Censys: Internet Exposure Search Comparison</title>
+      <link>https://oopsmypassword.web.app/compare/shodan-vs-censys</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/shodan-vs-censys</guid>
+      <category>OSINT &amp; Recon</category>
+      <description>Compare Shodan and Censys for external attack-surface discovery, TLS certificate hunting, ICS/IoT banner analysis, and origin IP discovery behind CDNs.</description>
+    </item>
+    <item>
+      <title>Wireshark vs tcpdump: Packet Capture &amp; Analysis Guide</title>
+      <link>https://oopsmypassword.web.app/compare/wireshark-vs-tcpdump</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/wireshark-vs-tcpdump</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Compare Wireshark and tcpdump for live network packet capture, BPF capture filters, display filter forensics, TLS decryption, and incident response.</description>
+    </item>
+    <item>
+      <title>Nmap Command Cheat Sheet: Discovery, Stealth &amp; NSE</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Copy-ready Nmap CLI commands for host discovery, SYN/TCP/UDP port scanning, service fingerprinting, NSE vulnerability scripts, and output formats.</description>
+    </item>
+    <item>
+      <title>Google Dorks Cheat Sheet for OSINT &amp; Bug Bounty Recon</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet</guid>
+      <category>OSINT &amp; Recon</category>
+      <description>Essential Google search operators (site, filetype, inurl, intitle, intext) for discovering exposed configuration files, portals, and cloud buckets.</description>
+    </item>
+    <item>
+      <title>ffuf Web Fuzzing Cheat Sheet: Directories, Vhosts &amp; APIs</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/ffuf-web-fuzzing-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/ffuf-web-fuzzing-cheatsheet</guid>
+      <category>Web App Security</category>
+      <description>Practical ffuf one-liners for directory discovery, virtual host enumeration, GET/POST parameter fuzzing, auto-calibration, and rate limiting.</description>
+    </item>
+    <item>
+      <title>Wireshark Display Filters Cheat Sheet for Packet Analysis</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/wireshark-display-filters-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/wireshark-display-filters-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>High-signal Wireshark and tshark display filters for hunting suspicious HTTP requests, DNS tunneling, TLS handshakes, TCP anomalies, and SMB traffic.</description>
+    </item>
+    <item>
+      <title>sqlmap Cheat Sheet: Authorized SQL Injection Verification</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/sqlmap-pentest-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/sqlmap-pentest-cheatsheet</guid>
+      <category>Web App Security</category>
+      <description>Safe, controlled sqlmap flags for testing captured Burp HTTP requests, tuning --level and --risk, rate limiting, and verifying parameterization.</description>
+    </item>
+    <item>
+      <title>Linux Privilege Escalation Cheat Sheet: Enumeration &amp; Hardening</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/linux-privilege-escalation-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/linux-privilege-escalation-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Essential Linux local enumeration commands for auditing sudoers rules, SUID binaries, file capabilities, cron jobs, and exposed credentials.</description>
+    </item>
+    <item>
+      <title>Active Directory Enumeration Cheat Sheet: LDAP, Kerberos &amp; SMB</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/active-directory-enumeration-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/active-directory-enumeration-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Authorized Active Directory security assessment commands for SMB signing checks, BloodHound collection, SPN Kerberoasting, and AD CS auditing.</description>
+    </item>
+    <item>
+      <title>Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet</guid>
+      <category>OSINT &amp; Recon</category>
+      <description>Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.</description>
+    </item>
+    <item>
+      <title>HTTP Security Headers Cheat Sheet: CSP, HSTS &amp; CORS Hardening</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/http-security-headers-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/http-security-headers-cheatsheet</guid>
+      <category>Web App Security</category>
+      <description>Copy-ready HTTP response headers (Strict-Transport-Security, Content-Security-Policy, X-Frame-Options, Permissions-Policy) and curl audit commands.</description>
+    </item>
+    <item>
+      <title>Incident Response First-Hour Cheat Sheet: Triage &amp; Containment</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet</guid>
+      <category>Defensive Security</category>
+      <description>First-hour Linux &amp; account compromise triage checklist: preserving volatile network/process state, isolating hosts, and revoking active sessions.</description>
+    </item>
+  </channel>
+</rss>

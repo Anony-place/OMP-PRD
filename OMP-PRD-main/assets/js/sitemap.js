@@ -116,8 +116,18 @@
     })
     .catch(function () {
       clearTimeout(timer);
-      /* Silent by design — the baked-in index above is already complete
-         for crawlers and for humans. */
-      finish();
+      fetch('/assets/data/hubs-snapshot.json')
+        .then(function (r) { return r && r.ok ? r.json() : null; })
+        .then(function (snap) {
+          if (done || !snap) { finish(); return; }
+          finish();
+          show({
+            articles: (snap.articles || []).map(function (a) { return { title: a.title, url: '/articles/' + a.slug }; }),
+            products: (snap.products || []).map(function (p) { return { title: p.name, url: '/products/' + p.slug }; }),
+            osint: (snap.osint || []).map(function (o) { return { title: o.name, url: '/osint/' + o.slug }; }),
+            pentest: (snap.pentest || []).map(function (t) { return { title: t.name, url: '/pentest/' + t.slug }; })
+          });
+        })
+        .catch(function () { finish(); });
     });
 })();

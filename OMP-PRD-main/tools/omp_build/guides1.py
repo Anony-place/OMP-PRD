@@ -259,7 +259,7 @@ G5 = {
 
 <h2 id="types">The main types, ranked (weakest to strongest)</h2>
 <ol>
-  <li><strong>SMS codes.</strong> Better than nothing. Vulnerable to SIM-swapping and number port-out fraud.</li>
+  <li><strong>SMS codes.</strong> Better than nothing. Vulnerable to SIM-swapping and number port-out fraud (see <a href="/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead">Is SMS 2FA Safe in 2026?</a>).</li>
   <li><strong>Email codes.</strong> Similar tier; only as strong as your email account.</li>
   <li><strong>Authenticator apps (TOTP).</strong> Free, offline, phishing-resistant-ish. Codes rotate every 30 seconds. Still typeable into a phishing page in real time.</li>
   <li><strong>Push approvals with number matching.</strong> Convenient; approve with care — unexpected prompts mean someone has your password.</li>

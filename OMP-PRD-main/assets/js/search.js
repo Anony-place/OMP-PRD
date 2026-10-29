@@ -26,6 +26,9 @@
     { type: 'Tool', title: 'Password Health Check', desc: 'A 10-point local audit of your password habits — nothing leaves your device.', url: '/password-health', kw: 'audit habits reuse hygiene health checkup score' },
     { type: 'Tool', title: 'Breach Check (k-Anonymity Demo)', desc: 'See how breach lookups work with k-anonymity — SHA-1 hashed locally.', url: '/breach-check', kw: 'breach pwned leaked have i been k-anonymity sha1 hash demo' },
     { type: 'Tool', title: 'Security Checklist', desc: '16 habits for safer accounts, from 2FA to password manager setup.', url: '/security-checklist', kw: 'habits checklist 2fa safer accounts tips list' },
+    { type: 'Tool', title: 'Google Dork & OSINT Query Builder', desc: 'Compose site:, filetype:, inurl:, intitle:, and intext: queries with 24 presets.', url: '/dork-builder', kw: 'google dork osint search query builder filetype inurl intitle shodan recon' },
+    { type: 'Tool', title: 'Hash, JWT & Encoding Inspector', desc: 'Offline SHA-256/512 calculator, password hash identifier, JWT security auditor, and Base64 encoder.', url: '/hash-inspector', kw: 'hash sha256 sha512 argon2id bcrypt jwt decoder token base64 hex inspector' },
+    { type: 'Tool', title: 'Phishing URL & Link Risk Scanner', desc: 'Detect IDN homograph punycode (xn--), @-authority tricks, and brand typosquatting locally.', url: '/url-scanner', kw: 'phishing url scanner link checker punycode homograph typosquatting safe' },
 
     /* Academy: public curriculum, not signed-in learner records. */
     { type: 'Page', title: 'OMP Academy', desc: 'Explore subjects, choose a course, and learn through focused modules and lessons.', url: '/learning', kw: 'academy learn training education courses subjects curriculum programming security' },
@@ -33,6 +36,8 @@
     /* Site pages */
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
     { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools', kw: 'tools overview all list utilities' },
+    { type: 'Page', title: 'Tool Comparisons Hub (VS)', desc: '12 head-to-head security, password manager, OSINT, and pentest tool comparisons.', url: '/compare', kw: 'compare vs comparison bitwarden 1password nmap masscan burp zap sherlock maigret' },
+    { type: 'Page', title: 'CLI Cheat Sheets Hub', desc: '10 interactive, printable CLI cheat sheets for Nmap, ffuf, Wireshark, sqlmap, Linux PrivEsc, and AD.', url: '/cheatsheets', kw: 'cheatsheets cheat sheet cli commands nmap ffuf wireshark sqlmap linux active directory' },
     { type: 'Page', title: 'Articles', desc: 'Every read in one hub: security news, deep dives, how-tos and guides.', url: '/articles', kw: 'blog articles posts news updates guides learn tutorials help content hub' },
     { type: 'Product Page', title: 'Products', desc: 'Books, courses, tools and resources from OopsMyPassword.', url: '/products', kw: 'products shop store buy purchase book books course template resource pricing' },
     { type: 'Page', title: 'OSINT Hub', desc: 'OSINT tools by category — username, email, domain, phone, image and all-in-one — with install guides and official links.', url: '/osint', kw: 'osint hub investigation username email domain phone image sherlock holehe tools catalog' },
@@ -40,11 +45,37 @@
     { type: 'Page', title: 'About OopsMyPassword', desc: 'Privacy-first password tools — the mission.', url: '/about', kw: 'about team mission privacy first who' },
     { type: 'Page', title: 'Contact', desc: 'Questions, feedback or bug reports.', url: '/contact', kw: 'contact email support feedback report' },
     { type: 'Page', title: 'FAQ', desc: 'Frequently asked questions, answered.', url: '/faq', kw: 'faq questions answers help common' },
-    { type: 'Page', title: 'Security Glossary', desc: 'Plain-English definitions of security terms.', url: '/glossary', kw: 'glossary terms definitions dictionary meaning' },
+    { type: 'Page', title: 'Security Glossary', desc: 'Thirty security, cryptography, web, and OSINT terms defined in depth.', url: '/glossary', kw: 'glossary terms definitions dictionary meaning' },
     { type: 'Page', title: 'Security & Responsible Disclosure', desc: 'How we protect the site and how to report a vulnerability.', url: '/security', kw: 'security disclosure report vulnerability cve responsible' },
     { type: 'Page', title: 'Privacy Policy', desc: 'What we collect (almost nothing) and why.', url: '/privacy', kw: 'privacy policy data collection cookies' },
     { type: 'Page', title: 'Terms of Use', desc: 'The legal bits of using OopsMyPassword.', url: '/terms', kw: 'terms of use legal conditions' },
     { type: 'Page', title: 'Sitemap', desc: 'Every page on the site, listed.', url: '/sitemap', kw: 'sitemap all pages list index' },
+
+    /* Comparisons (/compare/<slug>) */
+    { type: 'Comparison', title: 'Bitwarden vs 1Password', desc: 'Open-source vault vs 128-bit Secret Key architecture.', url: '/compare/bitwarden-vs-1password', kw: 'bitwarden 1password compare password manager vault' },
+    { type: 'Comparison', title: 'Bitwarden vs Proton Pass', desc: 'Self-hostable vault vs Swiss privacy and SimpleLogin email aliases.', url: '/compare/bitwarden-vs-proton-pass', kw: 'bitwarden proton pass alias compare' },
+    { type: 'Comparison', title: 'KeePassXC vs Bitwarden', desc: 'Local offline KDBX database vs zero-knowledge cloud sync.', url: '/compare/keepassxc-vs-bitwarden', kw: 'keepassxc bitwarden offline kdbx compare' },
+    { type: 'Comparison', title: 'YubiKey vs Synced Passkeys', desc: 'Hardware FIDO2 security keys vs synced platform passkeys.', url: '/compare/yubikey-vs-passkeys', kw: 'yubikey passkey webauthn fido2 hardware key' },
+    { type: 'Comparison', title: 'Nmap vs Masscan', desc: 'Deep service enumeration vs asynchronous high-speed port sweeping.', url: '/compare/nmap-vs-masscan', kw: 'nmap masscan port scanner network pentest' },
+    { type: 'Comparison', title: 'Burp Suite vs OWASP ZAP', desc: 'Manual web pentesting proxy vs open-source CI/CD DAST scanner.', url: '/compare/burp-suite-vs-owasp-zap', kw: 'burp suite owasp zap web proxy pentest' },
+    { type: 'Comparison', title: 'ffuf vs Gobuster', desc: 'Flexible web fuzzing with auto-calibration vs dedicated dir/dns modes.', url: '/compare/ffuf-vs-gobuster', kw: 'ffuf gobuster web fuzzing directory' },
+    { type: 'Comparison', title: 'sqlmap vs Manual SQLi', desc: 'Automated SQL injection exploitation vs manual Burp Repeater testing.', url: '/compare/sqlmap-vs-manual-sqli', kw: 'sqlmap sqli sql injection manual' },
+    { type: 'Comparison', title: 'Sherlock vs Maigret', desc: 'Fast CLI username checks vs deep profile metadata & HTML reports.', url: '/compare/sherlock-vs-maigret', kw: 'sherlock maigret username osint' },
+    { type: 'Comparison', title: 'OWASP Amass vs Subfinder', desc: 'Comprehensive attack-surface graph vs fast passive subdomain discovery.', url: '/compare/amass-vs-subfinder', kw: 'amass subfinder subdomain recon osint' },
+    { type: 'Comparison', title: 'Shodan vs Censys', desc: 'IoT/service banner search vs X.509 certificate transparency intelligence.', url: '/compare/shodan-vs-censys', kw: 'shodan censys exposure search certificate' },
+    { type: 'Comparison', title: 'Wireshark vs tcpdump', desc: 'Graphical deep packet dissection vs headless server PCAP capture.', url: '/compare/wireshark-vs-tcpdump', kw: 'wireshark tcpdump pcap packet capture' },
+
+    /* Cheat Sheets (/cheatsheets/<slug>) */
+    { type: 'Cheat Sheet', title: 'Nmap Command Cheat Sheet', desc: 'Host discovery, SYN scan, NSE scripts, and output flags.', url: '/cheatsheets/nmap-command-cheatsheet', kw: 'nmap cheat sheet commands port scan nse' },
+    { type: 'Cheat Sheet', title: 'Google Dorks OSINT Cheat Sheet', desc: 'Advanced search operators for exposed files, portals, and cloud buckets.', url: '/cheatsheets/google-dorks-osint-cheatsheet', kw: 'google dorks cheat sheet osint operators' },
+    { type: 'Cheat Sheet', title: 'ffuf Web Fuzzing Cheat Sheet', desc: 'Directory, vhost, parameter, and authenticated fuzzing one-liners.', url: '/cheatsheets/ffuf-web-fuzzing-cheatsheet', kw: 'ffuf cheat sheet web fuzzing vhost' },
+    { type: 'Cheat Sheet', title: 'Wireshark Display Filters Cheat Sheet', desc: 'HTTP, TLS SNI, DNS, TCP anomaly, and SMB hunting filters.', url: '/cheatsheets/wireshark-display-filters-cheatsheet', kw: 'wireshark display filters pcap tshark' },
+    { type: 'Cheat Sheet', title: 'sqlmap Pentest Cheat Sheet', desc: 'Controlled Burp request testing, risk/level flags, and DBMS enumeration.', url: '/cheatsheets/sqlmap-pentest-cheatsheet', kw: 'sqlmap cheat sheet sqli database' },
+    { type: 'Cheat Sheet', title: 'Linux Privilege Escalation Cheat Sheet', desc: 'Sudoers, SUID, capabilities, cron jobs, and local enumeration commands.', url: '/cheatsheets/linux-privilege-escalation-cheatsheet', kw: 'linux privilege escalation privesc suid getcap' },
+    { type: 'Cheat Sheet', title: 'Active Directory Enumeration Cheat Sheet', desc: 'BloodHound, NetExec, Kerberoasting, AS-REP, and AD CS commands.', url: '/cheatsheets/active-directory-enumeration-cheatsheet', kw: 'active directory ad bloodhound kerberoasting' },
+    { type: 'Cheat Sheet', title: 'Shodan Search Filters Cheat Sheet', desc: 'ASN, org, ssl.cert, http.favicon.hash, and exposed service filters.', url: '/cheatsheets/shodan-search-filters-cheatsheet', kw: 'shodan filters query cheat sheet' },
+    { type: 'Cheat Sheet', title: 'HTTP Security Headers Cheat Sheet', desc: 'HSTS, CSP, X-Frame-Options, Referrer-Policy, and cookie flags.', url: '/cheatsheets/http-security-headers-cheatsheet', kw: 'http security headers csp hsts cors' },
+    { type: 'Cheat Sheet', title: 'Incident Response First-Hour Cheat Sheet', desc: 'Volatile state capture, process/network triage, and host containment.', url: '/cheatsheets/incident-response-first-hour-cheatsheet', kw: 'incident response triage linux forensics' },
 
     /* Guides (/guides/) */
     { type: 'Guide', title: 'What to Do After a Data Breach', desc: 'Step-by-step response plan when a service you use gets breached.', url: '/articles/after-a-data-breach', kw: 'breach response steps stolen exposed what now' },
@@ -76,28 +107,19 @@
     { type: 'FAQ', title: 'Should I reuse passwords?', desc: 'Never — reuse is how one breach becomes the takeover of your other accounts (credential stuffing).', url: '/faq', kw: 'reuse same password accounts credential stuffing' },
     { type: 'FAQ', title: 'What should I do after a data breach?', desc: 'Change the breached password and every reuse, sign out sessions, enable 2FA, stay alert for phishing.', url: '/faq', kw: 'breach after compromised steps response' },
 
-    /* Glossary — individual terms resolve to /glossary.html (kept in sync
-       with tools/omp_build/pages_info.py GLOSSARY). */
-    { type: 'Glossary', title: '2FA / MFA', desc: 'Requiring two or more proofs (something you know, have, or are) to sign in.', url: '/glossary', kw: 'two factor multi factor mfa authentication' },
-    { type: 'Glossary', title: 'Brute-force attack', desc: 'Systematically guessing credentials until one works, industrialized by GPUs against leaked hash databases.', url: '/glossary', kw: 'brute force attack guessing compute' },
-    { type: 'Glossary', title: 'Credential stuffing', desc: 'Replaying leaked email/password pairs across services, betting on reuse.', url: '/glossary', kw: 'credential stuffing replay reused leaked' },
-    { type: 'Glossary', title: 'CSPRNG', desc: 'A cryptographically secure pseudo-random number generator — in browsers, crypto.getRandomValues().', url: '/glossary', kw: 'csprng random cryptographically secure generator' },
-    { type: 'Glossary', title: 'Diceware', desc: 'Building passphrases by randomly picking words from a published list; entropy = words × log2(list size).', url: '/glossary', kw: 'diceware word list passphrase entropy' },
-    { type: 'Glossary', title: 'Entropy (bits)', desc: 'A measure of unpredictability: log2 of the search space.', url: '/glossary', kw: 'entropy bits unpredictability measure' },
-    { type: 'Glossary', title: 'Hash (password)', desc: 'A one-way fingerprint; slow salted hashes (Argon2, bcrypt) resist cracking, fast unsalted ones (MD5) do not.', url: '/glossary', kw: 'hash password fingerprint salted bcrypt argon2 md5' },
-    { type: 'Glossary', title: 'k-anonymity', desc: 'A privacy model mixing a lookup into a set of at least k possibilities so the server cannot tell what you searched.', url: '/glossary', kw: 'k-anonymity privacy model lookup anonymity' },
-    { type: 'Glossary', title: 'Key stretching', desc: 'Deliberately slowing password verification with many hash rounds to make each guess expensive.', url: '/glossary', kw: 'key stretching slow hash rounds cost' },
-    { type: 'Glossary', title: 'Master password', desc: 'The single strong passphrase that unlocks a password manager.', url: '/glossary', kw: 'master password manager unlock vault' },
-    { type: 'Glossary', title: 'Passkey', desc: 'A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site public key.', url: '/glossary', kw: 'passkey webauthn fido phishing resistant' },
-    { type: 'Glossary', title: 'Passphrase', desc: 'A password made of several random words — long, memorable, and measurably strong.', url: '/glossary', kw: 'passphrase words memorable diceware' },
-    { type: 'Glossary', title: 'Password manager', desc: 'Software that generates, encrypts and fills unique passwords per account, unlocked by one master password.', url: '/glossary', kw: 'password manager software vault unique' },
-    { type: 'Glossary', title: 'Phishing', desc: 'Impersonating a trusted service to trick you into revealing credentials.', url: '/glossary', kw: 'phishing scam credential impersonation login fake' },
-    { type: 'Glossary', title: 'Rainbow table', desc: 'A precomputed hash→password lookup; defeated by salting.', url: '/glossary', kw: 'rainbow table precomputed hash lookup salt' },
-    { type: 'Glossary', title: 'Rate limiting', desc: 'Server-side throttling of login attempts; the main defense against online guessing.', url: '/glossary', kw: 'rate limit throttle login guessing' },
-    { type: 'Glossary', title: 'Salt', desc: 'A per-password random value mixed into hashing so identical passwords hash differently.', url: '/glossary', kw: 'salt random per-password hash identical' },
-    { type: 'Glossary', title: 'SIM swapping', desc: 'Convincing a carrier to move your phone number to an attacker SIM, hijacking SMS codes.', url: '/glossary', kw: 'sim swap carrier phone number sms hijack' },
-    { type: 'Glossary', title: 'TOTP', desc: 'Time-based one-time codes from authenticator apps, rotating every 30 seconds.', url: '/glossary', kw: 'totp otp authenticator time based app' },
-    { type: 'Glossary', title: 'WebAuthn', desc: 'The web standard behind passkeys and hardware security keys, binding credentials to a site origin.', url: '/glossary', kw: 'webauthn standard passkey hardware key origin' }
+    /* Glossary — dedicated term pages (/glossary/<slug>) */
+    { type: 'Glossary', title: 'k-Anonymity', desc: 'A privacy model mixing a lookup into a set of at least k possibilities so the server cannot tell what you searched.', url: '/glossary/k-anonymity', kw: 'k-anonymity privacy model lookup anonymity' },
+    { type: 'Glossary', title: 'Argon2id', desc: 'Memory-hard password hashing function that resists GPU and ASIC cracking.', url: '/glossary/argon2id', kw: 'argon2id hash password memory hard' },
+    { type: 'Glossary', title: 'Credential Stuffing', desc: 'Replaying leaked email/password pairs across services, betting on reuse.', url: '/glossary/credential-stuffing', kw: 'credential stuffing replay reused leaked' },
+    { type: 'Glossary', title: 'Password Spraying', desc: 'Testing one common password across many accounts to avoid lockouts.', url: '/glossary/password-spraying', kw: 'password spraying lockout brute force' },
+    { type: 'Glossary', title: 'Passkey (FIDO2 / WebAuthn)', desc: 'A phishing-resistant credential bound to a site genuine origin domain.', url: '/glossary/passkey-webauthn', kw: 'passkey webauthn fido phishing resistant' },
+    { type: 'Glossary', title: 'TOTP (RFC 6238)', desc: 'Time-based one-time codes from authenticator apps, rotating every 30 seconds.', url: '/glossary/totp-rfc-6238', kw: 'totp otp authenticator time based app' },
+    { type: 'Glossary', title: 'Browser-in-the-Browser (BitB)', desc: 'Fake HTML/CSS OAuth login popup rendered inside a webpage to spoof the URL bar.', url: '/glossary/browser-in-the-browser-bitb', kw: 'bitb browser in the browser phishing oauth' },
+    { type: 'Glossary', title: 'IDOR (Insecure Direct Object Reference)', desc: 'Accessing another user record by modifying an object ID when server authorization is missing.', url: '/glossary/idor-insecure-direct-object-reference', kw: 'idor bola broken access control' },
+    { type: 'Glossary', title: 'SSRF (Server-Side Request Forgery)', desc: 'Tricking a backend server into making HTTP requests to internal services or cloud metadata.', url: '/glossary/ssrf-server-side-request-forgery', kw: 'ssrf server side request forgery metadata' },
+    { type: 'Glossary', title: 'XSS (Cross-Site Scripting)', desc: 'Injecting malicious JavaScript into a page viewed by other users.', url: '/glossary/xss-cross-site-scripting', kw: 'xss cross site scripting csp' },
+    { type: 'Glossary', title: 'SQL Injection (SQLi)', desc: 'Altering backend database queries via unsanitized input.', url: '/glossary/sql-injection-sqli', kw: 'sqli sql injection prepared statements' },
+    { type: 'Glossary', title: 'JWT (JSON Web Token)', desc: 'Signed Base64URL JSON token used for stateless API authentication.', url: '/glossary/jwt-json-web-token', kw: 'jwt json web token bearer' }
   ];
 
   /* ---------- Live index: Supabase articles + tools registry ---------- */
@@ -124,105 +146,159 @@
   }
 
   var livePromise = null;
+  function buildItemsFromData(academy, articlesList, toolsList, productsList, osintList, pentestList) {
+    var items = [];
+    var seen = {};
+    STATIC_INDEX.forEach(function (it) { seen[normalizeUrl(it.url)] = 1; });
+
+    if (academy && Array.isArray(academy.categories) && Array.isArray(academy.paths) && Array.isArray(academy.topics)) {
+      var catById = {};
+      var pathById = {};
+      academy.categories.forEach(function (c) { if (c && c.id && c.slug) catById[c.id] = c; });
+      academy.paths.forEach(function (p) {
+        if (!p || !p.id || !p.slug) return;
+        pathById[p.id] = p;
+        var c = catById[p.category_id];
+        if (!c) return;
+        var pUrl = '/learning/' + c.slug + '/' + p.slug;
+        if (!seen[normalizeUrl(pUrl)]) {
+          seen[normalizeUrl(pUrl)] = 1;
+          items.push({ type: 'Course', title: p.name || p.slug, desc: p.description || '', url: pUrl, kw: 'academy course ' + (c.name || '') });
+        }
+      });
+      academy.topics.forEach(function (t) {
+        if (!t || !t.slug) return;
+        var p = pathById[t.path_id];
+        var c = p ? catById[p.category_id] : catById[t.category_id];
+        if (!c || !p) return;
+        var tUrl = '/learning/' + c.slug + '/' + p.slug + '/' + t.slug;
+        if (seen[normalizeUrl(tUrl)]) return;
+        seen[normalizeUrl(tUrl)] = 1;
+        var kwList = (t.content && Array.isArray(t.content.keywords)) ? t.content.keywords.join(' ') : '';
+        items.push({ type: 'Lesson', title: t.name || t.slug, desc: t.description || '', url: tUrl, kw: 'academy lesson ' + (c.name || '') + ' ' + kwList });
+      });
+    }
+
+    (articlesList || []).forEach(function (a) {
+      if (!a || !a.slug) return;
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(a.slug))) return;
+      var url = '/articles/' + encodeURIComponent(a.slug);
+      if (seen[normalizeUrl(url)]) return;
+      seen[normalizeUrl(url)] = 1;
+      items.push({ type: 'Article', title: a.title || a.slug, desc: a.summary || '', url: url, kw: '' });
+    });
+    (toolsList || []).forEach(function (t) {
+      if (!t || !(t.slug || t.route)) return;
+      var routed = String(t.route || '').replace(/\.html($|#)/, '$1');
+      var raw = safeResultUrl(routed) || '/tools';
+      if (seen[normalizeUrl(raw)]) return;
+      seen[normalizeUrl(raw)] = 1;
+      items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: raw, kw: '' });
+    });
+    (productsList || []).forEach(function (p) {
+      if (!p || !p.slug) return;
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug))) return;
+      var url = '/products/' + encodeURIComponent(p.slug);
+      if (seen[normalizeUrl(url)]) return;
+      seen[normalizeUrl(url)] = 1;
+      items.push({ type: 'Product', title: p.name || p.slug, desc: p.summary || (p.product_type ? String(p.product_type) : ''), url: url, kw: String(p.product_type || '') });
+    });
+    (osintList || []).forEach(function (o) {
+      if (!o || !o.slug) return;
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(o.slug))) return;
+      var url = '/osint/' + encodeURIComponent(o.slug);
+      if (seen[normalizeUrl(url)]) return;
+      seen[normalizeUrl(url)] = 1;
+      items.push({ type: 'OSINT tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'osint ' + String(o.pricing || '') });
+    });
+    (pentestList || []).forEach(function (o) {
+      if (!o || !o.slug) return;
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(o.slug))) return;
+      var url = '/pentest/' + encodeURIComponent(o.slug);
+      if (seen[normalizeUrl(url)]) return;
+      seen[normalizeUrl(url)] = 1;
+      items.push({ type: 'Pentest tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'pentest ' + String(o.pricing || '') });
+    });
+    return items;
+  }
+
+  function fetchWithDeadline(url, headers, ms) {
+    if (typeof AbortController === 'undefined') return fetch(url, { headers: headers });
+    var ctrl = new AbortController();
+    var t = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, ms || 2500);
+    return fetch(url, { headers: headers, signal: ctrl.signal }).finally(function () { clearTimeout(t); });
+  }
+
   function fetchLive() {
     if (livePromise) return livePromise;
     livePromise = new Promise(function (resolve) {
-      var items = [];
-      var failed = false;
       try {
         var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-        if (cached && cached.items && cached.items.length && Date.now() - cached.t < CACHE_TTL) { resolve(cached.items); return; }
-      } catch (e) { /* storage unavailable — fall through to network */ }
-      var headers = { apikey: SUPABASE_KEY };
-      var qA = SUPABASE_URL + '/rest/v1/articles?select=slug,title,summary&status=eq.published&order=published_at.desc.nullslast&limit=200';
-      var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
-      var qP = SUPABASE_URL + '/rest/v1/products?select=slug,name,summary,product_type&status=eq.published&order=sort_order.asc&limit=100';
-      var qO = SUPABASE_URL + '/rest/v1/osint_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
-      var qPT = SUPABASE_URL + '/rest/v1/pentest_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
-      /* A non-OK response is a FAILURE, not an empty table. Treating it
-         as [] used to cache "no articles" for 10 minutes. */
-      function safeJson(r) {
-        if (!r.ok) { failed = true; return Promise.resolve([]); }
-        return r.json().catch(function () { failed = true; return []; });
-      }
-      Promise.all([
-        fetch(qA, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qP, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qO, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; }),
-        fetch(qPT, { headers: headers }).then(safeJson).catch(function () { failed = true; return []; })
-      ]).then(function (res) {
-        var seen = {};
-        /* URLs already covered by the baked-in index — skip duplicates
-           so a tools-registry row cannot list the same page twice. */
-        STATIC_INDEX.forEach(function (it) { seen[normalizeUrl(it.url)] = 1; });
-        (res[0] || []).forEach(function (a) {
-          if (!a || !a.slug) return;
-          /* Slugs must match the admin slugify charset before they may
-             form a URL — nothing unsanitized reaches an href. */
-          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(a.slug))) return;
-          var url = '/articles/' + encodeURIComponent(a.slug);
-          if (seen[normalizeUrl(url)]) return;
-          seen[normalizeUrl(url)] = 1;
-          items.push({ type: 'Article', title: a.title || a.slug, desc: a.summary || '', url: url, kw: '' });
-        });
-        (res[1] || []).forEach(function (t) {
-          if (!t || !(t.slug || t.route)) return;
-          /* Tools live at extensionless public URLs; a registry row that
-             still says /x.html is normalized to /x. */
-          var routed = String(t.route || '').replace(/\.html($|#)/, '$1');
-          var raw = safeResultUrl(routed) || '/tools';
-          if (seen[normalizeUrl(raw)]) return;
-          seen[normalizeUrl(raw)] = 1;
-          items.push({ type: 'Tool', title: t.name || t.slug, desc: t.description || '', url: raw, kw: '' });
-        });
-        /* Commercial catalog — slug-guarded like articles, routed to
-           /products/<slug>. */
-        (res[2] || []).forEach(function (p) {
-          if (!p || !p.slug) return;
-          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug))) return;
-          var url = '/products/' + encodeURIComponent(p.slug);
-          if (seen[normalizeUrl(url)]) return;
-          seen[normalizeUrl(url)] = 1;
-          items.push({ type: 'Product', title: p.name || p.slug, desc: p.summary || (p.product_type ? String(p.product_type) : ''), url: url, kw: String(p.product_type || '') });
-        });
-        /* OSINT catalog — slug-guarded like articles, routed to
-           /osint/<slug>. */
-        (res[3] || []).forEach(function (o) {
-          if (!o || !o.slug) return;
-          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(o.slug))) return;
-          var url = '/osint/' + encodeURIComponent(o.slug);
-          if (seen[normalizeUrl(url)]) return;
-          seen[normalizeUrl(url)] = 1;
-          items.push({ type: 'OSINT tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'osint ' + String(o.pricing || '') });
-        });
-        /* Pentest catalog — slug-guarded like articles, routed to
-           /pentest/<slug>. */
-        (res[4] || []).forEach(function (o) {
-          if (!o || !o.slug) return;
-          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(o.slug))) return;
-          var url = '/pentest/' + encodeURIComponent(o.slug);
-          if (seen[normalizeUrl(url)]) return;
-          seen[normalizeUrl(url)] = 1;
-          items.push({ type: 'Pentest tool', title: o.name || o.slug, desc: o.summary || '', url: url, kw: 'pentest ' + String(o.pricing || '') });
-        });
-        /* Only cache a successful, non-empty lookup. */
-        if (!failed && items.length) {
-          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), items: items })); } catch (e) { /* ignore */ }
+        if (cached && cached.items && cached.items.length && Date.now() - cached.t < CACHE_TTL) {
+          resolve(cached.items);
+          return;
         }
-        resolve(items);
-      }).catch(function () { failed = true; resolve(items); });
+      } catch (e) { /* storage unavailable */ }
+
+      var qAcademy = fetch('/assets/data/academy-catalogue.json').then(function (r) { return r && r.ok ? r.json() : null; }).catch(function () { return null; });
+      var qSnapshot = fetch('/assets/data/hubs-snapshot.json').then(function (r) { return r && r.ok ? r.json() : null; }).catch(function () { return null; });
+
+      /* Resolve immediately with local Academy + Hubs snapshot so search is instant (<20ms),
+         then upgrade in background if Supabase responds within 2.5s. */
+      Promise.all([qAcademy, qSnapshot]).then(function (localRes) {
+        var academy = localRes[0];
+        var snap = localRes[1] || {};
+        var localItems = buildItemsFromData(
+          academy,
+          snap.articles || [],
+          [],
+          snap.products || [],
+          snap.osint || [],
+          snap.pentest || []
+        );
+        if (localItems.length) {
+          liveItems = localItems;
+          if (overlay && !overlay.hidden) render();
+        }
+        resolve(localItems);
+
+        var headers = { apikey: SUPABASE_KEY };
+        var qA = SUPABASE_URL + '/rest/v1/articles?select=slug,title,summary&status=eq.published&order=published_at.desc.nullslast&limit=200';
+        var qT = SUPABASE_URL + '/rest/v1/tools?select=slug,name,description,route&is_active=eq.true&limit=200';
+        var qP = SUPABASE_URL + '/rest/v1/products?select=slug,name,summary,product_type&status=eq.published&order=sort_order.asc&limit=100';
+        var qO = SUPABASE_URL + '/rest/v1/osint_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
+        var qPT = SUPABASE_URL + '/rest/v1/pentest_tools?select=slug,name,summary,pricing&status=eq.published&order=sort_order.asc&limit=200';
+        function safeJson(r) {
+          if (!r || !r.ok) return Promise.resolve([]);
+          return r.json().catch(function () { return []; });
+        }
+        Promise.all([
+          fetchWithDeadline(qA, headers, 2500).then(safeJson).catch(function () { return []; }),
+          fetchWithDeadline(qT, headers, 2500).then(safeJson).catch(function () { return []; }),
+          fetchWithDeadline(qP, headers, 2500).then(safeJson).catch(function () { return []; }),
+          fetchWithDeadline(qO, headers, 2500).then(safeJson).catch(function () { return []; }),
+          fetchWithDeadline(qPT, headers, 2500).then(safeJson).catch(function () { return []; })
+        ]).then(function (res) {
+          var merged = buildItemsFromData(
+            academy,
+            (res[0] && res[0].length) ? res[0] : (snap.articles || []),
+            res[1] || [],
+            (res[2] && res[2].length) ? res[2] : (snap.products || []),
+            (res[3] && res[3].length) ? res[3] : (snap.osint || []),
+            (res[4] && res[4].length) ? res[4] : (snap.pentest || [])
+          );
+          if (merged.length) {
+            liveItems = merged;
+            try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), items: merged })); } catch (e) {}
+            if (overlay && !overlay.hidden) render();
+          }
+        });
+      });
     });
-    /* Let a later open retry after a transient network failure. */
-    livePromise.then(function (items) {
-      if (!items || !items.length) livePromise = null;
-    }, function () { livePromise = null; });
     return livePromise;
   }
 
   function normalizeUrl(u) {
-    /* Treat /generator.html and /generator as the same public URL so a
-       legacy tools-registry row cannot duplicate a baked-in pretty URL. */
     var s = String(u || '').replace(/\.html(?=$|[?#])/i, '').replace(/\/+$/, '').toLowerCase();
     return s || '/';
   }
@@ -282,6 +358,7 @@
     + '.omp-sr-badge.b-article{color:#67E8F9;background:rgba(34,211,238,.12)}'
     + '.omp-sr-badge.b-tool{color:#A5B4FC;background:rgba(99,102,241,.14)}'
     + '.omp-sr-badge.b-guide{color:#C4B5FD;background:rgba(139,92,246,.14)}'
+    + '.omp-sr-badge.b-lesson,.omp-sr-badge.b-course{color:#34D399;background:rgba(16,185,129,.14)}'
     + '.omp-sr-badge.b-product{color:#FDE68A;background:rgba(234,179,8,.14)}'
     + '.omp-sr-badge.b-productpage{color:#FCD34D;background:rgba(245,158,11,.12)}'
     + '.omp-sr-badge.b-page{color:var(--muted);background:rgba(148,163,184,.12)}'

@@ -46,6 +46,10 @@ async function load() {
     return JSON.parse(
       await readFile(join(ROOT, "assets/data/academy-reading.json"), "utf8"),
     );
+  if (process.argv.includes("--catalogue"))
+    return JSON.parse(
+      await readFile(join(ROOT, "assets/data/academy-catalogue.json"), "utf8"),
+    );
   const [categories, paths, modules, topics, labs] = await Promise.all([
     rows(
       "learning_categories",

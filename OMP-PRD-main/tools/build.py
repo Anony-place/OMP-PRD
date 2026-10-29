@@ -260,9 +260,9 @@ def main():
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Tools", "/tools")]),
     ))
     write("breach-check.html", page(
-        path="/breach-check", active="/breach-check",
-        title="Password Breach Check — Local Demo | OopsMyPassword",
-        desc="Learn why password reuse is dangerous and how privacy-preserving breach lookup works. Includes a clearly-labeled local demo — no live database, no false claims.",
+        path="/breach-check", active="/tools",
+        title="Password Breach Check — k-Anonymity Lookup | OopsMyPassword",
+        desc="Check if a password appears in data breaches using zero-knowledge k-anonymity (5-char SHA-1 prefix) with offline fallback. 100% client-side.",
         body=breach_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Breach Check", "/breach-check")]),
         scripts_=["security.js", "breach.js"],
@@ -337,7 +337,7 @@ def main():
     write("pentest.html", page(
         path="/pentest", active="/pentest",
         title="Pentesting Tools Directory & Official Downloads | OopsMyPassword",
-        desc="Explore penetration testing tools for reconnaissance, network scanning, web and API security, mobile apps, cloud, password auditing and forensics. Compare use cases and open official downloads and docs.",
+        desc="Explore penetration testing tools for recon, network scanning, web/API security, cloud, password auditing and forensics with official docs.",
         body=pentest_body(),
         jsonld=[jsonld_breadcrumb([("Home", "/"), ("Pentest Hub", "/pentest")]), jsonld_faq(PENTEST_FAQ)],
         scripts_=["sanitize.js", "markdown.js", "pentest.js"],
@@ -417,9 +417,25 @@ def main():
     # shared core module so the snapshot can never drift from what the
     # generator emits. tools/test_sitemap.js asserts the two agree.
     routes, static_lastmod = load_sitemap_core()
+    extra_routes = []
+    for prefix, fname in [
+        ("/articles/", "articles-fallback.json"),
+        ("/products/", "products-fallback.json"),
+        ("/osint/", "osint-fallback.json"),
+        ("/pentest/", "pentest-fallback.json"),
+    ]:
+        fpath = os.path.join(ROOT, "assets", "data", fname)
+        if os.path.exists(fpath):
+            with open(fpath, encoding="utf-8") as fh:
+                items = json.load(fh)
+            for item in items:
+                slug = item.get("slug")
+                if slug and item.get("status", "published") == "published":
+                    extra_routes.append(f"{prefix}{slug}")
+    all_routes = list(dict.fromkeys(routes + extra_routes))
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for u in routes:
+    for u in all_routes:
         pri = ("1.0" if u == "/" else
                "0.9" if u in ("/articles", "/products", "/osint", "/pentest") else
                "0.7" if u.startswith("/articles/") or u.startswith("/products/") or u.startswith("/osint/") or u.startswith("/pentest/") else

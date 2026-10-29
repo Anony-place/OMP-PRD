@@ -314,7 +314,19 @@ def security_body():
 def sitemap_body(guides):
     groups = [
         ("Tools", [(t["name"], t["href"]) for t in TOOLS]),
-        ("Articles", [("Articles hub", "/articles"), ("Products", "/products")] + [(g["title"], f"/articles/{g['slug']}") for g in guides]),
+        ("Academy & Hubs", [
+            ("Academy Home", "/learning"),
+            ("Learning Paths & Roadmap", "/learning/roadmap"),
+            ("Cyber Security Path", "/learning/cyber-security"),
+            ("Fundamentals to Defence Course", "/learning/cyber-security/cyber-security-track"),
+            ("Web Application Security Path", "/learning/web-application-security"),
+            ("Web Security Foundations Course", "/learning/web-application-security/foundations"),
+            ("OSINT Hub", "/osint"),
+            ("Pentest Hub", "/pentest"),
+            ("Articles Hub", "/articles"),
+            ("Products", "/products"),
+        ]),
+        ("Guides", [(g["title"], f"/articles/{g['slug']}") for g in guides]),
         ("Site", [
             ("Home", "/"), ("About", "/about"), ("FAQ", "/faq"),
             ("Glossary", "/glossary"), ("Security", "/security"),

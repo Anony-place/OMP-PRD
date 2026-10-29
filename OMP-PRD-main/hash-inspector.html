@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hash, JWT &amp; Encoding Inspector — Client-Side | OopsMyPassword</title>
+  <meta name="description" content="Free offline SHA-256/SHA-512 hash calculator, password hash identifier (Argon2id, bcrypt, NTLM), JWT token security auditor, and Base64/Hex encoder.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/hash-inspector">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="Hash, JWT &amp; Encoding Inspector — Client-Side | OopsMyPassword">
+  <meta property="og:description" content="Free offline SHA-256/SHA-512 hash calculator, password hash identifier (Argon2id, bcrypt, NTLM), JWT token security auditor, and Base64/Hex encoder.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/hash-inspector">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hash, JWT &amp; Encoding Inspector — Client-Side | OopsMyPassword">
+  <meta name="twitter:description" content="Free offline SHA-256/SHA-512 hash calculator, password hash identifier (Argon2id, bcrypt, NTLM), JWT token security auditor, and Base64/Hex encoder.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Client-Side Hash, JWT \u0026 Encoding Inspector","url":"https://oopsmypassword.web.app/hash-inspector","applicationCategory":"SecurityApplication","operatingSystem":"All","description":"Offline WebCrypto SHA-256/SHA-512 hash calculator, password hash format identifier, JWT token security auditor, and Base64/Hex encoder."}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is it safe to paste a JWT token into an online decoder?","acceptedAnswer":{"@type":"Answer","text":"Pasting live production JWTs into server-backed websites can leak session tokens. The OopsMyPassword Hash \u0026 JWT Inspector runs 100% locally in your browser tab using WebCrypto and native JavaScript—no token or hash ever leaves your device."}},{"@type":"Question","name":"How can I tell if a password hash uses Argon2id, bcrypt, or MD5?","acceptedAnswer":{"@type":"Answer","text":"Modular crypt hashes start with an algorithm identifier such as $argon2id$ or $2b$12$ (bcrypt), whereas raw unsalted MD5 (32 hex chars) and SHA-256 (64 hex chars) appear as fixed-length hexadecimal strings."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://oopsmypassword.web.app/tools"},{"@type":"ListItem","position":3,"name":"Hash \u0026 JWT Inspector","item":"https://oopsmypassword.web.app/hash-inspector"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="page-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/tools" style="color:var(--purple)">Tools</a> <span class="divider-dot">/</span> <span>Hash &amp; JWT Inspector</span></nav>
+    <h1 class="h-1 mt-16">Client-Side Hash, JWT &amp; Encoding Inspector</h1>
+    <p class="lead mt-8">Compute WebCrypto SHA digests, identify password hash formats (Argon2id, bcrypt, NTLM), audit JWT tokens for security flaws, and convert Base64/Hex — 100% offline in your tab.</p>
+  </div>
+</section>
+<section class="section-tight" data-hash-inspector>
+  <div class="container">
+    <div class="flex gap-8 wrap" role="tablist" aria-label="Inspector modes">
+      <button type="button" class="btn btn-primary btn-sm" data-inspector-tab="jwt" aria-selected="true">JWT Security Auditor</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-inspector-tab="hash-gen" aria-selected="false">Live SHA Hash Generator</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-inspector-tab="hash-id" aria-selected="false">Hash Format Identifier</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-inspector-tab="encoder" aria-selected="false">Base64 / Hex / URL Workbench</button>
+    </div>
+
+    <div class="card card-pad mt-16" data-inspector-panel="jwt">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 class="h-3" style="margin:0">Offline JWT Decoder &amp; Security Auditor</h2>
+        <button type="button" id="jwt-load-sample" class="btn btn-secondary btn-sm">Load Sample JWT</button>
+      </div>
+      <p class="muted small mt-8">Paste a JSON Web Token below. Header and payload decoding plus 6-point security checks run locally in memory.</p>
+      <label class="small" for="jwt-input" style="font-weight:600;display:block;margin-bottom:6px">Encoded JWT (header.payload.signature)</label>
+      <textarea id="jwt-input" class="input mono" rows="3" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <div class="small" style="font-weight:600;margin-bottom:6px">Decoded Header</div>
+          <pre class="mono" style="padding:12px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;margin:0"><code id="jwt-header-out">{}</code></pre>
+        </div>
+        <div>
+          <div class="small" style="font-weight:600;margin-bottom:6px">Decoded Payload Claims</div>
+          <pre class="mono" style="padding:12px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;margin:0"><code id="jwt-payload-out">{}</code></pre>
+        </div>
+      </div>
+      <div class="mt-16">
+        <h3 class="h-3" style="font-size:1.02rem">Automated JWT Security Posture Findings</h3>
+        <div id="jwt-findings-out"></div>
+      </div>
+    </div>
+
+    <div class="card card-pad mt-16" data-inspector-panel="hash-gen" hidden>
+      <h2 class="h-3">WebCrypto Cryptographic Hash Calculator</h2>
+      <p class="muted small mt-8">Computes SHA-256, SHA-384, SHA-512, and SHA-1 digests in real time using your browser native <code>crypto.subtle.digest</code> engine.</p>
+      <label class="small" for="hash-live-input" style="font-weight:600;display:block;margin-bottom:6px">Input Text</label>
+      <input id="hash-live-input" class="input" type="text" value="OopsMyPassword-ZeroKnowledge" autocomplete="off">
+      <div class="mt-16" style="display:grid;gap:12px">
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong class="small">SHA-256 (256-bit)</strong><button type="button" class="btn btn-ghost btn-sm" data-copy-target="hash-out-sha256">Copy</button></div>
+          <code id="hash-out-sha256" class="mono small" style="word-break:break-all;display:block;margin-top:6px"></code>
+        </div>
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong class="small">SHA-384 (384-bit)</strong><button type="button" class="btn btn-ghost btn-sm" data-copy-target="hash-out-sha384">Copy</button></div>
+          <code id="hash-out-sha384" class="mono small" style="word-break:break-all;display:block;margin-top:6px"></code>
+        </div>
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong class="small">SHA-512 (512-bit)</strong><button type="button" class="btn btn-ghost btn-sm" data-copy-target="hash-out-sha512">Copy</button></div>
+          <code id="hash-out-sha512" class="mono small" style="word-break:break-all;display:block;margin-top:6px"></code>
+        </div>
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong class="small">SHA-1 (160-bit legacy / k-anonymity prefix)</strong><button type="button" class="btn btn-ghost btn-sm" data-copy-target="hash-out-sha1">Copy</button></div>
+          <code id="hash-out-sha1" class="mono small" style="word-break:break-all;display:block;margin-top:6px"></code>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad mt-16" data-inspector-panel="hash-id" hidden>
+      <h2 class="h-3">Password Hash Format &amp; Crack-Resistance Identifier</h2>
+      <p class="muted small mt-8">Paste any hash string or click a sample below to identify the algorithm and whether it is safe for password storage.</p>
+      <div class="flex gap-8 wrap mt-8" style="margin-bottom:12px">
+        <button type="button" class="btn btn-secondary btn-sm" data-sample-hash="$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG">Sample Argon2id</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-sample-hash="$2b$12$K8GpY7bS8m.e0P1vX3qQ9e7zL1vX2n3m4k5j6h7g8f9d0s1a2w3e4">Sample bcrypt ($2b$12$)</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-sample-hash="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8">Sample SHA-256</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-sample-hash="5f4dcc3b5aa765d61d8327deb882cf99">Sample MD5 / NTLM</button>
+      </div>
+      <label class="small" for="hash-detect-input" style="font-weight:600;display:block;margin-bottom:6px">Hash String to Identify</label>
+      <input id="hash-detect-input" class="input mono" type="text" value="$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG" spellcheck="false">
+      <div id="hash-detect-output" class="mt-16"></div>
+    </div>
+
+    <div class="card card-pad mt-16" data-inspector-panel="encoder" hidden>
+      <h2 class="h-3">Base64, Base64URL, Hex &amp; URL Encoding Workbench</h2>
+      <div class="grid grid-2 mt-12" style="gap:12px">
+        <div>
+          <label class="small" for="enc-format" style="font-weight:600;display:block;margin-bottom:6px">Format</label>
+          <select id="enc-format" class="input">
+            <option value="base64">Base64 (Standard)</option>
+            <option value="base64url">Base64URL (JWT / URL-safe)</option>
+            <option value="hex">Hexadecimal (UTF-8 bytes)</option>
+            <option value="url">URL Percent-Encoding</option>
+          </select>
+        </div>
+        <div>
+          <label class="small" for="enc-direction" style="font-weight:600;display:block;margin-bottom:6px">Operation</label>
+          <select id="enc-direction" class="input">
+            <option value="encode">Encode Plaintext → Format</option>
+            <option value="decode">Decode Format → Plaintext</option>
+          </select>
+        </div>
+      </div>
+      <label class="small mt-12" for="enc-input" style="font-weight:600;display:block;margin-bottom:6px">Input</label>
+      <textarea id="enc-input" class="input mono" rows="3">Authorization: Bearer security-check-2026</textarea>
+      <div class="small mt-12" style="font-weight:600;margin-bottom:6px">Result</div>
+      <pre class="mono" style="padding:12px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;margin:0"><code id="enc-output"></code></pre>
+    </div>
+
+    <div class="card card-pad mt-32">
+      <h2 class="h-3">Deepen Your Cryptography &amp; Token Security Knowledge</h2>
+      <div class="grid grid-3 mt-16">
+        <a class="card card-pad card-link" href="/glossary/argon2id"><h3 class="h-3">Glossary: Argon2id Explained</h3><p class="muted small mt-8">Why memory-hard password hashing stops GPU cracking rigs.</p></a>
+        <a class="card card-pad card-link" href="/glossary/jwt-json-web-token"><h3 class="h-3">Glossary: JWT Security</h3><p class="muted small mt-8">Understand JWT headers, claims, and algorithm confusion risks.</p></a>
+        <a class="card card-pad card-link" href="/learning/cyber-security/cyber-security-track/hashing-salting-password-storage"><h3 class="h-3">Academy: Hashing &amp; Salting</h3><p class="muted small mt-8">Interactive lesson on how modern servers store credentials.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script><script src="/assets/js/hash-inspector.js" defer></script>
+</body>
+</html>

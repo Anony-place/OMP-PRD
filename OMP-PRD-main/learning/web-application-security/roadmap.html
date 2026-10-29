@@ -31,7 +31,8 @@
     <script src="/assets/js/theme-init.js"></script>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://oopsmypassword.web.app/learning/web-application-security/roadmap#page","url":"https://oopsmypassword.web.app/learning/web-application-security/roadmap","name":"Web Application Security course order","description":"Choose your starting course in Web Application Security. Compare prerequisites, outcomes and modules within this learning path.","inLanguage":"en","isAccessibleForFree":true,"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Academy","item":"https://oopsmypassword.web.app/learning"},{"@type":"ListItem","position":2,"name":"Web Application Security","item":"https://oopsmypassword.web.app/learning/web-application-security"},{"@type":"ListItem","position":3,"name":"Course order","item":"https://oopsmypassword.web.app/learning/web-application-security/roadmap"}]}</script>
-  </head>
+    <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+</head>
   <body class="academy-page">
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-nav academy-topnav">
@@ -45,8 +46,10 @@
         <nav class="academy-topnav-nav" aria-label="Site">
           <a href="/checker">Checker</a>
           <a href="/tools">Tools</a>
+          <a href="/osint">OSINT Hub</a>
+          <a href="/pentest">Pentest Hub</a>
           <a href="/articles">Articles</a>
-          <a href="/security">Security</a>
+          <a href="/products">Products</a>
         </nav>
         <div class="academy-topnav-actions">
           <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button>
@@ -58,14 +61,14 @@
             aria-label="Toggle color theme"
             title="Toggle theme"
           >
-            <span class="theme-icon-moon">☾</span
-            ><span class="theme-icon-sun">☀</span>
+            <span class="theme-icon-moon" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+            <span class="theme-icon-sun" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span>
           </button>
         </div>
       </div>
     </header>
 <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
-  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
   <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
 </nav>
     <main id="main" class="academy-main">
@@ -77,8 +80,8 @@
     <p>Explore the courses in this learning path and the order of modules within each one.</p>
     <div class="roadmap-facts-bar">
       <span class="fact-item"><strong>1 course</strong></span>
-      <span class="fact-item"><strong>4 lessons</strong></span>
-      <span class="fact-item"><strong>~90 min reading</strong></span>
+      <span class="fact-item"><strong>12 lessons</strong></span>
+      <span class="fact-item"><strong>~270 min reading</strong></span>
       <span class="fact-item fact-privacy"><strong>Client-Side Progress</strong></span>
     </div>
   </div>
@@ -107,7 +110,7 @@
     </div>
   </div>
   <div class="roadmap-skills-grid">
-    <div class="roadmap-skill-card"><span class="skill-tag">Architecture</span><h3>Attack Surface & Boundaries</h3><p>Chart system assets, user inputs, and server-side defensive trust boundaries.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Protocols</span><h3>HTTP Inspection & Flow</h3><p>Evaluate methods, headers, cookies, status codes, and message parsing differences.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Identity</span><h3>Authentication & Sessions</h3><p>Safeguard logins, manage session lifecycles, and prevent account enumeration.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Defense</span><h3>Access Control & Authorization</h3><p>Enforce explicit server-side checks to eliminate IDOR and privilege escalation.</p></div>
+    <div class="roadmap-skill-card"><span class="skill-tag">Architecture</span><h3>Attack Surface & HTTP Flow</h3><p>Chart system assets, HTTP messages, cookies, and server-side defensive trust boundaries.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Identity</span><h3>Authentication, Sessions & Access</h3><p>Safeguard logins, manage session lifecycles, and eliminate IDOR and privilege escalation.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Injection & XSS</span><h3>Parameterized Queries & Encoding</h3><p>Neutralize SQL injection, reflected/stored/DOM XSS, and enforce strict Content Security Policy.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Hardening</span><h3>CSRF, SSRF & Production Controls</h3><p>Enforce SameSite/CSRF tokens, egress allowlists, safe file uploads, security headers, and rate limits.</p></div>
   </div>
 </section>
 <section class="roadmap-order" aria-labelledby="timeline-heading">
@@ -124,9 +127,9 @@
         <span class="academy-kicker">COURSE MILESTONES</span>
         <h3><a href="/learning/web-application-security/foundations">Web Security Foundations</a></h3>
       </div>
-      <span class="small muted">4 lessons · 90 min</span>
+      <span class="small muted">12 lessons · 270 min</span>
     </div>
-    <p class="roadmap-path-desc">Start with how web applications work, then learn how identity, sessions, and access decisions keep users and data safe.</p>
+    <p class="roadmap-path-desc">A complete 4-module foundation: start with HTTP and trust boundaries, protect sessions and authorization, eliminate SQL injection and XSS, and harden CSRF, SSRF, uploads, and production APIs.</p>
     <ol class="roadmap-timeline">
       <li>
         <span class="roadmap-stop" aria-hidden="true">1</span>
@@ -158,6 +161,38 @@
           <p class="roadmap-milestone-desc">Build on HTTP to understand who a user is, how a session persists, and what that user may do.</p>
           <div class="roadmap-lessons-pill-grid">
             <a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/authentication-and-session-security"><span class="pill-number">1</span><span class="pill-title">Authentication &amp; Session Security</span><span class="pill-time">24m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/access-control-authorization"><span class="pill-number">2</span><span class="pill-title">Access Control &amp; Authorization</span><span class="pill-time">24m</span><span class="pill-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </li><li>
+        <span class="roadmap-stop" aria-hidden="true">3</span>
+        <div class="roadmap-milestone-content">
+          <div class="roadmap-milestone-header">
+            <h4>Injection, XSS &amp; Client-Side Defenses</h4>
+            <span class="milestone-badge">Module 3</span>
+          </div>
+          <div class="roadmap-milestone-goal">
+            <span class="goal-label">Milestone outcome:</span>
+            <p>You can separate untrusted data from executable queries, HTML templates, and browser DOM sinks.</p>
+          </div>
+          <p class="roadmap-milestone-desc">Why mixing untrusted input with code interpreters causes SQL injection, cross-site scripting, and DOM vulnerabilities — and how parameterization, context-aware encoding, and CSP stop them.</p>
+          <div class="roadmap-lessons-pill-grid">
+            <a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/sql-injection-and-parameterized-queries"><span class="pill-number">1</span><span class="pill-title">SQL Injection &amp; Parameterized Queries</span><span class="pill-time">24m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/cross-site-scripting-contexts-and-csp"><span class="pill-number">2</span><span class="pill-title">Cross-Site Scripting (XSS) Contexts &amp; CSP</span><span class="pill-time">25m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/dom-based-vulnerabilities-and-sanitization"><span class="pill-number">3</span><span class="pill-title">DOM-Based Vulnerabilities &amp; Sanitization</span><span class="pill-time">22m</span><span class="pill-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </li><li>
+        <span class="roadmap-stop" aria-hidden="true">4</span>
+        <div class="roadmap-milestone-content">
+          <div class="roadmap-milestone-header">
+            <h4>CSRF, SSRF &amp; Production Hardening</h4>
+            <span class="milestone-badge">Module 4</span>
+          </div>
+          <div class="roadmap-milestone-goal">
+            <span class="goal-label">Milestone outcome:</span>
+            <p>You can design defense-in-depth controls for state-changing requests, outbound network calls, file storage, and production APIs.</p>
+          </div>
+          <p class="roadmap-milestone-desc">Protect cross-origin state changes, outbound server fetches, file uploads, HTTP response headers, and API endpoints in production.</p>
+          <div class="roadmap-lessons-pill-grid">
+            <a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/csrf-samesite-and-state-changing-requests"><span class="pill-number">1</span><span class="pill-title">CSRF, SameSite Cookies &amp; State-Changing Requests</span><span class="pill-time">22m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/ssrf-and-outbound-request-controls"><span class="pill-number">2</span><span class="pill-title">SSRF &amp; Outbound Request Controls</span><span class="pill-time">23m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/file-upload-validation-and-storage-isolation"><span class="pill-number">3</span><span class="pill-title">File Upload Validation &amp; Storage Isolation</span><span class="pill-time">21m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/security-headers-cors-and-tls-deployment"><span class="pill-number">4</span><span class="pill-title">Security Headers, CORS &amp; TLS Deployment</span><span class="pill-time">23m</span><span class="pill-arrow" aria-hidden="true">→</span></a><a class="roadmap-lesson-pill" href="/learning/web-application-security/foundations/api-rate-limiting-logging-and-defensive-testing"><span class="pill-number">5</span><span class="pill-title">API Rate Limiting, Logging &amp; Defensive Verification</span><span class="pill-time">20m</span><span class="pill-arrow" aria-hidden="true">→</span></a>
           </div>
         </div>
       </li>

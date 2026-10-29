@@ -13,7 +13,7 @@
       "id": "d93dd172-940d-469c-9e2b-126acfc36bff",
       "slug": "web-application-security",
       "name": "Web Application Security",
-      "description": "Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.",
+      "description": "Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment failures become real security issues.",
       "sort_order": 0,
       "is_active": true
     }
@@ -45,7 +45,7 @@
       "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
       "slug": "foundations",
       "name": "Web Security Foundations",
-      "description": "Start with how web applications work, then learn how identity, sessions, and access decisions keep users and data safe.",
+      "description": "A complete 4-module foundation: start with HTTP and trust boundaries, protect sessions and authorization, eliminate SQL injection and XSS, and harden CSRF, SSRF, uploads, and production APIs.",
       "audience": "Beginners, students, and developers who want to understand web security before studying individual vulnerabilities.",
       "difficulty": "Beginner",
       "prerequisites": [
@@ -53,10 +53,10 @@
         "No previous security-testing experience required. Basic HTML is helpful, not required."
       ],
       "outcomes": [
-        "Map assets and trust boundaries in a web application.",
-        "Read the security-relevant parts of an HTTP request and response.",
-        "Explain how authentication differs from authorization.",
-        "Recognize session and access-control risks, and describe defensive controls."
+        "Map assets and trust boundaries in a web application and read raw HTTP requests and responses.",
+        "Explain how authentication, session management, and server-side object authorization differ.",
+        "Identify SQL injection, reflected/stored/DOM XSS, CSRF, and SSRF failure modes and apply structural defenses.",
+        "Configure defensive file-upload controls, HTTP security headers, CORS policies, and API rate limiting."
       ],
       "next_steps": "Revisit any topic you cannot explain in your own words. Then explore beginner vulnerability labs using the external resources below. This foundation does not cover every vulnerability or qualify you as a professional tester.",
       "is_start_here": true,
@@ -110,6 +110,17 @@
       "status": "published"
     },
     {
+      "id": "50000000-0000-4000-8000-000000000003",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "slug": "injection-and-xss-defenses",
+      "name": "Injection, XSS & Client-Side Defenses",
+      "description": "Why mixing untrusted input with code interpreters causes SQL injection, cross-site scripting, and DOM vulnerabilities — and how parameterization, context-aware encoding, and CSP stop them.",
+      "outcome": "You can separate untrusted data from executable queries, HTML templates, and browser DOM sinks.",
+      "sort_order": 2,
+      "status": "published"
+    },
+    {
       "id": "15d6609f-6881-55ec-9c53-3cc296569582",
       "path_id": "41000000-0000-4000-8000-000000000001",
       "category_id": "843e0a7f-cc7c-5911-b7fa-60d14ce27913",
@@ -128,6 +139,17 @@
       "name": "Cryptography Essentials",
       "description": "Learn how encryption, hashing, digital signatures and TLS work, what each guarantees, and how keys, randomness and mistakes decide whether those guarantees hold.",
       "outcome": "What cryptography really guarantees, how it is built, and where it breaks.",
+      "sort_order": 3,
+      "status": "published"
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "slug": "csrf-ssrf-and-production-hardening",
+      "name": "CSRF, SSRF & Production Hardening",
+      "description": "Protect cross-origin state changes, outbound server fetches, file uploads, HTTP response headers, and API endpoints in production.",
+      "outcome": "You can design defense-in-depth controls for state-changing requests, outbound network calls, file storage, and production APIs.",
       "sort_order": 3,
       "status": "published"
     },
@@ -5939,6 +5961,414 @@
           "https://cornucopia.owasp.org/cards/AZ6"
         ]
       }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000005",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000003",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "sql-injection-and-parameterized-queries",
+      "name": "SQL Injection & Parameterized Queries",
+      "description": "Understand how string concatenation turns user input into database commands, and why prepared statements keep code and data separate.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 24,
+      "sort_order": 4,
+      "status": "published",
+      "content": {
+        "seo_title": "SQL Injection & Parameterized Queries | OMP Academy",
+        "seo_description": "Learn how SQL injection happens when input is concatenated into queries and how parameterized prepared statements prevent it.",
+        "keywords": [
+          "SQL injection",
+          "prepared statements",
+          "parameterized queries",
+          "database security",
+          "OWASP injection"
+        ],
+        "overview": "SQL injection (SQLi) occurs when an application builds a database query by concatenating untrusted input directly into the SQL command string. Because the database parser cannot tell where the developer’s query ends and the user’s data begins, crafted characters can alter query logic, bypass checks, read unauthorized rows, or modify data. The primary defense is structural: parameterized queries (prepared statements) compile the SQL structure first and pass user values separately as bound parameters.",
+        "how_it_works": [
+          "An application receives input from a query parameter, form field, header, cookie, or stored record.",
+          "If the code concatenates that input into a raw SQL string, characters like quotes, operators, or SQL keywords are parsed as part of the command syntax.",
+          "In-band SQLi returns results directly in the page; blind SQLi infers answers from boolean page differences or database response delays.",
+          "With a parameterized query, the database compiles the statement template ahead of time and treats the bound parameter strictly as a literal value, never as executable SQL syntax."
+        ],
+        "history": "First documented widely in Phrack Magazine in 1998, SQL injection has remained one of the most damaging web vulnerability classes for over two decades despite having a clear, universal engineering fix.",
+        "real_world": [
+          "High-profile breaches have repeatedly traced back to legacy endpoints or dynamic ORDER BY / filter clauses where developers bypassed query parameterization.",
+          "Even modern ORM frameworks can expose SQL injection when raw query helpers or string interpolation are used for dynamic table or column names."
+        ],
+        "what_to_look_for": [
+          "Search codebases for string interpolation or concatenation inside SQL query builders and raw ORM query calls.",
+          "Check dynamic sorting, filtering, and search endpoints where column names or directions cannot use standard value placeholders.",
+          "Verify that database error messages and stack traces are logged internally rather than returned in HTTP responses."
+        ],
+        "defensive": [
+          "Use parameterized queries (prepared statements) for every variable data value in SQL statements.",
+          "Validate dynamic identifiers such as column names or sort orders against a strict server-side allowlist.",
+          "Run the application database connection with least-privilege credentials limited to required tables and operations.",
+          "Avoid exposing raw database driver errors to clients."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/sql-injection",
+          "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000006",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000003",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "cross-site-scripting-contexts-and-csp",
+      "name": "Cross-Site Scripting (XSS) Contexts & CSP",
+      "description": "Learn how reflected and stored XSS execute scripts in a victim’s browser, why output context matters, and how Content Security Policy reduces impact.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 25,
+      "sort_order": 5,
+      "status": "published",
+      "content": {
+        "seo_title": "Cross-Site Scripting (XSS) Contexts & CSP | OMP Academy",
+        "seo_description": "Understand reflected and stored XSS, context-aware output encoding for HTML, attributes, URLs, and scripts, plus Content Security Policy.",
+        "keywords": [
+          "cross-site scripting",
+          "reflected XSS",
+          "stored XSS",
+          "output encoding",
+          "Content Security Policy"
+        ],
+        "overview": "Cross-Site Scripting (XSS) happens when an application includes untrusted data in a web page without proper encoding or validation for the specific browser context where it appears. When a victim’s browser renders the page, it executes the injected JavaScript within the origin of the trusted site—allowing the script to read page data, make authenticated requests, or alter the UI.",
+        "how_it_works": [
+          "In reflected XSS, untrusted input from the current HTTP request (such as a search query) is echoed immediately into the HTML response.",
+          "In stored XSS, untrusted input (such as a comment, profile bio, or support ticket) is saved on the server and rendered later to other users or administrators.",
+          "Each output location in a document—HTML body text, HTML attribute, URL attribute (href/src), or inline JavaScript—is parsed differently by the browser.",
+          "Context-aware output encoding converts characters that have special meaning in that specific context into safe literal representations before the browser parses them."
+        ],
+        "history": "Coined in the early 2000s as \"cross-site scripting\" to describe loading scripts across domains, XSS quickly became the most common vulnerability reported in bug bounty programs worldwide.",
+        "real_world": [
+          "Stored XSS in customer support dashboards or admin panels can silently compromise privileged staff sessions when they view an attacker-submitted record.",
+          "HTML entity encoding inside an href=\"javascript:...\" attribute does not stop script execution because the browser decodes attributes before evaluating the URL scheme."
+        ],
+        "what_to_look_for": [
+          "Identify every place where user-controlled strings are rendered into HTML templates, attributes, or links.",
+          "Check user-supplied URLs (such as profile website links or avatar URLs) to ensure only http: and https: schemes are permitted.",
+          "Inspect whether templates disable auto-escaping (for example, raw HTML directives) on user content."
+        ],
+        "defensive": [
+          "Use modern templating engines or UI frameworks that automatically apply context-aware encoding by default.",
+          "Validate URLs rendered into href or src attributes so only safe schemes (https:, http:, or site-relative paths) are allowed.",
+          "Set HttpOnly on session cookies so injected JavaScript cannot read raw session identifiers via document.cookie.",
+          "Deploy a strict Content Security Policy (CSP) that blocks inline script execution and restricts script sources."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/cross-site-scripting",
+          "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000007",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000003",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "dom-based-vulnerabilities-and-sanitization",
+      "name": "DOM-Based Vulnerabilities & Sanitization",
+      "description": "Trace client-side sources and sinks in browser JavaScript, understand why innerHTML is dangerous, and sanitize rich HTML safely.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 22,
+      "sort_order": 6,
+      "status": "published",
+      "content": {
+        "seo_title": "DOM XSS, Sinks & HTML Sanitization | OMP Academy",
+        "seo_description": "Learn how DOM-based XSS flows from client-side sources like location.search to sinks like innerHTML, and how textContent and sanitizers prevent it.",
+        "keywords": [
+          "DOM XSS",
+          "innerHTML vs textContent",
+          "HTML sanitization",
+          "Trusted Types",
+          "client-side security"
+        ],
+        "overview": "DOM-based vulnerabilities occur entirely inside browser JavaScript when code reads data from an untrusted client-side source (such as location.search, location.hash, or postMessage) and passes it into a dangerous DOM sink (such as element.innerHTML, document.write, or location.assign) without safe handling. Even if the server never sees the payload, the browser executes it in the application’s origin.",
+        "how_it_works": [
+          "A source is any browser property or API that an attacker can influence, including URL query strings, URL fragments, referrer headers, storage entries, or cross-window messages.",
+          "A sink is a browser DOM property or function that interprets strings as HTML markup, executable code, or navigation targets.",
+          "When JavaScript assigns untrusted text to innerHTML or outerHTML, the browser parses embedded tags and event handlers (such as <img src=x onerror=...>).",
+          "Using textContent or createElement assigns plain text nodes that the browser never parses as HTML markup."
+        ],
+        "history": "As single-page applications shifted rendering logic from server templates to client-side JavaScript in the 2010s, DOM-based XSS grew from a niche edge case into a primary web security focus.",
+        "real_world": [
+          "Client-side search widgets and tab routers frequently read location.hash or query parameters and inject them directly into a status banner via innerHTML.",
+          "Window postMessage listeners that fail to check event.origin can allow any third-party tab to send commands or markup into the page."
+        ],
+        "what_to_look_for": [
+          "Audit assignments to innerHTML, outerHTML, insertAdjacentHTML, document.write, eval, and Function.",
+          "Check window.addEventListener(\"message\", ...) handlers for strict event.origin verification.",
+          "Review client-side redirects that read returnUrl or next parameters from the URL and pass them to location.href."
+        ],
+        "defensive": [
+          "Use textContent, setAttribute, and DOM node creation APIs instead of innerHTML whenever rendering plain text.",
+          "When rich HTML or Markdown rendering is required, pass output through a vetted allowlist HTML sanitizer before inserting it into the DOM.",
+          "Validate redirect targets against same-origin paths before calling location.assign or location.replace.",
+          "Adopt browser Trusted Types where supported to block raw string assignments to dangerous DOM sinks."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/dom-based",
+          "https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000008",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "csrf-samesite-and-state-changing-requests",
+      "name": "CSRF, SameSite Cookies & State-Changing Requests",
+      "description": "See how Cross-Site Request Forgery abuses ambient browser cookies and how CSRF tokens, SameSite attributes, and method discipline stop it.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 22,
+      "sort_order": 7,
+      "status": "published",
+      "content": {
+        "seo_title": "CSRF Defense & SameSite Cookies | OMP Academy",
+        "seo_description": "Understand Cross-Site Request Forgery (CSRF), why browsers attach cookies automatically, and how anti-CSRF tokens and SameSite cookies protect state changes.",
+        "keywords": [
+          "CSRF",
+          "Cross-Site Request Forgery",
+          "SameSite cookies",
+          "anti-CSRF token",
+          "state-changing requests"
+        ],
+        "overview": "Cross-Site Request Forgery (CSRF) tricks a victim’s browser into sending an unintended state-changing request—such as changing an email address, transferring funds, or rotating an API key—to a site where the victim is currently signed in. Because browsers automatically attach session cookies to cross-site requests unless restricted, the server may treat the forged request as a genuine action by the user.",
+        "how_it_works": [
+          "A user signs into a web application and receives a session cookie stored by their browser.",
+          "While that session is active, the user visits another page or opens an email containing a hidden form or script that submits a request to the target application.",
+          "If the session cookie lacks SameSite protection and the endpoint requires no unpredictable request token, the browser sends the cookie and the server executes the action.",
+          "An anti-CSRF token (or custom header verified on the server) works because a cross-origin page cannot read the token from the target origin due to the Same-Origin Policy."
+        ],
+        "history": "Historically widespread across form-based web apps, CSRF prompted browser vendors to change the default cookie behavior to SameSite=Lax, dramatically reducing accidental exposure while keeping explicit anti-CSRF tokens essential for sensitive endpoints.",
+        "real_world": [
+          "Applications that perform state changes on GET requests (such as /account/delete?confirm=1) remain vulnerable even with SameSite=Lax cookies because top-level link navigations still send Lax cookies.",
+          "Login CSRF can bind a victim’s browser to an attacker-controlled account so the victim inadvertently saves sensitive data into the attacker’s profile."
+        ],
+        "what_to_look_for": [
+          "Verify that GET and HEAD requests are strictly read-only and never mutate server state.",
+          "Check whether state-changing POST, PUT, PATCH, and DELETE endpoints validate a cryptographic anti-CSRF token or require a non-simple custom header with strict CORS.",
+          "Inspect Set-Cookie headers to confirm SameSite=Lax or SameSite=Strict is explicitly set."
+        ],
+        "defensive": [
+          "Require unpredictable, session-bound anti-CSRF tokens on all state-changing form and API requests.",
+          "Never perform state-changing operations on GET requests.",
+          "Explicitly set SameSite=Lax (or SameSite=Strict for high-sensitivity sessions) along with Secure and HttpOnly on session cookies.",
+          "Verify the Origin or Referer header on sensitive state-changing requests as an additional defense-in-depth check."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/csrf",
+          "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000009",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "ssrf-and-outbound-request-controls",
+      "name": "SSRF & Outbound Request Controls",
+      "description": "Learn how Server-Side Request Forgery tricks a server into fetching internal network resources or cloud metadata, and how to isolate outbound calls.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 23,
+      "sort_order": 8,
+      "status": "published",
+      "content": {
+        "seo_title": "Server-Side Request Forgery (SSRF) Defense | OMP Academy",
+        "seo_description": "Learn how SSRF vulnerabilities let attackers reach internal services and cloud metadata endpoints, and how allowlists and network isolation prevent them.",
+        "keywords": [
+          "SSRF",
+          "Server-Side Request Forgery",
+          "cloud metadata security",
+          "outbound network controls",
+          "egress filtering"
+        ],
+        "overview": "Server-Side Request Forgery (SSRF) happens when an application fetches a remote resource using a URL or hostname supplied or influenced by a user without verifying the destination. Because the request originates from the trusted application server, an attacker can use it to reach internal-only services, loopback interfaces, private RFC 1918 networks, or cloud instance metadata endpoints.",
+        "how_it_works": [
+          "Features such as webhook testers, URL link previews, PDF generators, and remote avatar importers ask the server to fetch a URL.",
+          "If the server accepts arbitrary URLs, an attacker can supply internal addresses like http://127.0.0.1, internal admin hostnames, or cloud metadata IPs (169.254.169.254).",
+          "Even if the application only validates the initial URL string, HTTP 302 redirects or DNS rebinding can point the actual socket connection at a private IP address.",
+          "Effective defense combines application-layer allowlisting, DNS resolution validation at connection time, and network-layer egress isolation."
+        ],
+        "history": "SSRF rose to prominence with cloud computing and microservice architectures, earning its own dedicated category in the OWASP Top 10 (A10:2021) due to its role in major cloud credential thefts.",
+        "real_world": [
+          "Cloud metadata services on link-local addresses (169.254.169.254) have been queried via SSRF to extract temporary IAM role credentials when metadata session tokens were not required.",
+          "Server-side HTML-to-PDF converters that evaluate embedded <iframe> or <link> tags frequently act as hidden SSRF vectors."
+        ],
+        "what_to_look_for": [
+          "Identify any endpoint that accepts a full URL, domain name, webhook target, or file import link from the client.",
+          "Check whether the HTTP client follows redirects automatically to unvalidated destinations.",
+          "Verify whether cloud instances enforce session-oriented metadata access (such as IMDSv2) and restrict outbound connections."
+        ],
+        "defensive": [
+          "Avoid fetching user-supplied URLs from application servers whenever possible; prefer strict allowlists of known partner domains.",
+          "Resolve hostnames and block connections to loopback, link-local, and private IP ranges at the custom socket/dialer layer, and disable automatic HTTP redirects.",
+          "Route legitimate user-initiated fetches through an isolated egress proxy in a dedicated network segment with no access to internal services.",
+          "Require token-authenticated cloud metadata endpoints (such as AWS IMDSv2) and minimize instance IAM privileges."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/ssrf",
+          "https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000010",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "file-upload-validation-and-storage-isolation",
+      "name": "File Upload Validation & Storage Isolation",
+      "description": "Design safe file upload pipelines: why filename extensions and Content-Type headers cannot be trusted, and how to isolate stored files.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 21,
+      "sort_order": 9,
+      "status": "published",
+      "content": {
+        "seo_title": "Secure File Uploads & Storage Isolation | OMP Academy",
+        "seo_description": "Learn how file upload vulnerabilities lead to stored XSS, path traversal, or server execution, and how to validate and isolate uploaded files.",
+        "keywords": [
+          "file upload security",
+          "content-disposition",
+          "MIME sniffing",
+          "storage isolation",
+          "path traversal"
+        ],
+        "overview": "File upload features accept complex binary or text streams directly from untrusted clients. If an application trusts the client-supplied filename, Content-Type header, or file contents, attackers may upload active web scripts, SVG documents containing JavaScript, oversized archive bombs, or path-traversal filenames that overwrite sensitive files.",
+        "how_it_works": [
+          "The browser sends a multipart/form-data request containing a filename, a Content-Type header, and raw bytes—all of which are controlled by the client.",
+          "If the server saves the file using the raw user filename inside a web-accessible directory, an uploaded .html, .svg, or server script may be executed when requested.",
+          "Even image uploads can carry embedded scripts if the server or browser sniffs the content as HTML or SVG on the main application origin.",
+          "Generating a random UUID filename, verifying magic bytes/dimensions, and serving user files from a separate cookieless storage domain neutralizes these risks."
+        ],
+        "history": "Unrestricted file upload has been a classic path to full server compromise or stored XSS since early bulletin boards and content management systems stored uploads in executable web roots.",
+        "real_world": [
+          "Uploaded SVG avatars rendered inline on the main application domain execute embedded <script> tags with full access to the user’s session.",
+          "Filenames containing ../ sequences in multipart uploads or zip archives (Zip Slip) can write files outside the intended upload folder."
+        ],
+        "what_to_look_for": [
+          "Check whether uploaded filenames are stripped or replaced with server-generated random identifiers.",
+          "Test whether SVG or HTML files can be uploaded and viewed directly on the main application origin.",
+          "Verify that responses serving user downloads include X-Content-Type-Options: nosniff and safe Content-Disposition headers."
+        ],
+        "defensive": [
+          "Never use client-supplied filenames on disk or in object keys; generate random UUID filenames and allowlist safe extensions.",
+          "Verify file signatures (magic bytes) and re-encode or validate images server-side; enforce strict file size limits.",
+          "Store uploads outside the application web root—ideally in an isolated object storage bucket served from a separate, cookieless domain.",
+          "Serve user downloads with Content-Disposition: attachment and X-Content-Type-Options: nosniff."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/file-upload",
+          "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000011",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "security-headers-cors-and-tls-deployment",
+      "name": "Security Headers, CORS & TLS Deployment",
+      "description": "Configure browser security headers, understand the Same-Origin Policy and CORS misconfigurations, and enforce HTTPS with HSTS.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 23,
+      "sort_order": 10,
+      "status": "published",
+      "content": {
+        "seo_title": "HTTP Security Headers, CORS & HSTS Guide | OMP Academy",
+        "seo_description": "Master browser security headers (CSP, HSTS, X-Frame-Options, nosniff), Same-Origin Policy, and how to avoid dangerous CORS misconfigurations.",
+        "keywords": [
+          "HTTP security headers",
+          "CORS security",
+          "Same-Origin Policy",
+          "HSTS",
+          "clickjacking defense"
+        ],
+        "overview": "Browsers enforce powerful built-in isolation through the Same-Origin Policy (SOP) and optional HTTP response headers. However, overly permissive Cross-Origin Resource Sharing (CORS) headers or missing transport and framing headers can weaken those protections, exposing authenticated API responses or allowing clickjacking and downgrade attacks.",
+        "how_it_works": [
+          "The Same-Origin Policy prevents scripts on one origin (scheme + host + port) from reading responses from another origin unless the server explicitly opts in via CORS headers.",
+          "If an API reflects an arbitrary Origin header in Access-Control-Allow-Origin while also setting Access-Control-Allow-Credentials: true, any website can read authenticated responses.",
+          "Strict-Transport-Security (HSTS) instructs browsers to connect only over HTTPS, preventing protocol downgrade and cookie hijacking on untrusted networks.",
+          "Frame restrictions (CSP frame-ancestors or X-Frame-Options) stop attackers from embedding a sensitive page inside an invisible iframe to trick users into clicking buttons (clickjacking)."
+        ],
+        "history": "Introduced by Netscape in 1995, the Same-Origin Policy remains the cornerstone of web browser isolation, supplemented over time by CORS, HSTS, CSP, and Fetch Metadata headers.",
+        "real_world": [
+          "APIs that dynamically reflect req.headers.origin into Access-Control-Allow-Origin alongside Allow-Credentials: true effectively disable the Same-Origin Policy for signed-in users.",
+          "Weak regex checks on Origin headers (such as matching *example.com without anchoring) have allowed attackers to register evil-example.com and steal account data."
+        ],
+        "what_to_look_for": [
+          "Inspect HTTP responses for Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options: nosniff, and Referrer-Policy.",
+          "Test CORS behavior by sending requests with an arbitrary Origin header and checking whether it is reflected with Access-Control-Allow-Credentials: true.",
+          "Confirm that framing is restricted via frame-ancestors in CSP or X-Frame-Options."
+        ],
+        "defensive": [
+          "Compare incoming Origin headers against an exact allowlist of trusted origins; never reflect arbitrary origins when Access-Control-Allow-Credentials is true.",
+          "Enable HSTS (Strict-Transport-Security) and redirect all HTTP traffic permanently to HTTPS.",
+          "Set X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin, and frame-ancestors restrictions on all responses.",
+          "Review Permissions-Policy to disable unused browser features such as camera, microphone, and geolocation."
+        ],
+        "references": [
+          "https://portswigger.net/web-security/cors",
+          "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000012",
+      "category_id": "d93dd172-940d-469c-9e2b-126acfc36bff",
+      "module_id": "50000000-0000-4000-8000-000000000004",
+      "path_id": "40000000-0000-4000-8000-000000000001",
+      "slug": "api-rate-limiting-logging-and-defensive-testing",
+      "name": "API Rate Limiting, Logging & Defensive Verification",
+      "description": "Protect web APIs against automated abuse, design privacy-safe security audit logs, and verify security controls continuously in CI.",
+      "difficulty": "Beginner",
+      "estimated_minutes": 20,
+      "sort_order": 11,
+      "status": "published",
+      "content": {
+        "seo_title": "API Rate Limiting, Security Logging & Testing | OMP Academy",
+        "seo_description": "Learn how to defend web APIs with layered rate limiting, structured security logging without leaking secrets, and automated regression testing.",
+        "keywords": [
+          "API security",
+          "rate limiting",
+          "security logging",
+          "credential stuffing defense",
+          "defensive testing"
+        ],
+        "overview": "Even when an application has no classic injection or XSS flaws, attackers target business logic and API endpoints with automated credential stuffing, OTP brute-forcing, scraping, and resource exhaustion. Production resilience requires layered rate limiting, structured audit logging that never records plaintext secrets, and automated security regression tests.",
+        "how_it_works": [
+          "Automated bots send thousands of requests per minute across rotating IP addresses to test leaked credentials, guess reset codes, or exhaust expensive endpoints.",
+          "Layered rate limiting tracks request budgets per IP, per account identifier, and per endpoint cost so neither a single host nor a distributed botnet can brute-force a target account.",
+          "Security audit logs record authentication outcomes, privilege changes, and authorization denials with correlation IDs—while explicitly redacting passwords, tokens, and session cookies.",
+          "Automated integration tests in CI assert that unauthenticated and cross-tenant requests receive 401/403 responses before code ships."
+        ],
+        "history": "As modern applications moved to JSON APIs and mobile clients, OWASP introduced the dedicated API Security Top 10 to address resource consumption, broken object-level authorization, and automated abuse.",
+        "real_world": [
+          "Password reset endpoints that accept a 4- or 6-digit numeric code without per-account attempt limits can be brute-forced in seconds across multiple IP addresses.",
+          "Debug loggers that dump raw HTTP headers or request bodies into central log indices have accidentally exposed bearer tokens and plaintext passwords to internal readers."
+        ],
+        "what_to_look_for": [
+          "Check login, MFA verification, password reset, and coupon/checkout endpoints for per-account and per-IP rate limits.",
+          "Verify that security logs capture failed logins and access-control denials without logging passwords, session cookies, or API keys.",
+          "Confirm that CI pipelines include automated tests for authorization boundaries, SEO/CSP headers, and dependency vulnerabilities."
+        ],
+        "defensive": [
+          "Enforce both per-IP and per-account rate limits and short lockouts or exponential backoff on authentication, MFA, and recovery endpoints.",
+          "Use short-lived, high-entropy tokens for password resets and invalidate them immediately after use or after a small number of failed attempts.",
+          "Log security-relevant events in a structured format with automatic redaction of Authorization headers, cookies, and password fields.",
+          "Write automated unit and integration tests for access control rules so regressions fail the build before deployment."
+        ],
+        "references": [
+          "https://owasp.org/API-Security/",
+          "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+        ]
+      }
     }
   ],
   "labs": [
@@ -8260,6 +8690,86 @@
       "url": null,
       "description": "Rewriting a string-built query as a parameterised statement and comparing behaviour with ordinary and awkward input",
       "sort_order": 3,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000005",
+      "topic_id": "10000000-0000-4000-8000-000000000005",
+      "title": "PortSwigger Web Security Academy: SQL Injection",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/sql-injection",
+      "description": "Practice identifying SQL injection and understanding parameterized query defenses in legal, purpose-built lab environments.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000006",
+      "topic_id": "10000000-0000-4000-8000-000000000006",
+      "title": "PortSwigger Web Security Academy: Cross-Site Scripting (XSS)",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/cross-site-scripting",
+      "description": "Explore reflected and stored XSS contexts and test how output encoding and Content Security Policy mitigate script injection.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000007",
+      "topic_id": "10000000-0000-4000-8000-000000000007",
+      "title": "PortSwigger Web Security Academy: DOM-Based Vulnerabilities",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/dom-based",
+      "description": "Trace client-side sources and DOM sinks in interactive browser labs and compare unsafe innerHTML with safe DOM APIs.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000008",
+      "topic_id": "10000000-0000-4000-8000-000000000008",
+      "title": "PortSwigger Web Security Academy: Cross-Site Request Forgery (CSRF)",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/csrf",
+      "description": "Understand how cross-site requests abuse session cookies and how anti-CSRF tokens and SameSite attributes protect state-changing endpoints.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000009",
+      "topic_id": "10000000-0000-4000-8000-000000000009",
+      "title": "PortSwigger Web Security Academy: Server-Side Request Forgery (SSRF)",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/ssrf",
+      "description": "See how outbound server requests can be redirected toward internal services and how allowlists and network isolation prevent SSRF.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000010",
+      "topic_id": "10000000-0000-4000-8000-000000000010",
+      "title": "PortSwigger Web Security Academy: File Upload Vulnerabilities",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/file-upload",
+      "description": "Learn why content-type headers and file extensions cannot be trusted alone and how to isolate uploaded files safely.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000011",
+      "topic_id": "10000000-0000-4000-8000-000000000011",
+      "title": "PortSwigger Web Security Academy: CORS & Security Headers",
+      "provider": "PortSwigger Web Security Academy",
+      "url": "https://portswigger.net/web-security/cors",
+      "description": "Explore Same-Origin Policy boundaries, CORS origin reflection mistakes, and clickjacking defenses.",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000012",
+      "topic_id": "10000000-0000-4000-8000-000000000012",
+      "title": "OWASP API Security Project & Cheat Sheets",
+      "provider": "OWASP Foundation",
+      "url": "https://owasp.org/API-Security/",
+      "description": "Review OWASP guidance on API rate limiting, authentication brute-force controls, and structured security logging.",
+      "sort_order": 1,
       "is_active": true
     }
   ],

@@ -31,7 +31,8 @@
     <script src="/assets/js/theme-init.js"></script>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://oopsmypassword.web.app/learning#page","url":"https://oopsmypassword.web.app/learning","name":"Learn Cybersecurity Step by Step","description":"Learn cybersecurity step by step. Structured courses with clear outcomes, ordered modules, bite-sized lessons and knowledge checks at OMP Academy.","inLanguage":"en","isAccessibleForFree":true,"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Academy","item":"https://oopsmypassword.web.app/learning"}]}</script>
-  </head>
+    <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+</head>
   <body class="academy-page">
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-nav academy-topnav">
@@ -45,8 +46,10 @@
         <nav class="academy-topnav-nav" aria-label="Site">
           <a href="/checker">Checker</a>
           <a href="/tools">Tools</a>
+          <a href="/osint">OSINT Hub</a>
+          <a href="/pentest">Pentest Hub</a>
           <a href="/articles">Articles</a>
-          <a href="/security">Security</a>
+          <a href="/products">Products</a>
         </nav>
         <div class="academy-topnav-actions">
           <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button>
@@ -58,14 +61,14 @@
             aria-label="Toggle color theme"
             title="Toggle theme"
           >
-            <span class="theme-icon-moon">☾</span
-            ><span class="theme-icon-sun">☀</span>
+            <span class="theme-icon-moon" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+            <span class="theme-icon-sun" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span>
           </button>
         </div>
       </div>
     </header>
 <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
-  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
   <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
 </nav>
     <main id="main" class="academy-main">
@@ -77,17 +80,42 @@
     <div class="hero-actions">
             <a class="btn btn-primary btn-lg" href="/learning/cyber-security/cyber-security-track/what-is-cyber-security"><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg> Start learning</a>
           </div>
-    <p class="hero-meta">2 courses · 110 lessons · No signup, progress stays on this device</p>
+    <p class="hero-meta">2 courses · 118 lessons · No signup, progress stays on this device</p>
   </div>
   <aside class="hero-resume hero-resume--orientation" aria-label="What a lesson looks like">
             <span class="resume-label">Inside every lesson</span>
             <ol class="hero-loop">
               <li><span><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4z"/><path d="M13 7a3 3 0 0 1 3-3h5v15h-5a4 4 0 0 0-3 2"/></svg></span><div><strong>Read the concept</strong><small>A focused explanation, its history and real examples.</small></div></li>
               <li><span><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6m-5 0v7L4 19a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2l-6-9V3M7 16h10"/></svg></span><div><strong>Practice it</strong><small>External exercises you run yourself, and the defensive view.</small></div></li>
-              <li><span><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8 14-1 8 5-3 5 3-1-8"/></svg></span><div><strong>Check yourself</strong><small>A self-check on the lessons that publish one. No score is claimed where there isn't one.</small></div></li>
+              <li><span><svg class="academy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8 14-1 8 5-3 5 3-1-8"/></svg></span><div><strong>Check yourself</strong><small>A 4-question interactive self-check on every lesson to verify what you learned.</small></div></li>
             </ol>
           </aside>
 </header>
+<section class="academy-dashboard-strip" aria-label="Your learning progress">
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Your Learning Dashboard</span>
+    <div class="dashboard-stat-main">
+      <strong>0 / 118</strong>
+      <span>Lessons completed (0%)</span>
+    </div>
+    <div class="course-progress-track"><span style="width:0%"></span></div>
+  </div>
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Active Progress</span>
+    <div class="dashboard-stat-main">
+      <strong>0</strong>
+      <span>Lessons in progress</span>
+    </div>
+    <p class="small muted" style="margin:0">Interactive 4-question self-checks available on all 118 lessons.</p>
+  </div>
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Next Recommended Step</span>
+    <div class="dashboard-stat-main">
+      <strong>What Is Cyber Security?</strong>
+    </div>
+    <a class="text-button" href="/learning/cyber-security/cyber-security-track/what-is-cyber-security">Begin first lesson →</a>
+  </div>
+</section>
 <section class="course-index" aria-labelledby="course-index-heading">
   <div class="section-heading">
     <div>
@@ -116,12 +144,12 @@
   <div class="course-card-main">
     <p class="course-card-path">Web Application Security</p>
     <h3>Web Security Foundations</h3>
-    <p class="course-card-desc">Start with how web applications work, then learn how identity, sessions, and access decisions keep users and data safe.</p>
+    <p class="course-card-desc">A complete 4-module foundation: start with HTTP and trust boundaries, protect sessions and authorization, eliminate SQL injection and XSS, and harden CSRF, SSRF, uploads, and production APIs.</p>
     <p class="course-card-facts">
       <span>Beginner</span>
-      <span>2 modules</span>
-      <span>4 lessons</span>
-      <span>90 min</span>
+      <span>4 modules</span>
+      <span>12 lessons</span>
+      <span>270 min</span>
     </p>
   </div>
   <div class="course-card-side">

@@ -12,6 +12,7 @@ import {
   modulesView,
   breadcrumbView,
   blocksView,
+  lessonDiagramView,
 } from "./academy-views.mjs";
 import { esc, icon, safeHttpUrl } from "./academy-ui.mjs";
 /* No learner authentication. Names, progress and self-check results stay on this device. */
@@ -248,6 +249,35 @@ function renderPublic(data, page, pmap) {
     filter = document.querySelector("#lesson-filter");
   filter.disabled = false;
   filter.title = "Filter by progress on this device";
+  function wireModules() {
+    document.querySelectorAll("[data-module-toggle]").forEach((hdr) => {
+      const toggle = () => {
+        const card = hdr.closest(".curriculum-module");
+        if (!card) return;
+        const collapsed = card.classList.toggle("is-collapsed");
+        hdr.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      };
+      hdr.addEventListener("click", toggle);
+      hdr.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggle();
+        }
+      });
+    });
+  }
+  document.querySelector("#modules-expand-all")?.addEventListener("click", () => {
+    document.querySelectorAll(".curriculum-module").forEach((c) => {
+      c.classList.remove("is-collapsed");
+      c.querySelector("[data-module-toggle]")?.setAttribute("aria-expanded", "true");
+    });
+  });
+  document.querySelector("#modules-collapse-all")?.addEventListener("click", () => {
+    document.querySelectorAll(".curriculum-module").forEach((c) => {
+      c.classList.add("is-collapsed");
+      c.querySelector("[data-module-toggle]")?.setAttribute("aria-expanded", "false");
+    });
+  });
   function update() {
     const q = search.value.trim().toLocaleLowerCase();
     const matches = (t) => {
@@ -267,6 +297,7 @@ function renderPublic(data, page, pmap) {
     document.querySelector("#category-lessons").innerHTML = count
       ? modulesView(page.path, pmap, matches)
       : '<div class="filter-empty"><h3>No lessons found</h3><p>Try another search or reset the filters.</p><button class="btn btn-secondary" id="reset-filters">Clear filters</button></div>';
+    wireModules();
     document.querySelector("#reset-filters")?.addEventListener("click", () => {
       search.value = "";
       filter.value = "all";
@@ -302,7 +333,7 @@ function quizView(quiz, p) {
   return `<div class="quiz-intro"><span class="academy-badge">4 questions</span><span class="academy-badge">15 / 20 to pass</span><p>A practice self-check, graded in your browser. Answers are public learning material—not a secure exam. Retry whenever you like.</p></div><form id="academy-quiz" novalidate><div class="quiz-counter" role="status"></div>${quiz.questions
     .map(
       (q, i) =>
-        `<fieldset class="quiz-question" data-question="${i}" ${i ? "hidden" : ""}><legend><span>QUESTION ${i + 1} OF 4</span>${esc(q.question)}</legend><div class="quiz-options">${shuffledOptions(
+        `<fieldset class="quiz-question" data-question="${i}" data-self-check-question="${i}" ${i ? "hidden" : ""}><legend><span>QUESTION ${i + 1} OF 4</span>${esc(q.question)}</legend><div class="quiz-options">${shuffledOptions(
           q.options,
         )
           .map(
@@ -401,13 +432,33 @@ async function renderTopic(data, cat, topic, saved = {}) {
   const quiz = data.selfCheckUnavailable
     ? { unavailable: true }
     : data.quizzes.find((q) => q.topic_id === topic.id);
+  let readerMode = "full";
+  try {
+    const savedMode = localStorage.getItem("omp-academy-read-mode");
+    if (savedMode === "step" || savedMode === "full") readerMode = savedMode;
+  } catch {}
   const outline = `<aside class="academy-sidebar lesson-sidebar"><a class="lesson-back" href="${path.url}">← Back to course</a><div class="lesson-sidebar-title"><span class="academy-kicker">${esc(path.name)}</span><strong>${esc(topic.name)}</strong><span>${esc(topic.difficulty)} · ${Number(topic.estimated_minutes) || 0} min</span></div><button class="lesson-outline-toggle" aria-expanded="false" aria-controls="lesson-outline">Lesson contents <span aria-hidden="true">⌄</span></button><nav id="lesson-outline" class="lesson-outline" aria-label="Lesson sections"><span class="academy-nav-label">LEARN</span>${sections.map(([id, title], i) => `${i === learnCount ? '<span class="academy-nav-label outline-practice-label">PRACTICE &amp; CHECK</span>' : ""}<a href="#${id}" data-outline="${id}"><span class="outline-index">${i === learnCount ? icon("lab") : i === learnCount + 1 ? icon("award") : String(i + 1).padStart(2, "0")}</span>${esc(title)}<span class="outline-current" aria-hidden="true"></span></a>`).join("")}</nav><div class="sidebar-note"><strong>Focus on understanding.</strong><p>You can move between sections at any time. Your reading position is saved on this device.</p></div></aside>`;
   shell(
     data,
     "lesson",
-    `${breadcrumbView(resolvePage(data, topic.url))}<header class="lesson-heading"><div class="lesson-heading-meta"><span class="academy-badge">${esc(topic.difficulty)}</span><span>${icon("clock")}${Number(topic.estimated_minutes) || 0} min</span><span class="lesson-state" id="lesson-state">${labels[state(p)]}</span></div><h1>${esc(topic.name)}</h1><p>${esc(topic.description)}</p></header><div class="topic-context"><strong>${esc(module.name)} · Lesson ${path.topics.findIndex((t) => t.id === topic.id) + 1} of ${path.topics.length}</strong><p>${esc(module.outcome)}</p><a class="text-button" href="${path.url}#module-${module.slug}">See this lesson in the course →</a></div><div class="lesson-stage-bar" aria-label="Learning stages"><span data-stage="learn">01 <strong>Learn</strong></span><span data-stage="example">02 <strong>See examples</strong></span><span data-stage="apply">03 <strong>Apply</strong></span><span data-stage="labs">04 <strong>Practice</strong></span><span data-stage="quiz">05 <strong>Check</strong></span></div><div id="lesson-feedback" role="status"></div><div class="lesson-reader">${sections.map(([id, title, key], i) => `<section id="section-${id}" class="lesson-section" aria-labelledby="heading-${id}" hidden><div class="reader-eyebrow">${sectionKickers[id] || (i < learnCount ? `LEARN THE CONCEPT · STEP ${i + 1} OF ${learnCount}` : "CHECK YOUR UNDERSTANDING")}</div><h2 id="heading-${id}" tabindex="-1">${esc(title)}</h2>${key ? `<div class="prose learning-prose">${blocksView(key)}</div>${i === learnCount - 1 ? references(topic.content?.references) : ""}` : id === "labs" ? `<p class="reader-intro">Move from understanding to doing. Explore the resource below, then confirm you’ve completed the practice.</p><div class="lab-safety">${icon("shield")}${esc(topic.content.practice_guidance || "Use a suitable learning environment. Follow the resource’s instructions and test other people’s systems only with permission.")}</div>${labs.length ? labs.map((l) => `<div class="academy-lab"><span class="academy-kicker">${esc(l.provider)} · EXTERNAL RESOURCE</span><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open practice resource ↗<span class="sr-only"> (opens in a new tab)</span></a></div>`).join("") + `<div class="lab-confirmation"><label><input type="checkbox" id="lab-confirm" ${p.lab_completed ? "checked disabled" : ""}>I’ve worked through the practice and reviewed the key concepts.</label><button class="btn btn-primary" id="complete-lab" ${p.lab_completed ? "disabled" : ""}>${p.lab_completed ? "Practice completed ✓" : "Save practice & continue"}${icon("arrow")}</button><p class="small muted">Practice and self-check results stay on this device. Completion is self-reported.</p><p id="lab-feedback" role="status"></p></div>` : notice("No practice resources are published for this lesson yet. Please check back later.")}` : `<div id="quiz-container">${quizView(quiz, p)}</div>`}</section>`).join("")}<footer class="reader-navigation"><button class="btn btn-secondary" id="section-back">← Previous</button><span id="section-counter"></span><button class="btn btn-primary" id="section-next">Next section ${icon("arrow")}</button></footer></div><p class="reader-footnote">${icon("shield")}Learn responsibly. Practice with permission. Build with confidence.</p><div id="lesson-next-slot">${nextStepView(data, path, module, topic, Boolean(p.passed))}</div>`,
+    `${breadcrumbView(resolvePage(data, topic.url))}<header class="lesson-heading"><div class="lesson-heading-meta"><span class="academy-badge">${esc(topic.difficulty)}</span><span>${icon("clock")}${Number(topic.estimated_minutes) || 0} min</span><span class="lesson-state" id="lesson-state">${labels[state(p)]}</span></div><h1>${esc(topic.name)}</h1><p>${esc(topic.description)}</p></header><div class="topic-context"><strong>${esc(module.name)} · Lesson ${path.topics.findIndex((t) => t.id === topic.id) + 1} of ${path.topics.length}</strong><p>${esc(module.outcome)}</p><a class="text-button" href="${path.url}#module-${module.slug}">See this lesson in the course →</a></div>${lessonDiagramView(topic)}<div class="lesson-controls-row"><div class="lesson-stage-bar" role="group" aria-label="Learning stages"><button type="button" class="stage-btn" data-stage="learn">01 <strong>Learn</strong></button><button type="button" class="stage-btn" data-stage="example">02 <strong>See examples</strong></button><button type="button" class="stage-btn" data-stage="apply">03 <strong>Apply</strong></button><button type="button" class="stage-btn" data-stage="labs">04 <strong>Practice</strong></button><button type="button" class="stage-btn" data-stage="quiz">05 <strong>Check</strong></button></div><div class="reader-mode-bar" role="group" aria-label="Reading mode"><button type="button" class="reader-mode-btn ${readerMode === "full" ? "is-active" : ""}" data-read-mode="full" aria-pressed="${readerMode === "full"}">Full lesson</button><button type="button" class="reader-mode-btn ${readerMode === "step" ? "is-active" : ""}" data-read-mode="step" aria-pressed="${readerMode === "step"}">Step-by-step</button></div></div><div id="lesson-feedback" role="status"></div><div class="lesson-reader" id="lesson-article" data-reader-mode="${readerMode}">${sections.map(([id, title, key], i) => `<section id="section-${id}" class="lesson-section" aria-labelledby="heading-${id}" ${readerMode === "step" ? "hidden" : ""}><div class="reader-eyebrow">${sectionKickers[id] || (i < learnCount ? `LEARN THE CONCEPT · STEP ${i + 1} OF ${learnCount}` : "CHECK YOUR UNDERSTANDING")}</div><h2 id="heading-${id}" tabindex="-1">${esc(title)}</h2><div class="lesson-section-body">${key ? `<div class="prose learning-prose">${blocksView(key)}</div>${i === learnCount - 1 ? references(topic.content?.references) : ""}` : id === "labs" ? `<p class="reader-intro">Move from understanding to doing. Explore the resource below, then confirm you’ve completed the practice.</p><div class="lab-safety">${icon("shield")}${esc(topic.content.practice_guidance || "Use a suitable learning environment. Follow the resource’s instructions and test other people’s systems only with permission.")}</div>${labs.length ? labs.map((l) => `<div class="academy-lab"><span class="academy-kicker">${esc(l.provider)} · EXTERNAL RESOURCE</span><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open practice resource ↗<span class="sr-only"> (opens in a new tab)</span></a></div>`).join("") + `<div class="lab-confirmation"><label><input type="checkbox" id="lab-confirm" ${p.lab_completed ? "checked disabled" : ""}>I’ve worked through the practice and reviewed the key concepts.</label><button class="btn btn-primary" id="complete-lab" ${p.lab_completed ? "disabled" : ""}>${p.lab_completed ? "Practice completed ✓" : "Save practice & continue"}${icon("arrow")}</button><p class="small muted">Practice and self-check results stay on this device. Completion is self-reported.</p><p id="lab-feedback" role="status"></p></div>` : notice("No practice resources are published for this lesson yet. Please check back later.")}` : `<div id="quiz-container">${quizView(quiz, p)}</div>`}</div></section>`).join("")}<footer class="reader-navigation" ${readerMode === "full" ? "hidden" : ""}><button class="btn btn-secondary" id="section-back">← Previous</button><span id="section-counter"></span><button class="btn btn-primary" id="section-next">Next section ${icon("arrow")}</button></footer></div><p class="reader-footnote">${icon("shield")}Learn responsibly. Practice with permission. Build with confidence.</p><div id="lesson-next-slot">${nextStepView(data, path, module, topic, Boolean(p.passed))}</div>`,
     outline,
   );
+  document.querySelectorAll("[data-lesson-diagram]").forEach((diagramEl) => {
+    diagramEl.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-diagram-tab]");
+      if (!tab) return;
+      const mode = tab.dataset.diagramTab;
+      diagramEl.querySelectorAll("[data-diagram-tab]").forEach((btn) => {
+        const active = btn.dataset.diagramTab === mode;
+        btn.classList.toggle("is-active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      diagramEl.querySelectorAll("[data-diagram-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.diagramPanel !== mode;
+      });
+    });
+  });
   let current = 0;
   // Section id -> learning stage. Labs and the knowledge check are always their
   // own stage; concept sections map onto the published lesson loop. Unknown ids
@@ -417,11 +468,40 @@ async function renderTopic(data, cat, topic, saved = {}) {
     "how-it-works": "learn",
     history: "learn",
     "real-world": "example",
+    "what-to-look-for": "apply",
     "look-for": "apply",
     defensive: "apply",
   };
   const stageFor = (id) =>
     id === "labs" ? "labs" : id === "quiz" ? "quiz" : stageById[id] || "learn";
+  function applyReaderMode(mode) {
+    readerMode = mode === "step" ? "step" : "full";
+    try {
+      localStorage.setItem("omp-academy-read-mode", readerMode);
+    } catch {}
+    const readerEl = document.querySelector("#lesson-article");
+    if (readerEl) readerEl.setAttribute("data-reader-mode", readerMode);
+    document.querySelectorAll("[data-read-mode]").forEach((b) => {
+      const on = b.dataset.readMode === readerMode;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    const navFooter = document.querySelector(".reader-navigation");
+    if (navFooter) navFooter.hidden = readerMode === "full";
+    document.querySelectorAll(".lesson-section").forEach((el, i) => {
+      el.hidden = readerMode === "step" ? i !== current : false;
+    });
+  }
+  document.querySelectorAll("[data-read-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => applyReaderMode(btn.dataset.readMode));
+  });
+  document.querySelectorAll(".stage-btn[data-stage]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetStage = btn.dataset.stage;
+      const found = sections.find(([id]) => stageFor(id) === targetStage);
+      if (found) go(found[0]);
+    });
+  });
   function showSection(id, focus = false) {
     let index = sections.findIndex((s) => s[0] === id);
     if (index < 0 && !topic.content.sections && /^s-0[1-8]$/.test(id))
@@ -429,7 +509,7 @@ async function renderTopic(data, cat, topic, saved = {}) {
     current = index < 0 ? 0 : index;
     const activeId = sections[current][0];
     document.querySelectorAll(".lesson-section").forEach((el, i) => {
-      el.hidden = i !== current;
+      el.hidden = readerMode === "step" ? i !== current : false;
     });
     document.querySelectorAll("[data-outline]").forEach((el) => {
       if (el.dataset.outline === activeId)
@@ -458,7 +538,14 @@ async function renderTopic(data, cat, topic, saved = {}) {
       .querySelector(".lesson-outline-toggle")
       .setAttribute("aria-expanded", "false");
     position(topic, activeId);
-    if (focus) document.querySelector(`#heading-${activeId}`).focus();
+    if (focus) {
+      const headingEl = document.querySelector(`#heading-${activeId}`);
+      if (headingEl) {
+        if (readerMode === "full")
+          headingEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        headingEl.focus({ preventScroll: readerMode === "full" });
+      }
+    }
   }
   function go(id) {
     if (location.hash === "#" + id) showSection(id, true);
@@ -793,7 +880,8 @@ async function init() {
             "/assets/data/academy-self-checks.json",
           );
           if (!response.ok) throw new Error("Self-check unavailable");
-          check = (await response.json())[page.topic.id];
+          const rawChecks = await response.json();
+          check = rawChecks[page.topic.id] || rawChecks.by_slug?.[page.topic.slug];
         } catch {
           data.selfCheckUnavailable = true;
         }

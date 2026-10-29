@@ -25,7 +25,7 @@ const MIME = {
   '.ico': 'image/x-icon'
 };
 
-const PORT = Number(process.argv[2] || process.env.PORT || 8080);
+const PORT = Number(process.argv[2] || process.env.PORT || 3000);
 
 const server = http.createServer((req, res) => {
   let pathname;

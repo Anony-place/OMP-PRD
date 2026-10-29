@@ -1369,3 +1369,278 @@ img.osint-tile { padding: 6px; }
 .osint-cat:hover .osint-tile-illustrated { transform:translateY(-1px); }
 .osint-tile-illustrated { transition:transform .18s var(--ease); }
 @media(prefers-reduced-motion:reduce) { .osint-tile-illustrated { transition:none; } }
+
+/* ==========================================================================
+   Phase 2: OSINT & Pentest Hub Comparison Drawer + Interactive CLI Builder
+   ========================================================================== */
+.hub-compare-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  font-size: .74rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: all .15s var(--ease);
+}
+.hub-compare-btn:hover {
+  color: var(--text);
+  border-color: var(--purple);
+}
+.hub-compare-btn.is-active {
+  color: #fff;
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+.hub-compare-dock {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  width: min(880px, calc(100vw - 32px));
+  background: var(--bg-elev);
+  border: 1px solid var(--purple);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .55);
+  padding: 12px 16px;
+}
+.compare-dock-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.compare-dock-count {
+  font-size: .85rem;
+  color: var(--text);
+}
+.compare-dock-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.compare-dock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: .8rem;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text);
+}
+.compare-dock-rm {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.compare-dock-rm:hover {
+  color: var(--danger, #f87171);
+}
+.compare-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hub-compare-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 7, 15, .76);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.hub-compare-modal {
+  width: min(1080px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .65);
+}
+.hub-compare-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.compare-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.compare-col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.compare-col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.compare-col-head h3 {
+  margin: 0;
+  font-size: 1.08rem;
+}
+.compare-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.compare-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+/* Interactive CLI Command Builder */
+.cli-builder-card {
+  margin: 14px 0 24px;
+  padding: 20px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+}
+.cli-builder-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cli-builder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cli-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cli-field label,
+.cli-label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.cli-field input[type="text"] {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: var(--mono);
+  font-size: .88rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.cli-field input[type="text"]:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+.cli-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cli-preset-btn {
+  padding: 6px 12px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s var(--ease);
+}
+.cli-preset-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.cli-preset-btn.is-active {
+  color: #fff;
+  background: var(--purple);
+  border-color: var(--purple);
+}
+.cli-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cli-flag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: .8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cli-output-bar {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, .32);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.cli-output {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  font-family: var(--mono);
+  font-size: .86rem;
+  color: var(--text);
+  overflow-x: auto;
+  flex: 1;
+}
+@media (max-width: 640px) {
+  .cli-output-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

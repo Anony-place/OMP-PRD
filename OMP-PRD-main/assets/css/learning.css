@@ -4939,3 +4939,406 @@
   }
 }
 
+/* Interactive Lesson Concept & Boundary Diagram */
+.academy-page .lesson-diagram-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.academy-page .lesson-diagram-caption {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.academy-page .diagram-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+}
+.academy-page .diagram-tab {
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.academy-page .diagram-tab:hover {
+  color: var(--text);
+}
+.academy-page .diagram-tab.is-active {
+  color: var(--text);
+  background: var(--academy-accent-soft);
+  border-color: var(--academy-accent-line);
+}
+.academy-page .diagram-panel {
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--bg);
+}
+.academy-page .diagram-panel.tone-attack {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+.academy-page .diagram-panel.tone-defense {
+  border-color: rgba(52, 211, 153, 0.35);
+}
+.academy-page .diagram-canvas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.academy-page .diagram-node {
+  padding: 12px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  text-align: center;
+}
+.academy-page .diagram-node-gate {
+  border-color: var(--academy-accent-line);
+  background: var(--academy-tint);
+}
+.academy-page .tone-attack .diagram-node-gate {
+  border-color: rgba(248, 113, 113, 0.45);
+  background: rgba(248, 113, 113, 0.08);
+}
+.academy-page .tone-defense .diagram-node-gate {
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(52, 211, 153, 0.08);
+}
+.academy-page .diagram-node-index {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.academy-page .diagram-node strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.academy-page .diagram-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--academy-accent);
+  min-width: 72px;
+}
+.academy-page .tone-attack .diagram-connector {
+  color: var(--red);
+}
+.academy-page .tone-defense .diagram-connector {
+  color: var(--green);
+}
+.academy-page .diagram-edge-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.academy-page .diagram-arrow {
+  width: 64px;
+  height: 14px;
+}
+.academy-page .diagram-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+.academy-page .diagram-steps li {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.academy-page .diagram-steps li strong {
+  color: var(--text);
+}
+@media (max-width: 720px) {
+  .academy-page .diagram-canvas {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .academy-page .diagram-arrow {
+    transform: rotate(90deg);
+    margin: 4px 0;
+  }
+}
+.academy-page .lesson-diagram-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 24px 26px;
+  margin: 22px 0;
+  max-width: 800px;
+}
+.academy-page .lesson-diagram-card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 6px 0 0;
+}
+
+/* ==========================================================================
+   Phase 2: Academy UX & Lesson Reader Overhaul
+   ========================================================================== */
+
+/* 1. Readable 16px+ typography across lesson prose & course cards */
+.academy-page .learning-prose p,
+.academy-page .learning-prose li,
+.academy-page .lesson-section-body p,
+.academy-page .lesson-section-body li,
+.academy-page .reader-intro {
+  font-size: 1.02rem !important;
+  line-height: 1.82 !important;
+  color: var(--text);
+}
+.academy-page .lesson-heading > p {
+  font-size: 1.06rem !important;
+  line-height: 1.75 !important;
+}
+.academy-page .topic-body p,
+.academy-page .module-heading p,
+.academy-page .module-outcome p,
+.academy-page .course-card-lede {
+  font-size: 0.94rem !important;
+  line-height: 1.68 !important;
+}
+.academy-page .lesson-section h2 {
+  font-size: 1.42rem !important;
+  margin-bottom: 14px;
+}
+
+/* 2. Learner Progress Dashboard Strip on /learning */
+.academy-page .academy-dashboard-strip {
+  margin: 28px 0 36px;
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+}
+.academy-page .dashboard-strip-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.academy-page .dashboard-strip-head h2 {
+  font-size: 1.25rem;
+  font-weight: 650;
+  margin: 4px 0 0;
+  letter-spacing: -0.02em;
+}
+.academy-page .dashboard-strip-pct {
+  text-align: right;
+}
+.academy-page .dashboard-strip-pct strong {
+  display: block;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--purple);
+  line-height: 1.1;
+}
+.academy-page .dashboard-strip-pct span {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.academy-page .dashboard-strip-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg-elev);
+  overflow: hidden;
+  margin: 16px 0 20px;
+  border: 1px solid var(--border);
+}
+.academy-page .dashboard-strip-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), #6366f1);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+.academy-page .dashboard-strip-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+.academy-page .dash-metric {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+}
+.academy-page .dash-metric strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.academy-page .dash-metric span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* 3. Module Quick-Jump Bar & Collapsible Module Accordions */
+.academy-page .module-Bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.academy-page .module-jump-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 2px 14px;
+  margin: 4px 0 18px;
+  scrollbar-width: thin;
+}
+.academy-page .module-jump-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.academy-page .module-jump-pill:hover {
+  border-color: var(--purple);
+  transform: translateY(-1px);
+}
+.academy-page .module-jump-pill .jump-num {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--purple);
+  font-weight: 700;
+}
+.academy-page .module-jump-pill.is-done {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.08);
+}
+.academy-page .module-heading[data-module-toggle] {
+  cursor: pointer;
+  user-select: none;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s ease;
+}
+.academy-page .module-heading[data-module-toggle]:hover {
+  border-color: var(--border-strong);
+}
+.academy-page .module-chevron {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-left: 8px;
+  transition: transform 0.2s ease;
+}
+.academy-page .curriculum-module.is-collapsed .module-chevron {
+  transform: rotate(-90deg);
+}
+.academy-page .curriculum-module.is-collapsed .module-body {
+  display: none;
+}
+
+/* 4. Interactive Stage Buttons & Reader Mode Switcher (Full Lesson vs Step-by-Step) */
+.academy-page .lesson-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+  max-width: 800px;
+}
+.academy-page .lesson-stage-bar {
+  margin: 0 !important;
+  flex: 1;
+}
+.academy-page .lesson-stage-bar .stage-btn {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.academy-page .lesson-stage-bar .stage-btn:hover {
+  background: var(--bg-elev);
+  color: var(--text);
+}
+.academy-page .lesson-stage-bar .stage-btn.active {
+  background: rgba(139, 92, 246, 0.16);
+  color: var(--purple);
+}
+.academy-page .reader-mode-bar {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+.academy-page .reader-mode-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+  padding: 6px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.academy-page .reader-mode-btn:hover {
+  color: var(--text);
+}
+.academy-page .reader-mode-btn.is-active {
+  background: var(--purple);
+  color: #fff;
+}
+.academy-page .lesson-reader[data-reader-mode="full"] .lesson-section {
+  display: block !important;
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.academy-page .lesson-reader[data-reader-mode="full"] .lesson-section:last-of-type {
+  border-bottom: 0;
+  margin-bottom: 8px;
+}
+
+

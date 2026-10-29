@@ -597,6 +597,46 @@
         "source": "/learning/cyber-security/where-this-category-ends",
         "destination": "/learning/cyber-security/cyber-security-track/where-this-category-ends",
         "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/sql-injection-and-parameterized-queries",
+        "destination": "/learning/web-application-security/foundations/sql-injection-and-parameterized-queries",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/cross-site-scripting-contexts-and-csp",
+        "destination": "/learning/web-application-security/foundations/cross-site-scripting-contexts-and-csp",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/dom-based-vulnerabilities-and-sanitization",
+        "destination": "/learning/web-application-security/foundations/dom-based-vulnerabilities-and-sanitization",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/csrf-samesite-and-state-changing-requests",
+        "destination": "/learning/web-application-security/foundations/csrf-samesite-and-state-changing-requests",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/ssrf-and-outbound-request-controls",
+        "destination": "/learning/web-application-security/foundations/ssrf-and-outbound-request-controls",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/file-upload-validation-and-storage-isolation",
+        "destination": "/learning/web-application-security/foundations/file-upload-validation-and-storage-isolation",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/security-headers-cors-and-tls-deployment",
+        "destination": "/learning/web-application-security/foundations/security-headers-cors-and-tls-deployment",
+        "type": 301
+      },
+      {
+        "source": "/learning/web-application-security/api-rate-limiting-logging-and-defensive-testing",
+        "destination": "/learning/web-application-security/foundations/api-rate-limiting-logging-and-defensive-testing",
+        "type": 301
       }
     ],
     "rewrites": [

@@ -358,26 +358,26 @@ def breach_body():
     return f"""
 <section class="page-hero">
   <div class="container">
-    <span class="badge badge-demo">Educational demo</span>
+    <span class="chip chip-accent">{icon("radar","icon-16")} Live tool · k-anonymity prefix query</span>
     <h1 class="h-1 mt-16">Breach Check</h1>
-    <p class="lead">Learn how privacy-preserving breach lookup works — and try a transparent local demo. <strong>This page is not connected to a live breach database, and never claims to be.</strong></p>
+    <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API, with automatic fallback to a built-in ~330-password local corpus when offline.</p>
   </div>
 </section>
 
 <section class="section-tight" style="padding-top:16px">
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad" data-breach>
-      <h2 class="h-3">Try the demo lookup</h2>
-      <p class="muted small mt-8">Type any password. It is SHA-1-hashed locally; only the first 5 hash characters are compared against a tiny built-in demo corpus of known-compromised passwords. Nothing is transmitted.</p>
+      <h2 class="h-3">Run a k-anonymity breach lookup</h2>
+      <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API (or compares against the built-in offline demo list if unreachable). The password and full hash never leave your device.</p>
       <div class="pw-input-wrap mt-16">
-        <input class="pw-input" type="password" data-breach-input placeholder="Password to demo-check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to demo-check">
+        <input class="pw-input" type="password" data-breach-input placeholder="Password to check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to check">
       </div>
-      <button class="btn btn-primary mt-16" type="button" data-breach-btn>Run demo lookup</button>
+      <button class="btn btn-primary mt-16" type="button" data-breach-btn>Check for breaches</button>
       <div class="hash-view" data-breach-hash hidden></div>
       <div class="breach-result" data-breach-result>
         <div data-breach-status></div>
       </div>
-      <p class="disclaimer mt-16">{icon("alert","icon-18")}<span><strong>Demo limitations.</strong> The built-in corpus contains only ~330 famous compromised passwords. "Not found" proves nothing. A production version would use a licensed breach-data API with k-anonymity range queries — and this page would say so explicitly.</span></p>
+      <p class="disclaimer mt-16">{icon("info","icon-18")}<span><strong>Zero-knowledge guarantee &amp; fallback.</strong> Only a 5-character SHA-1 prefix (~1 million matching hashes per prefix) is requested over HTTPS with padding enabled. When offline, the tool falls back to a built-in ~330-password educational corpus and labels the result accordingly.</span></p>
     </div>
 
     <div class="grid" style="align-content:start">
@@ -400,14 +400,14 @@ def breach_body():
     <div class="section-head">
       <span class="eyebrow">The model</span>
       <h2 class="h-1">How k-anonymity breach lookup works</h2>
-      <p class="lead">The same architecture used by services like Have I Been Pwned's Pwned Passwords range API.</p>
+      <p class="lead">The privacy-preserving range architecture powered by Have I Been Pwned's Pwned Passwords API.</p>
     </div>
     <div class="steps">
-      <div class="step"><h3 class="h-3">Hash locally</h3><p class="muted">Your password is hashed on your device (e.g., SHA-1, as the range API standard uses). The password itself never leaves the browser.</p></div>
-      <div class="step"><h3 class="h-3">Send only a prefix</h3><p class="muted">Only the first 5 characters of the hash are sent to the API — a "range" shared by hundreds of unrelated hashes. The service cannot tell which password you meant.</p></div>
-      <div class="step"><h3 class="h-3">Match locally</h3><p class="muted">The API returns all hash suffixes in that range; your device compares locally. Full hash and password stay with you — anonymity set: everyone sharing the prefix.</p></div>
+      <div class="step"><h3 class="h-3">Hash locally</h3><p class="muted">Your password is hashed on your device using WebCrypto SHA-1. The plaintext password and full 40-character digest never leave your browser.</p></div>
+      <div class="step"><h3 class="h-3">Send only a 5-char prefix</h3><p class="muted">Only the first 5 hex characters of the hash are queried — a range shared by hundreds of unrelated hashes, with response padding enabled.</p></div>
+      <div class="step"><h3 class="h-3">Match locally</h3><p class="muted">The range endpoint returns candidate 35-character suffixes; your browser compares them locally in memory and discards the list immediately.</p></div>
     </div>
-    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Where OMP is going:</strong> this demo is built behind a clean <span class="mono">BreachProvider</span>-style interface, so a real k-anonymity range API can be connected later without changing the UI — with explicit consent, documented in our <a href="/privacy" style="color:var(--purple)">privacy policy</a> before any network call ships.</p></div>
+    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Transparent network behavior:</strong> open your browser's Network inspector while running a check — you will see a single <span class="mono">GET</span> request containing only 5 hex characters (<span class="mono">api.pwnedpasswords.com/range/XXXXX</span>), and never your password. Read more in our <a href="/privacy" style="color:var(--purple)">privacy policy</a>.</p></div>
   </div>
 </section>
 

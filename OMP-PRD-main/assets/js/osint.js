@@ -258,6 +258,243 @@
     });
   }
 
+  /* ---------- comparison drawer state & helpers ---------- */
+  var COMPARE_KEY = 'omp_osint_compare_v1';
+  var compareSlugs = (function () {
+    try {
+      var raw = JSON.parse(sessionStorage.getItem(COMPARE_KEY) || '[]');
+      return Array.isArray(raw) ? raw.map(safeSlug).filter(Boolean).slice(0, 3) : [];
+    } catch (e) { return []; }
+  })();
+  var compareModalOpen = false;
+
+  function saveCompare() {
+    try { sessionStorage.setItem(COMPARE_KEY, JSON.stringify(compareSlugs)); } catch (e) { /* ignore */ }
+  }
+  function isCompared(slug) {
+    return compareSlugs.indexOf(safeSlug(slug)) !== -1;
+  }
+  function toggleCompare(slug) {
+    var s = safeSlug(slug);
+    if (!s) return;
+    var idx = compareSlugs.indexOf(s);
+    if (idx !== -1) {
+      compareSlugs.splice(idx, 1);
+    } else {
+      if (compareSlugs.length >= 3) compareSlugs.shift();
+      compareSlugs.push(s);
+    }
+    saveCompare();
+    renderCompareUI();
+    syncCompareButtons();
+  }
+  function syncCompareButtons() {
+    document.querySelectorAll('[data-compare-slug]').forEach(function (btn) {
+      var slug = btn.getAttribute('data-compare-slug');
+      var on = isCompared(slug);
+      btn.classList.toggle('is-active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.textContent = on ? '✓ Comparing' : '+ Compare';
+    });
+  }
+  function renderCompareUI() {
+    var dock = document.getElementById('omp-osint-compare-dock');
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = 'omp-osint-compare-dock';
+      document.body.appendChild(dock);
+    }
+    var selected = compareSlugs.map(function (s) {
+      for (var i = 0; i < lastTools.length; i++) if (lastTools[i].slug === s) return lastTools[i];
+      return null;
+    }).filter(Boolean);
+
+    if (!selected.length) {
+      dock.innerHTML = '';
+      compareModalOpen = false;
+      return;
+    }
+
+    var pills = selected.map(function (t) {
+      return '<span class="compare-dock-pill">' + esc(t.name) +
+        '<button type="button" class="compare-dock-rm" data-rm-compare="' + attr(t.slug) + '" aria-label="Remove ' + attr(t.name) + '">×</button></span>';
+    }).join('');
+
+    var modalHtml = '';
+    if (compareModalOpen) {
+      var cols = selected.map(function (t) {
+        var official = safeUrl(t.official_url);
+        var github = safeUrl(t.github_url);
+        var p = toolPath(t.slug);
+        return '<div class="compare-col">' +
+          '<div class="compare-col-head">' +
+            '<h3><a href="' + attr(p) + '">' + esc(t.name) + '</a></h3>' +
+            '<button type="button" class="btn btn-ghost btn-sm" data-rm-compare="' + attr(t.slug) + '">Remove</button>' +
+          '</div>' +
+          '<div class="compare-field"><span class="compare-label">Category</span><strong>' + esc(t.category_name || 'OSINT') + '</strong></div>' +
+          '<div class="compare-field"><span class="compare-label">Pricing</span><span class="ptype t-' + attr(safePricing(t.pricing) || 'free') + '">' + esc(pricingLabel(safePricing(t.pricing))) + '</span></div>' +
+          '<div class="compare-field"><span class="compare-label">Access</span><div>' + (safeAccessList(t.access_types).map(function (a) { return '<span class="ptype t-access">' + esc(accessLabel(a)) + '</span>'; }).join(' ') || '—') + '</div></div>' +
+          '<div class="compare-field"><span class="compare-label">Summary</span><p class="small muted">' + esc(t.summary || plainText(t.overview).slice(0, 180)) + '</p></div>' +
+          '<div class="compare-field"><span class="compare-label">Best use case</span><p class="small">' + esc(plainText(t.use_case || t.key_features || t.overview).slice(0, 220)) + '</p></div>' +
+          '<div class="compare-field"><span class="compare-label">Links</span><div class="flex gap-8 wrap">' +
+            (p ? '<a class="btn btn-secondary btn-sm" href="' + attr(p) + '">Full guide</a>' : '') +
+            (official ? '<a class="btn btn-primary btn-sm" href="' + attr(official) + '" target="_blank" rel="noopener noreferrer">Official ↗</a>' : '') +
+            (github ? '<a class="btn btn-ghost btn-sm" href="' + attr(github) + '" target="_blank" rel="noopener noreferrer">GitHub ↗</a>' : '') +
+          '</div></div>' +
+        '</div>';
+      }).join('');
+
+      modalHtml = '<div class="hub-compare-backdrop" data-close-compare="1">' +
+        '<div class="hub-compare-modal" role="dialog" aria-modal="true" aria-label="OSINT Tool Comparison">' +
+          '<div class="hub-compare-modal-head">' +
+            '<div><span class="eyebrow">Side-by-Side Comparison</span><h2 class="h-3" style="margin:2px 0 0">Comparing ' + selected.length + ' OSINT Tool' + (selected.length > 1 ? 's' : '') + '</h2></div>' +
+            '<div class="flex gap-8"><button type="button" class="btn btn-ghost btn-sm" data-clear-compare="1">Clear all</button><button type="button" class="btn btn-secondary btn-sm" data-close-compare="1">Close ✕</button></div>' +
+          '</div>' +
+          '<div class="compare-grid cols-' + selected.length + '">' + cols + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    dock.innerHTML =
+      '<div class="hub-compare-dock" role="region" aria-label="Selected tools for comparison">' +
+        '<div class="compare-dock-inner">' +
+          '<span class="compare-dock-count"><strong>Compare (' + selected.length + '/3)</strong></span>' +
+          '<div class="compare-dock-pills">' + pills + '</div>' +
+          '<div class="compare-dock-actions">' +
+            '<button type="button" class="btn btn-ghost btn-sm" data-clear-compare="1">Clear</button>' +
+            '<button type="button" class="btn btn-primary btn-sm" data-open-compare="1">Compare side-by-side →</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' + modalHtml;
+
+    dock.querySelectorAll('[data-rm-compare]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleCompare(b.getAttribute('data-rm-compare'));
+      });
+    });
+    dock.querySelectorAll('[data-clear-compare]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        compareSlugs = [];
+        compareModalOpen = false;
+        saveCompare();
+        renderCompareUI();
+        syncCompareButtons();
+      });
+    });
+    dock.querySelectorAll('[data-open-compare]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        compareModalOpen = true;
+        renderCompareUI();
+      });
+    });
+    dock.querySelectorAll('[data-close-compare]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        if (e.target === el || el.tagName === 'BUTTON') {
+          compareModalOpen = false;
+          renderCompareUI();
+        }
+      });
+    });
+  }
+
+  /* ---------- interactive CLI command builder ---------- */
+  function osintCliSpec(t) {
+    var slug = safeSlug(t.slug);
+    var access = safeAccessList(t.access_types);
+    var isCli = access.indexOf('cli') !== -1;
+    var specs = {
+      'sherlock': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Single username', cmd: 'sherlock {target}' }, { label: 'Print found only + timeout', cmd: 'sherlock --timeout 10 --print-found {target}' }, { label: 'CSV export', cmd: 'sherlock --csv -o {target}_results.txt {target}' }], flags: [{ flag: '--tor', label: 'Route via Tor (--tor)' }, { flag: '--nsfw', label: 'Include NSFW (--nsfw)' }] },
+      'maigret': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Top 500 sites + HTML report', cmd: 'maigret {target} --top-sites 500 -H' }, { label: 'PDF dossier', cmd: 'maigret {target} -P' }], flags: [{ flag: '--no-color', label: 'Plain output (--no-color)' }] },
+      'holehe': { inputLabel: 'Target email', placeholder: 'target@example.com', presets: [{ label: 'Registered accounts only', cmd: 'holehe --only-used {target}' }, { label: 'Full check + CSV', cmd: 'holehe -C {target}' }], flags: [{ flag: '--no-clear', label: 'Do not clear terminal (--no-clear)' }] },
+      'theharvester': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Passive recon (crtsh,ert)', cmd: 'theHarvester -d {target} -b crtsh,certspotter,duckduckgo -l 200' }, { label: 'Save JSON/HTML report', cmd: 'theHarvester -d {target} -b all -f {target}_harvest' }], flags: [{ flag: '-n', label: 'DNS lookup (-n)' }] },
+      'subfinder': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Silent subdomain list', cmd: 'subfinder -d {target} -silent' }, { label: 'All passive sources to file', cmd: 'subfinder -d {target} -all -o {target}_subs.txt' }], flags: [{ flag: '-rL resolvers.txt', label: 'Custom resolvers' }] }
+    };
+    if (specs[slug]) return specs[slug];
+    if (isCli) {
+      return {
+        inputLabel: 'Investigation Target',
+        placeholder: 'example.com',
+        presets: [
+          { label: 'Standard run', cmd: slug + ' {target}' },
+          { label: 'Help & options reference', cmd: slug + ' --help' },
+          { label: 'Save output to report', cmd: slug + ' {target} -o ' + slug + '-report.txt' }
+        ],
+        flags: [{ flag: '--verbose', label: 'Verbose output' }]
+      };
+    }
+    return {
+      isWorkflow: true,
+      inputLabel: 'Target Identifier for Notes',
+      placeholder: 'example.com',
+      presets: [
+        { label: 'OSINT investigation note', cmd: '# OSINT Note (' + (t.name || slug) + ')\nTarget: {target}\nTimestamp: ' + new Date().toISOString().slice(0, 10) }
+      ],
+      flags: []
+    };
+  }
+
+  function renderCliBuilder(t) {
+    var spec = osintCliSpec(t);
+    var presetsHtml = spec.presets.map(function (p, i) {
+      return '<button type="button" class="cli-preset-btn' + (i === 0 ? ' is-active' : '') + '" data-cli-preset="' + i + '">' + esc(p.label) + '</button>';
+    }).join('');
+    var flagsHtml = (spec.flags || []).map(function (f) {
+      return '<label class="cli-flag-pill"><input type="checkbox" data-cli-flag="' + attr(f.flag) + '"> <span>' + esc(f.label) + '</span></label>';
+    }).join('');
+    return '<div class="cli-builder-card" data-cli-builder>' +
+      '<div class="cli-builder-head"><div><span class="eyebrow">' + (spec.isWorkflow ? 'Investigation Workflow Helper' : 'Interactive CLI Command Builder') + '</span>' +
+      '<h3 class="h-4" style="margin:2px 0 0">Build & copy ' + esc(t.name) + ' commands safely</h3></div><span class="badge badge-demo">Client-side only</span></div>' +
+      '<div class="cli-builder-controls">' +
+        '<div class="cli-field"><label for="cli-target-input">' + esc(spec.inputLabel) + '</label>' +
+        '<input id="cli-target-input" type="text" value="' + attr(spec.placeholder) + '" placeholder="' + attr(spec.placeholder) + '" autocomplete="off" spellcheck="false"></div>' +
+        '<div class="cli-field"><span class="cli-label">Preset mode</span><div class="cli-presets">' + presetsHtml + '</div></div>' +
+        (flagsHtml ? '<div class="cli-field"><span class="cli-label">Optional flags</span><div class="cli-flags">' + flagsHtml + '</div></div>' : '') +
+      '</div>' +
+      '<div class="cli-output-bar"><pre class="cli-output"><code data-cli-code></code></pre>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-cli-copy>Copy command</button></div></div>';
+  }
+
+  function wireCliBuilder(scope, t) {
+    var box = (scope || root).querySelector('[data-cli-builder]');
+    if (!box) return;
+    var spec = osintCliSpec(t);
+    var input = box.querySelector('#cli-target-input');
+    var codeEl = box.querySelector('[data-cli-code]');
+    var copyBtn = box.querySelector('[data-cli-copy]');
+    var activePreset = 0;
+    function updateCmd() {
+      var preset = spec.presets[activePreset] || spec.presets[0];
+      var target = (String(input ? input.value : '').trim() || spec.placeholder).replace(/[;&|`$><\n\r]/g, '');
+      var cmd = preset.cmd.replace(/\{target\}/g, target);
+      var extraFlags = [];
+      box.querySelectorAll('[data-cli-flag]:checked').forEach(function (cb) { extraFlags.push(cb.getAttribute('data-cli-flag')); });
+      if (extraFlags.length) cmd += ' ' + extraFlags.join(' ');
+      if (codeEl) codeEl.textContent = cmd;
+    }
+    if (input) input.addEventListener('input', updateCmd);
+    box.querySelectorAll('[data-cli-preset]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activePreset = Number(btn.getAttribute('data-cli-preset')) || 0;
+        box.querySelectorAll('[data-cli-preset]').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+        updateCmd();
+      });
+    });
+    box.querySelectorAll('[data-cli-flag]').forEach(function (cb) { cb.addEventListener('change', updateCmd); });
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var txt = codeEl ? codeEl.textContent : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(function () {
+            copyBtn.textContent = 'Copied ✓';
+            setTimeout(function () { copyBtn.textContent = 'Copy command'; }, 1500);
+          });
+        }
+      });
+    }
+    updateCmd();
+  }
+
   /* ---------- hub view ---------- */
   function badgeHtml(t) {
     var out = '<span class="ptype t-' + attr(safePricing(t.pricing) || 'free') + '">' + esc(pricingLabel(safePricing(t.pricing))) + '</span>';
@@ -278,10 +515,14 @@
     var head = path
       ? '<h2 class="feed-title"><a href="' + attr(path) + '">' + esc(t.name) + '</a></h2>'
       : '<h2 class="feed-title">' + esc(t.name) + '</h2>';
+    var cmpOn = isCompared(t.slug);
+    var cmpBtn = t.slug
+      ? '<button type="button" class="hub-compare-btn' + (cmpOn ? ' is-active' : '') + '" data-compare-slug="' + attr(t.slug) + '" aria-pressed="' + (cmpOn ? 'true' : 'false') + '">' + (cmpOn ? '✓ Comparing' : '+ Compare') + '</button>'
+      : '';
     return '<article class="feed-row osint-row">' +
       '<span class="osint-tile" aria-hidden="true">' + tileHtml + '</span>' +
       '<div class="feed-row-main">' +
-      '<div class="feed-meta"><span class="badge badge-demo">' + esc(t.category_name || 'OSINT') + '</span>' + badgeHtml(t) + '</div>' +
+      '<div class="feed-meta"><span class="badge badge-demo">' + esc(t.category_name || 'OSINT') + '</span>' + badgeHtml(t) + cmpBtn + '</div>' +
       head +
       (t.summary ? '<p class="feed-excerpt">' + esc(t.summary) + '</p>' : '') +
       '</div></article>';
@@ -395,6 +636,12 @@
     root.innerHTML = html;
     wireRetry();
     wireBrokenLogos(root);
+    root.querySelectorAll('[data-compare-slug]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        toggleCompare(btn.getAttribute('data-compare-slug'));
+      });
+    });
+    renderCompareUI();
 
     var search = root.querySelector('#osint-search');
     if (search) {
@@ -465,10 +712,12 @@
     var updated = fmtDate(t.updated_at || t.published_at);
     var initial = esc(String(t.name || '?').trim().charAt(0).toUpperCase());
 
+    var cmpOn = isCompared(t.slug);
     var links = '';
     if (official) links += '<a class="btn btn-primary" href="' + attr(official) + '" target="_blank" rel="noopener noreferrer">Open official site →</a>';
     if (github) links += '<a class="btn btn-secondary" href="' + attr(github) + '" target="_blank" rel="noopener noreferrer">GitHub</a>';
     if (docs) links += '<a class="btn btn-ghost" href="' + attr(docs) + '" target="_blank" rel="noopener noreferrer">Docs</a>';
+    if (t.slug) links += '<button type="button" class="btn btn-ghost hub-compare-btn' + (cmpOn ? ' is-active' : '') + '" data-compare-slug="' + attr(t.slug) + '" aria-pressed="' + (cmpOn ? 'true' : 'false') + '">' + (cmpOn ? '✓ Comparing' : '+ Compare') + '</button>';
 
     /* Sections drive both the article body and the sticky table of contents,
        so they can never drift apart. Empty fields simply vanish. */
@@ -479,6 +728,7 @@
     if (t.install_guide && String(t.install_guide).trim()) {
       sections.push({ id: 'sec-install', label: 'Install & first run', install: true, html: renderContent(t.install_guide) });
     }
+    sections.push({ id: 'sec-cli-builder', label: 'Interactive command builder', cliBuilder: true });
     if (t.use_case && String(t.use_case).trim()) {
       sections.push({ id: 'sec-example', label: 'Real-world example', html: renderContent(t.use_case) });
     }
@@ -504,6 +754,9 @@
                 : '<h3 class="feed-title">' + esc(r.name) + '</h3>') +
             (r.summary ? '<p class="feed-excerpt">' + esc(r.summary) + '</p>' : '') + '</div></article>';
         }).join('') + '</div>';
+      }
+      if (s.cliBuilder) {
+        return '<h2 id="' + s.id + '">' + esc(s.label) + '</h2>' + renderCliBuilder(t);
       }
       if (s.install) {
         return '<h2 id="' + s.id + '">' + esc(s.label) + '</h2>' +
@@ -538,6 +791,13 @@
       root.querySelectorAll('.prose').forEach(function (el) { window.OMPMarkdown.demoteHeadings(el, 1); });
     }
     wireBrokenLogos(root);
+    wireCliBuilder(root, t);
+    root.querySelectorAll('[data-compare-slug]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        toggleCompare(btn.getAttribute('data-compare-slug'));
+      });
+    });
+    renderCompareUI();
     var copyBtn = root.querySelector('[data-copy-install]');
     if (copyBtn) copyBtn.addEventListener('click', function () {
       var body = root.querySelector('[data-install-body]');
@@ -676,6 +936,18 @@
     hubView(lastTools, loadState === 'error' ? lastErrorKind : '');
   }
 
+  async function fetchSnapshotHub() {
+    var res = await timedFetch('/assets/data/hubs-snapshot.json');
+    if (!res || !res.ok) throw new Error('Snapshot unavailable');
+    var snap = await res.json();
+    var cats = (Array.isArray(snap && snap.osint_categories) ? snap.osint_categories : [])
+      .filter(function (c) { return c && c.slug && safeSlug(c.slug); });
+    var tools = (Array.isArray(snap && snap.osint) ? snap.osint : [])
+      .filter(function (t) { return t && t.slug && String(t.name || '').trim() && safeSlug(t.slug); });
+    if (!tools.length) throw new Error('Empty OSINT snapshot');
+    return { categories: cats, tools: tools };
+  }
+
   async function load() {
     if (loadState === 'loading') return;
     loadState = 'loading';
@@ -688,6 +960,15 @@
       paintStats();
       render();
     } catch (error) {
+      try {
+        var snap = await fetchSnapshotHub();
+        lastCategories = snap.categories;
+        lastTools = snap.tools;
+        loadState = 'ready';
+        paintStats();
+        render();
+        return;
+      } catch (snapErr) { /* fall through */ }
       console.error('OSINT catalog error:', error);
       lastErrorKind = isTimeoutError(error) ? 'timeout' : 'network';
       loadState = 'error';

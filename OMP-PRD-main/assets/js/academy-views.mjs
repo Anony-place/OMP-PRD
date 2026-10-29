@@ -164,6 +164,11 @@ export function hubView(data, context = {}) {
     resumeCourse && data.categories.find((c) => c.id === resumeCourse.category_id);
   const pmap = context.pmap || new Map();
   const totalLessons = data.topics.length;
+  const completedLessons = data.topics.filter((t) => pmap.get(t.id)?.passed).length;
+  const inProgressLessons = data.topics.filter(
+    (t) => pmap.get(t.id)?.lesson_started && !pmap.get(t.id)?.passed,
+  ).length;
+  const overallPct = totalLessons ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   // One resume target, and one starting course. A learner who has read
   // something continues; everyone else starts at the recommended course.
@@ -206,21 +211,42 @@ export function hubView(data, context = {}) {
           <a class="btn btn-secondary" href="${resumeLesson.url}">Resume this lesson ${icon("arrow")}</a>
         </aside>`
       : startPath
-        ? /* Without saved progress there is nothing to resume, and repeating the
-             recommended course here just duplicated the first card in the
-             course list directly below. Explain the shape of a lesson instead:
-             it is the one thing the list below does not already say. */
-          `<aside class="hero-resume hero-resume--orientation" aria-label="What a lesson looks like">
+        ? `<aside class="hero-resume hero-resume--orientation" aria-label="What a lesson looks like">
             <span class="resume-label">Inside every lesson</span>
             <ol class="hero-loop">
               <li><span>${icon("book")}</span><div><strong>Read the concept</strong><small>A focused explanation, its history and real examples.</small></div></li>
               <li><span>${icon("lab")}</span><div><strong>Practice it</strong><small>External exercises you run yourself, and the defensive view.</small></div></li>
-              <li><span>${icon("award")}</span><div><strong>Check yourself</strong><small>A self-check on the lessons that publish one. No score is claimed where there isn't one.</small></div></li>
+              <li><span>${icon("award")}</span><div><strong>Check yourself</strong><small>A 4-question interactive self-check on every lesson to verify what you learned.</small></div></li>
             </ol>
           </aside>`
         : ""
   }
 </header>
+<section class="academy-dashboard-strip" aria-label="Your learning progress">
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Your Learning Dashboard</span>
+    <div class="dashboard-stat-main">
+      <strong>${completedLessons} / ${totalLessons}</strong>
+      <span>Lessons completed (${overallPct}%)</span>
+    </div>
+    <div class="course-progress-track"><span style="width:${overallPct}%"></span></div>
+  </div>
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Active Progress</span>
+    <div class="dashboard-stat-main">
+      <strong>${inProgressLessons}</strong>
+      <span>Lesson${inProgressLessons === 1 ? "" : "s"} in progress</span>
+    </div>
+    <p class="small muted" style="margin:0">Interactive 4-question self-checks available on all ${totalLessons} lessons.</p>
+  </div>
+  <div class="dashboard-stat-card">
+    <span class="academy-kicker">Next Recommended Step</span>
+    <div class="dashboard-stat-main">
+      <strong>${esc((resumeLesson || startLesson)?.name || "Start Course")}</strong>
+    </div>
+    <a class="text-button" href="${(resumeLesson || startLesson)?.url || "/learning"}">${resumeLesson ? "Resume lesson →" : "Begin first lesson →"}</a>
+  </div>
+</section>
 <section class="course-index" aria-labelledby="course-index-heading">
   <div class="section-heading">
     <div>
@@ -257,23 +283,23 @@ function categorySkills(c) {
     return [
       {
         tag: "Architecture",
-        title: "Attack Surface & Boundaries",
-        desc: "Chart system assets, user inputs, and server-side defensive trust boundaries.",
-      },
-      {
-        tag: "Protocols",
-        title: "HTTP Inspection & Flow",
-        desc: "Evaluate methods, headers, cookies, status codes, and message parsing differences.",
+        title: "Attack Surface & HTTP Flow",
+        desc: "Chart system assets, HTTP messages, cookies, and server-side defensive trust boundaries.",
       },
       {
         tag: "Identity",
-        title: "Authentication & Sessions",
-        desc: "Safeguard logins, manage session lifecycles, and prevent account enumeration.",
+        title: "Authentication, Sessions & Access",
+        desc: "Safeguard logins, manage session lifecycles, and eliminate IDOR and privilege escalation.",
       },
       {
-        tag: "Defense",
-        title: "Access Control & Authorization",
-        desc: "Enforce explicit server-side checks to eliminate IDOR and privilege escalation.",
+        tag: "Injection & XSS",
+        title: "Parameterized Queries & Encoding",
+        desc: "Neutralize SQL injection, reflected/stored/DOM XSS, and enforce strict Content Security Policy.",
+      },
+      {
+        tag: "Hardening",
+        title: "CSRF, SSRF & Production Controls",
+        desc: "Enforce SameSite/CSRF tokens, egress allowlists, safe file uploads, security headers, and rate limits.",
       },
     ];
   }
@@ -442,7 +468,7 @@ export function modulesView(path, pmap = new Map(), filter = () => true) {
       const doneCount = m.topics.filter((t) => pmap.get(t.id)?.passed).length;
       const allDone = doneCount === m.topics.length;
       const started = doneCount > 0;
-      return `<section class="curriculum-module" id="module-${m.slug}"><div class="module-heading"><span class="module-number">${String(i + 1).padStart(2, "0")}</span><div><span class="academy-kicker">MODULE ${i + 1} · ${plural(m.topics.length, "lesson")}</span><h2>${esc(m.name)}</h2><p>${esc(m.description)}</p></div><span class="module-status ${allDone ? "is-complete" : started ? "is-in-progress" : "is-not-started"}">${allDone ? "✓ Complete" : started ? "◐ In progress" : "○ Not started"}</span></div><div class="module-outcome"><span class="outcome-label">By the end of this module, you will be able to:</span><p>${esc(m.outcome)}</p></div><div class="academy-course">${topics.map(({ t, index }) => topicRow(t, index, pmap.get(t.id))).join("")}</div></section>`;
+      return `<section class="curriculum-module" id="module-${m.slug}" data-module-collapsible><div class="module-heading" data-module-toggle role="button" tabindex="0" aria-expanded="true"><span class="module-number">${String(i + 1).padStart(2, "0")}</span><div><span class="academy-kicker">MODULE ${i + 1} · ${plural(m.topics.length, "lesson")} · ${doneCount}/${m.topics.length} done</span><h2>${esc(m.name)}</h2><p>${esc(m.description)}</p></div><span class="module-status ${allDone ? "is-complete" : started ? "is-in-progress" : "is-not-started"}">${allDone ? "✓ Complete" : started ? "◐ In progress" : "○ Not started"}</span></div><div class="module-body"><div class="module-outcome"><span class="outcome-label">By the end of this module, you will be able to:</span><p>${esc(m.outcome)}</p></div><div class="academy-course">${topics.map(({ t, index }) => topicRow(t, index, pmap.get(t.id))).join("")}</div></div></section>`;
     })
     .join("");
 }
@@ -458,10 +484,17 @@ export function pathView(data, page, context = {}) {
     p.topics[0];
   const started = done > 0 || p.topics.some((t) => pmap.get(t.id)?.lesson_started);
   const ctaLabel = done === total ? "Review course" : started ? "Continue learning" : "Start course";
+  const jumpLinks = p.modules
+    .filter((m) => m.topics.length)
+    .map(
+      (m, i) =>
+        `<a class="module-jump-pill" href="#module-${m.slug}"><span>${String(i + 1).padStart(2, "0")}</span> ${esc(m.name)}</a>`,
+    )
+    .join("");
   return `${breadcrumbView(page)}<header class="course-hero"><div class="course-hero-inner"><span class="academy-kicker">COURSE</span><h1>${esc(p.name)}</h1><p class="course-lede">${esc(p.description)}</p><div class="course-stats"><div class="stat"><span class="stat-value">${esc(p.difficulty)}</span><span class="stat-label">Level</span></div><div class="stat"><span class="stat-value">${p.modules.length}</span><span class="stat-label">Module${p.modules.length !== 1 ? "s" : ""}</span></div><div class="stat"><span class="stat-value">${total}</span><span class="stat-label">Lesson${total !== 1 ? "s" : ""}</span></div><div class="stat"><span class="stat-value">~${Math.max(1, Math.round(minutes(p.topics) / 60))}h</span><span class="stat-label">Est. time</span></div><div class="stat stat-progress"><span class="stat-value">${pct}%</span><span class="stat-label">Progress</span></div></div><div class="course-progress-bar"><div class="course-progress-track"><span style="width:${pct}%"></span></div><span class="course-progress-label">${done} of ${total} lessons completed</span></div><a class="btn btn-primary btn-lg" href="${next.url}">${ctaLabel} ${icon("arrow")}</a></div></header>
 <section class="course-outcomes"><div class="section-heading"><div><span class="academy-kicker">WHAT YOU'LL LEARN</span><h2>By the end of this course, you will understand:</h2></div></div>${list(p.outcomes)}</section>
 <section class="course-audience"><details><summary>Who this course is for &amp; prerequisites</summary><p>${esc(p.audience)}</p><h3>Before you start</h3>${list(p.prerequisites)}</details></section>
-<section aria-label="Course curriculum" id="curriculum" class="course-structure"><div class="section-heading"><div><span class="academy-kicker">YOUR LEARNING PATH</span><h2>Course structure</h2><p>Work through each module in order. Each module builds on the one before it.</p></div><span class="small muted" id="lesson-count" role="status">${plural(total, "lesson")}</span></div><div class="curriculum-toolbar" data-enhanced-control hidden><label class="academy-search">${icon("search")}<span class="sr-only">Search lessons</span><input type="search" id="lesson-search" placeholder="Find a lesson…" autocomplete="off"></label><label class="academy-filter"><span class="sr-only">Filter by progress</span><select id="lesson-filter"><option value="all">All lessons</option><option value="active">In progress</option><option value="new">Not started</option><option value="complete">Completed</option></select></label></div><div id="category-lessons">${modulesView(p, pmap)}</div></section>
+<section aria-label="Course curriculum" id="curriculum" class="course-structure"><div class="section-heading"><div><span class="academy-kicker">YOUR LEARNING PATH</span><h2>Course structure</h2><p>Work through each module in order, or jump directly to any module below.</p></div><div class="module-bulk-actions"><button type="button" class="btn btn-ghost btn-sm" id="modules-expand-all">Expand all</button><button type="button" class="btn btn-ghost btn-sm" id="modules-collapse-all">Collapse all</button><span class="small muted" id="lesson-count" role="status">${plural(total, "lesson")}</span></div></div>${jumpLinks ? `<nav class="module-jump-bar" aria-label="Jump to module">${jumpLinks}</nav>` : ""}<div class="curriculum-toolbar" data-enhanced-control hidden><label class="academy-search">${icon("search")}<span class="sr-only">Search lessons</span><input type="search" id="lesson-search" placeholder="Find a lesson…" autocomplete="off"></label><label class="academy-filter"><span class="sr-only">Filter by progress</span><select id="lesson-filter"><option value="all">All lessons</option><option value="active">In progress</option><option value="new">Not started</option><option value="complete">Completed</option></select></label></div><div id="category-lessons">${modulesView(p, pmap)}</div></section>
 <section class="academy-next-note"><span class="academy-kicker">WHEN YOU FINISH</span><h2>What comes next</h2><p>${esc(p.next_steps)}</p>${page.category ? `<a class="text-button" href="${page.category.url}">Explore other courses →</a>` : ""}</section>`;
 }
 export function roadmapView(data, page, context = {}) {
@@ -697,6 +730,247 @@ export function blocksView(blocks) {
     )
     .join("");
 }
+function buildDiagramSpec(t) {
+  if (t.content?.diagram && Array.isArray(t.content.diagram.modes)) return t.content.diagram;
+  const slug = String(t.slug || "");
+  if (slug.includes("sql") || slug.includes("injection")) {
+    return {
+      caption: "How untrusted input crosses into an interpreter — and how parameterization separates code from data.",
+      modes: [
+        {
+          id: "normal",
+          label: "01 · Normal Flow",
+          tone: "normal",
+          nodes: ["Browser Input", "Query Builder", "SQL Database"],
+          edgeLabel: "Structured query",
+          steps: [
+            ["Input", "Caller supplies a search term or record filter in the HTTP request."],
+            ["Boundary", "Application binds the value to an expected query structure."],
+            ["Result", "Database returns only rows matching the intended predicate."]
+          ]
+        },
+        {
+          id: "attack",
+          label: "02 · Attack Vector",
+          tone: "attack",
+          nodes: ["Crafted Payload", "String Concatenation", "Altered AST"],
+          edgeLabel: "Syntax breakout",
+          steps: [
+            ["Input", "Input includes SQL syntax tokens (quotes, operators, or UNION clauses)."],
+            ["Boundary", "Concatenation merges untrusted characters directly into the command string."],
+            ["Result", "Database parser interprets user data as instructions, bypassing filters."]
+          ]
+        },
+        {
+          id: "defense",
+          label: "03 · Hardened Defense",
+          tone: "defense",
+          nodes: ["Untrusted Input", "Prepared Statement (?)", "Bound Execution"],
+          edgeLabel: "Typed parameter",
+          steps: [
+            ["Input", "Any string—even containing quotes or SQL keywords—arrives at the handler."],
+            ["Boundary", "Database compiles the SQL statement tree before binding parameters as literal scalars."],
+            ["Result", "Payload is treated strictly as inert data; query structure cannot change."]
+          ]
+        }
+      ]
+    };
+  }
+  if (slug.includes("xss") || slug.includes("cross-site-scripting") || slug.includes("dom")) {
+    return {
+      caption: "Tracing how untrusted strings reach browser rendering sinks and how context-aware encoding neutralizes execution.",
+      modes: [
+        {
+          id: "normal",
+          label: "01 · Normal Flow",
+          tone: "normal",
+          nodes: ["User Content", "Template Renderer", "Browser DOM"],
+          edgeLabel: "Safe text node",
+          steps: [
+            ["Source", "User submits profile text, search query, or URL fragment."],
+            ["Boundary", "Application places the value into a template or DOM text property."],
+            ["Sink", "Browser renders readable text without creating new script elements."]
+          ]
+        },
+        {
+          id: "attack",
+          label: "02 · Attack Vector",
+          tone: "attack",
+          nodes: ["Markup / Event Payload", "Raw HTML Sink", "Script Execution"],
+          edgeLabel: "Unencoded sink",
+          steps: [
+            ["Source", "Attacker supplies HTML tags, event attributes, or a javascript: URL."],
+            ["Boundary", "Value is written raw via innerHTML or unescaped template interpolation."],
+            ["Sink", "Browser parser executes injected script inside the victim's origin and session."]
+          ]
+        },
+        {
+          id: "defense",
+          label: "03 · Hardened Defense",
+          tone: "defense",
+          nodes: ["Untrusted Input", "Context Encoder + CSP", "Inert DOM Text"],
+          edgeLabel: "Encoded + restricted",
+          steps: [
+            ["Source", "Untrusted input arrives from the request, storage, or URL."],
+            ["Boundary", "Output is encoded for the exact context (textContent / safe HTML sanitizer) and guarded by CSP."],
+            ["Sink", "Browser displays literal characters; inline script execution is blocked."]
+          ]
+        }
+      ]
+    };
+  }
+  if (slug.includes("access") || slug.includes("authorisation") || slug.includes("authorization") || slug.includes("idor")) {
+    return {
+      caption: "Comparing missing object-level checks (IDOR/BOLA) with server-side principal-to-resource policy enforcement.",
+      modes: [
+        {
+          id: "normal",
+          label: "01 · Normal Flow",
+          tone: "normal",
+          nodes: ["Authenticated User A", "Route Handler", "User A Record"],
+          edgeLabel: "GET /records/104",
+          steps: [
+            ["Actor", "Signed-in user clicks a link generated for their own account."],
+            ["Boundary", "Server looks up the requested object identifier."],
+            ["Resource", "Caller receives their own authorized data."]
+          ]
+        },
+        {
+          id: "attack",
+          label: "02 · Attack Vector",
+          tone: "attack",
+          nodes: ["Authenticated User A", "Identity-Only Check", "User B Record"],
+          edgeLabel: "GET /records/105",
+          steps: [
+            ["Actor", "User A modifies the record ID in the URL, JSON body, or API call."],
+            ["Boundary", "Handler verifies that User A is logged in, but never checks ownership of ID 105."],
+            ["Resource", "Server returns or mutates User B's private record (horizontal breach)."]
+          ]
+        },
+        {
+          id: "defense",
+          label: "03 · Hardened Defense",
+          tone: "defense",
+          nodes: ["Authenticated User A", "Policy + Ownership Gate", "403 / Scoped Query"],
+          edgeLabel: "WHERE owner_id = session.uid",
+          steps: [
+            ["Actor", "Caller requests any object identifier or privileged operation."],
+            ["Boundary", "Centralized policy checks (principal, action, resource ownership) on the server."],
+            ["Resource", "Unauthorized cross-account access is denied before data is read or modified."]
+          ]
+        }
+      ]
+    };
+  }
+  const how0 = Array.isArray(t.content?.how_it_works) && t.content.how_it_works[0]
+    ? t.content.how_it_works[0]
+    : t.description || "Requests move from the client across a trust boundary to protected application logic.";
+  const look0 = Array.isArray(t.content?.what_to_look_for) && t.content.what_to_look_for[0]
+    ? t.content.what_to_look_for[0]
+    : "Implicit trust in client-controlled inputs, headers, or state transitions.";
+  const def0 = Array.isArray(t.content?.defensive) && t.content.defensive[0]
+    ? t.content.defensive[0]
+    : "Enforce explicit validation, authentication, and authorization at the server boundary.";
+  return {
+    caption: `Interactive mental model for ${t.name}: compare normal operation, boundary failure, and defensive design.`,
+    modes: [
+      {
+        id: "normal",
+        label: "01 · Normal Flow",
+        tone: "normal",
+        nodes: ["Client / Caller", "Application Boundary", "Protected State"],
+        edgeLabel: "Expected request",
+        steps: [
+          ["Source", how0],
+          ["Boundary", "The system processes well-formed input along the intended happy path."],
+          ["Outcome", "State transitions and responses remain within expected operational bounds."]
+        ]
+      },
+      {
+        id: "attack",
+        label: "02 · Failure Vector",
+        tone: "attack",
+        nodes: ["Untrusted Input", "Unchecked Assumption", "Boundary Bypass"],
+        edgeLabel: "Tampered state",
+        steps: [
+          ["Vector", "An attacker or faulty client alters parameters, headers, timing, or sequence order."],
+          ["Weakness", look0],
+          ["Impact", "The component trusts unverified data, crossing a confidentiality or integrity boundary."]
+        ]
+      },
+      {
+        id: "defense",
+        label: "03 · Hardened Control",
+        tone: "defense",
+        nodes: ["Untrusted Input", "Server Policy Gate", "Verified Operation"],
+        edgeLabel: "Enforced control",
+        steps: [
+          ["Verification", def0],
+          ["Enforcement", "Checks run deterministically on the server side for every sensitive action."],
+          ["Resilience", "Invalid requests fail closed and emit structured security telemetry."]
+        ]
+      }
+    ]
+  };
+}
+
+export function lessonDiagramView(t) {
+  const spec = buildDiagramSpec(t);
+  const tabs = spec.modes
+    .map(
+      (m, idx) =>
+        `<button type="button" class="diagram-tab${idx === 0 ? " is-active" : ""}" role="tab" aria-selected="${idx === 0 ? "true" : "false"}" data-diagram-tab="${esc(m.id)}">${esc(m.label)}</button>`
+    )
+    .join("");
+  const panels = spec.modes
+    .map(
+      (m, idx) => `<div class="diagram-panel tone-${esc(m.tone)}" role="tabpanel" data-diagram-panel="${esc(m.id)}"${idx === 0 ? "" : " hidden"}>
+        <div class="diagram-canvas" role="img" aria-label="${esc(m.label)}: ${esc(m.nodes.join(" to "))}">
+          <div class="diagram-node">
+            <span class="diagram-node-index">01</span>
+            <strong>${esc(m.nodes[0])}</strong>
+          </div>
+          <div class="diagram-connector">
+            <span class="diagram-edge-label">${esc(m.edgeLabel)}</span>
+            <svg viewBox="0 0 80 16" aria-hidden="true" class="diagram-arrow"><path d="M2 8h70M66 3l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="diagram-node diagram-node-gate">
+            <span class="diagram-node-index">02</span>
+            <strong>${esc(m.nodes[1])}</strong>
+          </div>
+          <div class="diagram-connector">
+            <span class="diagram-edge-label">${esc(m.tone === "attack" ? "Unblocked" : m.tone === "defense" ? "Verified" : "Allowed")}</span>
+            <svg viewBox="0 0 80 16" aria-hidden="true" class="diagram-arrow"><path d="M2 8h70M66 3l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="diagram-node">
+            <span class="diagram-node-index">03</span>
+            <strong>${esc(m.nodes[2])}</strong>
+          </div>
+        </div>
+        <ol class="diagram-steps">
+          ${m.steps
+            .map(
+              ([title, detail]) =>
+                `<li><strong>${esc(title)}:</strong> <span>${esc(detail)}</span></li>`
+            )
+            .join("")}
+        </ol>
+      </div>`
+    )
+    .join("");
+  return `<div class="lesson-diagram-card" data-lesson-diagram>
+    <div class="lesson-diagram-head">
+      <div>
+        <span class="academy-kicker">INTERACTIVE FLOW MODEL</span>
+        <h2>Architecture &amp; Trust Boundary Flow</h2>
+        <p class="lesson-diagram-caption">${esc(spec.caption)}</p>
+      </div>
+      <div class="diagram-tabs" role="tablist" aria-label="Flow mode">${tabs}</div>
+    </div>
+    ${panels}
+  </div>`;
+}
+
 export function staticLessonView(data, page) {
   const t = page.topic,
     p = page.path,
@@ -710,7 +984,7 @@ export function staticLessonView(data, page) {
   );
   const takeaways = all.find((s) => s.id === "defensive");
   const resources = (t.content.references || []).map(safeHttpUrl).filter(Boolean);
-  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div><section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
+  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div>${lessonDiagramView(t)}<section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
 }
 export function publicView(data, page, context = {}) {
   if (page.type === "overview") return hubView(data, { ...context, categories: data.categories });

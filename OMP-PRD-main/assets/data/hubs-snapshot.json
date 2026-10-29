@@ -1,0 +1,1815 @@
+{
+  "generated_at": "2026-09-18T00:00:00Z",
+  "article_categories": [
+    {
+      "name": "Security",
+      "slug": "security",
+      "sort_order": 1
+    }
+  ],
+  "articles": [
+    {
+      "id": "ai-agents-can-hack-other-ai-agents",
+      "slug": "ai-agents-can-hack-other-ai-agents",
+      "title": "AI Agents Can Hack Other AI Agents: A New Security Threat",
+      "summary": "AI agents are becoming capable of performing complex cyber operations. Here is what recent real-world incidents actually show about AI agent security, agent…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-09T13:35:58.199697+00:00",
+      "updated_at": "2026-09-30T08:05:48.168013+00:00",
+      "created_at": "2026-09-09T13:35:58.199697+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "android-app-blocked-to-protect-your-device-what-to-do",
+      "slug": "android-app-blocked-to-protect-your-device-what-to-do",
+      "title": "Android App Blocked to Protect Your Device? What to Do",
+      "summary": "Android says “App blocked to protect your device”? Learn what the warning means, how to check an APK, and what to do safely before installing it.",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-11T05:22:14.293+00:00",
+      "updated_at": "2026-10-11T05:22:32.775828+00:00",
+      "created_at": "2026-10-11T05:22:14.293+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt",
+      "slug": "are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt",
+      "title": "Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT",
+      "summary": "Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-08T06:00:53.287331+00:00",
+      "updated_at": "2026-10-08T06:00:53.287331+00:00",
+      "created_at": "2026-10-08T06:00:53.287331+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "best-free-osint-tools-for-beginners",
+      "slug": "best-free-osint-tools-for-beginners",
+      "title": "Best Free OSINT Tools for Beginners in 2026",
+      "summary": "A practical beginner guide to free OSINT tools for usernames, emails, domains, metadata, historical web research, infrastructure, and digital investigations.",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-26T10:57:24.830826+00:00",
+      "updated_at": "2026-10-07T14:39:23.675063+00:00",
+      "created_at": "2026-09-26T10:57:24.830826+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "cloudflare-verification-asking-you-to-press-winr-its-a-scam",
+      "slug": "cloudflare-verification-asking-you-to-press-winr-its-a-scam",
+      "title": "Cloudflare Verification Asking You to Press Win+R? It’s a Scam",
+      "summary": "If a website shows a Cloudflare-style “Verify you are human” page and then tells you to press Windows + R , press Ctrl + V , and hit Enter , stop. That is not…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-08T06:00:53.287331+00:00",
+      "updated_at": "2026-10-08T06:00:53.287331+00:00",
+      "created_at": "2026-10-08T06:00:53.287331+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
+      "slug": "cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
+      "title": "Cyber Security Salary in the USA in 2026: Full Guide",
+      "summary": "If you're considering a career in cybersecurity, one of the biggest questions is: how much can you earn in cybersecurity in the USA? The answer depends on your…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-04T13:45:46.086+00:00",
+      "updated_at": "2026-09-30T08:05:48.168013+00:00",
+      "created_at": "2026-09-04T13:45:46.086+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
+      "slug": "fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
+      "title": "Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works",
+      "summary": "You click a link and a Google or Microsoft login window appears. The window looks legitimate. It has a familiar logo, a lock icon, browser controls, and even…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-08T06:00:53.287331+00:00",
+      "updated_at": "2026-10-08T06:00:53.287331+00:00",
+      "created_at": "2026-10-08T06:00:53.287331+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "holehe-vs-epieos-email-lookup-comparison",
+      "slug": "holehe-vs-epieos-email-lookup-comparison",
+      "title": "Holehe vs Epieos: Free vs Freemium Email Lookup",
+      "summary": "Holehe checks 120+ sites free from the terminal; Epieos answers in the browser with Google-linked details. Honest comparison plus when to use each.",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-08T06:00:53.287331+00:00",
+      "updated_at": "2026-10-08T06:00:53.287331+00:00",
+      "created_at": "2026-10-08T06:00:53.287331+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "how-does-ai-work-a-beginners-guide-to-artificial-intelligence",
+      "slug": "how-does-ai-work-a-beginners-guide-to-artificial-intelligence",
+      "title": "How Does AI Work? A Beginner's Guide to Artificial Intelligence",
+      "summary": "Learn how AI works from training data and neural networks to tokens, Transformers, inference, hallucinations, and AI agents—with a simple beginner-friendly…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-08T14:49:13.548323+00:00",
+      "updated_at": "2026-09-18T13:46:35.317366+00:00",
+      "created_at": "2026-09-08T14:49:13.548323+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account",
+      "slug": "how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account",
+      "title": "How to Spot Fake Passkey Setup Scams Before They Steal Your Account",
+      "summary": "Passkeys are designed to make online accounts safer. They use public-key cryptography instead of asking you to type a reusable password, and properly…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-30T13:47:00.795+00:00",
+      "updated_at": "2026-09-30T13:47:00.795+00:00",
+      "created_at": "2026-09-30T13:47:00.795+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead",
+      "slug": "is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead",
+      "title": "Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead",
+      "summary": "If an account offers two-factor authentication (2FA) by text message, turning it on is generally better than protecting the account with a password alone. But…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-30T13:45:32.477+00:00",
+      "updated_at": "2026-09-30T13:45:32.477+00:00",
+      "created_at": "2026-09-30T13:45:32.477+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys",
+      "slug": "langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys",
+      "title": "CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys",
+      "summary": "Critical Langflow Vulnerability CVE-2026-0768 Exploited to Steal OpenAI and AWS Keys Critical Langflow vulnerability CVE-2026-0768 is being exploited in the…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-09-02T05:55:29.438+00:00",
+      "updated_at": "2026-09-30T08:05:48.168013+00:00",
+      "created_at": "2026-09-02T05:55:29.438+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "sherlock-vs-maigret-username-osint-comparison",
+      "slug": "sherlock-vs-maigret-username-osint-comparison",
+      "title": "Sherlock vs Maigret: Which Username OSINT Tool Should You Use?",
+      "summary": "Sherlock checks 400+ sites fast; Maigret covers 3000+ sites with full reports. Honest comparison on speed, depth, reports and ease of use — plus when to use…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-08T06:00:53.287331+00:00",
+      "updated_at": "2026-10-08T06:00:53.287331+00:00",
+      "created_at": "2026-10-08T06:00:53.287331+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "top-5-books-for-learning-ethical-hacking-pdf",
+      "slug": "top-5-books-for-learning-ethical-hacking-pdf",
+      "title": "Top 5 Books for Learning Ethical Hacking PDF",
+      "summary": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-11T09:46:13.875+00:00",
+      "updated_at": "2026-10-11T10:12:40.077136+00:00",
+      "created_at": "2026-10-11T09:46:13.875+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    },
+    {
+      "id": "zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it",
+      "slug": "zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it",
+      "title": "Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It",
+      "summary": "Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It. what is zero day vulnerability in cyber security ?",
+      "content": "",
+      "status": "published",
+      "published_at": "2026-10-13T10:01:50.558+00:00",
+      "updated_at": "2026-10-13T10:01:50.558+00:00",
+      "created_at": "2026-10-13T10:01:50.558+00:00",
+      "article_categories": {
+        "name": "Security",
+        "slug": "security"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "master-in-ai-prompt",
+      "slug": "master-in-ai-prompt",
+      "name": "MASTER IN AI PROMPT",
+      "summary": "MASTER IN AI PROMPT is a practical A-to-Z guide to modern prompt engineering and AI workflow design. It takes you from clear task specifications and…",
+      "description": "<p>Stop getting mediocre results from AI. Start designing reliable ones.</p>\n<p>Most people use AI by asking better questions. Professionals go further: they design prompts, context, constraints, tools, evaluation and workflows that make good results repeatable.</p>\n<p>MASTER IN AI PROMPT is a practical A-to-Z guide to modern prompt engineering and AI workflow design. It takes you from clear task specifications and high-quality prompts to structured outputs, reasoning models, multimodal AI, coding workflows, research, RAG, agents, security, evaluation and production AI.</p>\n<p>Inside, you'll learn how to:</p>\n<p>• Design prompts with clear goals, context, constraints, output contracts and validation • Use zero-shot and few-shot examples effectively • Build prompt chains and multi-step AI workflows • Create reliable structured outputs and JSON • Work with images, audio and video • Write better coding and software-engineering prompts • Research current information and verify claims with evidence • Build grounded RAG workflows • Design AI agents with tools, permissions and approval boundaries • Defend against prompt injection and other AI security risks • Reduce hallucinations and measure prompt performance • Optimize, version and reuse prompt systems • Think about cost, latency, caching, governance and production deployment • Turn a prompt into a real AI product • Follow a 30-day deliberate practice programme</p>\n<p>This is not a collection of random prompt tricks. It is a practical system for learning how to specify, test, verify and improve AI work.</p>\n<p>Whether you are a developer, creator, student, freelancer, founder, operator or technical researcher, this book gives you a framework for moving from casual AI use to repeatable, testable AI workflows.</p>\n<p>Learn the skill. Build the workflow. Test the result. Make it reliable.</p>",
+      "product_type": "book",
+      "price": 15,
+      "currency": "USD",
+      "cta_label": "Learn More",
+      "featured": false,
+      "featured_image": [
+        "https://aeehfulikupskyrvcpzb.supabase.co/storage/v1/object/public/products/covers/1788872682570-Cover_.png"
+      ],
+      "external_url": "",
+      "status": "published",
+      "sort_order": 0,
+      "published_at": "2026-09-02T00:00:00Z",
+      "created_at": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "why-we-suddenly-forget-why-we-entered-the-room",
+      "slug": "why-we-suddenly-forget-why-we-entered-the-room",
+      "name": "WHY WE SUDDENLY FORGET WHY WE ENTERED THE ROOM",
+      "summary": "You enter a room and forget the mission. A familiar word suddenly looks wrong. Your phone seems to vibrate—but it hasn’t. And after a friendly conversation…",
+      "description": "<p>YYou enter a room and forget the mission. A familiar word suddenly looks wrong. Your phone seems to vibrate—but it hasn’t. And after a friendly conversation, your mind writes a surprisingly harsh review.</p>\n<h2 id=\"why-do-ordinary-moments-become-so-strange\"><strong>Why do ordinary moments become so strange?</strong></h2>\n<p>Across 26 everyday mysteries, Suraj Baishya explores the psychology of memory, attention, familiarity, social judgment, decisions, time, and sleep. Discover why recognizing a face is different from retrieving a name, why an unopened notification can interrupt you, and why feeling familiar with an idea is not the same as being able to recall it.</p>\n<p>Each chapter begins with a recognizable scene, follows the research, and separates a useful explanation from a story that goes too far. Along the way, you’ll meet earworms, déjà vu, phantom vibrations, the spotlight effect, sensory-specific satiety, sleep inertia, and disappearing dreams.</p>\n<p>This is not a collection of brain hacks or a guide to diagnosing yourself. It is an invitation to understand everyday experience more precisely—with clear explanations, gentle humor, optional low-stakes observations, and a referenced research trail.</p>\n<p><strong>For anyone who has ever paused and thought, “Why did I just do that?”</strong></p>",
+      "product_type": "book",
+      "price": 20,
+      "currency": "USD",
+      "cta_label": "Learn More",
+      "featured": false,
+      "featured_image": [
+        "https://m.media-amazon.com/images/I/61N7xCRN94L._SL1293_.jpg"
+      ],
+      "external_url": "",
+      "status": "published",
+      "sort_order": 1,
+      "published_at": "2026-09-02T00:00:00Z",
+      "created_at": "2026-09-02T00:00:00Z"
+    }
+  ],
+  "osint_categories": [
+    {
+      "id": "cat-osint-email-osint",
+      "slug": "email-osint",
+      "name": "Email OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 0
+    },
+    {
+      "id": "cat-osint-image-osint",
+      "slug": "image-osint",
+      "name": "Image & Metadata OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 1
+    },
+    {
+      "id": "cat-osint-username-osint",
+      "slug": "username-osint",
+      "name": "Username OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 2
+    },
+    {
+      "id": "cat-osint-phone-osint",
+      "slug": "phone-osint",
+      "name": "Phone OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 3
+    },
+    {
+      "id": "cat-osint-domain-osint",
+      "slug": "domain-osint",
+      "name": "Domain & IP OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 4
+    },
+    {
+      "id": "cat-osint-all-in-one",
+      "slug": "all-in-one",
+      "name": "All-in-One OSINT",
+      "description": "",
+      "status": "published",
+      "sort_order": 5
+    }
+  ],
+  "osint": [
+    {
+      "id": "osint-epieos",
+      "slug": "epieos",
+      "name": "Epieos",
+      "summary": "Reverse-lookup an email or phone number to uncover linked social accounts. Freemium web app.",
+      "overview": "<p>Epieos is a web-based reverse lookup for email addresses and phone numbers. Paste an identifier and it returns linked Google account details, connected services and public traces — without notifying the target and without logging your query. Basic lookups are free; deeper modules covering LinkedIn, Facebook, fitness apps and more need a paid plan.</p>\n<p>It is the fastest option when you want answers in a browser instead of a terminal: no install, no syntax, just paste and read. Because results come from live service responses rather than a stale database, re-running a lookup over time can surface newly linked accounts.</p>",
+      "key_features": "<ul><li>Reverse lookup for both email addresses and phone numbers</li><li>Surfaces linked Google account details and connected services</li><li>No query logging and no notification to the target</li><li>No install — guided web workflow for beginners</li><li>Paid modules unlock LinkedIn, Facebook, fitness apps and more</li><li>Used by investigators, journalists and enterprises</li></ul>",
+      "install_guide": "<p>No installation needed: it runs in your browser.</p>\n<ol><li>Open Epieos below and choose Email or Phone lookup.</li><li>Enter the address or number and confirm the terms.</li><li>Review linked accounts, then pivot on each finding elsewhere.</li></ol>\n<p>Free tier covers basic lookups; advanced modules need a paid plan (check Pricing on their site).</p>",
+      "use_case": "<p>A rental listing asks for a deposit over email, and the price feels too good. Paste the lister's address into Epieos. Within a minute you see linked Google reviews, a Skype handle and other connected traces — or a complete blank. Read them for consistency: reviews spanning years under one name build confidence, while mismatched names and fresh accounts are classic scam markers.</p>\n<p>Never send money on email evidence alone. Use the lookup as a filter — consistent history earns a video viewing, inconsistency ends the conversation.</p>",
+      "faqs": "<h3 id=\"is-epieos-free\">Is Epieos free?</h3>\n<p>Basic lookups are free. Deeper modules covering networks like LinkedIn and Facebook need a paid plan — check the Pricing page on their site for current rates.</p>",
+      "category_id": "cat-osint-email-osint",
+      "category_slug": "email-osint",
+      "category_name": "Email OSINT",
+      "pricing": "freemium",
+      "access_types": [
+        "web"
+      ],
+      "official_url": "https://epieos.com/",
+      "github_url": "",
+      "docs_url": "",
+      "logo_url": [
+        "https://www.google.com/s2/favicons?domain=epieos.com&sz=128"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 0,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-exiftool",
+      "slug": "exiftool",
+      "name": "ExifTool",
+      "summary": "Read, write and strip metadata from images, video, PDFs and documents. Free, the metadata standard.",
+      "overview": "<p>ExifTool by Phil Harvey is the reference tool for file metadata. Point it at a photo and it reveals camera model, GPS coordinates, timestamps, software history and hundreds of other embedded fields — the raw material of image verification work.</p>\n<p>Journalists use it to check whether a viral photo is really from where it claims; investigators use it to place a device at a location and time; privacy-conscious users run it in reverse, stripping metadata before sharing. It reads and writes metadata across a huge range of formats, and almost every other metadata tool is built on top of it.</p>",
+      "key_features": "<ul><li>Reads metadata from images, video, audio, PDF and documents</li><li>Reveals GPS, camera, timestamps and editing history</li><li>Writes and strips metadata for safe sharing</li><li>Scriptable CLI trusted in forensic workflows</li><li>Single dependency-free install on every major OS</li><li>Free and open source</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install libimage-exiftool-perl\n\n\n\n## macOS\n\nbrew install exiftool\n\n\n\n# Read all metadata from a photo\n\nexiftool photo.jpg\n\n\n\n## GPS coordinates only\n\nexiftool -gpslatitude -gpslongitude photo.jpg\n\n\n\n# Strip all metadata (safe sharing)\n\nexiftool -all= photo.jpg\n\n</code></pre>",
+      "use_case": "<p>A dramatic photo spreads online claiming to show last night's protest in your city. Save a copy and run ExifTool on it. The timestamps and any GPS data tell you when and where the camera actually was — if the metadata says noon three years ago in another country, the claim collapses without any further debate.</p>\n<p>Flip the workflow for your own photos: run ExifTool with the strip-all flag before posting, so your location and device details never travel with the image.</p>",
+      "faqs": "<h3 id=\"is-exiftool-free\">Is ExifTool free?</h3>\n<p>Yes. ExifTool is free and open source.</p>",
+      "category_id": "cat-osint-image-osint",
+      "category_slug": "image-osint",
+      "category_name": "Image & Metadata OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://exiftool.org/",
+      "github_url": "",
+      "docs_url": "https://exiftool.org/#docs",
+      "logo_url": [
+        "https://exiftool.org/ET-256.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 1,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-holehe",
+      "slug": "holehe",
+      "name": "Holehe",
+      "summary": "Check whether an email address is registered on 120+ platforms. Free, open-source, command line.",
+      "overview": "<p>Holehe answers one question fast: is this email address signed up on a given site? It tests the address against more than 120 platforms — Reddit, GitHub, Discord, Spotify, Amazon and many more — using each site's own password-reset and registration flows, without sending anything to the address owner.</p>\n<p>The result is a clean registered-or-not list that is perfect for pivoting from an email to a set of accounts: every \"registered\" hit is a new place to look. Investigators pair it with username tools to connect an address to handles, and defenders use it to audit which services a corporate domain is scattered across.</p>",
+      "key_features": "<ul><li>120+ platforms: Reddit, GitHub, Discord, Spotify, Amazon and more</li><li>Uses official reset and registration flows — no intrusive probing</li><li>Clean registered-or-not verdict per site</li><li>CSV export for case files</li><li>Fast async engine — one command per email</li><li>Free and open source (MIT)</li></ul>",
+      "install_guide": "<pre><code>\n# Install with pip (Python 3.9+)\n\npip install holehe\n\n\n\n# Check an email address\n\nholehe test@example.com\n\n\n\n## Save results to a CSV file\n\nholehe test@example.com --csv\n\n</code></pre>",
+      "use_case": "<p>During incident response you learn an employee's address appeared in a breach dump. Before forcing company-wide resets, scope the exposure: run the address through Holehe and list every platform where it is registered. That list becomes your reset checklist — start with email, cloud storage and code hosting, then work down.</p>\n<p>Document each confirmed account for the incident report. Anything Holehe flags that the employee does not recognize may indicate an account created with a leaked password elsewhere, which is exactly how credential-stuffing chains begin.</p>",
+      "faqs": "<h3 id=\"is-holehe-free\">Is Holehe free?</h3>\n<p>Yes. Holehe is free and open source under the MIT license.</p>",
+      "category_id": "cat-osint-email-osint",
+      "category_slug": "email-osint",
+      "category_name": "Email OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/megadose/holehe",
+      "github_url": "https://github.com/megadose/holehe",
+      "docs_url": "",
+      "logo_url": [
+        "https://github.com/megadose.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 2,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-maigret",
+      "slug": "maigret",
+      "name": "Maigret",
+      "summary": "Username search across 3000+ sites with HTML/PDF reports. Free, open-source.",
+      "overview": "<p>Maigret collects information about a username across more than 3000 websites and known data leaks. Where Sherlock answers \"does this profile exist?\", Maigret goes further: it pulls public profile details such as linked IDs, accounts and interests, and compiles everything into structured HTML and PDF reports you can hand to a client or file with a case.</p>\n<p>It is the better pick when one username needs a full written report rather than a quick existence check — fraud reviews, due-diligence screening and long-running person investigations. Like every OSINT tool, its output is leads, not proof: open the linked profiles and corroborate the interesting hits before acting on them.</p>",
+      "key_features": "<ul><li>3000+ sites plus username checks against known data leaks</li><li>Auto-generated HTML and PDF investigation reports</li><li>Extracts linked IDs, accounts and interests from public profiles</li><li>Cookie-based authenticated checks for logged-in sources</li><li>Fingerprint database kept current by the community</li><li>Free and open source, CLI-first with Docker support</li></ul>",
+      "install_guide": "<pre><code>\n# Recommended: isolated install with pipx (Python 3.9+)\n\npipx install maigret\n\n\n\n# Check a username and open the HTML report\n\nmaigret user123 --html\n\n\n\n# Also generate a PDF report\n\nmaigret user123 --html --pdf\n\n</code></pre>",
+      "use_case": "<p>You are hiring a freelance developer whose proposal links a username but no portfolio. Run Maigret on the handle with HTML output and read the report like a CV: old StackOverflow answers reveal real skill history, forum posts show communication style, and any leak-database hit tells you to ask about password habits before granting repository access.</p>\n<p>Verify the two most relevant profiles by opening them directly. If the timeline and skills match the proposal, proceed to a paid trial task. If the username barely exists outside the proposal itself, treat the application with caution.</p>",
+      "faqs": "<h3 id=\"maigret-or-sherlock-which-should-i-use\">Maigret or Sherlock — which should I use?</h3>\n<p>Use Sherlock for a fast existence check across 400+ sites. Use Maigret when you need depth: 3000+ sites, leaked-data checks and a written HTML or PDF report.</p>",
+      "category_id": "cat-osint-username-osint",
+      "category_slug": "username-osint",
+      "category_name": "Username OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/soxoj/maigret",
+      "github_url": "https://github.com/soxoj/maigret",
+      "docs_url": "https://maigret.readthedocs.io/",
+      "logo_url": [
+        "https://github.com/soxoj.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 3,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-phoneinfoga",
+      "slug": "phoneinfoga",
+      "name": "PhoneInfoga",
+      "summary": "Scan a phone number for carrier, country, linked accounts and mentions. Free, open-source.",
+      "overview": "<p>PhoneInfoga is an open-source phone number investigator. Enter a number in international format and it reports the carrier and country, checks the number against data-leak databases, and searches for public mentions and linked messenger accounts.</p>\n<p>Version 2 runs as a local web server, so beginners never have to leave the browser while advanced users keep the terminal workflow. The one-command Docker deployment removes the usual dependency pain, which makes it practical for scam triage desks and fraud teams that need answers in minutes, not setup hours.</p>",
+      "key_features": "<ul><li>Carrier, country and line-type detection from any number</li><li>Checks leaks and public mentions of the number</li><li>Local web UI plus the classic terminal workflow</li><li>One-command Docker deployment — no dependency hell</li><li>Number reputation signals for scam and spam triage</li><li>Free and open source (GPL-3.0)</li></ul>",
+      "install_guide": "<pre><code>\n# Easiest: run with Docker\n\ndocker pull sundowndev/phoneinfoga:latest\n\ndocker run -it -p 5000:5000 sundowndev/phoneinfoga serve --port=5000\n\n\n\n# Then open http://localhost:5000 in your browser,\n\n# or scan directly from the terminal:\n\ndocker run -it sundowndev/phoneinfoga scan -n +33612345678\n\n</code></pre>",
+      "use_case": "<p>A text message claims your parcel is held and links a \"redelivery\" page asking for card details. Copy the sender number into PhoneInfoga in international format. The scan returns the real carrier and country plus any leak or mention history — compare that with the story: a domestic parcel service texting from a foreign prepaid range is a failed check.</p>\n<p>Screenshot the result, block the number and report the message as smishing. If the number shows prior scam reports, include them in the report so the pattern is visible.</p>",
+      "faqs": "<h3 id=\"what-format-does-the-number-need\">What format does the number need?</h3>\n<p>International format with the country code, for example +33612345678.</p>",
+      "category_id": "cat-osint-phone-osint",
+      "category_slug": "phone-osint",
+      "category_name": "Phone OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli",
+        "web"
+      ],
+      "official_url": "https://github.com/sundowndev/phoneinfoga",
+      "github_url": "https://github.com/sundowndev/phoneinfoga",
+      "docs_url": "",
+      "logo_url": [
+        "https://github.com/sundowndev.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 4,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-sherlock",
+      "slug": "sherlock",
+      "name": "Sherlock",
+      "summary": "Hunt down a username across 400+ social networks and websites. Free, open-source, runs on your machine.",
+      "overview": "<p>Sherlock is one of the most popular open-source username investigation tools. Give it a username and it checks that handle across more than 400 social networks and websites — GitHub, Instagram, Reddit, Telegram, TikTok and hundreds more — then saves every hit to a text file for that username. Results link straight to the matching profile so you can verify each one by hand.</p>\n<p>Journalists use it to verify whether a source's handle is real, security teams use it to spot executive impersonation, and hiring managers use it for lightweight background checks. It is a lookup tool, not a hacking tool: it only visits public profile pages and reports which ones exist, and every finding should still be opened and confirmed manually.</p>\n<p>Power users get structured exports (CSV, XLSX, JSON), Tor and proxy support for sensitive cases, and a community-maintained site list that can be extended with custom targets.</p>",
+      "key_features": "<ul><li>Checks 400+ social networks and websites from a single command</li><li>Saves every hit to a per-username text file with direct profile links</li><li>CSV, XLSX and JSON export for reports and further analysis</li><li>Tor and proxy support for sensitive investigations</li><li>Site list is community-maintained JSON — add your own targets</li><li>Free and open source (MIT), runs fully on your machine</li></ul>",
+      "install_guide": "<pre><code>\n# Recommended: isolated install with pipx (Python 3.9+)\n\npipx install sherlock-project\n\n\n\n# Check a single username\n\nsherlock user123\n\n\n\n# Check several usernames at once\n\nsherlock user1 user2 user3\n\n</code></pre>",
+      "use_case": "<p>A marketplace seller contacts you on Telegram with a great price and a username that also appears as their \"shop name\". Before sending any money, run that handle through Sherlock. In a few minutes you get a list of everywhere the name exists: perhaps a matching Instagram with three years of posts and a GitHub with real commits — or perhaps nothing at all outside Telegram, which is itself an answer.</p>\n<p>Open the two or three strongest hits. Compare avatars, writing style and account ages. If the Instagram joined last week and the photos look stock, walk away. If everything lines up across years, you have done in ten minutes what used to take an afternoon of manual searching.</p>",
+      "faqs": "<h3 id=\"is-sherlock-free\">Is Sherlock free?</h3>\n<p>Yes. Sherlock is free and open source under the MIT license. It runs entirely on your own machine, needs no account and no API key.</p>",
+      "category_id": "cat-osint-username-osint",
+      "category_slug": "username-osint",
+      "category_name": "Username OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://sherlockproject.xyz/",
+      "github_url": "https://github.com/sherlock-project/sherlock",
+      "docs_url": "",
+      "logo_url": [
+        "https://github.com/sherlock-project.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 5,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-shodan",
+      "slug": "shodan",
+      "name": "Shodan",
+      "summary": "The search engine for internet-connected devices, services and exposures. Freemium web app plus API.",
+      "overview": "<p>Shodan continuously scans the internet and indexes banners from servers, routers, webcams, databases and industrial systems. Instead of searching web pages, you search devices: find open ports, outdated software, exposed databases and misconfigured services by IP, hostname, port or organisation.</p>\n<p>Defenders use it to discover their own forgotten exposures — the unpatched camera, the database without a password, the test server that was never taken down. A free account covers basic lookups; serious use with API access, historical data and network monitoring is paid. Every result includes the raw banner, so findings can be verified rather than taken on faith.</p>",
+      "key_features": "<ul><li>Searchable index of banners from millions of devices</li><li>Filters by port, country, organisation, product and vulnerability</li><li>Exposes misconfigurations: open databases, default credentials, outdated builds</li><li>REST API, CLI and integrations with Maltego, Nmap and Metasploit</li><li>Monitoring and alerts for your own attack surface on paid plans</li><li>Free tier for basic lookups; membership unlocks history and API credits</li></ul>",
+      "install_guide": "<p>No installation needed for the web version.</p>\n<ol><li>Create a free account on Shodan below.</li><li>Try a starter query such as port:22 or an IP address.</li><li>Open a result to see open ports, banners and known vulnerabilities.</li></ol>\n<p>For automation, install the CLI (pip install shodan) and add your API key with: shodan init YOUR_API_KEY.</p>",
+      "use_case": "<p>Ask your network team for the company's public IP ranges, then search them on Shodan. You are looking for surprises: a printer admin page with default credentials, an old camera feed, a database port answering the whole internet, a test server someone forgot in 2021.</p>\n<p>Each surprise becomes a ticket: restrict the port, patch the service, or take the host down. Re-run the same search quarterly — exposure drifts, and Shodan notices new devices before internal inventories do.</p>",
+      "faqs": "<h3 id=\"is-shodan-free\">Is Shodan free?</h3>\n<p>A free account covers basic lookups. Membership and API credits for automation, history and monitoring are paid.</p>",
+      "category_id": "cat-osint-domain-osint",
+      "category_slug": "domain-osint",
+      "category_name": "Domain & IP OSINT",
+      "pricing": "freemium",
+      "access_types": [
+        "web",
+        "api"
+      ],
+      "official_url": "https://www.shodan.io/",
+      "github_url": "",
+      "docs_url": "https://developer.shodan.io/",
+      "logo_url": [
+        "https://www.google.com/s2/favicons?domain=shodan.io&sz=128"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 6,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-spiderfoot",
+      "slug": "spiderfoot",
+      "name": "SpiderFoot",
+      "summary": "Automate OSINT collection across 200+ modules from one web interface. Free, open-source.",
+      "overview": "<p>SpiderFoot is an open-source OSINT automation platform. Instead of running ten tools by hand, you give SpiderFoot one target — a domain, IP, email, username or ASN — and its 200+ modules query threat feeds, search engines, DNS records, breach data and social sources automatically, then correlate everything into a single browsable report.</p>\n<p>It runs as a local web app with a command-line option for scripting, and because it is self-hosted your targets never leave your infrastructure. Teams schedule recurring scans to watch their own exposure drift over time; investigators use one-off scans to turn a single identifier into a full entity graph in minutes.</p>",
+      "key_features": "<ul><li>200+ modules: feeds, DNS, breaches, search, social, threat intel</li><li>One target in — correlated graph and browsable report out</li><li>Self-hosted: your targets never leave your infrastructure</li><li>Scheduled and API-driven scans for continuous monitoring</li><li>Built-in visualizations of entity relationships</li><li>Free and open source (MIT)</li></ul>",
+      "install_guide": "<pre><code>\n# Clone and install (Python 3.9+)\n\ngit clone https://github.com/smicallef/spiderfoot.git\n\ncd spiderfoot\n\npip install -r requirements.txt\n\n\n\n## Start the web interface\n\npython3 ./sf.py -l 127.0.0.1:5001\n\n\n\n# Open http://127.0.0.1:5001, create a new scan,\n\n# enter your target and pick the modules to run.\n\n</code></pre>",
+      "use_case": "<p>All you have is a suspicious domain from a phishing email. Create a SpiderFoot scan with that domain as the seed and let its modules work: DNS records, certificate logs, breach data, threat feeds and similar-domain searches run automatically and link into one graph.</p>\n<p>Read the graph outward from the seed. A cluster of lookalike domains registered the same week through the same registrar is a campaign, not a coincidence — export the report and hand the indicator list to your blocking and takedown process.</p>",
+      "faqs": "<h3 id=\"what-can-i-scan-with-spiderfoot\">What can I scan with SpiderFoot?</h3>\n<p>Domains, IP addresses, email addresses, usernames, ASNs and more — one target per scan.</p>",
+      "category_id": "cat-osint-all-in-one",
+      "category_slug": "all-in-one",
+      "category_name": "All-in-One OSINT",
+      "pricing": "free",
+      "access_types": [
+        "web",
+        "cli"
+      ],
+      "official_url": "https://github.com/smicallef/spiderfoot",
+      "github_url": "https://github.com/smicallef/spiderfoot",
+      "docs_url": "",
+      "logo_url": [
+        "https://github.com/smicallef.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 7,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-theharvester",
+      "slug": "theharvester",
+      "name": "theHarvester",
+      "summary": "Gather emails, subdomains, IPs and employee names for a domain. Free, open-source, command line.",
+      "overview": "<p>theHarvester is a classic reconnaissance tool for the early stages of an investigation. Give it a domain name and it passively collects emails, subdomains, hostnames, IP addresses and employee names from public sources — search engines, certificate transparency logs, DNS dumps and more.</p>\n<p>Security teams run it against their own organisation to map what is exposed before attackers do; investigators run it to expand one domain into a full target list of people, hosts and addresses. Everything it gathers is already public — the skill is in querying broadly and correlating the results, which is exactly what the tool automates.</p>",
+      "key_features": "<ul><li>Emails, subdomains, hosts, IPs and employee names per domain</li><li>Passive sources: certificate transparency, DNS dumps, search engines</li><li>XML and JSON output for piping into other tooling</li><li>Screenshot and takeover checks for discovered subdomains</li><li>A standard first step in pentest and red-team recon</li><li>Free and open source (GPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Clone and install (Python 3.9+)\n\ngit clone https://github.com/laramies/theHarvester.git\n\ncd theHarvester\n\npip install -r requirements.txt\n\n\n\n## Basic run against a domain\n\npython3 theHarvester.py -d example.com -b all\n\n\n\n## Limit sources and save output\n\npython3 theHarvester.py -d example.com -b crtsh,hackertarget -f results\n\n</code></pre>",
+      "use_case": "<p>You have just been authorized to test a company's public exposure. Start with theHarvester against their main domain: within minutes you hold a list of employee emails, subdomains and hostnames — the exact raw material an attacker would collect first.</p>\n<p>Hand the subdomain list to your DNS checks and the email list to a breach lookup. Every forgotten staging host or exposed webmail login you find becomes a finding in the report, with the remediation advice to inventory subdomains and enforce multi-factor authentication on everything public.</p>",
+      "faqs": "<h3 id=\"what-do-i-need-to-start\">What do I need to start?</h3>\n<p>Only a domain name. API keys are optional — they unlock additional sources but the tool works without them.</p>",
+      "category_id": "cat-osint-domain-osint",
+      "category_slug": "domain-osint",
+      "category_name": "Domain & IP OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/laramies/theHarvester",
+      "github_url": "https://github.com/laramies/theHarvester",
+      "docs_url": "",
+      "logo_url": [
+        "https://github.com/laramies.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 8,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "osint-whatsmyname",
+      "slug": "whatsmyname",
+      "name": "WhatsMyName",
+      "summary": "Check a username across hundreds of sites instantly in your browser. Free web app, nothing to install.",
+      "overview": "<p>WhatsMyName is a browser-based username checker maintained by the WebBreacher project. Type a username and it tests it against hundreds of websites in seconds, showing found profiles as clickable links. Because it runs entirely as a web page there is nothing to install and no command line needed — the best first tool for beginners.</p>\n<p>Experienced investigators use it as a triage step before heavier tools: a 30-second WhatsMyName run tells you whether a handle is worth a full Sherlock or Maigret pass. The underlying site list is downloadable, so the same checks can run offline or inside your own scripts.</p>",
+      "key_features": "<ul><li>Zero install — runs as a single web page</li><li>Hundreds of sites checked in seconds with clickable results</li><li>Downloadable site database for offline and scripted checks</li><li>No account and no tracking of your searches</li><li>Dataset maintained and used by investigators worldwide</li><li>Free forever, open source (MIT)</li></ul>",
+      "install_guide": "<p>No installation needed: it runs in your browser.</p>\n<ol><li>Open the WhatsMyName web app below.</li><li>Type the username and press enter.</li><li>Click any found result to open and verify the profile.</li></ol>",
+      "use_case": "<p>A stranger's DM offers you a part-time \"rating task\" job and asks you to move to another chat app. Before replying, paste their username into WhatsMyName. In thirty seconds you see whether the handle exists anywhere else: a years-old gaming profile suggests a real person, while zero hits anywhere suggests a handle invented for this scam.</p>\n<p>Use the result to decide the next step. Real presence plus a verifiable history? Continue carefully. No presence at all? Block, report, and optionally escalate the handle to Sherlock for a deeper pass.</p>",
+      "faqs": "<h3 id=\"do-i-need-to-install-whatsmyname\">Do I need to install WhatsMyName?</h3>\n<p>No. It runs entirely as a web page — open it, type a username, read the results.</p>",
+      "category_id": "cat-osint-username-osint",
+      "category_slug": "username-osint",
+      "category_name": "Username OSINT",
+      "pricing": "free",
+      "access_types": [
+        "web"
+      ],
+      "official_url": "https://whatsmynam3.github.io/WhatsMyName/",
+      "github_url": "https://github.com/WebBreacher/WhatsMyName",
+      "docs_url": "",
+      "logo_url": [
+        "https://avatars.githubusercontent.com/u/2359093?v=4"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 9,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    }
+  ],
+  "pentest_categories": [
+    {
+      "id": "cat-pentest-wireless-testing",
+      "slug": "wireless-testing",
+      "name": "Wireless Testing",
+      "description": "Assess Wi-Fi networks you own or are authorized to test — capture handshakes and audit encryption.",
+      "status": "published",
+      "sort_order": 0
+    },
+    {
+      "id": "cat-pentest-traffic-analysis-forensics",
+      "slug": "traffic-analysis-forensics",
+      "name": "Traffic Analysis & Forensics",
+      "description": "Capture and inspect network traffic, investigate packet-level behavior and analyze memory or forensic evidence during authorized investigations.",
+      "status": "published",
+      "sort_order": 1
+    },
+    {
+      "id": "cat-pentest-active-directory-internal-network",
+      "slug": "active-directory-internal-network",
+      "name": "Active Directory & Internal Network",
+      "description": "Assess Windows domain environments, identity relationships and internal-network exposure in an explicitly authorized lab or engagement.",
+      "status": "published",
+      "sort_order": 2
+    },
+    {
+      "id": "cat-pentest-web-testing",
+      "slug": "web-testing",
+      "name": "Web App Testing",
+      "description": "Intercept, inspect and test web applications for injection, broken access control and misconfiguration.",
+      "status": "published",
+      "sort_order": 3
+    },
+    {
+      "id": "cat-pentest-reconnaissance-osint",
+      "slug": "reconnaissance-osint",
+      "name": "Reconnaissance & OSINT",
+      "description": "Discover assets, subdomains, DNS records and publicly exposed information during an authorized security assessment. Includes passive reconnaissance and controlled web discovery.",
+      "status": "published",
+      "sort_order": 4
+    },
+    {
+      "id": "cat-pentest-mobile-app-security",
+      "slug": "mobile-app-security",
+      "name": "Mobile App Security",
+      "description": "Inspect Android and iOS applications for insecure storage, exposed secrets, weak configuration and runtime security issues.",
+      "status": "published",
+      "sort_order": 5
+    },
+    {
+      "id": "cat-pentest-source-code-secret-scanning",
+      "slug": "source-code-secret-scanning",
+      "name": "Source Code & Secret Scanning",
+      "description": "Find insecure code patterns, vulnerable dependencies and accidentally committed credentials before they reach production.",
+      "status": "published",
+      "sort_order": 6
+    },
+    {
+      "id": "cat-pentest-password-auditing",
+      "slug": "password-auditing",
+      "name": "Password Auditing",
+      "description": "Audit password strength on your own systems and recovery files — measure cracking resistance before attackers do.",
+      "status": "published",
+      "sort_order": 7
+    },
+    {
+      "id": "cat-pentest-api-security-testing",
+      "slug": "api-security-testing",
+      "name": "API Security Testing",
+      "description": "Tools for testing REST and other APIs, validating schemas, fuzzing endpoints and finding authorization or input-handling weaknesses in APIs you own or are authorized to assess.",
+      "status": "published",
+      "sort_order": 8
+    },
+    {
+      "id": "cat-pentest-network-scanning",
+      "slug": "network-scanning",
+      "name": "Network Scanning",
+      "description": "Map networks, discover hosts and enumerate open ports and services — the first step of any authorized assessment.",
+      "status": "published",
+      "sort_order": 9
+    },
+    {
+      "id": "cat-pentest-exploitation-frameworks",
+      "slug": "exploitation-frameworks",
+      "name": "Exploitation Frameworks",
+      "description": "Modular platforms for authorized exploitation and post-exploitation in lab and client engagements.",
+      "status": "published",
+      "sort_order": 10
+    },
+    {
+      "id": "cat-pentest-vulnerability-scanning",
+      "slug": "vulnerability-scanning",
+      "name": "Vulnerability Scanning",
+      "description": "Detect known CVEs, misconfigurations and outdated software across hosts and web servers.",
+      "status": "published",
+      "sort_order": 11
+    },
+    {
+      "id": "cat-pentest-cloud-container-security",
+      "slug": "cloud-container-security",
+      "name": "Cloud & Container Security",
+      "description": "Audit cloud configurations, container images and infrastructure-as-code for excessive permissions, exposed services and known vulnerabilities.",
+      "status": "published",
+      "sort_order": 12
+    }
+  ],
+  "pentest": [
+    {
+      "id": "pentest-aircrack-ng",
+      "slug": "aircrack-ng",
+      "name": "Aircrack-ng",
+      "summary": "Wi-Fi security auditing for networks you own: capture handshakes and test encryption strength. Free.",
+      "overview": "<p>Aircrack-ng is the standard suite for auditing Wi-Fi security on networks you own or are authorized to test. Capture a WPA handshake from your own access point, then test offline whether the passphrase resists dictionary attack — the honest way to answer if your wireless password is actually strong.</p>\n<p>The suite covers the full workflow: put the card in monitor mode, discover networks, capture handshakes, crack or verify them, and audit WPS and enterprise setups. Practice entirely on your own lab router; radiating attacks at neighbors' networks is illegal in most places regardless of intent.</p>",
+      "key_features": "<ul><li>Full workflow: monitor, capture, crack, verify</li><li>WPA/WPA2 handshake capture and offline testing</li><li>WPS and enterprise assessment tools</li><li>Packet injection and replay utilities</li><li>Works with common USB adapters in monitor mode</li><li>Free and open source (GPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali (needs a monitor-mode capable adapter)\n\nsudo apt install aircrack-ng\n\n\n\n# Monitor mode on your lab adapter\n\nsudo airmon-ng start wlan0\n\n\n\n## Capture a handshake from YOUR access point\n\nsudo airodump-ng --bssid AA:BB:CC:DD:EE:FF -c 6 -w lab wlan0mon\n\n\n\n# Test the capture against a wordlist (offline, your own network)\n\naircrack-ng -w words.txt lab-01.cap\n\n</code></pre>",
+      "use_case": "<p>Your new office runs WPA2 with a short shared key taped to the wall. With approval, capture your own handshake in the lab and run it against a wordlist: it falls in minutes. The report justifies unique per-device credentials and a guest network before move-in day.</p>",
+      "faqs": "<h3 id=\"is-aircrack-ng-free\">Is Aircrack-ng free?</h3>\n<p>Yes. The whole suite is free and open source.</p>",
+      "category_id": "cat-pentest-wireless-testing",
+      "category_slug": "wireless-testing",
+      "category_name": "Wireless Testing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://www.aircrack-ng.org/",
+      "github_url": "https://github.com/aircrack-ng/aircrack-ng",
+      "docs_url": "https://www.aircrack-ng.org/documentation.html",
+      "logo_url": [
+        "https://github.com/aircrack-ng.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 0,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-autopsy",
+      "slug": "autopsy",
+      "name": "Autopsy",
+      "summary": "Investigate disk images and digital evidence with a graphical forensic platform.",
+      "overview": "<p>Autopsy is a digital-forensics platform built on The Sleuth Kit. It helps investigators examine disk images, file systems and artifacts using a guided interface. Preserve chain of custody and use evidence copies rather than modifying original media.</p>",
+      "key_features": "<p>Graphical case workflow; disk-image analysis; file and artifact review; extensible modules.</p>",
+      "install_guide": "<p>Official downloads and documentation: https://www.autopsy.com/download/</p>",
+      "use_case": "<p>Create a case from a lab disk image, document relevant artifacts and export findings while preserving the original evidence.</p>",
+      "faqs": "<p>Is Autopsy only for cybercrime investigations? No. It is also used for incident response, internal investigations and forensic training.</p>",
+      "category_id": "cat-pentest-traffic-analysis-forensics",
+      "category_slug": "traffic-analysis-forensics",
+      "category_name": "Traffic Analysis & Forensics",
+      "pricing": "free",
+      "access_types": [
+        "desktop-app"
+      ],
+      "official_url": "https://www.autopsy.com/",
+      "github_url": "https://github.com/sleuthkit/autopsy",
+      "docs_url": "https://sleuthkit.org/autopsy/docs/",
+      "logo_url": [
+        "https://github.com/sleuthkit.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 1,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-bloodhound-community-edition",
+      "slug": "bloodhound-community-edition",
+      "name": "BloodHound Community Edition",
+      "summary": "Visualize identity relationships and privilege paths in supported directory environments.",
+      "overview": "<p>BloodHound Community Edition helps defenders and authorized testers analyze relationships in Active Directory and supported identity environments to understand how permissions and group memberships can create risky paths. Collection and analysis must be approved, and exported identity data should be treated as sensitive.</p>",
+      "key_features": "<p>Relationship graphing; path analysis; identity and privilege review; investigation queries.</p>",
+      "install_guide": "<p>Official documentation and installation: https://bloodhound.specterops.io/</p>",
+      "use_case": "<p>Analyze a lab domain or approved directory snapshot to identify excessive privileges and prioritize least-privilege remediation.</p>",
+      "faqs": "<p>Does a displayed path guarantee compromise? No. It indicates a relationship to validate against actual permissions and environmental controls.</p>",
+      "category_id": "cat-pentest-active-directory-internal-network",
+      "category_slug": "active-directory-internal-network",
+      "category_name": "Active Directory & Internal Network",
+      "pricing": "freemium",
+      "access_types": [
+        "web",
+        "cli"
+      ],
+      "official_url": "https://bloodhound.specterops.io/",
+      "github_url": "https://github.com/SpecterOps/BloodHound",
+      "docs_url": "https://bloodhound.specterops.io/",
+      "logo_url": [
+        "https://github.com/SpecterOps.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 2,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-burp-suite",
+      "slug": "burp-suite",
+      "name": "Burp Suite",
+      "summary": "The standard web app testing proxy: intercept, inspect and modify traffic for apps you are authorized to test. Freemium.",
+      "overview": "<p>Burp Suite is the industry-standard platform for web application security testing. Route your browser through its proxy on an application you are authorized to assess and every request becomes inspectable, repeatable and modifiable: replay login flows, fuzz parameters with Intruder, and scan passively as you click through the app.</p>\n<p>The free Community edition covers the proxy, Repeater and Intruder (throttled) — enough to learn real methodology. Burp Suite Professional adds the active scanner, full-speed Intruder and project files for client work. Learn on free, pay when client engagements demand the speed.</p>",
+      "key_features": "<ul><li>Intercepting proxy with full request/response editing</li><li>Repeater for manual request tweaking and replay</li><li>Intruder for fuzzing and parameter brute force</li><li>Passive scanning while you browse normally</li><li>Extender API with a large extension marketplace (BApp Store)</li><li>Professional tier adds active scanning and full-speed attacks</li></ul>",
+      "install_guide": "<p>No install needed for first look — download the Community edition below for your OS.</p>\n<ol><li>Install Burp Suite Community and launch it with a temporary project.</li><li>Open its built-in browser and visit your authorized test app (for example OWASP Juice Shop running locally).</li><li>Turn Intercept on, submit the login form, and study the raw request.</li><li>Send it to Repeater (Ctrl+R) and modify one parameter at a time.</li></ol>",
+      "use_case": "<p>A client asks you to test their staging store before launch. Proxy your browser through Burp, log in, and click through checkout while Repeater collects interesting requests. Fuzz the discount-code parameter with Intruder (throttled Community rate is fine for one field), find that stacked codes apply twice, and report it with the exact replayed request as proof.</p>",
+      "faqs": "<h3 id=\"is-burp-suite-free\">Is Burp Suite free?</h3>\n<p>Burp Suite Community is free. Burp Suite Professional is paid and adds the active scanner, full-speed Intruder and collaboration features.</p>",
+      "category_id": "cat-pentest-web-testing",
+      "category_slug": "web-testing",
+      "category_name": "Web App Testing",
+      "pricing": "freemium",
+      "access_types": [
+        "desktop-app"
+      ],
+      "official_url": "https://portswigger.net/burp",
+      "github_url": "",
+      "docs_url": "https://portswigger.net/burp/documentation",
+      "logo_url": [
+        "https://portswigger.net/content/images/logos/portswigger-twittercardlogo.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 3,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-dnsx",
+      "slug": "dnsx",
+      "name": "dnsx",
+      "summary": "Resolve and inspect DNS records with a pipeline-friendly security CLI.",
+      "overview": "<p>dnsx is a DNS toolkit from ProjectDiscovery that supports resolving hostnames and querying record types in reconnaissance pipelines. It can help validate candidate subdomains and enrich an asset inventory with DNS information.</p>",
+      "key_features": "<p>DNS resolution; record-type queries; list input; machine-readable output.</p>",
+      "install_guide": "<p>Official install and usage documentation: https://docs.projectdiscovery.io/tools/dnsx/overview</p>",
+      "use_case": "<p>Resolve a reviewed list of in-scope subdomains and record which names map to addresses before service discovery.</p>",
+      "faqs": "<p>Does DNS resolution prove a service is vulnerable? No. It only provides DNS evidence; assess services separately.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/projectdiscovery/dnsx",
+      "github_url": "https://github.com/projectdiscovery/dnsx",
+      "docs_url": "https://docs.projectdiscovery.io/tools/dnsx/overview",
+      "logo_url": [
+        "https://github.com/projectdiscovery.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 4,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-ffuf",
+      "slug": "ffuf",
+      "name": "ffuf",
+      "summary": "Discover web content and fuzz request inputs in authorized test environments.",
+      "overview": "<p>ffuf is a fast web fuzzer used for content discovery, virtual-host discovery and parameter testing. It is flexible and powerful, so rate limits, wordlists and scope should be configured deliberately to avoid overwhelming services.</p>",
+      "key_features": "<p>Content and path discovery; virtual-host fuzzing; parameter fuzzing; filters and matchers; prebuilt releases.</p>",
+      "install_guide": "<p>Official install and usage guide: https://github.com/ffuf/ffuf#installation</p>",
+      "use_case": "<p>Use a small wordlist against a local lab or approved staging host to identify unlinked routes, then manually assess discovered endpoints.</p>",
+      "faqs": "<p>Is ffuf a vulnerability scanner by itself? It finds responses worth investigating; response differences still need interpretation and verification.</p>",
+      "category_id": "cat-pentest-web-testing",
+      "category_slug": "web-testing",
+      "category_name": "Web App Testing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/ffuf/ffuf",
+      "github_url": "https://github.com/ffuf/ffuf",
+      "docs_url": "https://github.com/ffuf/ffuf/wiki",
+      "logo_url": [
+        "https://github.com/ffuf.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 5,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-frida",
+      "slug": "frida",
+      "name": "Frida",
+      "summary": "Instrument applications at runtime for authorized dynamic analysis and debugging.",
+      "overview": "<p>Frida is a dynamic instrumentation toolkit that lets researchers observe and interact with running processes. It is widely used for application debugging, mobile security research and controlled runtime analysis. Use it only on apps and devices you own or are authorized to test.</p>",
+      "key_features": "<p>Runtime instrumentation; scripting; multiple operating systems; language bindings; mobile and desktop workflows.</p>",
+      "install_guide": "<p>Official downloads and getting started: https://frida.re/docs/</p>",
+      "use_case": "<p>Use Frida in a test device to observe how your own app handles a sensitive function or stores data during a controlled test.</p>",
+      "faqs": "<p>Is Frida an automated vulnerability scanner? No. It is an instrumentation framework that supports manual analysis and custom tooling.</p>",
+      "category_id": "cat-pentest-mobile-app-security",
+      "category_slug": "mobile-app-security",
+      "category_name": "Mobile App Security",
+      "pricing": "free",
+      "access_types": [
+        "cli",
+        "api"
+      ],
+      "official_url": "https://frida.re/",
+      "github_url": "https://github.com/frida/frida",
+      "docs_url": "https://frida.re/docs/home/",
+      "logo_url": [
+        "https://github.com/frida.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 6,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-gitleaks",
+      "slug": "gitleaks",
+      "name": "Gitleaks",
+      "summary": "Detect secrets and credentials accidentally committed to Git repositories.",
+      "overview": "<p>Gitleaks scans repository content and history for patterns that resemble credentials, tokens and other secrets. A detection is a prompt to verify exposure and rotate any real secret immediately; removing a secret from the latest commit alone may not remove it from history.</p>",
+      "key_features": "<p>Git history scanning; configurable rules; local and CI use; machine-readable reports.</p>",
+      "install_guide": "<p>Official installation and usage: https://github.com/gitleaks/gitleaks</p>",
+      "use_case": "<p>Add Gitleaks to your own project’s pre-commit or CI workflow to catch accidental secret commits before release.</p>",
+      "faqs": "<p>Does deleting a leaked token fix the incident? Not by itself. Revoke or rotate the credential, investigate use and then clean repository history if appropriate.</p>",
+      "category_id": "cat-pentest-source-code-secret-scanning",
+      "category_slug": "source-code-secret-scanning",
+      "category_name": "Source Code & Secret Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/gitleaks/gitleaks",
+      "github_url": "https://github.com/gitleaks/gitleaks",
+      "docs_url": "https://github.com/gitleaks/gitleaks#readme",
+      "logo_url": [
+        "https://github.com/gitleaks.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 7,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-hashcat",
+      "slug": "hashcat",
+      "name": "Hashcat",
+      "summary": "The fastest password recovery and auditing tool: measure hash-cracking resistance on your own hashes. Free, open source.",
+      "overview": "<p>Hashcat is the reference password recovery tool, using your GPU to test billions of candidate passwords per second against hashes you own — audit dumps, forgotten archives, or test accounts. Security teams use it to answer one question honestly: how long would our users' passwords survive?</p>\n<p>It supports hundreds of hash modes, rule-based mutations, mask attacks and combinator strategies that mirror real attacker tradecraft. The workflow is always the same: extract hashes from systems you administer, crack them in your lab, and turn every cracked password into policy — longer minimums, breached-password screening and multi-factor authentication.</p>",
+      "key_features": "<ul><li>Hundreds of hash modes: NTLM, bcrypt, WPA, Kerberos and more</li><li>GPU acceleration across NVIDIA, AMD and Intel</li><li>Dictionary, mask, combinator and rule-based strategies</li><li>Distributed cracking and session restore</li><li>Brain and markov-chain optimizations</li><li>Free and open source (MIT)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu (needs OpenCL/CUDA drivers for GPU)\n\nsudo apt install hashcat\n\n\n\n# Dictionary attack on your own NTLM dump\n\n hashcat -m 1000 hashes.txt rockyou.txt\n\n\n\n## Show already-cracked results\n\n hashcat -m 1000 hashes.txt rockyou.txt --show\n\n\n\n## Mask attack: 8-char lowercase + digits\n\nhashcat -m 1000 hashes.txt -a 3 ?l?l?l?l?l?l?l?l?d\n\n</code></pre>",
+      "use_case": "<p>After a policy review, extract the NTLM hashes from your own test domain controller into an isolated lab machine. Run a dictionary plus rule attack: 30% fall in an hour. That number — not an opinion — justifies the new 14-character minimum and breached-password blocklist in Monday's proposal.</p>",
+      "faqs": "<h3 id=\"is-hashcat-free\">Is Hashcat free?</h3>\n<p>Yes. It is free and open source.</p>",
+      "category_id": "cat-pentest-password-auditing",
+      "category_slug": "password-auditing",
+      "category_name": "Password Auditing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://hashcat.net/",
+      "github_url": "https://github.com/hashcat/hashcat",
+      "docs_url": "https://hashcat.net/wiki/",
+      "logo_url": [
+        "https://github.com/hashcat.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 8,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-httpx-probe",
+      "slug": "httpx-probe",
+      "name": "httpx",
+      "summary": "Probe HTTP services and identify responsive web endpoints during reconnaissance.",
+      "overview": "<p>ProjectDiscovery httpx is a command-line HTTP toolkit for probing web services and collecting response metadata. It helps turn candidate hostnames into a more useful list of live HTTP(S) endpoints for an authorized assessment.</p>",
+      "key_features": "<p>HTTP/HTTPS probing; status and title collection; technology and response metadata; stdin and JSON workflows.</p>",
+      "install_guide": "<p>Official install and usage documentation: https://docs.projectdiscovery.io/tools/httpx/overview</p>",
+      "use_case": "<p>After passive subdomain discovery, probe the in-scope host list to identify which services respond over HTTP or HTTPS.</p>",
+      "faqs": "<p>Is this the Python httpx library? No. This entry is ProjectDiscovery’s security reconnaissance CLI.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/projectdiscovery/httpx",
+      "github_url": "https://github.com/projectdiscovery/httpx",
+      "docs_url": "https://docs.projectdiscovery.io/tools/httpx/overview",
+      "logo_url": [
+        "https://github.com/projectdiscovery.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 9,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-hydra",
+      "slug": "hydra",
+      "name": "Hydra",
+      "summary": "Online login auditing against your own services: test credential strength where you are authorized. Free.",
+      "overview": "<p>THC-Hydra tests online logins — SSH, FTP, web forms, databases — against password lists, on services you own or are explicitly authorized to assess. Where Hashcat cracks stolen hashes offline, Hydra knocks on the front door, which makes it the right tool for answering: would a password-guessing attack against our login actually succeed?</p>\n<p>It is loud by design: every attempt is a real login, so rate-limit it, warn your defenders, and prefer it against staging. Pair every cracked credential with the same remediation — lockout policy, MFA, and breached-password screening at registration.</p>",
+      "key_features": "<ul><li>Dozens of protocols: SSH, FTP, HTTP(S), SMB, databases</li><li>Parallel tasks with tunable aggression</li><li>Username and password list combinators</li><li>HTTP form brute force with success/failure matching</li><li>Resume files for long assessments</li><li>Free and open source (AGPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install hydra\n\n\n\n## Audit SSH on your lab host (4 parallel tasks)\n\nhydra -l admin -P words.txt -t 4 ssh://192.168.1.10\n\n\n\n## Audit a web login form on your staging app\n\n hydra -l user@example.com -P words.txt 192.168.1.20 http-post-form \"/login:email=^USER^&amp;pass=^PASS^:Invalid credentials\"\n\n</code></pre>",
+      "use_case": "<p>Your staging environment mirrors production logins. With approval, run Hydra with a small known-bad list against the staging SSH: two service accounts fall immediately. Those accounts get rotated, MFA-enforced, and added to the deploy checklist so production never ships them.</p>",
+      "faqs": "<h3 id=\"is-hydra-free\">Is Hydra free?</h3>\n<p>Yes. It is free and open source.</p>",
+      "category_id": "cat-pentest-password-auditing",
+      "category_slug": "password-auditing",
+      "category_name": "Password Auditing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/vanhauser-thc/thc-hydra",
+      "github_url": "https://github.com/vanhauser-thc/thc-hydra",
+      "docs_url": "https://github.com/vanhauser-thc/thc-hydra#readme",
+      "logo_url": [
+        "https://github.com/vanhauser-thc.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 10,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-impacket",
+      "slug": "impacket",
+      "name": "Impacket",
+      "summary": "Use protocol-focused Python tools for network protocol testing and Windows environment assessment.",
+      "overview": "<p>Impacket is a collection of Python classes and tools for working with network protocols. Security teams use it for protocol analysis, interoperability testing and authorized Windows-domain assessments; some utilities are highly intrusive, so use a dedicated lab or an explicitly scoped engagement.</p>",
+      "key_features": "<p>Protocol implementations; reusable Python libraries; example utilities; SMB and Windows-network workflows.</p>",
+      "install_guide": "<p>Official source and usage notes: https://github.com/fortra/impacket</p>",
+      "use_case": "<p>In an isolated Windows lab, validate protocol behavior and document the minimum evidence needed for an authorized assessment.</p>",
+      "faqs": "<p>Is Impacket a single scanner? No. It is a library and a collection of protocol-oriented tools.</p>",
+      "category_id": "cat-pentest-active-directory-internal-network",
+      "category_slug": "active-directory-internal-network",
+      "category_name": "Active Directory & Internal Network",
+      "pricing": "free",
+      "access_types": [
+        "cli",
+        "api"
+      ],
+      "official_url": "https://github.com/fortra/impacket",
+      "github_url": "https://github.com/fortra/impacket",
+      "docs_url": "https://github.com/fortra/impacket#readme",
+      "logo_url": [
+        "https://github.com/fortra.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 11,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-jadx",
+      "slug": "jadx",
+      "name": "JADX",
+      "summary": "Decompile Android DEX and APK files into readable Java-like source for inspection.",
+      "overview": "<p>JADX is a decompiler for Android DEX and APK files. It helps analysts navigate application code, inspect resources and understand implementation details, but decompiled output may be incomplete or misleading when obfuscation is present.</p>",
+      "key_features": "<p>DEX/APK decompilation; GUI and CLI; resource decoding; code navigation and search.</p>",
+      "install_guide": "<p>Official releases and usage: https://github.com/skylot/jadx</p>",
+      "use_case": "<p>Inspect your own APK for hard-coded endpoints, insecure logic and exposed configuration, then confirm findings against runtime behavior.</p>",
+      "faqs": "<p>Is decompiled code identical to the original source? No. Names and structure may be lost through compilation, optimization or obfuscation.</p>",
+      "category_id": "cat-pentest-mobile-app-security",
+      "category_slug": "mobile-app-security",
+      "category_name": "Mobile App Security",
+      "pricing": "free",
+      "access_types": [
+        "desktop-app",
+        "cli"
+      ],
+      "official_url": "https://github.com/skylot/jadx",
+      "github_url": "https://github.com/skylot/jadx",
+      "docs_url": "https://github.com/skylot/jadx/wiki",
+      "logo_url": [
+        "https://github.com/skylot.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 12,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-john-the-ripper",
+      "slug": "john-the-ripper",
+      "name": "John the Ripper",
+      "summary": "Classic password auditing suite, best at slow hashes and encrypted files you own. Free, open source.",
+      "overview": "<p>John the Ripper is the veteran password auditor, strongest where Hashcat is weakest: slow salted hashes, encrypted archives, documents and SSH keys you own and need assessed. Its \"single crack\" mode builds candidates from the account names themselves — exactly how lazy passwords are really chosen — and its wordlist-plus-rules engine squeezes maximum signal from minimum effort.</p>\n<p>Use John for encrypted files and CPU-friendly audits, Hashcat when you have GPUs and fast hashes. Together they cover essentially every password audit a defender will ever run on their own systems.</p>",
+      "key_features": "<ul><li>Superb slow-hash and encrypted-file support</li><li>Single-crack mode from account metadata</li><li>Huge format library: archives, docs, keys, databases</li><li>Custom rules and incremental modes</li><li>Jumbo build adds community formats and MPI</li><li>Free and open source (GPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install john\n\n\n\n## Audit your own shadow-style file\n\njohn --wordlist=/usr/share/wordlists/rockyou.txt.gz hashes.txt\n\n\n\n# Show cracked passwords\n\njohn --show hashes.txt\n\n\n\n# Crack an encrypted zip you own (convert first)\n\nzip2john protected.zip &gt; zip.hash\n\njohn --wordlist=words.txt zip.hash\n\n</code></pre>",
+      "use_case": "<p>A departing contractor returns a laptop with an encrypted archive nobody can open. With written approval, convert it with zip2john and run a wordlist-plus-rules pass in your lab. The archive opens on a seasonal password — which becomes exhibit A for the new generated-password policy.</p>",
+      "faqs": "<h3 id=\"john-or-hashcat\">John or Hashcat?</h3>\n<p>John for encrypted files and slow hashes on CPU; Hashcat for fast hashes on GPU. Auditors keep both.</p>",
+      "category_id": "cat-pentest-password-auditing",
+      "category_slug": "password-auditing",
+      "category_name": "Password Auditing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://www.openwall.com/john/",
+      "github_url": "https://github.com/openwall/john",
+      "docs_url": "https://www.openwall.com/john/doc/",
+      "logo_url": [
+        "https://github.com/openwall.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 13,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-katana",
+      "slug": "katana",
+      "name": "Katana",
+      "summary": "Crawl web applications to discover URLs and endpoints for authorized testing.",
+      "overview": "<p>Katana is a configurable web crawler from ProjectDiscovery. It supports standard and headless crawling modes and can help map routes, links and endpoints that should be reviewed during an application security assessment.</p>",
+      "key_features": "<p>Web crawling; JavaScript-aware options; scope controls; JSON output; pipeline support.</p>",
+      "install_guide": "<p>Official installation and usage documentation: https://docs.projectdiscovery.io/tools/katana/install</p>",
+      "use_case": "<p>Crawl a staging application within an approved scope to build a route inventory for manual review and controlled testing.</p>",
+      "faqs": "<p>Should every discovered URL be tested automatically? No. Review scope and avoid state-changing or destructive requests without approval.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/projectdiscovery/katana",
+      "github_url": "https://github.com/projectdiscovery/katana",
+      "docs_url": "https://docs.projectdiscovery.io/tools/katana",
+      "logo_url": [
+        "https://github.com/projectdiscovery.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 14,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-kiterunner",
+      "slug": "kiterunner",
+      "name": "Kiterunner",
+      "summary": "Discover API routes using route-focused content discovery techniques.",
+      "overview": "<p>Kiterunner is an API discovery tool designed to identify routes and endpoints that conventional web content lists may miss. Use it in a controlled environment with explicit authorization, conservative request rates and an approved target list.</p>",
+      "key_features": "<p>API-focused route discovery; route wordlists; CLI workflow; useful alongside proxy-based manual testing.</p>",
+      "install_guide": "<p>Official project and releases: https://github.com/assetnote/kiterunner</p>",
+      "use_case": "<p>Test an owned staging API to find undocumented routes, then verify access controls manually using test accounts.</p>",
+      "faqs": "<p>Does discovering a route confirm an API vulnerability? No. It identifies endpoints to inspect for authentication, authorization and input-validation issues.</p>",
+      "category_id": "cat-pentest-api-security-testing",
+      "category_slug": "api-security-testing",
+      "category_name": "API Security Testing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/assetnote/kiterunner",
+      "github_url": "https://github.com/assetnote/kiterunner",
+      "docs_url": "https://github.com/assetnote/kiterunner#readme",
+      "logo_url": [
+        "https://github.com/assetnote.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 15,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-masscan",
+      "slug": "masscan",
+      "name": "Masscan",
+      "summary": "The fastest internet-scale port scanner: sweep entire ranges in minutes on your authorized targets. Free, open source.",
+      "overview": "<p>Masscan is built for one job — scanning very large networks very fast. Where Nmap carefully fingerprints each host, Masscan blasts SYN packets asynchronously and can cover the entire public IPv4 space in minutes from a fast connection. Authorized teams use it to inventory their own external footprint: every exposed port across every IP they own, refreshed regularly.</p>\n<p>Speed has a price: Masscan fingerprints less per host than Nmap, so the standard workflow is Masscan to find what answers, then Nmap to examine the interesting hosts closely. Never point it at ranges you do not own — internet-wide scanning without authorization will get your address blocklisted and possibly your account suspended.</p>",
+      "key_features": "<ul><li>Internet-scale speed: millions of packets per second</li><li>Async stateless design with minimal memory use</li><li>Banner grabbing for service identification</li><li>Output compatible with Nmap XML tooling</li><li>Configurable transmit rate to stay inside policy</li><li>Free and open source (AGPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Build from source (Ubuntu/Debian)\n\nsudo apt install git gcc make libpcap-dev\n\n git clone https://github.com/robertdavidgraham/masscan.git\n\ncd masscan &amp;&amp; make\n\n\n\n## Scan your own /24 for web ports (set YOUR rate)\n\nsudo ./bin/masscan 203.0.113.0/24 -p80,443 --rate=1000\n\n\n\n## Banner grab on the hits\n\nsudo ./bin/masscan 203.0.113.0/24 -p80,443 --rate=1000 --banners\n\n</code></pre>",
+      "use_case": "<p>Your company owns a /24 it has not audited in years. With written authorization, run Masscan across it for common ports at a modest rate. Every unexpected open port — a forgotten camera, a dev database, a printer admin page — goes into the remediation queue, and the full sweep takes minutes instead of the weekend Nmap would need.</p>",
+      "faqs": "<h3 id=\"masscan-or-nmap\">Masscan or Nmap?</h3>\n<p>Masscan finds what answers across huge ranges fast; Nmap examines each host deeply. Use Masscan for discovery, Nmap for detail.</p>",
+      "category_id": "cat-pentest-network-scanning",
+      "category_slug": "network-scanning",
+      "category_name": "Network Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/robertdavidgraham/masscan",
+      "github_url": "https://github.com/robertdavidgraham/masscan",
+      "docs_url": "https://github.com/robertdavidgraham/masscan#readme",
+      "logo_url": [
+        "https://github.com/robertdavidgraham.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 16,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-metasploit",
+      "slug": "metasploit",
+      "name": "Metasploit",
+      "summary": "Modular exploitation framework for authorized engagements and labs. Framework free; Pro paid.",
+      "overview": "<p>The Metasploit Framework is the world's most used penetration testing platform: thousands of vetted exploit, auxiliary, payload and post-exploitation modules behind one consistent console. In authorized engagements it turns a confirmed vulnerability into demonstrated impact — a shell, a screenshot, a dumped hash proving the finding is real rather than theoretical.</p>\n<p>The Framework itself is free and open source; Metasploit Pro adds automation, reporting and team workflows for professional shops. Learn the Framework in an isolated lab (Metasploitable is built for exactly this), earn the methodology, and only ever point modules at targets inside your written scope.</p>",
+      "key_features": "<ul><li>Thousands of vetted exploit and auxiliary modules</li><li>Meterpreter post-exploitation payloads</li><li>Consistent console, database and reporting workflow</li><li>Payload generation (msfvenom) for authorized testing</li><li>Lab-ready targets like Metasploitable and OWASP projects</li><li>Framework free and open source; Pro adds team automation</li></ul>",
+      "install_guide": "<pre><code>\n# Kali Linux (preinstalled) — or install Omnibus nightly\n\ncurl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb &gt; msfinstall &amp;&amp; chmod 755 msfinstall &amp;&amp; ./msfinstall\n\n\n\n# Console against your LAB target only\n\nmsfconsole\n\n\n\n## Example flow (Metasploitable lab)\n\nuse exploit/unix/ftp/vsftpd_234_backdoor\n\nset RHOSTS 192.168.1.20\n\ncheck\n\nrun\n\n</code></pre>",
+      "use_case": "<p>In your isolated lab, boot Metasploitable and confirm the vsftpd backdoor with check before running anything. The resulting shell lets you demonstrate, step by step, how an unpatched 2011 service becomes full compromise — the exact narrative that turns a vulnerability scan printout into a budget for patching.</p>",
+      "faqs": "<h3 id=\"is-metasploit-free\">Is Metasploit free?</h3>\n<p>The Framework is free and open source. Metasploit Pro (automation, reporting, team features) is paid.</p>",
+      "category_id": "cat-pentest-exploitation-frameworks",
+      "category_slug": "exploitation-frameworks",
+      "category_name": "Exploitation Frameworks",
+      "pricing": "freemium",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://www.metasploit.com/",
+      "github_url": "https://github.com/rapid7/metasploit-framework",
+      "docs_url": "https://docs.metasploit.com/",
+      "logo_url": [
+        "https://github.com/rapid7.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 17,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-mobsf",
+      "slug": "mobsf",
+      "name": "Mobile Security Framework (MobSF)",
+      "summary": "Analyze Android and iOS apps with static and dynamic mobile security testing.",
+      "overview": "<p>MobSF is an automated mobile application security assessment framework for inspecting application packages and, in supported environments, observing runtime behavior. It helps teams review permissions, insecure configuration, embedded secrets and other mobile-app risk indicators.</p>",
+      "key_features": "<p>Static analysis; supported dynamic analysis workflows; report generation; Android and iOS assessment support.</p>",
+      "install_guide": "<p>Official installation and documentation: https://mobsf.github.io/docs/</p>",
+      "use_case": "<p>Analyze an application build you own or have permission to assess, then verify each important finding against the source or runtime behavior.</p>",
+      "faqs": "<p>Can MobSF guarantee an app is secure? No. Automated results need manual review and platform-specific testing.</p>",
+      "category_id": "cat-pentest-mobile-app-security",
+      "category_slug": "mobile-app-security",
+      "category_name": "Mobile App Security",
+      "pricing": "free",
+      "access_types": [
+        "web",
+        "cli"
+      ],
+      "official_url": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+      "github_url": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+      "docs_url": "https://mobsf.github.io/docs/",
+      "logo_url": [
+        "https://github.com/MobSF.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 18,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-nikto",
+      "slug": "nikto",
+      "name": "Nikto",
+      "summary": "Fast web-server vulnerability scanner: outdated software, misconfigurations and dangerous files on your hosts. Free.",
+      "overview": "<p>Nikto scans web servers for thousands of known issues: outdated versions with CVEs, default files, misconfigurations and potentially dangerous endpoints. Point it at your own hosts and within minutes you hold a prioritized list of what to patch, remove or restrict.</p>\n<p>It is deliberately noisy and fast rather than subtle — a first-pass hygiene check, not a stealth tool. Run it against every public web server you own on a schedule; pair anything it flags with manual verification, since version-based findings need confirming against your actual build.</p>",
+      "key_features": "<ul><li>Thousands of checks for CVEs, defaults and misconfigurations</li><li>Reports with CVE references and remediation hints</li><li>HTML, XML and CSV output for ticketing</li><li>SSL, authentication and proxy support</li><li>Tuning flags to match your stack and cut noise</li><li>Free and open source (GPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install nikto\n\n\n\n## Basic scan of your own host\n\nnikto -h https://staging.example.com\n\n\n\n## Save HTML report for the ticket\n\nnikto -h https://staging.example.com -o nikto-report.html\n\n\n\n## Tune out false positives for your stack\n\nnikto -h https://staging.example.com -Tuning 1234567890abc\n\n</code></pre>",
+      "use_case": "<p>Before a release, run Nikto against your staging server. It flags an outdated admin panel and a directory listing you forgot. Both become pre-release tickets, verified fixed with a re-scan — two findings that never reach production.</p>",
+      "faqs": "<h3 id=\"is-nikto-free\">Is Nikto free?</h3>\n<p>Yes. It is free and open source.</p>",
+      "category_id": "cat-pentest-vulnerability-scanning",
+      "category_slug": "vulnerability-scanning",
+      "category_name": "Vulnerability Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://cirt.net/Nikto2",
+      "github_url": "https://github.com/sullo/nikto",
+      "docs_url": "https://github.com/sullo/nikto#readme",
+      "logo_url": [
+        "https://github.com/sullo.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 19,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-nmap",
+      "slug": "nmap",
+      "name": "Nmap",
+      "summary": "The standard network scanner: discover hosts, ports and services on networks you are authorized to test. Free, open source.",
+      "overview": "<p>Nmap (Network Mapper) is the reference tool for network discovery and security auditing. Point it at a host or range you own or are authorized to assess and it reports which hosts are up, which ports are open, what services answer, and — with OS detection — what is likely running underneath. Almost every authorized assessment starts here, because you cannot secure what you have not mapped.</p>\n<p>Defenders run it on their own infrastructure to find forgotten exposures before attackers do: the unpatched camera, the database port answering the whole internet, the test server nobody took down. Every probe Nmap sends goes to a target you named, so keep scans inside your authorized scope and rate-limit wide ranges.</p>",
+      "key_features": "<ul><li>Host discovery, port scanning and service version detection</li><li>OS fingerprinting and traceroute mapping</li><li>NSE scripting engine with hundreds of audit scripts</li><li>Output in XML, JSON-friendly and grepable formats</li><li>Stealth, timing and decoy options for authorized evasion testing</li><li>Free and open source — the industry baseline scanner</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install nmap\n\n\n\n## macOS\n\nbrew install nmap\n\n\n\n# Fast ping sweep of your lab subnet\n\nnmap -sn 192.168.1.0/24\n\n\n\n# Service and version detection on one host\n\nnmap -sV 192.168.1.10\n\n\n\n# OS detection plus default scripts (slower, noisier)\n\nsudo nmap -A 192.168.1.10\n\n</code></pre>",
+      "use_case": "<p>A client authorizes a black-box review of their office network. Start with a ping sweep of the provided lab range to list live hosts, then run service detection on each one. The resulting host-port-service inventory becomes the scope map for everything that follows — and any host answering that is not on the client's asset list becomes finding number one.</p>",
+      "faqs": "<h3 id=\"is-nmap-free\">Is Nmap free?</h3>\n<p>Yes. Nmap is free and open source.</p>",
+      "category_id": "cat-pentest-network-scanning",
+      "category_slug": "network-scanning",
+      "category_name": "Network Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://nmap.org/",
+      "github_url": "https://github.com/nmap/nmap",
+      "docs_url": "https://nmap.org/book/man.html",
+      "logo_url": [
+        "https://github.com/nmap.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 20,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-nuclei",
+      "slug": "nuclei",
+      "name": "Nuclei",
+      "summary": "Run template-based security checks against authorized hosts, applications and APIs.",
+      "overview": "<p>Nuclei is a configurable vulnerability scanner from ProjectDiscovery that uses templates to check for known exposures and security conditions. Results require triage and confirmation; templates and target scope should be reviewed before running scans.</p>",
+      "key_features": "<p>Template-based checks; severity filtering; JSONL output; custom templates; CI-friendly execution.</p>",
+      "install_guide": "<p>Official install guide: https://docs.projectdiscovery.io/tools/nuclei/install</p>",
+      "use_case": "<p>Run an approved, reviewed template set against staging assets, then manually validate high-impact findings before opening remediation tickets.</p>",
+      "faqs": "<p>Does a Nuclei alert always mean a confirmed vulnerability? No. Verify the response and affected version or behavior before reporting.</p>",
+      "category_id": "cat-pentest-vulnerability-scanning",
+      "category_slug": "vulnerability-scanning",
+      "category_name": "Vulnerability Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://projectdiscovery.io/nuclei",
+      "github_url": "https://github.com/projectdiscovery/nuclei",
+      "docs_url": "https://docs.projectdiscovery.io/tools/nuclei",
+      "logo_url": [
+        "https://github.com/projectdiscovery.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 21,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-owasp-amass",
+      "slug": "owasp-amass",
+      "name": "OWASP Amass",
+      "summary": "Map an organization’s external attack surface using asset discovery and reconnaissance.",
+      "overview": "<p>OWASP Amass helps security teams map domains, subdomains and related assets through OSINT and network-mapping techniques. Use it to build an evidence-based inventory of assets that belong to an organization before an authorized assessment.</p>",
+      "key_features": "<p>Asset discovery; DNS and domain intelligence; attack-surface mapping; structured asset data.</p>",
+      "install_guide": "<p>Official installation and platform-specific setup: https://owasp-amass.github.io/docs/</p>",
+      "use_case": "<p>A security team uses Amass to compare the approved asset inventory with externally discoverable hosts and investigate unexpected exposure.</p>",
+      "faqs": "<p>Is Amass free? The project is open source. Use it only for domains and assets you are authorized to assess.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://owasp.org/projects/amass",
+      "github_url": "https://github.com/owasp-amass/amass",
+      "docs_url": "https://owasp-amass.github.io/docs/",
+      "logo_url": [
+        "https://github.com/owasp-amass.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 22,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-owasp-zap",
+      "slug": "owasp-zap",
+      "name": "OWASP ZAP",
+      "summary": "Free, open-source web app scanner and proxy from OWASP. Automate baseline scans of your own apps. Free forever.",
+      "overview": "<p>OWASP ZAP (Zed Attack Proxy) is the free, community flagship for web application testing. Like Burp it proxies your browser traffic for manual inspection, and unlike Burp Community it ships a full active scanner, spider, fuzzer and a powerful REST API for CI pipelines — free forever, maintained by OWASP contributors and sponsors.</p>\n<p>Teams wire ZAP into deployment pipelines so every release of their own app gets an automated baseline scan: spider the app, run the active scan against staging, fail the build on high-severity alerts. Beginners start with the automated scan button; professionals drive everything through the API.</p>",
+      "key_features": "<ul><li>Intercepting proxy plus full active vulnerability scanner</li><li>Traditional and AJAX spiders for coverage</li><li>Fuzzer, forced browse and custom scan policies</li><li>REST API and automation framework for CI pipelines</li><li>Add-on marketplace with community scan rules</li><li>Free and open source forever (OWASP flagship)</li></ul>",
+      "install_guide": "<p>No install needed for first look — download ZAP below for your OS.</p>\n<ol><li>Launch ZAP and run the Automated Scan against your local test app (OWASP Juice Shop on localhost).</li><li>Read the Alerts tree: red and orange items first.</li><li>Open one alert, read its description and solution, and verify it manually in the proxied browser.</li><li>Re-scan after fixing to confirm the alert clears.</li></ol>",
+      "use_case": "<p>Your team ships a new customer portal every sprint. Add a ZAP baseline scan to the staging pipeline: spider, active scan, export the alert report. When the sprint adds a forgotten debug endpoint, ZAP flags it before release — the fix lands the same day instead of becoming an incident.</p>",
+      "faqs": "<h3 id=\"is-zap-really-free\">Is ZAP really free?</h3>\n<p>Yes — every feature, including the active scanner and API, is free and open source.</p>",
+      "category_id": "cat-pentest-web-testing",
+      "category_slug": "web-testing",
+      "category_name": "Web App Testing",
+      "pricing": "free",
+      "access_types": [
+        "desktop-app",
+        "api"
+      ],
+      "official_url": "https://www.zaproxy.org/",
+      "github_url": "https://github.com/zaproxy/zaproxy",
+      "docs_url": "https://www.zaproxy.org/docs/",
+      "logo_url": [
+        "https://github.com/zaproxy.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 23,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-prowler",
+      "slug": "prowler",
+      "name": "Prowler",
+      "summary": "Audit cloud security posture across supported providers using repeatable checks.",
+      "overview": "<p>Prowler is a cloud security assessment tool that checks supported cloud environments against security best practices and frameworks. It can help identify risky configurations and produce evidence for remediation, provided access is scoped appropriately.</p>",
+      "key_features": "<p>Cloud posture checks; supported cloud providers; report outputs; CI and scheduled assessment workflows.</p>",
+      "install_guide": "<p>Official installation and user guide: https://docs.prowler.com/</p>",
+      "use_case": "<p>Run a read-focused assessment against your own cloud account and prioritize public exposure, identity and logging findings.</p>",
+      "faqs": "<p>Does Prowler need cloud credentials? Many assessments require permissions to read configuration. Use least-privilege, review the official guide and protect generated reports.</p>",
+      "category_id": "cat-pentest-cloud-container-security",
+      "category_slug": "cloud-container-security",
+      "category_name": "Cloud & Container Security",
+      "pricing": "freemium",
+      "access_types": [
+        "cli",
+        "web"
+      ],
+      "official_url": "https://prowler.com/",
+      "github_url": "https://github.com/prowler-cloud/prowler",
+      "docs_url": "https://docs.prowler.com/",
+      "logo_url": [
+        "https://github.com/prowler-cloud.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 24,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-schemathesis",
+      "slug": "schemathesis",
+      "name": "Schemathesis",
+      "summary": "Fuzz-test API behavior from OpenAPI or GraphQL schemas.",
+      "overview": "<p>Schemathesis generates property-based API tests from an API schema and explores edge cases that ordinary example-based tests may miss. It is useful for finding contract violations and unexpected server behavior in APIs you own or are authorized to test.</p>",
+      "key_features": "<p>Schema-driven test generation; OpenAPI and GraphQL support; reproducible cases; CI integration.</p>",
+      "install_guide": "<p>Official installation and quick start: https://schemathesis.readthedocs.io/</p>",
+      "use_case": "<p>Run schema-based tests against a local or staging API and investigate reproducible failures before release.</p>",
+      "faqs": "<p>Does Schemathesis replace manual API security testing? No. It complements authorization, business-logic and abuse-case testing.</p>",
+      "category_id": "cat-pentest-api-security-testing",
+      "category_slug": "api-security-testing",
+      "category_name": "API Security Testing",
+      "pricing": "freemium",
+      "access_types": [
+        "cli",
+        "api"
+      ],
+      "official_url": "https://schemathesis.io/",
+      "github_url": "https://github.com/schemathesis/schemathesis",
+      "docs_url": "https://schemathesis.readthedocs.io/",
+      "logo_url": [
+        "https://github.com/schemathesis.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 25,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-semgrep",
+      "slug": "semgrep",
+      "name": "Semgrep",
+      "summary": "Find risky code patterns and security issues with static analysis rules.",
+      "overview": "<p>Semgrep scans source code for patterns that may indicate security bugs, unsafe APIs and policy violations. It supports developer workflows and CI checks, but findings must be reviewed in context to distinguish exploitable issues from false positives.</p>",
+      "key_features": "<p>Static analysis; customizable rules; multi-language support; CI integration; community rule collections.</p>",
+      "install_guide": "<p>Official installation and documentation: https://semgrep.dev/docs/</p>",
+      "use_case": "<p>Scan a repository you maintain before merging a change, then fix confirmed high-impact issues and add regression tests.</p>",
+      "faqs": "<p>Can static analysis prove exploitability? No. Use the finding as a lead and validate data flow, reachability and impact.</p>",
+      "category_id": "cat-pentest-source-code-secret-scanning",
+      "category_slug": "source-code-secret-scanning",
+      "category_name": "Source Code & Secret Scanning",
+      "pricing": "freemium",
+      "access_types": [
+        "cli",
+        "web"
+      ],
+      "official_url": "https://semgrep.dev/",
+      "github_url": "https://github.com/semgrep/semgrep",
+      "docs_url": "https://semgrep.dev/docs/",
+      "logo_url": [
+        "https://github.com/semgrep.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 26,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-spiderfoot",
+      "slug": "spiderfoot",
+      "name": "SpiderFoot",
+      "summary": "Automate OSINT collection across public sources for an organization or domain.",
+      "overview": "<p>SpiderFoot automates open-source intelligence collection and links findings across supported modules. It is useful for broad reconnaissance, but collected data should be validated and handled with privacy and scope considerations.</p>",
+      "key_features": "<p>Modular OSINT collection; web UI; multiple source modules; exportable findings.</p>",
+      "install_guide": "<p>Official project, releases and setup: https://github.com/smicallef/spiderfoot</p>",
+      "use_case": "<p>Use a carefully scoped scan to organize public information about your own domain and identify items that need manual validation.</p>",
+      "faqs": "<p>Is SpiderFoot fully passive? Behavior depends on enabled modules and data sources; review module behavior before a run.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "desktop-app",
+        "web"
+      ],
+      "official_url": "https://www.spiderfoot.net/",
+      "github_url": "https://github.com/smicallef/spiderfoot",
+      "docs_url": "https://github.com/smicallef/spiderfoot/wiki",
+      "logo_url": [
+        "https://github.com/smicallef.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 27,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-sqlmap",
+      "slug": "sqlmap",
+      "name": "SQLMap",
+      "summary": "Automatic SQL injection detection and exploitation testing for your own apps and labs. Free, open source.",
+      "overview": "<p>SQLMap automates the tedious part of SQL injection testing: give it a URL, request file or Burp log from an application you are authorized to assess and it detects injectable parameters, fingerprints the database, and — with explicit flags — enumerates tables or dumps data to prove impact.</p>\n<p>Its real value is coverage and rigor. Manual testing finds the easy cases; SQLMap systematically tries boolean, time-based, error-based and stacked-query techniques across every parameter, including ones buried in cookies and headers. Use it to confirm findings on your test apps, and always stay inside authorized scope — dumping data you should not see is the line between testing and crime.</p>",
+      "key_features": "<ul><li>Automatic detection across boolean, time, error and stacked techniques</li><li>Database fingerprinting: type, version, user and privileges</li><li>Table enumeration and controlled data dumping for proof</li><li>Tests URLs, forms, cookies, headers and JSON bodies</li><li>Accepts Burp request files directly (-r)</li><li>Free and open source (GPL)</li></ul>",
+      "install_guide": "<pre><code>\n# Debian / Ubuntu / Kali\n\nsudo apt install sqlmap\n\n\n\n## Test a parameter on your lab app\n\nsqlmap -u \"http://localhost:3000/product?id=1\" --batch\n\n\n\n## Fingerprint the database once injection is confirmed\n\nsqlmap -u \"http://localhost:3000/product?id=1\" --banner --current-db\n\n\n\n# Capture a Burp request to a file, then test it\n\nsqlmap -r login-request.txt --batch\n\n</code></pre>",
+      "use_case": "<p>While testing your staging store in Burp you notice the product filter reflects input oddly. Save the request to a file and run SQLMap against it: it confirms a time-based injection in ten minutes. Fingerprint the database, document the exact payload and remediation (parameterized queries), and stop there — the proof is complete without touching customer data.</p>",
+      "faqs": "<h3 id=\"is-sqlmap-free\">Is SQLMap free?</h3>\n<p>Yes. It is free and open source.</p>",
+      "category_id": "cat-pentest-web-testing",
+      "category_slug": "web-testing",
+      "category_name": "Web App Testing",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://sqlmap.org/",
+      "github_url": "https://github.com/sqlmapproject/sqlmap",
+      "docs_url": "https://github.com/sqlmapproject/sqlmap/wiki",
+      "logo_url": [
+        "https://github.com/sqlmapproject.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 28,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-subfinder",
+      "slug": "subfinder",
+      "name": "Subfinder",
+      "summary": "Discover subdomains through passive online sources for authorized reconnaissance.",
+      "overview": "<p>Subfinder is a passive subdomain-enumeration tool from ProjectDiscovery. It aggregates results from supported public sources and is designed to fit into repeatable reconnaissance workflows without making active probes the default.</p>",
+      "key_features": "<p>Passive subdomain discovery; configurable data sources; JSON output; pipeline-friendly CLI.</p>",
+      "install_guide": "<p>Install guide and provider configuration: https://docs.projectdiscovery.io/tools/subfinder/install</p>",
+      "use_case": "<p>Use Subfinder to discover known public subdomains for a domain in scope, then validate and prioritize the results before testing.</p>",
+      "faqs": "<p>Does Subfinder need API keys? Some data sources require provider keys. Check the official installation guide for current requirements.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/projectdiscovery/subfinder",
+      "github_url": "https://github.com/projectdiscovery/subfinder",
+      "docs_url": "https://docs.projectdiscovery.io/tools/subfinder/overview",
+      "logo_url": [
+        "https://github.com/projectdiscovery.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 29,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-tcpdump",
+      "slug": "tcpdump",
+      "name": "tcpdump",
+      "summary": "Capture and filter network packets from the command line.",
+      "overview": "<p>tcpdump is a command-line packet analyzer used to capture and inspect traffic on supported network interfaces. It is lightweight and useful on servers where a graphical analyzer is unavailable; capture files can later be reviewed in Wireshark.</p>",
+      "key_features": "<p>Command-line capture; Berkeley Packet Filter expressions; pcap output; remote-server troubleshooting.</p>",
+      "install_guide": "<p>Official project, documentation and source: https://www.tcpdump.org/</p>",
+      "use_case": "<p>Capture a short, approved lab trace filtered to a specific host or port, then analyze the pcap locally.</p>",
+      "faqs": "<p>Does tcpdump decrypt TLS traffic automatically? No. It can capture encrypted traffic, but decryption requires appropriate keys and supported conditions.</p>",
+      "category_id": "cat-pentest-traffic-analysis-forensics",
+      "category_slug": "traffic-analysis-forensics",
+      "category_name": "Traffic Analysis & Forensics",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://www.tcpdump.org/",
+      "github_url": "https://github.com/the-tcpdump-group/tcpdump",
+      "docs_url": "https://www.tcpdump.org/manpages/tcpdump.1.html",
+      "logo_url": [
+        "https://github.com/the-tcpdump-group.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 30,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-testssl-sh",
+      "slug": "testssl-sh",
+      "name": "testssl.sh",
+      "summary": "Audit TLS and SSL configuration for supported protocols, ciphers and common weaknesses.",
+      "overview": "<p>testssl.sh checks TLS-enabled services for protocol support, cipher configuration and selected cryptographic issues. It works from the command line and produces human-readable and machine-readable reports for remediation.</p>",
+      "key_features": "<p>TLS protocol and cipher checks; machine-readable output; broad platform support; no separate package manager required for basic use.</p>",
+      "install_guide": "<p>Official installation and usage: https://github.com/testssl/testssl.sh</p>",
+      "use_case": "<p>Assess your own public-facing service or staging endpoint and use the report to prioritize outdated protocol and cipher settings.</p>",
+      "faqs": "<p>Can it test non-HTTPS services? It supports TLS/STARTTLS services on various ports; check the official documentation for protocol-specific options.</p>",
+      "category_id": "cat-pentest-vulnerability-scanning",
+      "category_slug": "vulnerability-scanning",
+      "category_name": "Vulnerability Scanning",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://testssl.sh/",
+      "github_url": "https://github.com/testssl/testssl.sh",
+      "docs_url": "https://github.com/testssl/testssl.sh#readme",
+      "logo_url": [
+        "https://github.com/testssl.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 31,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-theharvester",
+      "slug": "theharvester",
+      "name": "theHarvester",
+      "summary": "Collect public email, host and domain intelligence for reconnaissance.",
+      "overview": "<p>theHarvester gathers publicly available information from supported sources to help map an organization’s external footprint. Results are leads to verify, not proof of ownership, exposure or vulnerability.</p>",
+      "key_features": "<p>Public-source discovery; domain and email intelligence; exportable results; reconnaissance workflow support.</p>",
+      "install_guide": "<p>Official project and installation instructions: https://github.com/laramies/theHarvester</p>",
+      "use_case": "<p>During an approved assessment, use public-source results to identify contact patterns and candidate subdomains for verification.</p>",
+      "faqs": "<p>Is every result accurate? No. Sources may be incomplete or stale, so validate findings before reporting them.</p>",
+      "category_id": "cat-pentest-reconnaissance-osint",
+      "category_slug": "reconnaissance-osint",
+      "category_name": "Reconnaissance & OSINT",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/laramies/theHarvester",
+      "github_url": "https://github.com/laramies/theHarvester",
+      "docs_url": "https://github.com/laramies/theHarvester#readme",
+      "logo_url": [
+        "https://github.com/laramies.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 32,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-trivy",
+      "slug": "trivy",
+      "name": "Trivy",
+      "summary": "Scan container images, repositories and cloud configurations for known risks.",
+      "overview": "<p>Trivy is an open-source security scanner that can inspect container images, filesystems, repositories and supported configuration types for vulnerabilities and misconfigurations. It is useful for adding repeatable checks to development and deployment workflows.</p>",
+      "key_features": "<p>Container and dependency vulnerability scanning; configuration checks; secret detection; CI integration.</p>",
+      "install_guide": "<p>Official installation guide: https://trivy.dev/latest/getting-started/installation/</p>",
+      "use_case": "<p>Scan your own container image before publishing it and review high-severity results alongside base-image and dependency updates.</p>",
+      "faqs": "<p>Does a clean Trivy scan prove a container is secure? No. Coverage depends on the scanned artifact, enabled checks and current vulnerability data.</p>",
+      "category_id": "cat-pentest-cloud-container-security",
+      "category_slug": "cloud-container-security",
+      "category_name": "Cloud & Container Security",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://trivy.dev/",
+      "github_url": "https://github.com/aquasecurity/trivy",
+      "docs_url": "https://trivy.dev/docs/",
+      "logo_url": [
+        "https://github.com/aquasecurity.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 33,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-trufflehog",
+      "slug": "trufflehog",
+      "name": "TruffleHog",
+      "summary": "Search repositories and supported data sources for exposed secrets and verify findings.",
+      "overview": "<p>TruffleHog searches code and supported data sources for credentials and other secrets, with verification capabilities for supported detectors. Treat results as sensitive, restrict access to reports and rotate any confirmed credential promptly.</p>",
+      "key_features": "<p>Secret discovery; supported source integrations; credential verification for supported detectors; CI use.</p>",
+      "install_guide": "<p>Official installation and documentation: https://github.com/trufflesecurity/trufflehog</p>",
+      "use_case": "<p>Scan your own repositories and development history, verify findings safely, then revoke exposed credentials and prevent recurrence.</p>",
+      "faqs": "<p>Should scan results be published in tickets or public logs? No. They can contain live credentials; redact them and restrict access.</p>",
+      "category_id": "cat-pentest-source-code-secret-scanning",
+      "category_slug": "source-code-secret-scanning",
+      "category_name": "Source Code & Secret Scanning",
+      "pricing": "freemium",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://trufflesecurity.com/",
+      "github_url": "https://github.com/trufflesecurity/trufflehog",
+      "docs_url": "https://github.com/trufflesecurity/trufflehog#readme",
+      "logo_url": [
+        "https://github.com/trufflesecurity.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 34,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-volatility-3",
+      "slug": "volatility-3",
+      "name": "Volatility 3",
+      "summary": "Analyze memory images for digital forensics and incident response.",
+      "overview": "<p>Volatility 3 is an open-source memory-forensics framework for examining captured memory images. Analysts use plugins to investigate processes, modules and other artifacts, while preserving the original evidence and documenting acquisition context.</p>",
+      "key_features": "<p>Plugin-based memory analysis; structured output; cross-platform Python tooling; incident-response workflows.</p>",
+      "install_guide": "<p>Official project and usage documentation: https://volatility3.readthedocs.io/</p>",
+      "use_case": "<p>Analyze a memory image acquired from a system you administer, preserve the original file and document reproducible findings.</p>",
+      "faqs": "<p>Can memory analysis always identify malware? No. Findings depend on image quality, operating-system support and available artifacts.</p>",
+      "category_id": "cat-pentest-traffic-analysis-forensics",
+      "category_slug": "traffic-analysis-forensics",
+      "category_name": "Traffic Analysis & Forensics",
+      "pricing": "free",
+      "access_types": [
+        "cli"
+      ],
+      "official_url": "https://github.com/volatilityfoundation/volatility3",
+      "github_url": "https://github.com/volatilityfoundation/volatility3",
+      "docs_url": "https://volatility3.readthedocs.io/",
+      "logo_url": [
+        "https://github.com/volatilityfoundation.png"
+      ],
+      "featured": false,
+      "status": "published",
+      "sort_order": 35,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    },
+    {
+      "id": "pentest-wireshark",
+      "slug": "wireshark",
+      "name": "Wireshark",
+      "summary": "Inspect and analyze network packets through a graphical protocol analyzer.",
+      "overview": "<p>Wireshark captures or opens packet traces and decodes protocols so analysts can investigate connections, troubleshoot networks and understand suspicious traffic. Capture only traffic you are authorized to monitor and protect sensitive packet files.</p>",
+      "key_features": "<p>Protocol dissectors; display filters; packet stream inspection; capture and offline trace analysis.</p>",
+      "install_guide": "<p>Official downloads: https://www.wireshark.org/download.html</p>",
+      "use_case": "<p>Open a capture from your own lab and filter DNS, TCP or HTTP traffic to understand how an application communicates.</p>",
+      "faqs": "<p>Is Wireshark only for pentesting? No. It is also widely used for network troubleshooting, incident response and protocol analysis.</p>",
+      "category_id": "cat-pentest-traffic-analysis-forensics",
+      "category_slug": "traffic-analysis-forensics",
+      "category_name": "Traffic Analysis & Forensics",
+      "pricing": "free",
+      "access_types": [
+        "desktop-app"
+      ],
+      "official_url": "https://www.wireshark.org/",
+      "github_url": "https://gitlab.com/wireshark/wireshark",
+      "docs_url": "https://www.wireshark.org/docs/",
+      "logo_url": [
+        "https://github.com/wireshark.png"
+      ],
+      "featured": true,
+      "status": "published",
+      "sort_order": 36,
+      "published_at": "2026-09-04T00:00:00Z",
+      "created_at": "2026-09-04T00:00:00Z"
+    }
+  ]
+}

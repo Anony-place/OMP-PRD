@@ -518,6 +518,16 @@
     listView(lastProducts, loadState === 'error' ? lastErrorKind : '');
   }
 
+  async function fetchSnapshotProducts() {
+    var res = await timedFetch('/assets/data/hubs-snapshot.json');
+    if (!res || !res.ok) throw new Error('Snapshot unavailable');
+    var snap = await res.json();
+    var list = (Array.isArray(snap && snap.products) ? snap.products : [])
+      .filter(function (p) { return p && p.slug && String(p.name || '').trim() && safeSlug(p.slug); });
+    if (!list.length) throw new Error('Empty Products snapshot');
+    return list;
+  }
+
   async function load() {
     if (loadState === 'loading') return;
     loadState = 'loading';
@@ -527,6 +537,12 @@
       loadState = 'ready';
       render();
     } catch (error) {
+      try {
+        lastProducts = await fetchSnapshotProducts();
+        loadState = 'ready';
+        render();
+        return;
+      } catch (snapErr) { /* fall through */ }
       console.error('Product catalog error:', error);
       lastErrorKind = isTimeoutError(error) ? 'timeout' : 'network';
       loadState = 'error';

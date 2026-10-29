@@ -94,14 +94,12 @@ def pretty_url(path):
 NAV_LINKS = [
     ("Home", "/"),
     ("Checker", "/checker"),
-    ("Generator", "/generator"),
     ("Tools", "/tools"),
-    ("Articles", "/articles"),
-    ("Products", "/products"),
+    ("Academy", "/learning"),
     ("OSINT Hub", "/osint"),
     ("Pentest Hub", "/pentest"),
-    ("Academy", "/learning"),
-    ("Breach Check", "/breach-check"),
+    ("Articles", "/articles"),
+    ("Products", "/products"),
 ]
 
 
@@ -172,6 +170,9 @@ def header(active):
     mobile_links += "".join(
         f'<a href="{href}">{label}{icon("arrow","icon-16")}</a>'
         for label, href in [
+            ("Generator", "/generator"),
+            ("Breach Check", "/breach-check"),
+            ("About", "/about"),
             ("Password Health", "/password-health"),
             ("Security Checklist", "/security-checklist"),
             ("FAQ", "/faq"),
@@ -386,8 +387,8 @@ TOOLS = [
      "desc": "Cryptographically secure passwords built with crypto.getRandomValues() — never Math.random().",
      "cta": "Generate a password"},
     {"name": "Breach Check", "href": "/breach-check", "icon": "radar", "status": "live",
-     "desc": "Learn how k-anonymity breach lookups work with a transparent, clearly-labeled local demo.",
-     "cta": "Learn & try the demo"},
+     "desc": "Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix (plus offline demo fallback). Your password never leaves your browser.",
+     "cta": "Check for breaches"},
     {"name": "Password Health", "href": "/password-health", "icon": "pulse", "status": "live",
      "desc": "Run a full local audit — length, diversity, patterns, entropy and reuse hygiene — with a letter grade.",
      "cta": "Audit a password"},

@@ -6,13 +6,13 @@
     <link rel="canonical" href="https://oopsmypassword.web.app/learning/web-application-security">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Application Security learning path | OMP Academy</title>
-    <meta name="description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.">
+    <meta name="description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment…">
     <meta name="theme-color" content="#F6F8FC" />
     <meta name="color-scheme" content="light dark" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="OopsMyPassword" />
     <meta property="og:title" content="Web Application Security learning path | OMP Academy">
-    <meta property="og:description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.">
+    <meta property="og:description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment…">
     <meta property="og:url" content="https://oopsmypassword.web.app/learning/web-application-security">
     <meta
       property="og:image"
@@ -20,7 +20,7 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Web Application Security learning path | OMP Academy">
-    <meta name="twitter:description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.">
+    <meta name="twitter:description" content="Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment…">
     <meta
       name="twitter:image"
       content="https://oopsmypassword.web.app/assets/images/og-image.jpg"
@@ -29,9 +29,10 @@
     <link rel="stylesheet" href="/assets/css/styles.css" />
     <link rel="stylesheet" href="/assets/css/learning.css" />
     <script src="/assets/js/theme-init.js"></script>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://oopsmypassword.web.app/learning/web-application-security#page","url":"https://oopsmypassword.web.app/learning/web-application-security","name":"Web Application Security learning path","description":"Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.","inLanguage":"en","isAccessibleForFree":true,"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"}}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://oopsmypassword.web.app/learning/web-application-security#page","url":"https://oopsmypassword.web.app/learning/web-application-security","name":"Web Application Security learning path","description":"Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment failures become real security issues.","inLanguage":"en","isAccessibleForFree":true,"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Academy","item":"https://oopsmypassword.web.app/learning"},{"@type":"ListItem","position":2,"name":"Web Application Security","item":"https://oopsmypassword.web.app/learning/web-application-security"}]}</script>
-  </head>
+    <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+</head>
   <body class="academy-page">
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-nav academy-topnav">
@@ -45,8 +46,10 @@
         <nav class="academy-topnav-nav" aria-label="Site">
           <a href="/checker">Checker</a>
           <a href="/tools">Tools</a>
+          <a href="/osint">OSINT Hub</a>
+          <a href="/pentest">Pentest Hub</a>
           <a href="/articles">Articles</a>
-          <a href="/security">Security</a>
+          <a href="/products">Products</a>
         </nav>
         <div class="academy-topnav-actions">
           <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button>
@@ -58,14 +61,14 @@
             aria-label="Toggle color theme"
             title="Toggle theme"
           >
-            <span class="theme-icon-moon">☾</span
-            ><span class="theme-icon-sun">☀</span>
+            <span class="theme-icon-moon" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+            <span class="theme-icon-sun" aria-hidden="true"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span>
           </button>
         </div>
       </div>
     </header>
 <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
-  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
   <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
 </nav>
     <main id="main" class="academy-main">
@@ -73,8 +76,8 @@
 <header class="path-hero">
   <p class="path-eyebrow">Learning path</p>
   <h1>Web Application Security</h1>
-  <p class="path-lede">Learn how modern web applications work, where trust boundaries exist, and how authentication and authorization failures become real security issues.</p>
-  <p class="path-facts"><span>1 course</span><span>4 lessons</span><span>90 min of reading</span><span>100% Free · No Login</span></p>
+  <p class="path-lede">Learn how modern web applications work, where trust boundaries exist, and how authentication, authorization, injection, XSS, CSRF, SSRF, and deployment failures become real security issues.</p>
+  <p class="path-facts"><span>1 course</span><span>12 lessons</span><span>270 min of reading</span><span>100% Free · No Login</span></p>
 </header>
 <section class="path-single" aria-labelledby="path-single-heading">
   <div class="section-heading">
@@ -86,7 +89,7 @@
   <div class="path-single-body">
     <div>
       <h3>What you'll learn</h3>
-      <ul><li>Map assets and trust boundaries in a web application.</li><li>Read the security-relevant parts of an HTTP request and response.</li><li>Explain how authentication differs from authorization.</li><li>Recognize session and access-control risks, and describe defensive controls.</li></ul>
+      <ul><li>Map assets and trust boundaries in a web application and read raw HTTP requests and responses.</li><li>Explain how authentication, session management, and server-side object authorization differ.</li><li>Identify SQL injection, reflected/stored/DOM XSS, CSRF, and SSRF failure modes and apply structural defenses.</li><li>Configure defensive file-upload controls, HTTP security headers, CORS policies, and API rate limiting.</li></ul>
     </div>
     <div>
       <h3>Before you start</h3>
@@ -108,7 +111,7 @@
     </div>
   </div>
   <div class="roadmap-skills-grid">
-    <div class="roadmap-skill-card"><span class="skill-tag">Architecture</span><h3>Attack Surface & Boundaries</h3><p>Chart system assets, user inputs, and server-side defensive trust boundaries.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Protocols</span><h3>HTTP Inspection & Flow</h3><p>Evaluate methods, headers, cookies, status codes, and message parsing differences.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Identity</span><h3>Authentication & Sessions</h3><p>Safeguard logins, manage session lifecycles, and prevent account enumeration.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Defense</span><h3>Access Control & Authorization</h3><p>Enforce explicit server-side checks to eliminate IDOR and privilege escalation.</p></div>
+    <div class="roadmap-skill-card"><span class="skill-tag">Architecture</span><h3>Attack Surface & HTTP Flow</h3><p>Chart system assets, HTTP messages, cookies, and server-side defensive trust boundaries.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Identity</span><h3>Authentication, Sessions & Access</h3><p>Safeguard logins, manage session lifecycles, and eliminate IDOR and privilege escalation.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Injection & XSS</span><h3>Parameterized Queries & Encoding</h3><p>Neutralize SQL injection, reflected/stored/DOM XSS, and enforce strict Content Security Policy.</p></div><div class="roadmap-skill-card"><span class="skill-tag">Hardening</span><h3>CSRF, SSRF & Production Controls</h3><p>Enforce SameSite/CSRF tokens, egress allowlists, safe file uploads, security headers, and rate limits.</p></div>
   </div>
 </section>
 

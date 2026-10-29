@@ -194,6 +194,206 @@
     document.head.appendChild(searchScript);
   }
 
+  /* ---------- Static /osint/<slug> and /pentest/<slug> Interactive CLI Builder ---------- */
+  (function enhanceStaticToolDetail() {
+    var m = (window.location.pathname || '').match(/^\/(osint|pentest)\/([a-z0-9-]+)\/?$/);
+    if (!m || document.querySelector('[data-cli-builder]')) return;
+    var hub = m[1];
+    var slug = m[2];
+    var prose = document.querySelector('article.prose');
+    if (!prose) return;
+    var specs = {
+      'sherlock': { label: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Single username', cmd: 'sherlock {target}' }, { label: 'Print found only + timeout', cmd: 'sherlock --timeout 10 --print-found {target}' }, { label: 'CSV export', cmd: 'sherlock --csv -o {target}_results.txt {target}' }], flags: [{ flag: '--tor', label: 'Route via Tor (--tor)' }, { flag: '--nsfw', label: 'Include NSFW (--nsfw)' }] },
+      'maigret': { label: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Top 500 sites + HTML report', cmd: 'maigret {target} --top-sites 500 -H' }, { label: 'PDF dossier', cmd: 'maigret {target} -P' }], flags: [{ flag: '--no-color', label: 'Plain output (--no-color)' }] },
+      'holehe': { label: 'Target email', placeholder: 'target@example.com', presets: [{ label: 'Registered accounts only', cmd: 'holehe --only-used {target}' }, { label: 'Full check + CSV', cmd: 'holehe -C {target}' }], flags: [{ flag: '--no-clear', label: 'Do not clear terminal (--no-clear)' }] },
+      'theharvester': { label: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Passive recon', cmd: 'theHarvester -d {target} -b crtsh,certspotter,duckduckgo -l 200' }, { label: 'Save JSON/HTML report', cmd: 'theHarvester -d {target} -b all -f {target}_harvest' }], flags: [{ flag: '-n', label: 'DNS lookup (-n)' }] },
+      'subfinder': { label: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Silent subdomain list', cmd: 'subfinder -d {target} -silent' }, { label: 'All passive sources to file', cmd: 'subfinder -d {target} -all -o {target}_subs.txt' }], flags: [{ flag: '-rL resolvers.txt', label: 'Custom resolvers' }] },
+      'nmap': { label: 'Target host or subnet (authorized lab)', placeholder: '192.168.1.10', presets: [{ label: 'Service & version detection', cmd: 'nmap -sV -sC {target}' }, { label: 'Full TCP port sweep', cmd: 'nmap -p- -T4 {target}' }, { label: 'SYN stealth + OS fingerprint', cmd: 'sudo nmap -sS -O {target}' }], flags: [{ flag: '-Pn', label: 'Skip host discovery (-Pn)' }, { flag: '-v', label: 'Verbose (-v)' }, { flag: '-oN scan.txt', label: 'Save normal output (-oN)' }] },
+      'ffuf': { label: 'Target base URL', placeholder: 'https://lab.example.com', presets: [{ label: 'Directory discovery', cmd: 'ffuf -u {target}/FUZZ -w /usr/share/seclists/Discovery/Web-Content/common.txt -mc 200,204,301,302,307,401,403' }, { label: 'VHost fuzzing', cmd: 'ffuf -u {target} -H "Host: FUZZ.example.com" -w subdomains.txt -fs 4242' }], flags: [{ flag: '-t 40', label: '40 threads (-t 40)' }, { flag: '-recursion', label: 'Recursive (-recursion)' }] },
+      'nuclei': { label: 'Target URL', placeholder: 'https://lab.example.com', presets: [{ label: 'CVE & misconfiguration scan', cmd: 'nuclei -u {target} -tags cve,misconfig' }, { label: 'Critical & high severity only', cmd: 'nuclei -u {target} -severity critical,high' }], flags: [{ flag: '-rl 50', label: 'Rate limit 50/s (-rl 50)' }, { flag: '-stats', label: 'Show progress (-stats)' }] },
+      'sqlmap': { label: 'Target URL with parameter', placeholder: 'http://lab.local/item.php?id=1', presets: [{ label: 'Safe boolean/time test', cmd: 'sqlmap -u "{target}" --batch --level=1 --risk=1' }, { label: 'List databases', cmd: 'sqlmap -u "{target}" --batch --dbs' }], flags: [{ flag: '--random-agent', label: 'Random User-Agent' }, { flag: '--tor', label: 'Use Tor proxy' }] },
+      'hashcat': { label: 'Hash file path', placeholder: 'hashes.txt', presets: [{ label: 'WPA2/WPA3 (mode 22000)', cmd: 'hashcat -m 22000 {target} rockyou.txt' }, { label: 'NTLM (mode 1000)', cmd: 'hashcat -m 1000 {target} rockyou.txt -r best64.rule' }, { label: 'bcrypt (mode 3200)', cmd: 'hashcat -m 3200 {target} rockyou.txt' }], flags: [{ flag: '-O', label: 'Optimized kernels (-O)' }, { flag: '--status', label: 'Periodic status (--status)' }] }
+    };
+    var spec = specs[slug] || {
+      label: hub === 'pentest' ? 'Authorized Lab Target' : 'Investigation Target',
+      placeholder: 'example.com',
+      presets: [
+        { label: 'Standard invocation', cmd: slug + ' {target}' },
+        { label: 'Help & options reference', cmd: slug + ' --help' },
+        { label: 'Export report', cmd: slug + ' {target} -o ' + slug + '-report.txt' }
+      ],
+      flags: [{ flag: '--verbose', label: 'Verbose output (--verbose)' }]
+    };
+    var wrap = document.createElement('section');
+    wrap.id = 'sec-cli-builder';
+    var presetsHtml = spec.presets.map(function (p, i) {
+      return '<button type="button" class="cli-preset-btn' + (i === 0 ? ' is-active' : '') + '" data-cli-preset="' + i + '">' + p.label + '</button>';
+    }).join('');
+    var flagsHtml = (spec.flags || []).map(function (f) {
+      return '<label class="cli-flag-pill"><input type="checkbox" data-cli-flag="' + f.flag + '"> <span>' + f.label + '</span></label>';
+    }).join('');
+    wrap.innerHTML =
+      '<h2>Interactive CLI Command Builder</h2>' +
+      '<div class="cli-builder-card" data-cli-builder>' +
+        '<div class="cli-builder-head"><div><span class="eyebrow">Interactive CLI Command Builder</span>' +
+        '<h3 class="h-4" style="margin:2px 0 0">Customize & copy command</h3></div><span class="badge badge-demo">Client-side only</span></div>' +
+        '<div class="cli-builder-controls">' +
+          '<div class="cli-field"><label for="cli-target-input">' + spec.label + '</label>' +
+          '<input id="cli-target-input" type="text" value="' + spec.placeholder + '" placeholder="' + spec.placeholder + '" autocomplete="off" spellcheck="false"></div>' +
+          '<div class="cli-field"><span class="cli-label">Preset mode</span><div class="cli-presets">' + presetsHtml + '</div></div>' +
+          (flagsHtml ? '<div class="cli-field"><span class="cli-label">Optional flags</span><div class="cli-flags">' + flagsHtml + '</div></div>' : '') +
+        '</div>' +
+        '<div class="cli-output-bar"><pre class="cli-output"><code data-cli-code></code></pre>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-cli-copy>Copy command</button></div>' +
+      '</div>';
+    var hr = prose.querySelector('hr.hr-fade');
+    if (hr) prose.insertBefore(wrap, hr);
+    else prose.appendChild(wrap);
+
+    var input = wrap.querySelector('#cli-target-input');
+    var codeEl = wrap.querySelector('[data-cli-code]');
+    var copyBtn = wrap.querySelector('[data-cli-copy]');
+    var activePreset = 0;
+    function updateCmd() {
+      var preset = spec.presets[activePreset] || spec.presets[0];
+      var target = (String(input ? input.value : '').trim() || spec.placeholder).replace(/[;&|`$><\n\r]/g, '');
+      var cmd = preset.cmd.replace(/\{target\}/g, target);
+      var extra = [];
+      wrap.querySelectorAll('[data-cli-flag]:checked').forEach(function (cb) { extra.push(cb.getAttribute('data-cli-flag')); });
+      if (extra.length) cmd += ' ' + extra.join(' ');
+      if (codeEl) codeEl.textContent = cmd;
+    }
+    if (input) input.addEventListener('input', updateCmd);
+    wrap.querySelectorAll('[data-cli-preset]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activePreset = Number(btn.getAttribute('data-cli-preset')) || 0;
+        wrap.querySelectorAll('[data-cli-preset]').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+        updateCmd();
+      });
+    });
+    wrap.querySelectorAll('[data-cli-flag]').forEach(function (cb) { cb.addEventListener('change', updateCmd); });
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var txt = codeEl ? codeEl.textContent : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(function () {
+            copyBtn.textContent = 'Copied ✓';
+            setTimeout(function () { copyBtn.textContent = 'Copy command'; }, 1500);
+          });
+        }
+      });
+    }
+    updateCmd();
+  })();
+
+  /* ---------- Interactive Hub Search & Category Filter (/compare, /cheatsheets, /glossary) ---------- */
+  (function initFilterableHubs() {
+    var hub = document.querySelector('[data-filterable-hub]');
+    if (!hub) return;
+    var searchInput = hub.querySelector('[data-hub-filter-input]');
+    var catBtns = hub.querySelectorAll('[data-hub-filter-cat]');
+    var cards = hub.querySelectorAll('[data-hub-card]');
+    var activeCat = 'All';
+
+    function applyFilter() {
+      var q = searchInput ? String(searchInput.value || '').toLowerCase().trim() : '';
+      cards.forEach(function (card) {
+        var cCat = card.getAttribute('data-hub-cat') || '';
+        var cText = card.getAttribute('data-hub-search') || '';
+        var matchCat = activeCat === 'All' || cCat === activeCat;
+        var matchQ = !q || cText.indexOf(q) !== -1;
+        card.hidden = !(matchCat && matchQ);
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', applyFilter);
+    catBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeCat = btn.getAttribute('data-hub-filter-cat') || 'All';
+        catBtns.forEach(function (b) {
+          var on = b === btn;
+          b.className = 'btn btn-sm ' + (on ? 'btn-primary' : 'btn-ghost');
+        });
+        applyFilter();
+      });
+    });
+  })();
+
+  /* ---------- Interactive Cheat Sheet Variable Replacer & Exporter (/cheatsheets/<slug>) ---------- */
+  (function initCheatSheetPage() {
+    var csRoot = document.querySelector('[data-cheatsheet-page]');
+    if (!csRoot) return;
+    var varInputs = csRoot.querySelectorAll('[data-cs-var]');
+    var codeBlocks = csRoot.querySelectorAll('[data-cs-template]');
+    var copyBtns = csRoot.querySelectorAll('[data-cs-copy]');
+    var dlBtn = csRoot.querySelector('[data-cs-download-md]');
+    var printBtn = csRoot.querySelector('[data-cs-print]');
+
+    function getVars() {
+      var map = { TARGET: '192.0.2.10', DOMAIN: 'example.com', WORDLIST: '/usr/share/wordlists/common.txt' };
+      varInputs.forEach(function (inp) {
+        var k = inp.getAttribute('data-cs-var');
+        var v = String(inp.value || '').trim().replace(/[;&|`$><\n\r]/g, '');
+        if (k && v) map[k] = v;
+      });
+      return map;
+    }
+
+    function updateAllCommands() {
+      var vars = getVars();
+      codeBlocks.forEach(function (code) {
+        var tpl = code.getAttribute('data-cs-template') || '';
+        code.textContent = tpl
+          .replace(/\{TARGET\}/g, vars.TARGET)
+          .replace(/\{DOMAIN\}/g, vars.DOMAIN)
+          .replace(/\{WORDLIST\}/g, vars.WORDLIST);
+      });
+    }
+
+    varInputs.forEach(function (inp) {
+      inp.addEventListener('input', updateAllCommands);
+    });
+
+    copyBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = btn.getAttribute('data-cs-copy');
+        var code = csRoot.querySelector('[data-cs-idx="' + idx + '"]');
+        if (!code || !navigator.clipboard || !navigator.clipboard.writeText) return;
+        navigator.clipboard.writeText(code.textContent).then(function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy Command'; }, 1400);
+        });
+      });
+    });
+
+    if (dlBtn) {
+      dlBtn.addEventListener('click', function () {
+        var title = csRoot.getAttribute('data-cs-title') || 'OMP Cheat Sheet';
+        var lines = ['# ' + title, '', '> Generated from https://oopsmypassword.web.app/cheatsheets', ''];
+        codeBlocks.forEach(function (code, i) {
+          lines.push('## Command ' + (i + 1));
+          lines.push('```bash');
+          lines.push(code.textContent);
+          lines.push('```');
+          lines.push('');
+        });
+        var blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    }
+
+    if (printBtn) {
+      printBtn.addEventListener('click', function () {
+        window.print();
+      });
+    }
+  })();
+
   /* ---------- Service Worker Registration ---------- */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {

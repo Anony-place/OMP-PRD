@@ -31,7 +31,7 @@ G6 = {
 
 <h2 id="why-better">Why it beats passwords</h2>
 <ul>
-  <li><strong>Phishing-resistant:</strong> the signature is scoped to the exact domain. A lookalike site gets nothing usable.</li>
+  <li><strong>Phishing-resistant:</strong> the signature is scoped to the exact domain. A lookalike site gets nothing usable — though you should still know <a href="/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account">how to spot fake passkey setup scams</a>.</li>
   <li><strong>Nothing to breach:</strong> a leaked database of public keys is useless for impersonation.</li>
   <li><strong>Nothing to remember or reuse:</strong> keys are per-site by construction.</li>
   <li><strong>Fast:</strong> unlock your device and you are in — usually faster than typing a password.</li>
