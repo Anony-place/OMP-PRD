@@ -141,6 +141,17 @@ jobs:
           # With Firebase cleanUrls enabled, the HTML files map to /articles/<slug>.
           test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
 
+      - name: Build phase 3 SEO pages and feeds
+        working-directory: OMP-PRD-main
+        # scripts/deploy.sh has always run this between build-static-seo.mjs and
+        # the origin normalisation; CI did not, so a CI build could not
+        # reproduce the committed artifact. It is what links database-published
+        # articles and products from /sitemap (and writes rss.xml,
+        # sitemap-index.xml and the HTML sitemap), so without it every
+        # DB-published page is an orphan and verify-seo fails - which is exactly
+        # what the last run reported.
+        run: node scripts/build-phase3-seo.mjs
+
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
         # Safety net for any hand-edited file that still carries an old origin.
@@ -148,9 +159,10 @@ jobs:
 
       - name: Prepare the Google sitemap alias
         working-directory: OMP-PRD-main
-        # robots.txt advertises /sitemap.xml only. The alias is kept as a
-        # byte-identical copy so a previously submitted /google-sitemap.xml
-        # keeps resolving to the same content instead of going stale.
+        # robots.txt advertises sitemap.xml, sitemap-index.xml and rss.xml.
+        # The alias is kept byte-identical so a previously submitted
+        # /google-sitemap.xml resolves to the same content instead of going
+        # stale, and so the rename fallback in Search Console is available.
         run: cp sitemap.xml google-sitemap.xml
 
       - name: Report what was built
@@ -235,6 +247,17 @@ jobs:
           node functions/sync-sitemap-core.js
           node scripts/build-static-seo.mjs
           test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
+
+      - name: Build phase 3 SEO pages and feeds
+        working-directory: OMP-PRD-main
+        # scripts/deploy.sh has always run this between build-static-seo.mjs and
+        # the origin normalisation; CI did not, so a CI build could not
+        # reproduce the committed artifact. It is what links database-published
+        # articles and products from /sitemap (and writes rss.xml,
+        # sitemap-index.xml and the HTML sitemap), so without it every
+        # DB-published page is an orphan and verify-seo fails - which is exactly
+        # what the last run reported.
+        run: node scripts/build-phase3-seo.mjs
 
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
