@@ -89,7 +89,9 @@ which runs on every push to `main` and can be run in full from the Actions tab:
 - the mirror's canonical is still `https://oopsmypassword.web.app/...`
 - the home page still carries **both** Search Console verification tags — Google
   re-checks ownership later, and losing it silently kills Sitemaps and URL
-  Inspection days into the experiment
+  Inspection days into the experiment (retried 5× before failing, because a push
+  deploys the mirror at the same moment and the alias can serve the previous
+  build for a few seconds)
 - no login wall: a Googlebot user agent gets 200, not 401
 - `/guides/create-strong-password` → 301 → `/articles/create-strong-password`,
   an unknown path → 404
@@ -108,10 +110,20 @@ commit behind", not "routing broke".
 
 1. <https://search.google.com/search-console> → **Add property** → **URL prefix** →
    `https://oopsmypassword.vercel.app/`
-2. Verify ownership with the **HTML file** method: download the file Search
-   Console gives you, drop it in `OMP-PRD-main/`, commit and push. The mirror
-   must then be redeployed (see Step 1); `.vercelignore` does not exclude
-   `google*.html`, so the file ships with the site.
+2. Choose the **HTML tag** method and click **Verify**. The tag is already in
+   the home page's `<head>` (added in `tools/omp_build/layout.py` so it survives
+   regeneration, and in the committed `index.html` that the mirror serves), so
+   there is nothing to upload or paste:
+
+   ```html
+   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+   ```
+
+   The pre-existing `ilff-p9F5...` tag stays as well — Google matches the token
+   for the property being verified and ignores the rest, so one page verifies
+   both `web.app` and the mirror. `verify-vercel-mirror.yml` fails if either
+   tag ever stops being served, because losing verification later silently
+   removes Sitemaps and URL Inspection from the property.
 3. **Indexing → Sitemaps** → submit:
    - `https://oopsmypassword.vercel.app/sitemap.txt` (the format that worked for
      other people stuck on this exact bug), then
