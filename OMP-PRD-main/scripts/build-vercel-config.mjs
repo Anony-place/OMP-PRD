@@ -42,15 +42,11 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIREBASE_JSON = path.join(ROOT, 'firebase.json');
 const VERCEL_JSON = path.join(ROOT, 'vercel.json');
 
-/* The production *.vercel.app alias. Pages on this host get X-Robots-Tag:
-   noindex so the staging mirror cannot compete with the live Firebase site in
-   search results. It is host-scoped on purpose: the day a real custom domain
-   is attached, that domain is not covered by this rule and is indexable. */
+/* The host this deployment serves. Firebase 301s every path here (see the
+   catch-all rule in firebase.json), so this is now the indexable production
+   origin, not a mirror: redirects that point at it are Firebase-only and must
+   not be converted for Vercel, or every visitor would loop. */
 const PREVIEW_HOST = 'oopsmypassword.vercel.app';
-
-/* Endpoints Google must be able to fetch AND read without a noindex header,
-   otherwise the sitemap itself is excluded from indexing. */
-const CRAWLER_ENDPOINTS = 'sitemap|google-sitemap|rss\\.xml|robots\\.txt|llms|manifest\\.webmanifest|ads\\.txt|sw\\.js';
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const stripHtml = (p) => p.replace(/\.html$/, '');
@@ -158,6 +154,18 @@ function rewriteToVercel(rule) {
 
 /* -------------------------------------------------------------- headers */
 
+/* True when a redirect leaves the site for this same deployment host. */
+function isSelfRedirect(rule) {
+  const destination = String(rule.destination || '');
+  if (!/^https?:\/\//.test(destination)) return false;
+  try {
+    const url = new URL(destination);
+    return url.host === PREVIEW_HOST || url.host.endsWith(`.${PREVIEW_HOST}`);
+  } catch {
+    return false;
+  }
+}
+
 function headersToVercel(block) {
   return sourceToVercel(block.source).map((source) => ({
     source,
@@ -172,7 +180,17 @@ export function buildVercelConfig(firebaseConfig) {
   const report = { redirects: 0, redirectsFrom: 0, rewrites: 0, rewritesFrom: 0, headers: 0, headersFrom: 0 };
 
   const redirects = [];
+  const skipped = [];
   for (const rule of hosting.redirects || []) {
+    /* The move itself lives in firebase.json: every path 301s to the same path
+       on Vercel. Converting that rule for Vercel would build a redirect to
+       itself - an infinite loop for every visitor. It is Firebase-only by
+       definition, so it is skipped here and counted in the report. */
+    if (isSelfRedirect(rule)) {
+      skipped.push(rule.destination);
+      report.redirectsSkipped = (report.redirectsSkipped || 0) + 1;
+      continue;
+    }
     const converted = redirectToVercel(rule);
     if (!converted.length) throw new Error(`redirect produced no rules: ${JSON.stringify(rule)}`);
     redirects.push(...converted);
@@ -189,14 +207,13 @@ export function buildVercelConfig(firebaseConfig) {
   }
   report.rewrites = rewrites.length;
 
-  /* Staging guard: noindex the HTML on the *.vercel.app mirror only, and never
-     the endpoints a crawler has to read. Scoped by host so that attaching a
-     custom domain later does not inherit the noindex. */
-  const headers = [{
-    source: `/:path((?!${CRAWLER_ENDPOINTS}).*)`,
-    has: [{ type: 'host', value: PREVIEW_HOST }],
-    headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
-  }];
+  /* No staging noindex any more. While Vercel was a mirror it was the right
+     guard; now that web.app 301s here, a noindex on the destination would tell
+     Google to drop every page it was just redirected to - a self-inflicted
+     deindex, and the single worst outcome this migration could produce.
+     Indexability is asserted in tools/test_vercel_config.mjs and re-checked
+     live by .github/workflows/verify-vercel-mirror.yml. */
+  const headers = [];
 
   for (const block of hosting.headers || []) {
     const converted = headersToVercel(block);
