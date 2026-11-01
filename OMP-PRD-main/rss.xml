@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 01 Nov 2026 10:11:16 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -66,11 +66,11 @@
       <description>Holehe vs Epieos: Free vs Freemium Email Lookup</description>
     </item>
     <item>
-      <title>How Does AI Work? A Beginner&amp;#39;s Guide to Artificial Intelligence</title>
+      <title>How Does AI Work? A Beginner&#39;s Guide to Artificial Intelligence</title>
       <link>https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence</guid>
       <category>Security Research</category>
-      <description>How Does AI Work? A Beginner&amp;#39;s Guide to Artificial Intelligence</description>
+      <description>How Does AI Work? A Beginner&#39;s Guide to Artificial Intelligence</description>
     </item>
     <item>
       <title>How to Spot Fake Passkey Setup Scams Before They Steal Your Account</title>

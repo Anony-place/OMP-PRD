@@ -451,6 +451,11 @@ def main():
     sitemap_content = "\n".join(sm) + "\n"
     write("sitemap.xml", sitemap_content)
     write("google-sitemap.xml", sitemap_content)
+    # Text sitemap: Google's simplest supported format - one URL per line,
+    # UTF-8, nothing else in the file. It ships as its own endpoint because the
+    # XML endpoints are the ones Search Console reports "Couldn't fetch" for on
+    # shared hostnames, while the text endpoint on the same host can be read.
+    write("sitemap.txt", "".join(f"{SITE}{u}\n" for u in all_routes))
 
     # IndexNow: a real, generated key file must be publicly served at
     # /<key>.txt for Bing/Yandex to accept URL submissions. The key is public
@@ -491,6 +496,7 @@ Disallow: /functions/
 # https://oopsmypassword.web.app URL-prefix property.
 Sitemap: {SITE}/sitemap.xml
 Sitemap: {SITE}/sitemap-index.xml
+Sitemap: {SITE}/sitemap.txt
 Sitemap: {SITE}/rss.xml
 """)
 

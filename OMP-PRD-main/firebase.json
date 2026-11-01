@@ -831,6 +831,35 @@
         ]
       },
       {
+        "source": "/sitemap.txt",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=UTF-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Cross-Origin-Resource-Policy",
+            "value": "cross-origin"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "unsafe-none"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "all"
+          }
+        ]
+      },
+      {
         "source": "/sitemap-index.xml",
         "headers": [
           {

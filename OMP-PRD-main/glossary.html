@@ -3,24 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Security Glossary — OopsMyPassword</title>
-  <meta name="description" content="Twenty password-security terms — entropy, salting, passkeys, k-anonymity, credential stuffing — defined in one or two sentences each.">
+  <title>Cybersecurity, Auth &amp; OSINT Glossary — 30 Terms | OopsMyPassword</title>
+  <meta name="description" content="Thirty cybersecurity, cryptography, web security, and OSINT terms defined with technical breakdowns: Argon2id, k-anonymity, passkeys, IDOR, SSRF, JWT.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <link rel="canonical" href="https://oopsmypassword.web.app/glossary">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
   <meta name="application-name" content="OopsMyPassword">
   <meta name="theme-color" content="#F6F8FC">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OopsMyPassword">
-  <meta property="og:title" content="Security Glossary — OopsMyPassword">
-  <meta property="og:description" content="Twenty password-security terms — entropy, salting, passkeys, k-anonymity, credential stuffing — defined in one or two sentences each.">
+  <meta property="og:title" content="Cybersecurity, Auth &amp; OSINT Glossary — 30 Terms | OopsMyPassword">
+  <meta property="og:description" content="Thirty cybersecurity, cryptography, web security, and OSINT terms defined with technical breakdowns: Argon2id, k-anonymity, passkeys, IDOR, SSRF, JWT.">
   <meta property="og:url" content="https://oopsmypassword.web.app/glossary">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Security Glossary — OopsMyPassword">
-  <meta name="twitter:description" content="Twenty password-security terms — entropy, salting, passkeys, k-anonymity, credential stuffing — defined in one or two sentences each.">
+  <meta name="twitter:title" content="Cybersecurity, Auth &amp; OSINT Glossary — 30 Terms | OopsMyPassword">
+  <meta name="twitter:description" content="Thirty cybersecurity, cryptography, web security, and OSINT terms defined with technical breakdowns: Argon2id, k-anonymity, passkeys, IDOR, SSRF, JWT.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -28,67 +29,363 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Glossary","item":"https://oopsmypassword.web.app/glossary"}]}</script>
-  
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Security Glossary","item":"https://oopsmypassword.web.app/glossary"}]}</script>
 </head>
-<body class="">
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="site-nav">
-  <div class="container nav-inner">
-    <a class="brand" href="/" aria-label="OopsMyPassword — home">
-      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg>
-      <span>Oops<span class="grad-text">MyPassword</span></span>
-    </a>
-    <nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav>
-    <div class="nav-actions">
-      <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme">
-        <span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
-        <span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></span>
-      </button>
-      <a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a>
-      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-        <span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span>
-        <span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
-      </button>
-    </div>
-  </div>
-</header>
-<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
-  <a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-  <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
-</nav>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
 <main id="main">
 
 <section class="page-hero">
   <div class="container">
-    <span class="eyebrow">Reference</span>
-    <h1 class="h-1">Security Glossary</h1>
-    <p class="lead">Twenty terms that unlock every guide on this site — defined in one or two sentences each.</p>
+    <span class="eyebrow">Reference Encyclopedia</span>
+    <h1 class="h-1">Cybersecurity, Cryptography &amp; OSINT Glossary</h1>
+    <p class="lead">Thirty core security concepts — from k-anonymity, Argon2id, and passkeys to IDOR, SSRF, Kerberoasting, and Google Dorking — explained with architecture breakdowns and defensive checklists.</p>
   </div>
 </section>
-<section class="section-tight">
-  <div class="container"><div class="grid grid-3"><div class="card card-pad"><h2 class="h-3">2FA / MFA</h2><p class="muted small mt-8">Requiring two or more proofs (something you know, have, or are) to sign in.</p></div>
-<div class="card card-pad"><h2 class="h-3">Brute-force attack</h2><p class="muted small mt-8">Systematically guessing credentials until one works — industrialized by GPUs against leaked hash databases.</p></div>
-<div class="card card-pad"><h2 class="h-3">Credential stuffing</h2><p class="muted small mt-8">Replaying email/password pairs leaked from one breach across other services, betting on reuse.</p></div>
-<div class="card card-pad"><h2 class="h-3">CSPRNG</h2><p class="muted small mt-8">Cryptographically secure pseudo-random number generator — unpredictable randomness suitable for keys and passwords. In browsers: crypto.getRandomValues().</p></div>
-<div class="card card-pad"><h2 class="h-3">Diceware</h2><p class="muted small mt-8">Generating passphrases by randomly picking words from a published list; entropy = words × log₂(list size).</p></div>
-<div class="card card-pad"><h2 class="h-3">Entropy (bits)</h2><p class="muted small mt-8">A measure of unpredictability: log₂ of the search space. Each bit doubles the attacker's work.</p></div>
-<div class="card card-pad"><h2 class="h-3">Hash (password)</h2><p class="muted small mt-8">A one-way fingerprint of a password. Slow, salted, memory-hard hashes (Argon2, bcrypt) resist cracking; fast unsalted ones (MD5, SHA-1) do not.</p></div>
-<div class="card card-pad"><h2 class="h-3">k-anonymity</h2><p class="muted small mt-8">A privacy model where a lookup (e.g., a breached-password check) is mixed into a set of at least k possibilities, so the server cannot tell what you searched for.</p></div>
-<div class="card card-pad"><h2 class="h-3">Key stretching</h2><p class="muted small mt-8">Deliberately slowing password verification (many hash rounds) to make each guess expensive for attackers.</p></div>
-<div class="card card-pad"><h2 class="h-3">Master password</h2><p class="muted small mt-8">The single strong passphrase that unlocks a password manager; the one secret worth memorizing carefully.</p></div>
-<div class="card card-pad"><h2 class="h-3">Passkey</h2><p class="muted small mt-8">A phishing-resistant credential (FIDO2/WebAuthn): a private key on your device proving itself to a site's public key — no shared secret.</p></div>
-<div class="card card-pad"><h2 class="h-3">Passphrase</h2><p class="muted small mt-8">A password made of several random words — long, memorable, and measurably strong.</p></div>
-<div class="card card-pad"><h2 class="h-3">Password manager</h2><p class="muted small mt-8">Software that generates, encrypts, and fills unique passwords per account, unlocked by one master password.</p></div>
-<div class="card card-pad"><h2 class="h-3">Phishing</h2><p class="muted small mt-8">Impersonating a trusted service to trick you into revealing credentials — the leading cause of account takeover.</p></div>
-<div class="card card-pad"><h2 class="h-3">Rainbow table</h2><p class="muted small mt-8">Precomputed lookup of hash→password pairs; defeated by salting.</p></div>
-<div class="card card-pad"><h2 class="h-3">Rate limiting</h2><p class="muted small mt-8">Server-side throttling of login attempts; the main defense against online guessing.</p></div>
-<div class="card card-pad"><h2 class="h-3">Salt</h2><p class="muted small mt-8">A per-password random value mixed into hashing so identical passwords hash differently.</p></div>
-<div class="card card-pad"><h2 class="h-3">SIM swapping</h2><p class="muted small mt-8">Convincing a carrier to move your phone number to an attacker's SIM, hijacking SMS codes.</p></div>
-<div class="card card-pad"><h2 class="h-3">TOTP</h2><p class="muted small mt-8">Time-based one-time codes from authenticator apps, rotating every 30 seconds.</p></div>
-<div class="card card-pad"><h2 class="h-3">WebAuthn</h2><p class="muted small mt-8">The web standard behind passkeys and hardware security keys, binding credentials to a site's origin.</p></div></div></div>
+<section class="section-tight" data-filterable-hub>
+  <div class="container">
+    <div class="card card-pad" style="margin-bottom:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <input type="search" class="input" data-hub-filter-input placeholder="Search 30 security terms (e.g. Argon2id, IDOR, Passkey, SSRF, JWT)…" style="max-width:420px" aria-label="Search glossary terms">
+        <div class="flex gap-8 wrap">
+          <button type="button" class="btn btn-sm btn-primary" data-hub-filter-cat="All">All</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Cryptography &amp; Privacy">Cryptography &amp; Privacy</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Authentication &amp; Identity">Authentication &amp; Identity</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Phishing &amp; Social Engineering">Phishing &amp; Social Engineering</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Web App Security">Web App Security</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="OSINT &amp; Recon">OSINT &amp; Recon</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Defensive Security">Defensive Security</button><button type="button" class="btn btn-sm btn-ghost" data-hub-filter-cat="Network &amp; Pentest">Network &amp; Pentest</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-3">
+    <article class="card card-pad" data-hub-card data-hub-cat="Cryptography &amp; Privacy" data-hub-search="k-anonymity k-anonymity is a privacy property where a lookup or record cannot be distinguished from at least k-1 other items in the same set, allowing breach checks without revealing the secret queried. cryptography &amp; privacy" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Cryptography &amp; Privacy</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/k-anonymity">k-Anonymity</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">k-Anonymity is a privacy property where a lookup or record cannot be distinguished from at least k-1 other items in the same set, allowing breach checks without revealing the secret queried.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/k-anonymity">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/breach-check">Breach Check (k-Anonymity Demo)</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Cryptography &amp; Privacy" data-hub-search="argon2id argon2id is the modern winner of the password hashing competition that combines memory-hard resistance against gpu cracking (argon2d) with side-channel timing resistance (argon2i). cryptography &amp; privacy" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Cryptography &amp; Privacy</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/argon2id">Argon2id</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Argon2id is the modern winner of the Password Hashing Competition that combines memory-hard resistance against GPU cracking (Argon2d) with side-channel timing resistance (Argon2i).</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/argon2id">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/hash-inspector">Hash &amp; JWT Inspector</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Authentication &amp; Identity" data-hub-search="credential stuffing credential stuffing is an automated cyberattack where bots replay millions of leaked username-and-password pairs from one data breach across other websites to hijack accounts that reused the same password. authentication &amp; identity" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Authentication &amp; Identity</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/credential-stuffing">Credential Stuffing</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Credential stuffing is an automated cyberattack where bots replay millions of leaked username-and-password pairs from one data breach across other websites to hijack accounts that reused the same password.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/credential-stuffing">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/generator">Password Generator</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Authentication &amp; Identity" data-hub-search="password spraying password spraying is a low-and-slow authentication attack that tests one common password (such as summer2026! or welcome123) across thousands of user accounts to avoid triggering per-account lockout thresholds. authentication &amp; identity" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Authentication &amp; Identity</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/password-spraying">Password Spraying</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Password spraying is a low-and-slow authentication attack that tests one common password (such as Summer2026! or Welcome123) across thousands of user accounts to avoid triggering per-account lockout thresholds.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/password-spraying">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/checker">Password Strength Checker</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Authentication &amp; Identity" data-hub-search="passkey (fido2 / webauthn) a passkey is a phishing-resistant digital credential based on fido2 and webauthn public-key cryptography that replaces passwords with a cryptographic key pair bound to the website genuine domain. authentication &amp; identity" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Authentication &amp; Identity</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/passkey-webauthn">Passkey (FIDO2 / WebAuthn)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A passkey is a phishing-resistant digital credential based on FIDO2 and WebAuthn public-key cryptography that replaces passwords with a cryptographic key pair bound to the website genuine domain.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/passkey-webauthn">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/compare/yubikey-vs-passkeys">YubiKey vs Passkeys Comparison</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Authentication &amp; Identity" data-hub-search="totp (time-based one-time password) totp (rfc 6238) is an offline two-factor authentication algorithm that computes a short-lived 6- to 8-digit code from a shared secret key and the current unix timestamp, rotating every 30 seconds. authentication &amp; identity" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Authentication &amp; Identity</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/totp-rfc-6238">TOTP (Time-Based One-Time Password)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">TOTP (RFC 6238) is an offline two-factor authentication algorithm that computes a short-lived 6- to 8-digit code from a shared secret key and the current Unix timestamp, rotating every 30 seconds.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/totp-rfc-6238">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/security-checklist">Security Checklist</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Phishing &amp; Social Engineering" data-hub-search="browser-in-the-browser (bitb) phishing browser-in-the-browser (bitb) is a phishing technique that renders a fake html/css popup window inside a webpage to imitate a legitimate google, microsoft, or apple oauth login dialog complete with a spoofed https address bar. phishing &amp; social engineering" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Phishing &amp; Social Engineering</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/browser-in-the-browser-bitb">Browser-in-the-Browser (BitB) Phishing</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Browser-in-the-Browser (BitB) is a phishing technique that renders a fake HTML/CSS popup window inside a webpage to imitate a legitimate Google, Microsoft, or Apple OAuth login dialog complete with a spoofed HTTPS address bar.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/browser-in-the-browser-bitb">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/url-scanner">Phishing URL Risk Scanner</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="idor (insecure direct object reference) insecure direct object reference (idor), a form of broken object level authorization (bola), occurs when an application uses a client-supplied identifier (such as ?invoice_id=1042) to fetch or modify a record without verifying that the logged-in user owns that object. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/idor-insecure-direct-object-reference">IDOR (Insecure Direct Object Reference)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Insecure Direct Object Reference (IDOR), a form of Broken Object Level Authorization (BOLA), occurs when an application uses a client-supplied identifier (such as ?invoice_id=1042) to fetch or modify a record without verifying that the logged-in user owns that object.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/idor-insecure-direct-object-reference">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/compare/burp-suite-vs-owasp-zap">Burp Suite vs OWASP ZAP</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="ssrf (server-side request forgery) server-side request forgery (ssrf) is a web vulnerability where an attacker tricks a backend server into making http or network requests to internal-only services, localhost ports, or cloud metadata endpoints. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/ssrf-server-side-request-forgery">SSRF (Server-Side Request Forgery)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Server-Side Request Forgery (SSRF) is a web vulnerability where an attacker tricks a backend server into making HTTP or network requests to internal-only services, localhost ports, or cloud metadata endpoints.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/ssrf-server-side-request-forgery">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/http-security-headers-cheatsheet">HTTP Security Headers Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="xss (cross-site scripting) cross-site scripting (xss) is an injection vulnerability where untrusted data is rendered into a web page without context-aware output encoding, allowing an attacker to execute arbitrary javascript in another user browser session. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/xss-cross-site-scripting">XSS (Cross-Site Scripting)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Cross-Site Scripting (XSS) is an injection vulnerability where untrusted data is rendered into a web page without context-aware output encoding, allowing an attacker to execute arbitrary JavaScript in another user browser session.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/xss-cross-site-scripting">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/http-security-headers-cheatsheet">HTTP Security Headers Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="sql injection (sqli) sql injection (sqli) is a critical vulnerability where user input is concatenated directly into a database query string, allowing an attacker to alter the sql syntax and read, modify, or delete arbitrary database data. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/sql-injection-sqli">SQL Injection (SQLi)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">SQL Injection (SQLi) is a critical vulnerability where user input is concatenated directly into a database query string, allowing an attacker to alter the SQL syntax and read, modify, or delete arbitrary database data.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/sql-injection-sqli">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/sqlmap-pentest-cheatsheet">sqlmap Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="csrf (cross-site request forgery) cross-site request forgery (csrf) is an attack that tricks an authenticated user browser into sending an unwanted state-changing http request (such as changing an email or transferring funds) to a web application where they are currently signed in. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/csrf-cross-site-request-forgery">CSRF (Cross-Site Request Forgery)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Cross-Site Request Forgery (CSRF) is an attack that tricks an authenticated user browser into sending an unwanted state-changing HTTP request (such as changing an email or transferring funds) to a web application where they are currently signed in.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/csrf-cross-site-request-forgery">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/http-security-headers-cheatsheet">HTTP Security Headers Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Authentication &amp; Identity" data-hub-search="jwt (json web token) a json web token (jwt, rfc 7519) is a compact, url-safe token format consisting of a base64url-encoded json header, payload (claims), and cryptographic signature separated by dots. authentication &amp; identity" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Authentication &amp; Identity</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/jwt-json-web-token">JWT (JSON Web Token)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A JSON Web Token (JWT, RFC 7519) is a compact, URL-safe token format consisting of a Base64URL-encoded JSON Header, Payload (claims), and cryptographic Signature separated by dots.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/jwt-json-web-token">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/hash-inspector">Client-Side Hash &amp; JWT Inspector</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="OSINT &amp; Recon" data-hub-search="subdomain takeover subdomain takeover occurs when a subdomain (such as promo.example.com) has a dangling dns cname or a record pointing to an external cloud resource (s3 bucket, github pages, azure app) that has been deleted or unclaimed, allowing an attacker to register that cloud resource and serve content under the organization legitimate subdomain. osint &amp; recon" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">OSINT &amp; Recon</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/subdomain-takeover">Subdomain Takeover</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Subdomain takeover occurs when a subdomain (such as promo.example.com) has a dangling DNS CNAME or A record pointing to an external cloud resource (S3 bucket, GitHub Pages, Azure App) that has been deleted or unclaimed, allowing an attacker to register that cloud resource and serve content under the organization legitimate subdomain.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/subdomain-takeover">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/compare/amass-vs-subfinder">Amass vs Subfinder Comparison</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="OSINT &amp; Recon" data-hub-search="google dorking (search engine recon) google dorking (google hacking) is the use of advanced search engine operators—such as site:, filetype:, inurl:, intitle:, and intext:—to locate publicly indexed configuration files, exposed directories, login portals, and sensitive documents. osint &amp; recon" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">OSINT &amp; Recon</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/google-dorking">Google Dorking (Search Engine Recon)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Google Dorking (Google Hacking) is the use of advanced search engine operators—such as site:, filetype:, inurl:, intitle:, and intext:—to locate publicly indexed configuration files, exposed directories, login portals, and sensitive documents.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/google-dorking">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/dork-builder">Interactive Google Dork Builder</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Phishing &amp; Social Engineering" data-hub-search="idn homograph attack (punycode spoofing) an idn homograph attack registers a domain name containing non-ascii unicode characters (such as cyrillic &quot;а&quot; instead of latin &quot;a&quot;) that look visually identical to a trusted brand domain in order to deceive users into visiting a phishing site. phishing &amp; social engineering" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Phishing &amp; Social Engineering</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/idn-homograph-attack">IDN Homograph Attack (Punycode Spoofing)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">An IDN homograph attack registers a domain name containing non-ASCII Unicode characters (such as Cyrillic &quot;а&quot; instead of Latin &quot;a&quot;) that look visually identical to a trusted brand domain in order to deceive users into visiting a phishing site.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/idn-homograph-attack">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/url-scanner">Phishing URL Risk Scanner</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Phishing &amp; Social Engineering" data-hub-search="typosquatting &amp; combo-squatting typosquatting (and combo-squatting) is the registration of lookalike domains that differ from a trusted brand by a single mistyped letter, character swap (rn vs m), or appended keyword (such as microsoft-security-login.com) for phishing or malware delivery. phishing &amp; social engineering" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Phishing &amp; Social Engineering</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/typosquatting">Typosquatting &amp; Combo-Squatting</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Typosquatting (and combo-squatting) is the registration of lookalike domains that differ from a trusted brand by a single mistyped letter, character swap (rn vs m), or appended keyword (such as microsoft-security-login.com) for phishing or malware delivery.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/typosquatting">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/url-scanner">Phishing URL Risk Scanner</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="zero trust architecture (zta) zero trust architecture (nist sp 800-207) is a security model that eliminates implicit trust based on network location (&quot;inside the corporate lan/vpn&quot;) and instead requires continuous authentication, authorization, and encryption for every user, device, and service request. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/zero-trust-architecture">Zero Trust Architecture (ZTA)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Zero Trust Architecture (NIST SP 800-207) is a security model that eliminates implicit trust based on network location (&quot;inside the corporate LAN/VPN&quot;) and instead requires continuous authentication, authorization, and encryption for every user, device, and service request.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/zero-trust-architecture">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/security-checklist">Security Checklist</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Network &amp; Pentest" data-hub-search="privilege escalation privilege escalation is the act of exploiting a bug, misconfiguration, or weak permission to gain higher access rights—either vertically (from a standard user or web service account to root/system) or horizontally (accessing another user account of the same tier). network &amp; pentest" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Network &amp; Pentest</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/privilege-escalation">Privilege Escalation</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Privilege escalation is the act of exploiting a bug, misconfiguration, or weak permission to gain higher access rights—either vertically (from a standard user or web service account to root/SYSTEM) or horizontally (accessing another user account of the same tier).</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/privilege-escalation">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/linux-privilege-escalation-cheatsheet">Linux Privilege Escalation Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Network &amp; Pentest" data-hub-search="lateral movement lateral movement refers to the techniques an attacker uses after compromising one endpoint to pivot across the internal network to other workstations, servers, and domain controllers in search of high-value assets. network &amp; pentest" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Network &amp; Pentest</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/lateral-movement">Lateral Movement</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Lateral movement refers to the techniques an attacker uses after compromising one endpoint to pivot across the internal network to other workstations, servers, and domain controllers in search of high-value assets.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/lateral-movement">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/active-directory-enumeration-cheatsheet">Active Directory Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Network &amp; Pentest" data-hub-search="kerberoasting kerberoasting is an active directory post-exploitation technique where any authenticated domain user requests kerberos tgs service tickets for accounts with service principal names (spns) and cracks those tickets offline to recover the service account cleartext password. network &amp; pentest" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Network &amp; Pentest</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/kerberoasting">Kerberoasting</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Kerberoasting is an Active Directory post-exploitation technique where any authenticated domain user requests Kerberos TGS service tickets for accounts with Service Principal Names (SPNs) and cracks those tickets offline to recover the service account cleartext password.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/kerberoasting">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/active-directory-enumeration-cheatsheet">Active Directory Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="canary token (honeytoken) a canary token (or honeytoken) is a decoy credential, fake api key, tracked document, or unique dns/http url planted in sensitive systems that has no legitimate operational use—so any access immediately alerts defenders to an active intrusion. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/canary-token">Canary Token (Honeytoken)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A Canary Token (or honeytoken) is a decoy credential, fake API key, tracked document, or unique DNS/HTTP URL planted in sensitive systems that has no legitimate operational use—so any access immediately alerts defenders to an active intrusion.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/canary-token">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/incident-response-first-hour-cheatsheet">Incident Response First-Hour Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="cve &amp; cvss score cve (common vulnerabilities and exposures) is the standardized global identifier for publicly disclosed security flaws (e.g., cve-2026-0768), while cvss (common vulnerability scoring system) rates technical severity from 0.0 to 10.0. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/cve-and-cvss">CVE &amp; CVSS Score</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">CVE (Common Vulnerabilities and Exposures) is the standardized global identifier for publicly disclosed security flaws (e.g., CVE-2026-0768), while CVSS (Common Vulnerability Scoring System) rates technical severity from 0.0 to 10.0.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/cve-and-cvss">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/pentest/nuclei">Nuclei Pentest Guide</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="siem &amp; soar siem (security information and event management) aggregates, normalizes, and correlates security logs across an organization to detect threats, while soar (security orchestration, automation, and response) automates triage playbooks and containment actions. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/siem-and-soar">SIEM &amp; SOAR</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">SIEM (Security Information and Event Management) aggregates, normalizes, and correlates security logs across an organization to detect threats, while SOAR (Security Orchestration, Automation, and Response) automates triage playbooks and containment actions.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/siem-and-soar">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/incident-response-first-hour-cheatsheet">Incident Response Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="edr &amp; xdr (endpoint detection &amp; response) edr (endpoint detection and response) continuously monitors workstation and server process trees, memory, file changes, and network sockets to detect and contain behavioral threats, while xdr extends that correlation across identity, cloud, and network layers. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/edr-and-xdr">EDR &amp; XDR (Endpoint Detection &amp; Response)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">EDR (Endpoint Detection and Response) continuously monitors workstation and server process trees, memory, file changes, and network sockets to detect and contain behavioral threats, while XDR extends that correlation across identity, cloud, and network layers.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/edr-and-xdr">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/linux-privilege-escalation-cheatsheet">Linux PrivEsc Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Web App Security" data-hub-search="cors misconfiguration a cross-origin resource sharing (cors) misconfiguration occurs when a server dynamically reflects an arbitrary origin header in access-control-allow-origin alongside access-control-allow-credentials: true, allowing malicious websites to read authenticated api responses. web app security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Web App Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/cors-misconfiguration">CORS Misconfiguration</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A Cross-Origin Resource Sharing (CORS) misconfiguration occurs when a server dynamically reflects an arbitrary Origin header in Access-Control-Allow-Origin alongside Access-Control-Allow-Credentials: true, allowing malicious websites to read authenticated API responses.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/cors-misconfiguration">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/http-security-headers-cheatsheet">HTTP Security Headers Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="OSINT &amp; Recon" data-hub-search="banner grabbing banner grabbing is the technique of reading the initial handshake or response headers returned by a network service (such as ssh, http, smtp, or ftp) to identify the software product, version number, and operating system. osint &amp; recon" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">OSINT &amp; Recon</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/shodan-banner-grabbing">Banner Grabbing</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Banner grabbing is the technique of reading the initial handshake or response headers returned by a network service (such as SSH, HTTP, SMTP, or FTP) to identify the software product, version number, and operating system.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/shodan-banner-grabbing">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/cheatsheets/shodan-search-filters-cheatsheet">Shodan Search Filters Cheat Sheet</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Defensive Security" data-hub-search="sbom (software bill of materials) a software bill of materials (sbom) is a machine-readable inventory (in cyclonedx or spdx format) listing every open-source and third-party library, version, and transitive dependency packaged inside an application. defensive security" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Defensive Security</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/sbom-software-bill-of-materials">SBOM (Software Bill of Materials)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A Software Bill of Materials (SBOM) is a machine-readable inventory (in CycloneDX or SPDX format) listing every open-source and third-party library, version, and transitive dependency packaged inside an application.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/sbom-software-bill-of-materials">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/security-checklist">Security Checklist</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Cryptography &amp; Privacy" data-hub-search="diceware passphrase diceware is a provably random method for generating strong, memorable passphrases by selecting random words from a numbered word list using physical dice or a browser csprng. cryptography &amp; privacy" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Cryptography &amp; Privacy</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/diceware-passphrase">Diceware Passphrase</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">Diceware is a provably random method for generating strong, memorable passphrases by selecting random words from a numbered word list using physical dice or a browser CSPRNG.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/diceware-passphrase">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/passphrase">Passphrase Generator</a>
+      </div>
+    </article>
+    <article class="card card-pad" data-hub-card data-hub-cat="Cryptography &amp; Privacy" data-hub-search="csprng (cryptographically secure prng) a cryptographically secure pseudo-random number generator (csprng) produces unpredictable random bytes seeded by operating-system hardware entropy, suitable for generating passwords, cryptographic keys, and session tokens. cryptography &amp; privacy" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <div class="small muted" style="font-weight:600">Cryptography &amp; Privacy</div>
+        <h2 class="h-3 mt-8" style="margin-bottom:0"><a href="/glossary/csprng">CSPRNG (Cryptographically Secure PRNG)</a></h2>
+        <p class="muted small mt-8" style="margin-bottom:0">A Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) produces unpredictable random bytes seeded by operating-system hardware entropy, suitable for generating passwords, cryptographic keys, and session tokens.</p>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <a class="small" style="color:var(--purple);font-weight:600" href="/glossary/csprng">Deep-dive &amp; defenses →</a>
+        <a class="small muted" href="/random-string">Random String Generator</a>
+      </div>
+    </article></div>
+  </div>
 </section>
-
 </main>
 <footer class="site-footer">
   <div class="container">
@@ -108,7 +405,7 @@
           </div>
         </div>
       </div>
-      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/products">Products</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li><li><a href="/glossary">Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/roadmap#all-courses-h">Course order</a></li><li><a href="/learning/roadmap#how-it-works">How learning works</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>

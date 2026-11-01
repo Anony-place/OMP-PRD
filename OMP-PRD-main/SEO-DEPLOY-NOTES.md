@@ -128,3 +128,41 @@ routable to a real file, no noindex page, no duplicates.
    means the GSC error is cosmetic.
 
 This does **not** replace a custom domain. It keeps discovery alive at ₹0.
+
+## Text sitemap fallback (added 2026-11-01)
+
+`/sitemap.txt` is now a fourth discovery endpoint: Google's simplest supported
+format — **one URL per line, UTF-8, nothing else in the file** (no header, no
+comments, no XML).
+
+| Endpoint | Format | GSC "Add a new sitemap" value |
+|---|---|---|
+| `/sitemap.xml` | XML urlset, 297 URLs | `sitemap.xml` |
+| `/google-sitemap.xml` | byte-identical alias | (rename fallback only) |
+| `/sitemap-index.xml` | `<sitemapindex>` → `sitemap.xml` + `rss.xml` | `sitemap-index.xml` |
+| `/sitemap.txt` | **text, one URL per line** | `sitemap.txt` |
+| `/rss.xml` | RSS 2.0, 52 items | `rss.xml` |
+
+Why: on shared hostnames the **XML** endpoints are the ones Search Console
+gets stuck on ("Couldn't fetch", Type Unknown, Last read blank — Google only
+shows Last read when a fetch succeeded). A Vercel-hosted site in Oct 2026 had
+`/sitemap.xml` stuck at 0 discovered pages while `/sitemap.txt` on the same
+host showed **Success** with pages discovered. Same URL set, different format,
+so one format's processing problem cannot take the whole discovery path down.
+
+Verification: `scripts/verify-seo.mjs` now has a `TEXT` group that fails the
+deploy if the file is missing, contains markup/comments/CR/BOM, has whitespace,
+a query string, an off-origin or dead-origin URL, a duplicate, a noindex page,
+a URL that does not resolve to a file — or if its URL set drifts from
+`sitemap.xml` (same generator, same entries).
+
+Content-Type is set to `text/plain; charset=UTF-8` in `firebase.json`.
+
+### Submit order when "Couldn't fetch" persists
+Delete the failing entries first (Google stops retrying after a few days),
+then submit in this order, waiting for a status in between:
+
+1. `sitemap.txt`  ← text endpoint, most likely to be read
+2. `sitemap.xml`
+3. `sitemap-index.xml`
+4. `rss.xml`
