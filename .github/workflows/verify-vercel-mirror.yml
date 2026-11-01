@@ -56,6 +56,29 @@ jobs:
           foreign=$(curl -sS "$MIRROR/sitemap.txt" | grep -c 'web\.app' || true)
           [ "$foreign" = "0" ] || { echo "::error::$foreign line(s) in the sitemap still point at web.app"; exit 1; }
 
+      - name: Wait for the new build to reach the alias
+        run: |
+          set -euo pipefail
+          # A push to main triggers this workflow and a Vercel deployment at the
+          # same time. For the first ~30s the alias still serves the previous
+          # build, so every assertion below would read stale headers. That is a
+          # race, not a regression, and it must not paint the run red.
+          #
+          # This waits for the one thing that distinguishes the two builds
+          # during the migration - the staging noindex header. Once it is gone,
+          # the new tree is being served and the checks can be strict.
+          for attempt in $(seq 1 10); do
+            robots=$(curl -sSI --retry 3 "$MIRROR/" | grep -i '^x-robots-tag:' || true)
+            if ! printf '%s' "$robots" | grep -qi 'noindex'; then
+              echo "alias is serving the new build (attempt $attempt)"
+              exit 0
+            fi
+            echo "attempt $attempt/10: alias still serving the old build ($robots)"
+            sleep 20
+          done
+          echo "::error::the alias served a noindex build for 200s after the merge"
+          exit 1
+
       - name: Pages are indexable
         run: |
           set -euo pipefail
