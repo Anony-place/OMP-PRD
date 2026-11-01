@@ -256,7 +256,8 @@ function main() {
       process.exit(1);
     }
     console.log(
-      `vercel.json in sync: ${report.redirects} redirects (from ${report.redirectsFrom}), ` +
+      `vercel.json in sync: ${report.redirects} redirects (from ${report.redirectsFrom}` +
+      `${report.redirectsSkipped ? `, ${report.redirectsSkipped} migration rule(s) stay Firebase-only` : ''}), ` +
       `${report.rewrites} rewrites (from ${report.rewritesFrom}), ` +
       `${report.headers} header rules (from ${report.headersFrom} blocks)`
     );
@@ -265,7 +266,8 @@ function main() {
 
   fs.writeFileSync(VERCEL_JSON, serialized);
   console.log(
-    `vercel.json written: ${report.redirects} redirects (from ${report.redirectsFrom}), ` +
+    `vercel.json written: ${report.redirects} redirects (from ${report.redirectsFrom}` +
+    `${report.redirectsSkipped ? `, ${report.redirectsSkipped} migration rule(s) stay Firebase-only` : ''}), ` +
     `${report.rewrites} rewrites (from ${report.rewritesFrom}), ` +
     `${report.headers} header rules (from ${report.headersFrom} blocks)`
   );

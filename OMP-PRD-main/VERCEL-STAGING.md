@@ -19,9 +19,19 @@ host, not the file.
 
 ## How the move works
 
-1. `firebase.json` gets one extra rule at the **top**: every path 301s to
-   `https://oopsmypassword.vercel.app` + the same path. Redirects run before
-   anything else on Firebase Hosting, so the old host stops serving pages.
+1. `firebase.json` carries two rules at the **top**:
+
+   ```json
+   { "regex": "/(.*)\\.html", "destination": "https://oopsmypassword.vercel.app/:1", "type": 301 }
+   { "regex": "/(.*)",        "destination": "https://oopsmypassword.vercel.app/:1", "type": 301 }
+   ```
+
+   The first strips `.html` so `/about.html` lands on `/about` - the URL the new
+   host actually serves and the one the sitemap submits. Without it every
+   `.html` request would take a second hop (301 then Vercel's 308). The second
+   catches everything else. Redirects run before static files, rewrites and
+   cleanUrls on Firebase Hosting, so the old host stops serving pages at all -
+   including `robots.txt` and `sitemap.xml`, which is normal for a site move.
 2. `vercel-build.sh` (run by Vercel at build time) rewrites the
    origin inside every HTML, XML, TXT, JS and JSON file, so the new host's
    canonicals, `og:url`, JSON-LD `@id`, sitemap and RSS all point at itself.
@@ -34,14 +44,9 @@ host, not the file.
 
 ## Rollback (one commit)
 
-The move is a single rule in `firebase.json`:
-
-```json
-{ "regex": "/(.*)", "destination": "https://oopsmypassword.vercel.app/:1", "type": 301 }
-```
-
-Delete that rule, regenerate (`node scripts/build-vercel-config.mjs`), push, and
-Firebase serves the site again. Nothing else in the repository changed: the
+The move is those two rules in `firebase.json`. Delete them, push, and Firebase
+serves the site again (regenerating `vercel.json` is a no-op either way: the
+generator skips them, so the mirror never changes). Nothing else in the repository changed: the
 committed HTML still carries the `web.app` origin (Vercel rewrites it at build
 time), so restoring the old host is a revert, not a rebuild. The Vercel
 deployment can stay up or be deleted.
@@ -51,7 +56,7 @@ deployment can stay up or be deleted.
 | Step | What | Why this order |
 | --- | --- | --- |
 | A | Vercel becomes indexable + canonical to itself + build script | The destination must be ready before anything points at it |
-| B | Firebase 301 to Vercel | Flipping first would send traffic to a host that still said `noindex` |
+| B | Firebase 301 to Vercel | Flipping first would send traffic to a host that still said `noindex` (it did, for four minutes, when the first Phase A build failed - and the live check caught it) |
 
 Search Console **Change of Address** belongs after B, from the `web.app`
 property to the `vercel.app` property.
@@ -60,8 +65,10 @@ property to the `vercel.app` property.
 
 `tools/test_vercel_config.mjs` (CI gate on every Firebase deploy):
 
-- `vercel.json` is in sync with `firebase.json`, 124 redirects / 15 rewrites /
-  38 header rules
+- `vercel.json` is in sync with `firebase.json`: 124 legacy redirects / 15
+  rewrites / 38 header rules, plus **2 migration rules that stay Firebase-only**
+- offline: **all 455 known URLs 301 to the same path on the new host**, and then
+  resolve exactly as they did on the old one
 - **no `noindex` on any of the site's own pages** (the deliberate `/Anony.su`
   one is still carried over)
 - every redirect is a 301, no destination is dangling, no rewrite shadows a

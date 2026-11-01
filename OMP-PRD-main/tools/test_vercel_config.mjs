@@ -70,9 +70,17 @@ const sitemapPaths = (() => {
   }
 
   section('Coverage: nothing was dropped on the way to Vercel');
+  /* Two rules in firebase.json are the move itself: the 301 that hands every
+     path to Vercel. Converting them would make Vercel redirect to Vercel, so the
+     generator skips them and they are counted separately, not lost. */
+  const isMove = (rule) => String(rule.destination || '').startsWith('https://oopsmypassword.vercel.app');
+  const moveRules = firebase.redirects.filter(isMove);
+  const legacyRules = firebase.redirects.filter((rule) => !isMove(rule));
   assert(Array.isArray(vercel.redirects), 'vercel.json has a redirects array');
-  assert(vercel.redirects.length === firebase.redirects.length,
-    `redirects carried over: ${vercel.redirects.length}/${firebase.redirects.length}`);
+  assert(vercel.redirects.length === legacyRules.length,
+    `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length}`);
+  assert(moveRules.length === 2,
+    `the move is 2 Firebase-only rules (found ${moveRules.length}): .html stripped, then catch-all`);
   assert(vercel.rewrites.length === firebase.rewrites.length,
     `rewrites carried over: ${vercel.rewrites.length}/${firebase.rewrites.length}`);
 
@@ -109,7 +117,7 @@ const sitemapPaths = (() => {
 
   const externalTargets = vercel.redirects.filter((r) => /^https?:/.test(r.destination));
   assert(externalTargets.length === 0,
-    'no redirect leaves the site (all 124 legacy URLs stay internal)');
+    `no redirect leaves the site (all ${legacyRules.length} legacy URLs stay internal)`);
 
   /* A redirect whose destination has no file behind it just swaps one 404 for
      another, one hop later. */

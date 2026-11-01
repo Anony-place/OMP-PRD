@@ -63,16 +63,42 @@ function substitute(destination, match) {
   });
 }
 
-function createRouter(rootDir, configPath) {
-  const cfg = JSON.parse(fs.readFileSync(configPath || path.join(rootDir, 'firebase.json'), 'utf8')).hosting;
+/* The one redirect that is not about this host's own routing: the 301 that
+   moves the entire site to Vercel. It is excluded from `resolve` by default,
+   because the preview server and every routing test answer the question "where
+   does this URL land on THIS host", and the honest answer for a committed page
+   is still "the page". The parity harness, which has to prove the move really
+   covers every URL, passes { includeMigration: true }. */
+const MIGRATION_HOST = 'oopsmypassword.vercel.app';
+
+function isMigrationRedirect(rule) {
+  const destination = String(rule.destination || '');
+  if (!/^https?:\/\//i.test(destination)) return false;
+  try {
+    return new URL(destination).host === MIGRATION_HOST;
+  } catch (error) {
+    return false;
+  }
+}
+
+function loadHosting(cfgOrPath, rootDir) {
+  if (cfgOrPath && typeof cfgOrPath === 'object') return cfgOrPath.hosting || cfgOrPath;
+  const at = cfgOrPath || path.join(rootDir, 'firebase.json');
+  return JSON.parse(fs.readFileSync(at, 'utf8')).hosting;
+}
+
+function createRouter(rootDir, configPath, options = {}) {
+  const cfg = loadHosting(configPath, rootDir);
   const cleanUrls = cfg.cleanUrls !== false;
   const noTrailingSlash = cfg.trailingSlash === false;
 
-  const redirects = (cfg.redirects || []).map(r => ({
-    regex: r.regex ? new RegExp('^' + r.regex + '$') : globToRegex(r.source),
-    destination: r.destination,
-    status: r.type || 301
-  }));
+  const redirects = (cfg.redirects || [])
+    .filter(r => options.includeMigration || !isMigrationRedirect(r))
+    .map(r => ({
+      regex: r.regex ? new RegExp('^' + r.regex + '$') : globToRegex(r.source),
+      destination: r.destination,
+      status: r.type || 301
+    }));
   const rewrites = (cfg.rewrites || []).map(r => ({
     regex: r.regex ? new RegExp('^' + r.regex + '$') : globToRegex(r.source),
     destination: r.destination,
@@ -185,4 +211,6 @@ function createRouter(rootDir, configPath) {
   return { resolve, follow, headersFor };
 }
 
+createRouter.MIGRATION_HOST = MIGRATION_HOST;
+createRouter.isMigrationRedirect = isMigrationRedirect;
 module.exports = createRouter;

@@ -206,8 +206,45 @@ function follow(resolve, start, max = 8) {
   }
 }
 
+/* Every URL the old host ever answered has to leave it, and has to land on the
+   SAME path on the new one - a redirect to the wrong path is a 404 with extra
+   steps, and a URL that is not redirected at all keeps competing with its own
+   replacement. */
+function compareMigration(hosting, corpus) {
+  const href = `https://${createFirebaseRouter.MIGRATION_HOST}`;
+  const rules = (hosting.redirects || []).filter(createFirebaseRouter.isMigrationRedirect);
+  if (!rules.length) return { active: false, covered: 0, missed: [], misrouted: [] };
+
+  const fullRouter = createFirebaseRouter(ROOT, hosting, { includeMigration: true });
+  const missed = [];
+  const misrouted = [];
+
+  for (const url of corpus) {
+    const outcome = fullRouter.resolve(url, 0);
+    if (!outcome || outcome.type !== 'redirect') { missed.push(url); continue; }
+    let landed;
+    try {
+      landed = new URL(outcome.location);
+    } catch (error) {
+      missed.push(url);
+      continue;
+    }
+    if (landed.origin !== href) { misrouted.push({ url, to: outcome.location }); continue; }
+    /* /x.html must land on /x, because that is the URL the new host serves and
+       the one the sitemap submits. A .html path would only 308 again. */
+    const expected = url.replace(/\.html$/, '') || '/';
+    if (landed.pathname !== expected) misrouted.push({ url, to: landed.pathname, expected });
+  }
+
+  return { active: true, covered: corpus.length - missed.length - misrouted.length, missed, misrouted };
+}
+
 function compareOffline() {
-  const firebaseRouter = createFirebaseRouter(ROOT, path.join(ROOT, 'firebase.json'));
+  const hosting = JSON.parse(fs.readFileSync(path.join(ROOT, 'firebase.json'), 'utf8')).hosting;
+  /* The default router already drops the move, so this comparison answers "does
+     the page you reach after the redirect behave exactly as the old host did" -
+     the 124 legacy redirects, cleanUrls, rewrites, 404s. */
+  const firebaseRouter = createFirebaseRouter(ROOT, hosting);
   const vercelRouter = createVercelRouter(ROOT, path.join(ROOT, 'vercel.json'));
   const corpus = buildCorpus();
   const diffs = [];
@@ -223,7 +260,8 @@ function compareOffline() {
     }
   }
 
-  return { corpus: corpus.length, diffs, hopDiffs };
+  const migration = compareMigration(hosting, corpus);
+  return { corpus: corpus.length, diffs, hopDiffs, migration };
 }
 
 /* ---------------------------------------------------------------- live mode */
@@ -253,6 +291,10 @@ async function probe(origin, route, attempts = 3) {
       return {
         status: response.status,
         location: location ? new URL(location, url).pathname : null,
+        /* Absolute, so a redirect that changes host can be followed. The move
+           sends web.app straight to vercel.app; treating that as a path would
+           bounce around one origin until the hop limit. */
+        locationUrl: location ? new URL(location, url).href : null,
         contentType,
         title,
         robots: response.headers.get('x-robots-tag') || '',
@@ -276,17 +318,22 @@ function describeLive(probeResult, finalRoute) {
 }
 
 async function followLive(origin, start, max = 6) {
-  let route = start;
+  let url = new URL(start, origin);
   let hops = 0;
   let last;
+  const crossed = [];
   while (hops <= max) {
-    last = await probe(origin, route);
-    const described = describeLive(last, route);
-    if (described.kind !== 'redirect') return { ...described, hops, response: last, finalRoute: route };
-    route = described.target;
+    last = await probe(url.origin, `${url.pathname}${url.search}`);
+    const described = describeLive(last, url.pathname);
+    if (described.kind !== 'redirect') {
+      return { ...described, hops, response: last, finalRoute: url.pathname, crossed };
+    }
+    const next = last.locationUrl ? new URL(last.locationUrl) : new URL(described.target, url);
+    if (next.origin !== url.origin) crossed.push(`${url.origin} -> ${next.origin}`);
+    url = next;
     hops += 1;
   }
-  return { ...describeLive(last, route), hops, response: last, finalRoute: route, loop: true };
+  return { ...describeLive(last, url.pathname), hops, response: last, finalRoute: url.pathname, crossed, loop: true };
 }
 
 function stratified(corpus, size) {
@@ -394,6 +441,23 @@ if (hopDiffs.length) {
   console.log(`  ! ${hopDiffs.length} URL(s) reach the same destination in a different number of redirect hops`);
   for (const d of hopDiffs.slice(0, 5)) {
     console.log(`      ${d.url || d.route}: ${d.firebase.hops} vs ${d.vercel.hops} hop(s) -> ${d.vercel.target}`);
+  }
+}
+
+const migration = result.migration || { active: false };
+if (migration.active) {
+  console.log(`  ✓ the move covers every URL: ${migration.covered} land on the same path on ${createFirebaseRouter.MIGRATION_HOST}`);
+  for (const url of migration.missed.slice(0, 10)) {
+    console.log(`      not redirected: ${url}`);
+    annotate('error', `${url}: the old host still serves this path instead of redirecting it`);
+  }
+  for (const miss of migration.misrouted.slice(0, 10)) {
+    console.log(`      wrong path: ${miss.url} -> ${miss.to}${miss.expected ? ` (expected ${miss.expected})` : ''}`);
+    annotate('error', `${miss.url} redirects to ${miss.to}, not to the same path on the new host`);
+  }
+  if (migration.missed.length || migration.misrouted.length) {
+    console.log(`\n  ✗ the move has ${migration.missed.length + migration.misrouted.length} gap(s)`);
+    process.exit(1);
   }
 }
 
