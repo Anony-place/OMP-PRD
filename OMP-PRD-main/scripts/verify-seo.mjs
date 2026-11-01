@@ -462,18 +462,16 @@ function checkLinks() {
 
   broken.forEach(([f, h]) => fail(`${f}: broken internal link -> ${h}`));
 
-  /* Orphan check applies to hand-authored pages only. Generated article and
-     product pages are linked by JavaScript from the hub, not by static HTML. */
+  /* Every indexable page—including database-backed articles, products, OSINT,
+     and Pentest pages—is now linked in static HTML on its hub and /sitemap,
+     so no directory needs an orphan exemption. */
   const orphans = [...inbound.entries()]
     .filter(([u, n]) => n === 0)
     .map(([u]) => u)
     .filter((u) => !u.startsWith('/Anony.su'))
     .filter((u) => {
       const f = routeToFile.get(u);
-      const dir = path.dirname(rel(f));
-      // Private/noindex utility pages (e.g. query-based certificate verification)
-      // do not need an indexable inbound landing-page link.
-      return !parsed.get(f)?.robots?.includes('noindex') && !GENERATED_DIRS.has(dir) && rel(f) !== 'guides.html';
+      return !parsed.get(f)?.robots?.includes('noindex') && rel(f) !== 'guides.html';
     });
   orphans.forEach((u) => fail(`orphan page: ${u} has no inbound internal link`));
 
@@ -486,11 +484,6 @@ function checkLinks() {
 /* ==================================================================== main */
 console.log(`Verifying SEO output for ${SITE}\n`);
 
-const routes = ['/', '/checker', '/generator', '/tools', '/articles', '/products', '/osint', '/pentest',
-  '/breach-check', '/password-health', '/entropy', '/passphrase', '/random-string',
-  '/security-checklist', '/about', '/faq', '/glossary', '/security', '/sitemap',
-  '/privacy', '/terms', '/contact'];
-
 /* Routes that are deliberately not indexable — they must never be submitted. */
 const noindexRoutes = new Set(
   [...parsed.entries()]
@@ -498,6 +491,16 @@ const noindexRoutes = new Set(
     .map(([f]) => publicUrl(f))
     .filter(Boolean)
 );
+
+/* Dynamically require EVERY indexable HTML page on disk to be in sitemap.xml
+   and google-sitemap.xml so no published article, tool, lesson, or guide can
+   ever be silently omitted from Google Search Console. */
+const routes = [...new Set(
+  [...parsed.entries()]
+    .filter(([f, p]) => !(p.robots && p.robots.includes('noindex')) && rel(f) !== 'guides.html' && !rel(f).startsWith('Anony.su'))
+    .map(([f]) => publicUrl(f))
+    .filter(Boolean)
+)];
 
 checkDomain();
 checkRobots();

@@ -123,6 +123,7 @@ jobs:
           node scripts/build-academy.mjs
           node functions/sync-sitemap-core.js
           node scripts/build-static-seo.mjs
+          node scripts/build-phase3-seo.mjs
           # The Supabase article build intentionally produces /articles/<slug>.html.
           # With Firebase cleanUrls enabled, the HTML files map to /articles/<slug>.
           test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
@@ -209,6 +210,7 @@ jobs:
           node scripts/build-academy.mjs
           node functions/sync-sitemap-core.js
           node scripts/build-static-seo.mjs
+          node scripts/build-phase3-seo.mjs
           test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
 
       - name: Normalize production site origin

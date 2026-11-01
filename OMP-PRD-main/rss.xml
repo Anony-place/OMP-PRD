@@ -7,6 +7,111 @@
     <language>en-us</language>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
+      <title>AI Agents Can Hack Other AI Agents: A New Security Threat</title>
+      <link>https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents</guid>
+      <category>Security Research</category>
+      <description>AI Agents Can Hack Other AI Agents: A New Security Threat</description>
+    </item>
+    <item>
+      <title>Android App Blocked to Protect Your Device? What to Do</title>
+      <link>https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do</guid>
+      <category>Security Research</category>
+      <description>Android App Blocked to Protect Your Device? What to Do</description>
+    </item>
+    <item>
+      <title>Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT</title>
+      <link>https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt</guid>
+      <category>Security Research</category>
+      <description>Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT</description>
+    </item>
+    <item>
+      <title>Best Free OSINT Tools for Beginners in 2026</title>
+      <link>https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners</guid>
+      <category>Security Research</category>
+      <description>Best Free OSINT Tools for Beginners in 2026</description>
+    </item>
+    <item>
+      <title>Cloudflare Verification Asking You to Press Win+R? It’s a Scam</title>
+      <link>https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam</guid>
+      <category>Security Research</category>
+      <description>Cloudflare Verification Asking You to Press Win+R? It’s a Scam</description>
+    </item>
+    <item>
+      <title>Cyber Security Salary in the USA in 2026: Full Guide</title>
+      <link>https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026</guid>
+      <category>Security Research</category>
+      <description>Cyber Security Salary in the USA in 2026: Full Guide</description>
+    </item>
+    <item>
+      <title>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</title>
+      <link>https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</guid>
+      <category>Security Research</category>
+      <description>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</description>
+    </item>
+    <item>
+      <title>Holehe vs Epieos: Free vs Freemium Email Lookup</title>
+      <link>https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison</guid>
+      <category>Security Research</category>
+      <description>Holehe vs Epieos: Free vs Freemium Email Lookup</description>
+    </item>
+    <item>
+      <title>How Does AI Work? A Beginner&amp;#39;s Guide to Artificial Intelligence</title>
+      <link>https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence</guid>
+      <category>Security Research</category>
+      <description>How Does AI Work? A Beginner&amp;#39;s Guide to Artificial Intelligence</description>
+    </item>
+    <item>
+      <title>How to Spot Fake Passkey Setup Scams Before They Steal Your Account</title>
+      <link>https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account</guid>
+      <category>Security Research</category>
+      <description>How to Spot Fake Passkey Setup Scams Before They Steal Your Account</description>
+    </item>
+    <item>
+      <title>Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead</title>
+      <link>https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead</guid>
+      <category>Security Research</category>
+      <description>Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead</description>
+    </item>
+    <item>
+      <title>CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys</title>
+      <link>https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys</guid>
+      <category>Security Research</category>
+      <description>CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys</description>
+    </item>
+    <item>
+      <title>Sherlock vs Maigret: Which Username OSINT Tool Should You Use?</title>
+      <link>https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison</guid>
+      <category>Security Research</category>
+      <description>Sherlock vs Maigret: Which Username OSINT Tool Should You Use?</description>
+    </item>
+    <item>
+      <title>Top 5 Books for Learning Ethical Hacking PDF</title>
+      <link>https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf</guid>
+      <category>Security Research</category>
+      <description>Top 5 Books for Learning Ethical Hacking PDF</description>
+    </item>
+    <item>
+      <title>Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It</title>
+      <link>https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it</guid>
+      <category>Security Research</category>
+      <description>Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It</description>
+    </item>
+    <item>
       <title>Bitwarden vs 1Password: Security &amp; Vault Comparison</title>
       <link>https://oopsmypassword.web.app/compare/bitwarden-vs-1password</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/compare/bitwarden-vs-1password</guid>

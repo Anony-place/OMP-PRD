@@ -56,10 +56,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET') return;
   const url = new URL(req.url);
+
+  /* Skip cross-origin requests (e.g. Supabase REST, esm.sh, HIBP) so the browser handles them natively. */
   if (url.origin !== self.location.origin) return;
+
+  /* Skip non-GET requests and admin/sitemap endpoints. */
+  if (req.method !== 'GET') return;
   if (url.pathname.startsWith('/Anony.su')) return;
+  if (url.pathname.endsWith('.xml') || url.pathname === '/robots.txt') return;
 
   // Network-first with cache fallback for HTML and JSON; Stale-while-revalidate for static assets
   if (req.mode === 'navigate' || url.pathname.endsWith('.json')) {

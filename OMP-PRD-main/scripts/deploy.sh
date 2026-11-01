@@ -124,6 +124,7 @@ if [ "$VERIFY_ONLY" = 0 ] && [ "$SKIP_BUILD" = 0 ]; then
   run "academy from live data     (build-academy.mjs)"              node scripts/build-academy.mjs
   run "sitemap core sync          (sync-sitemap-core.js)"           node functions/sync-sitemap-core.js
   run "articles and sitemap       (build-static-seo.mjs)"           node scripts/build-static-seo.mjs
+  run "phase3 tools, hubs & feeds (build-phase3-seo.mjs)"           node scripts/build-phase3-seo.mjs
   run "canonical origin           (fix-site-origin.mjs)"            node scripts/fix-site-origin.mjs
   run "google sitemap mirror"                                         cp sitemap.xml google-sitemap.xml
 

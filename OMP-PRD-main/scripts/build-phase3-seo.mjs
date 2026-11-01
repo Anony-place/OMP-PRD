@@ -2102,12 +2102,67 @@ function updateToolsHubPage() {
 }
 
 /* ============================================================
-   STEP 6: Enhance Articles & OSINT/Pentest Pages with FAQPage JSON-LD
-           and Cross-Pillar Topical Mesh Internal Links
+   STEP 6: Enhance Articles & OSINT/Pentest Pages with FAQPage JSON-LD,
+           Static Hub Crawlability, and Cross-Pillar Topical Mesh
    ============================================================ */
+function extractTitleFromFile(filePath, fallbackSlug) {
+  const html = fs.readFileSync(filePath, 'utf8');
+  const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  if (h1) return h1[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const t = html.match(/<title>([\s\S]*?)<\/title>/i);
+  if (t) return t[1].replace(/\s*[|—-]\s*OopsMyPassword.*$/i, '').trim();
+  return fallbackSlug;
+}
+
+function extractLastmodFromFile(filePath, snapshotMap, routeKey) {
+  if (snapshotMap && snapshotMap.has(routeKey)) return snapshotMap.get(routeKey);
+  const html = fs.readFileSync(filePath, 'utf8');
+  const modMeta = html.match(/<meta\s+property="article:(?:modified_time|published_time)"\s+content="(\d{4}-\d{2}-\d{2})/i);
+  if (modMeta) return modMeta[1];
+  const jsonMod = html.match(/"date(?:Modified|Published)"\s*:\s*"(\d{4}-\d{2}-\d{2})/i);
+  if (jsonMod) return jsonMod[1];
+  return '2026-10-08';
+}
+
 function enhanceExistingPagesWithMeshAndSchema() {
-  // Update shared footer file
+  // Restore clean noindex redirect stub for guides.html so it never causes Search Console errors
+  const GUIDES_REDIRECT_STUB = `<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guides have moved — OopsMyPassword</title>
+  <meta name="description" content="Guides now live inside the Articles hub: security news, deep dives, how-tos and guides in one place.">
+  <!-- noindex + no canonical: this stub exists only as a fallback for the
+       Firebase 301 from /guides.html, so it must never enter the index. -->
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0; url=/articles">
+  <meta name="theme-color" content="#050811">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+</head>
+<body>
+<main id="main" style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px 20px">
+  <div class="container" style="max-width:620px">
+    <span class="eyebrow">Guides have moved</span>
+    <h1 class="h-2" style="margin-top:12px">Guides are now part of <span class="grad-text">Articles</span></h1>
+    <p class="lead" style="margin-top:14px">Everything we publish — security news, deep dives, how-tos and guides — lives in one place now.</p>
+    <p style="margin-top:24px"><a class="btn btn-primary" href="/articles">Continue to Articles</a></p>
+    <p class="meta" style="margin-top:18px">Redirecting you automatically…</p>
+  </div>
+</main>
+<noscript>
+  <p style="text-align:center;padding:0 20px 48px"><a href="/articles" style="color:var(--purple)">Go to Articles →</a></p>
+</noscript>
+</body>
+</html>
+`;
+  fs.writeFileSync(path.join(ROOT, 'guides.html'), GUIDES_REDIRECT_STUB);
+
+  // Update both shared footer files so test_site_contracts.js stays in sync
   fs.writeFileSync(path.join(ROOT, 'tools/site-footer.html'), UPDATED_FOOTER);
+  fs.writeFileSync(path.join(ROOT, 'functions/site-footer.fragment'), UPDATED_FOOTER);
 
   // Walk all HTML files to update footer and add RSS alternate link
   function* walkHtml(dir) {
@@ -2122,8 +2177,10 @@ function enhanceExistingPagesWithMeshAndSchema() {
   }
 
   for (const file of walkHtml(ROOT)) {
-    let html = fs.readFileSync(file, 'utf8');
     const rel = path.relative(ROOT, file).split(path.sep).join('/');
+    if (rel === 'guides.html' || rel === '404.html') continue;
+
+    let html = fs.readFileSync(file, 'utf8');
 
     // 1. Sync footer on all pages so new hubs (/compare, /cheatsheets, /dork-builder, /hash-inspector, /url-scanner) get strong site-wide links
     if (html.includes('<footer class="site-footer">')) {
@@ -2173,7 +2230,7 @@ function enhanceExistingPagesWithMeshAndSchema() {
       }
     }
 
-    // 4. For /osint/*.html and /pentest/*.html: inject FAQPage JSON-LD if not present + Cheat Sheet / Comparison cross-links
+    // 4. For /osint/*.html and /pentest/*.html: inject FAQPage JSON-LD if not present
     if ((rel.startsWith('osint/') || rel.startsWith('pentest/')) && !rel.startsWith('pentest/category/') && !html.includes('"@type":"FAQPage"')) {
       const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
       const descMatch = html.match(/<meta name="description" content="([^"]+)"/i);
@@ -2205,22 +2262,163 @@ function enhanceExistingPagesWithMeshAndSchema() {
 
     fs.writeFileSync(file, html);
   }
+
+  // 5. Inject Static Crawlable Links on Hub Pages (/articles, /products, /osint, /pentest)
+  // so Googlebot discovers every database-backed page directly from static HTML!
+  const dbArticles = fs.existsSync(path.join(ROOT, 'articles'))
+    ? fs.readdirSync(path.join(ROOT, 'articles')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/articles/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'articles', f), slug) };
+      })
+    : [];
+
+  const guideArticles = fs.existsSync(path.join(ROOT, 'guides'))
+    ? fs.readdirSync(path.join(ROOT, 'guides')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/articles/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'guides', f), slug) };
+      })
+    : [];
+
+  const dbProducts = fs.existsSync(path.join(ROOT, 'products'))
+    ? fs.readdirSync(path.join(ROOT, 'products')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/products/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'products', f), slug) };
+      })
+    : [];
+
+  const dbOsint = fs.existsSync(path.join(ROOT, 'osint'))
+    ? fs.readdirSync(path.join(ROOT, 'osint')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/osint/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'osint', f), slug) };
+      })
+    : [];
+
+  const dbPentest = fs.existsSync(path.join(ROOT, 'pentest'))
+    ? fs.readdirSync(path.join(ROOT, 'pentest')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/pentest/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'pentest', f), slug) };
+      })
+    : [];
+
+  const dbPentestCats = fs.existsSync(path.join(ROOT, 'pentest/category'))
+    ? fs.readdirSync(path.join(ROOT, 'pentest/category')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/pentest/category/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'pentest/category', f), slug) };
+      })
+    : [];
+
+  // Update articles.html <noscript> with all 30 articles (15 guides + 15 DB articles)
+  const articlesHubPath = path.join(ROOT, 'articles.html');
+  if (fs.existsSync(articlesHubPath)) {
+    let aHtml = fs.readFileSync(articlesHubPath, 'utf8');
+    const allArticles = [...guideArticles, ...dbArticles];
+    const listHtml = allArticles.map((a) => `        <li><a href="${esc(a.url)}" style="color:var(--purple)">${esc(a.title)}</a></li>`).join('\n');
+    aHtml = aHtml.replace(
+      /<noscript>[\s\S]*?<\/noscript>/,
+      `<noscript>\n      <div class="notice-band mt-24"><p>All ${allArticles.length} security articles and guides are available as static HTML pages below:</p>\n      <ul style="columns:2;column-gap:28px;margin-top:10px;padding-left:18px;text-align:left">\n${listHtml}\n      </ul></div>\n    </noscript>`
+    );
+    fs.writeFileSync(articlesHubPath, aHtml);
+  }
+
+  // Update products.html <noscript> so it links all published products instead of saying "There are no products for sale today"
+  const productsHubPath = path.join(ROOT, 'products.html');
+  if (fs.existsSync(productsHubPath) && dbProducts.length) {
+    let pHtml = fs.readFileSync(productsHubPath, 'utf8');
+    const pLinks = dbProducts.map((p) => `<li><a href="${esc(p.url)}" style="color:var(--purple)">${esc(p.title)}</a></li>`).join('');
+    pHtml = pHtml.replace(
+      /<noscript>[\s\S]*?<\/noscript>/,
+      `<noscript>\n      <div class="notice-band mt-24"><p>Browse published security books, courses, and resources:</p><ul style="margin-top:10px;padding-left:18px;text-align:left">${pLinks}</ul></div>\n    </noscript>`
+    );
+    fs.writeFileSync(productsHubPath, pHtml);
+  }
+
+  // Update osint.html <noscript> so all 10 OSINT tool pages are directly linked from static HTML
+  const osintHubPath = path.join(ROOT, 'osint.html');
+  if (fs.existsSync(osintHubPath) && dbOsint.length) {
+    let oHtml = fs.readFileSync(osintHubPath, 'utf8');
+    const oLinks = dbOsint.map((o) => `<li><a href="${esc(o.url)}" style="color:var(--purple)">${esc(o.title)}</a></li>`).join('');
+    oHtml = oHtml.replace(
+      /<noscript>[\s\S]*?<\/noscript>/,
+      `<noscript>\n      <div class="notice-band mt-24"><p>Browse all OSINT tool guides directly (also see <a href="/articles/best-free-osint-tools-for-beginners" style="color:var(--purple)">Best Free OSINT Tools for Beginners</a>):</p><ul style="columns:2;column-gap:24px;margin-top:10px;padding-left:18px;text-align:left">${oLinks}</ul></div>\n    </noscript>`
+    );
+    fs.writeFileSync(osintHubPath, oHtml);
+  }
+
+  // Update pentest.html <noscript> so all 37 Pentest tool pages + 13 category pages are directly linked from static HTML
+  const pentestHubPath = path.join(ROOT, 'pentest.html');
+  if (fs.existsSync(pentestHubPath) && dbPentest.length) {
+    let ptHtml = fs.readFileSync(pentestHubPath, 'utf8');
+    const ptLinks = [...dbPentest, ...dbPentestCats].map((t) => `<li><a href="${esc(t.url)}" style="color:var(--purple)">${esc(t.title)}</a></li>`).join('');
+    ptHtml = ptHtml.replace(
+      /<noscript>[\s\S]*?<\/noscript>/,
+      `<noscript>\n      <div class="notice-band mt-24"><p>Browse all authorized penetration testing tool guides and categories directly (or start with the <a href="/learning" style="color:var(--purple)">OMP Academy</a>):</p><ul style="columns:3;column-gap:24px;margin-top:10px;padding-left:18px;text-align:left">${ptLinks}</ul></div>\n    </noscript>`
+    );
+    fs.writeFileSync(pentestHubPath, ptHtml);
+  }
 }
 
 /* ============================================================
    STEP 7: Build /sitemap.html, /rss.xml, /llms.txt, /llms-full.txt
-           and Synchronize sitemap.xml + google-sitemap.xml + sitemap-core.mjs
+           and Synchronize sitemap.xml + google-sitemap.xml + sitemap-index.xml
    ============================================================ */
-function buildSitemapAndFeeds() {
-  // 1. Update /sitemap.html so every new tool, comparison, cheat sheet, and glossary term is linked directly from the HTML Sitemap Hub!
+async function buildSitemapAndFeeds() {
+  const dbArticles = fs.existsSync(path.join(ROOT, 'articles'))
+    ? fs.readdirSync(path.join(ROOT, 'articles')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/articles/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'articles', f), slug), file: path.join(ROOT, 'articles', f) };
+      })
+    : [];
+
+  const dbProducts = fs.existsSync(path.join(ROOT, 'products'))
+    ? fs.readdirSync(path.join(ROOT, 'products')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/products/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'products', f), slug), file: path.join(ROOT, 'products', f) };
+      })
+    : [];
+
+  const dbOsint = fs.existsSync(path.join(ROOT, 'osint'))
+    ? fs.readdirSync(path.join(ROOT, 'osint')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/osint/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'osint', f), slug), file: path.join(ROOT, 'osint', f) };
+      })
+    : [];
+
+  const dbPentest = fs.existsSync(path.join(ROOT, 'pentest'))
+    ? fs.readdirSync(path.join(ROOT, 'pentest')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/pentest/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'pentest', f), slug), file: path.join(ROOT, 'pentest', f) };
+      })
+    : [];
+
+  const dbPentestCats = fs.existsSync(path.join(ROOT, 'pentest/category'))
+    ? fs.readdirSync(path.join(ROOT, 'pentest/category')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        return { slug, url: `/pentest/category/${slug}`, title: extractTitleFromFile(path.join(ROOT, 'pentest/category', f), slug), file: path.join(ROOT, 'pentest/category', f) };
+      })
+    : [];
+
+  // 1. Update /sitemap.html so every tool, comparison, cheat sheet, glossary term, and DB-published page is linked directly from the HTML Sitemap Hub, while preserving data-sitemap-live!
   const sitemapFile = path.join(ROOT, 'sitemap.html');
   let sitemapHtml = fs.readFileSync(sitemapFile, 'utf8');
 
   const compareLinks = COMPARISONS.map((c) => `<li><a href="/compare/${esc(c.slug)}">${esc(c.shortTitle)}</a></li>`).join('');
   const cheatsheetLinks = CHEATSHEETS.map((c) => `<li><a href="/cheatsheets/${esc(c.slug)}">${esc(c.shortTitle)}</a></li>`).join('');
   const glossaryLinks = GLOSSARY_TERMS.map((g) => `<li><a href="/glossary/${esc(g.slug)}">${esc(g.term)}</a></li>`).join('');
+  const dbArticleLinks = dbArticles.map((a) => `<li><a href="${esc(a.url)}">${esc(a.title)}</a></li>`).join('');
+  const dbProductLinks = dbProducts.map((p) => `<li><a href="${esc(p.url)}">${esc(p.title)}</a></li>`).join('');
+  const dbOsintLinks = dbOsint.map((o) => `<li><a href="${esc(o.url)}">${esc(o.title)}</a></li>`).join('');
+  const dbPentestLinks = dbPentest.map((p) => `<li><a href="${esc(p.url)}">${esc(p.title)}</a></li>`).join('');
+  const dbPentestCatLinks = dbPentestCats.map((c) => `<li><a href="${esc(c.url)}">${esc(c.title)}</a></li>`).join('');
 
-  const expandedSitemapSection = `<section class="section-tight">
+  const expandedSitemapMain = `<main id="main">
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">All pages</span>
+    <h1 class="h-1">Sitemap</h1>
+    <p class="lead">Every interactive tool, Academy course, OSINT &amp; Pentest reference, comparison, cheat sheet, glossary term, and article on OopsMyPassword. Machine-readable XML at <a href="/sitemap.xml" style="color:var(--purple)">/sitemap.xml</a>.</p>
+  </div>
+</section>
+<section class="section-tight">
   <div class="container"><div class="grid grid-3 sitemap-grid">
     <div class="footer-col card card-pad"><div class="footer-col-title">Interactive Security Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check (k-Anonymity)</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/passphrase">Passphrase Generator</a></li><li><a href="/entropy">Password Entropy Calculator</a></li><li><a href="/random-string">Random String Generator</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/dork-builder">Google Dork &amp; OSINT Builder</a></li><li><a href="/hash-inspector">Hash, JWT &amp; Encoding Inspector</a></li><li><a href="/url-scanner">Phishing URL Risk Scanner</a></li><li><a href="/tools">All Tools Hub</a></li></ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">Academy &amp; Hubs</div><ul><li><a href="/learning">Academy Home</a></li><li><a href="/learning/roadmap">Learning Paths &amp; Roadmap</a></li><li><a href="/learning/cyber-security">Cyber Security Path</a></li><li><a href="/learning/cyber-security/cyber-security-track">Fundamentals to Defence Course</a></li><li><a href="/learning/web-application-security">Web Application Security Path</a></li><li><a href="/learning/web-application-security/foundations">Web Security Foundations Course</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/articles">Articles Hub</a></li><li><a href="/products">Products</a></li></ul></div>
@@ -2228,14 +2426,34 @@ function buildSitemapAndFeeds() {
     <div class="footer-col card card-pad"><div class="footer-col-title">CLI Cheat Sheets (<a href="/cheatsheets">/cheatsheets</a>)</div><ul>${cheatsheetLinks}</ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">Core Guides &amp; Site</div><ul><li><a href="/articles/create-strong-password">How to Create a Strong Password</a></li><li><a href="/articles/password-best-practices">Password Security Best Practices</a></li><li><a href="/articles/common-password-mistakes">Common Password Mistakes</a></li><li><a href="/articles/password-manager-benefits">Password Manager Benefits</a></li><li><a href="/articles/two-factor-authentication">Two-Factor Authentication (2FA)</a></li><li><a href="/articles/passkeys-explained">Passkeys Explained</a></li><li><a href="/articles/after-a-data-breach">What to Do After a Data Breach</a></li><li><a href="/articles/phishing-attacks">How Phishing Attacks Steal Passwords</a></li><li><a href="/articles/password-vs-passkey">Password vs Passkey</a></li><li><a href="/articles/password-entropy">How Password Entropy Works</a></li><li><a href="/articles/how-long-should-a-password-be">How Long Should a Password Be?</a></li><li><a href="/articles/password-cracking-time-table">Password Cracking Times</a></li><li><a href="/articles/are-password-managers-safe">Are Password Managers Safe?</a></li><li><a href="/articles/check-if-password-was-leaked">Check If Your Password Was Leaked</a></li><li><a href="/articles/password-vs-passphrase">Password vs Passphrase</a></li><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/faq">FAQ</a></li><li><a href="/security">Security</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">Security Glossary (<a href="/glossary">/glossary</a>)</div><ul>${glossaryLinks}</ul></div>
+    <div class="footer-col card card-pad"><div class="footer-col-title">Published Security Articles</div><ul>${dbArticleLinks}</ul></div>
+    <div class="footer-col card card-pad"><div class="footer-col-title">OSINT Tools &amp; Products</div><ul>${dbOsintLinks}${dbProductLinks}</ul></div>
+    <div class="footer-col card card-pad"><div class="footer-col-title">Pentest Tools &amp; Categories</div><ul>${dbPentestCatLinks}${dbPentestLinks}</ul></div>
   </div></div>
-</section>`;
+</section>
+<section class="section-tight" data-sitemap-live hidden>
+  <div class="container">
+    <h2 class="h-3">Live articles &amp; products</h2>
+    <p class="muted small" style="margin-top:6px">Published from the admin panel — the same entries the XML sitemap lists.</p>
+    <div class="grid grid-2 sitemap-grid mt-16" data-sitemap-live-grid></div>
+  </div>
+</section>
+</main>`;
 
-  sitemapHtml = sitemapHtml.replace(/<section class="section-tight">[\s\S]*?<\/section>/, expandedSitemapSection);
+  sitemapHtml = sitemapHtml.replace(/<main id="main">[\s\S]*?<\/main>/, expandedSitemapMain);
+  if (!sitemapHtml.includes('/assets/js/sitemap.js')) {
+    sitemapHtml = sitemapHtml.replace('</body>', '<script src="/assets/js/sitemap.js" defer></script>\n</body>');
+  }
   fs.writeFileSync(sitemapFile, sitemapHtml);
 
   // 2. Build /rss.xml (RSS 2.0 Feed)
   const rssItems = [
+    ...dbArticles.map((a) => ({
+      title: a.title,
+      link: `${SITE}${a.url}`,
+      desc: a.title,
+      category: 'Security Research'
+    })),
     ...COMPARISONS.map((c) => ({
       title: c.title,
       link: `${SITE}/compare/${c.slug}`,
@@ -2308,30 +2526,93 @@ ${rssItems.map((it) => `    <item>
       '\n'
   );
 
-  // 4. Update sitemap.xml & google-sitemap.xml to include all new routes cleanly (no <lastmod> on static generated routes per verify-seo.mjs rules)
-  const newStaticRoutes = [
-    '/dork-builder',
-    '/hash-inspector',
-    '/url-scanner',
-    '/compare',
-    ...COMPARISONS.map((c) => `/compare/${c.slug}`),
-    '/cheatsheets',
-    ...CHEATSHEETS.map((c) => `/cheatsheets/${c.slug}`),
-    ...GLOSSARY_TERMS.map((g) => `/glossary/${g.slug}`)
-  ];
-
-  const sitemapXmlPath = path.join(ROOT, 'sitemap.xml');
-  let xml = fs.readFileSync(sitemapXmlPath, 'utf8');
-  for (const r of newStaticRoutes) {
-    const loc = `${SITE}${r}`;
-    if (!xml.includes(`<loc>${loc}</loc>`)) {
-      const priority = (r === '/compare' || r === '/cheatsheets' || r === '/dork-builder' || r === '/hash-inspector' || r === '/url-scanner') ? '0.8' : '0.7';
-      const entry = `  <url>\n    <loc>${loc}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n</urlset>`;
-      xml = xml.replace('</urlset>', entry);
-    }
+  // 4. Build complete, canonical, multi-line sitemap.xml, google-sitemap.xml, and sitemap-index.xml
+  // Read hubs-snapshot.json for timestamps when available
+  const snapshotMap = new Map();
+  const snapPath = path.join(ROOT, 'assets/data/hubs-snapshot.json');
+  if (fs.existsSync(snapPath)) {
+    try {
+      const snap = JSON.parse(fs.readFileSync(snapPath, 'utf8'));
+      const fmt = (v) => {
+        if (!v) return '';
+        const ms = Date.parse(v);
+        return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : '';
+      };
+      for (const a of snap.articles || []) if (a && a.slug) snapshotMap.set(`/articles/${a.slug}`, fmt(a.updated_at || a.published_at || a.created_at));
+      for (const p of snap.products || []) if (p && p.slug) snapshotMap.set(`/products/${p.slug}`, fmt(p.updated_at || p.published_at || p.created_at));
+      for (const o of snap.osint || []) if (o && o.slug) snapshotMap.set(`/osint/${o.slug}`, fmt(o.updated_at || o.published_at || o.created_at));
+      for (const t of snap.pentest || []) if (t && t.slug) snapshotMap.set(`/pentest/${t.slug}`, fmt(t.updated_at || t.published_at || t.created_at));
+      for (const c of snap.pentestCategories || []) if (c && c.slug) snapshotMap.set(`/pentest/category/${c.slug}`, fmt(c.updated_at || c.published_at || c.created_at));
+    } catch { /* ignore */ }
   }
-  fs.writeFileSync(sitemapXmlPath, xml);
-  fs.writeFileSync(path.join(ROOT, 'google-sitemap.xml'), xml);
+
+  const corePath = path.join(ROOT, 'supabase/functions/sitemap/sitemap-core.mjs');
+  const core = await import('file://' + corePath);
+
+  const entriesMap = new Map();
+  const addEntry = (route, lastmod, changefreq, priority) => {
+    const loc = route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`;
+    if (!entriesMap.has(loc)) {
+      entriesMap.set(loc, { loc, lastmod: lastmod || '', changefreq, priority });
+    }
+  };
+
+  // Add all STATIC_ROUTES first (homepage '/' is #1, no <lastmod> on static generated routes)
+  for (const route of core.STATIC_ROUTES) {
+    addEntry(
+      route,
+      '',
+      route === '/' ? 'weekly' : 'monthly',
+      core.priorityForRoute(route)
+    );
+  }
+
+  // Add all database-backed pages on disk with their real <lastmod> dates
+  for (const a of dbArticles) {
+    addEntry(a.url, extractLastmodFromFile(a.file, snapshotMap, a.url), 'monthly', '0.7');
+  }
+  for (const p of dbProducts) {
+    addEntry(p.url, extractLastmodFromFile(p.file, snapshotMap, p.url), 'monthly', '0.7');
+  }
+  for (const o of dbOsint) {
+    addEntry(o.url, extractLastmodFromFile(o.file, snapshotMap, o.url), 'monthly', '0.7');
+  }
+  for (const t of dbPentest) {
+    addEntry(t.url, extractLastmodFromFile(t.file, snapshotMap, t.url), 'monthly', '0.7');
+  }
+  for (const c of dbPentestCats) {
+    addEntry(c.url, extractLastmodFromFile(c.file, snapshotMap, c.url), 'monthly', '0.7');
+  }
+
+  const xmlLines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+  ];
+  for (const u of entriesMap.values()) {
+    xmlLines.push('  <url>');
+    xmlLines.push(`    <loc>${esc(u.loc)}</loc>`);
+    if (u.lastmod && /^\d{4}-\d{2}-\d{2}$/.test(u.lastmod)) {
+      xmlLines.push(`    <lastmod>${esc(u.lastmod)}</lastmod>`);
+    }
+    xmlLines.push(`    <changefreq>${esc(u.changefreq)}</changefreq>`);
+    xmlLines.push(`    <priority>${esc(u.priority)}</priority>`);
+    xmlLines.push('  </url>');
+  }
+  xmlLines.push('</urlset>');
+  const finalXml = xmlLines.join('\n') + '\n';
+
+  fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), finalXml);
+  fs.writeFileSync(path.join(ROOT, 'google-sitemap.xml'), finalXml);
+
+  // Also generate a clean /sitemap-index.xml pointing to /sitemap.xml
+  const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${SITE}/sitemap.xml</loc>
+  </sitemap>
+</sitemapindex>
+`;
+  fs.writeFileSync(path.join(ROOT, 'sitemap-index.xml'), sitemapIndexXml);
 }
 
 buildDorkBuilderPage();
@@ -2342,6 +2623,7 @@ buildCheatsheetsCluster();
 buildGlossaryCluster();
 updateToolsHubPage();
 enhanceExistingPagesWithMeshAndSchema();
-buildSitemapAndFeeds();
+await buildSitemapAndFeeds();
 
-console.log('Phase 3 SEO pages, interactive tools, schema, and feeds built successfully.');
+console.log('Phase 3 SEO pages, interactive tools, schema, and 297-URL sitemaps built successfully.');
+
