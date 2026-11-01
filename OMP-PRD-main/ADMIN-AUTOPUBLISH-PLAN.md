@@ -1,6 +1,6 @@
 # Admin panel: publish → live, automatically
 
-**Status: plan, not implemented.** Everything below is a proposal. It is written
+**Status: phase 0 shipped, phase 1 item 1 (SEO overrides) shipped.** Everything below is a proposal. It is written
 down first because the trigger path touches a repository token, a bot commit and
 a live deploy — three things that are easy to get subtly wrong and hard to
 un-ship.
@@ -192,7 +192,7 @@ features.
 
 | # | Power | Why it matters | Touches |
 | --- | --- | --- | --- |
-| 1 | **SEO overrides**: `meta_title`, `meta_description`, `og_image`, `canonical_url`, `robots_noindex` | today the `<title>` is `title + " | OopsMyPassword"` and the description is the summary, truncated. A post that can't tune its snippet can't win the click | migration + `build-static-seo.mjs` + panel "SEO" accordion with 60/160 char counters |
+| 1 | ✅ **SEO overrides**: `meta_title`, `meta_description`, `og_image`, `canonical_url`, `robots_noindex` | done - every field falls back to the generated value, and `noindex` also drops the page from the sitemap so the two signals cannot disagree | `20261101130000_article_seo_overrides.sql`, `build-static-seo.mjs`, panel SEO panel with 60/160 counters |
 | 2 | **Slug rename → automatic 301** | renaming a slug today is a silent 404 for every existing link and ranking. Panel writes old→new to a `redirects` table; a build step merges it into `firebase.json`, and `build-vercel-config.mjs` already turns that into `vercel.json` | migration + `scripts/sync-redirects.mjs` + panel confirm dialog |
 | 3 | **Scheduled publish** | write on Sunday, live at 9am Monday. `status='scheduled'` + `published_at`; a 15-minute cron dispatches the build when due | migration + cron workflow + panel date field |
 | 4 | **Bulk actions** | publish/archive/delete 10 drafts without 10 round-trips | panel only |
