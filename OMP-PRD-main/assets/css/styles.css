@@ -1644,3 +1644,46 @@ img.osint-tile { padding: 6px; }
     align-items: stretch;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Article ornamentation: what authors can now actually use.
+
+   Inline <svg> was already allowed through the sanitiser; it rendered as a
+   0x0 box because nothing sized it. A drawing without max-width overflows a
+   phone at exactly the moment it matters.
+   --------------------------------------------------------------------------- */
+.prose svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 24px auto;
+}
+
+/* Wide tables: scroll the table instead of the page. Applied at every width
+   because a 9-column table does not fit a laptop either. */
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.prose figure { margin: 24px 0; }
+.prose figure img { border-radius: var(--radius, 12px); }
+.prose figcaption { margin-top: 8px; font-size: 0.875rem; color: var(--muted, #5b6472); }
+
+/* <mark> and <kbd> arrived with the sanitiser parity fix; without these they
+   render as unstyled text and authors assume the tag was dropped. */
+.prose mark { background: rgba(255, 214, 0, 0.35); color: inherit; padding: 0 2px; border-radius: 3px; }
+.prose kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+  padding: 1px 6px;
+  border: 1px solid var(--border, #d8dee9);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface-2, #f6f8fc);
+}
+.prose dl { margin: 20px 0; }
+.prose dt { font-weight: 600; margin-top: 12px; }
+.prose dd { margin: 4px 0 0 20px; }
