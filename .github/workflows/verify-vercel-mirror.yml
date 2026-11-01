@@ -102,15 +102,29 @@ jobs:
       - name: Canonicals point at this host
         run: |
           set -euo pipefail
-          for page in / /checker; do
-            canonical=$(curl -sS --retry 3 "$MIRROR$page" | grep -o '<link rel="canonical"[^>]*>' | head -1)
-            echo "$page -> $canonical"
-            case "$canonical" in
-              *"https://oopsmypassword.vercel.app"*) ;;
-              *) echo "::error::$page canonicalises somewhere other than this host: $canonical"; exit 1 ;;
-            esac
+          # Retried for the same deploy-race reason as the wait step: the
+          # origin rewrite happens inside the Vercel build, so the previous
+          # build serves canonicals that still name web.app. A retry is cheap;
+          # a red run that means "you were early" is not.
+          for attempt in 1 2 3 4 5; do
+            bad=""
+            for page in / /checker; do
+              canonical=$(curl -sS --retry 3 "$MIRROR$page" | grep -o '<link rel="canonical"[^>]*>' | head -1)
+              echo "attempt $attempt: $page -> $canonical"
+              case "$canonical" in
+                *"https://oopsmypassword.vercel.app"*) ;;
+                *) bad="$page canonicalises somewhere other than this host: $canonical" ;;
+              esac
+            done
+            if [ -z "$bad" ]; then
+              echo "::notice::canonicals point at the Vercel origin"
+              exit 0
+            fi
+            echo "  $bad"
+            sleep 20
           done
-          echo "::notice::canonicals point at the Vercel origin"
+          echo "::error::$bad"
+          exit 1
 
       - name: Search Console verification tag is still served
         run: |
