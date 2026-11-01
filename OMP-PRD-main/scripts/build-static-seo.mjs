@@ -200,13 +200,21 @@ function articleHtml(article) {
   const title = String(article.title || 'Article').trim();
   const slug = String(article.slug || '').trim();
   const summary = metaDescription(String(article.summary || '').trim() || extractPlainText(article.content));
-  const canonical = `${SITE}/articles/${encodeURIComponent(slug)}`;
+  /* SEO overrides. Empty columns fall back to exactly the previous behaviour, so
+     an article that sets none of them is byte-identical to before. */
+  const metaTitle = String(article.meta_title || '').trim();
+  const metaDesc = metaDescription(String(article.meta_description || '').trim() || summary);
+  const canonicalRaw = String(article.canonical_url || '').trim();
+  const canonical = /^https?:\/\//i.test(canonicalRaw) ? canonicalRaw : `${SITE}/articles/${encodeURIComponent(slug)}`;
+  const noindex = article.robots_noindex === true;
   const published = article.published_at || article.created_at || '';
   const modified = article.updated_at || published;
   const normalized = normalizeInjected(sanitizeHtml(article.content || '', title), title);
   const content = normalized.html;
-  const image = /^https?:\/\//i.test(String(article.featured_image || '')) ? String(article.featured_image) : `${SITE}/assets/images/og-image.jpg`;
-  const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: summary, mainEntityOfPage: canonical, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en', image: [image] };
+  const image = /^https?:\/\//i.test(String(article.og_image || ''))
+    ? String(article.og_image)
+    : (/^https?:\/\//i.test(String(article.featured_image || '')) ? String(article.featured_image) : `${SITE}/assets/images/og-image.jpg`);
+  const articleSchema = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: metaDesc, mainEntityOfPage: canonical, author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` }, publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE }, inLanguage: 'en', image: [image] };
   if (published) articleSchema.datePublished = published;
   if (modified) articleSchema.dateModified = modified;
   const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` }, { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE}/articles` }, { '@type': 'ListItem', position: 3, name: title, item: canonical }] };
@@ -217,7 +225,10 @@ function articleHtml(article) {
   const body = toc.length
     ? `<div class="container"><div class="article-layout">${tocHtml}<article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div>`
     : `<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div>`;
-  const head = commonHead({ title: documentTitle(title, 'OopsMyPassword'), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
+  let head = commonHead({ title: metaTitle || documentTitle(title, 'OopsMyPassword'), description: metaDesc, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
+  /* A noindexed page must not ask to be indexed through one signal and not the
+     other; the sitemap filter below honours the same flag. */
+  if (noindex) head = head.replace('</head>', '<meta name="robots" content="noindex,follow"></head>');
   return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 // Append the brand suffix only when the result still fits the search-result
@@ -402,7 +413,7 @@ function sitemapXml({ articles, products, osint = [], pentest = [], pentestCateg
   const urlFor = (route) => route === '/' ? `${SITE}/` : `${SITE}${route.replace(/\/+$/, '')}`;
   const add = (loc, lastmod, route) => { if (!urls.has(loc)) urls.set(loc, { lastmod, priority: priorityForRoute(route || '/') }); };
   for (const route of STATIC_ROUTES) add(urlFor(route), '', route);
-  for (const article of articles) if (isValidSlug(article.slug)) add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(article.updated_at || article.published_at || article.created_at), `/articles/${article.slug}`);
+  for (const article of articles) if (isValidSlug(article.slug) && !article.robots_noindex) add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(article.updated_at || article.published_at || article.created_at), `/articles/${article.slug}`);
   for (const product of products) if (isValidSlug(product.slug)) add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(product.updated_at || product.published_at || product.created_at), `/products/${product.slug}`);
   for (const tool of osint) if (isValidSlug(tool.slug)) add(urlFor(`/osint/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/osint/${tool.slug}`);
   for (const tool of pentest) if (isValidSlug(tool.slug)) add(urlFor(`/pentest/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/pentest/${tool.slug}`);

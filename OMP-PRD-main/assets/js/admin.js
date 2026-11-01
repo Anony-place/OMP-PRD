@@ -1074,7 +1074,7 @@ function publishChip(host, jobId, livePath) {
 }
 
 function articleForm(host, categories, article) {
-  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,scheduled_for:null,featured_image:'',document_url:''};
+  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,scheduled_for:null,featured_image:'',document_url:'',meta_title:'',meta_description:'',og_image:'',canonical_url:'',robots_noindex:false};
   const uid = article ? String(article.id).slice(0, 8) : 'new';
   const id = n => `af-${uid}-${n}`;
   host.innerHTML = `<form id="article-form" class="card card-pad" style="margin-top:18px">
@@ -1104,6 +1104,26 @@ function articleForm(host, categories, article) {
       ${documentHref(a.document_url) ? `<p class="tiny" style="margin-top:6px">Attached: <a href="${esc(documentHref(a.document_url))}" target="_blank" rel="noopener noreferrer">view current document</a> &nbsp;<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label></p>`
         : (a.document_url ? `<p class="tiny" style="margin-top:6px;color:var(--red)">This article has an attachment with an unsafe URL (${esc(a.document_url)}). It is not shown to readers — save with “remove attachment” to clear it.</p><label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" name="remove_document"> remove attachment</label>` : '<p class="tiny muted" style="margin-top:6px">Optional — readers get a “Download document” button on the article page.</p>')}
     </div>
+    <details class="card card-pad" style="margin-top:12px" ${(a.meta_title || a.meta_description || a.og_image || a.canonical_url || a.robots_noindex) ? 'open' : ''}>
+      <summary class="h-4" style="cursor:pointer">SEO <span class="tiny muted">— what the search result says. Blank = generated.</span></summary>
+      <div class="form-field" style="margin-top:12px">
+        <label for="${id('meta_title')}">Meta title <span class="tiny muted" id="${id('meta_title_count')}"></span></label>
+        <input id="${id('meta_title')}" name="meta_title" maxlength="70" value="${esc(a.meta_title || '')}" placeholder="Exact <title>. No brand suffix is added when you fill this.">
+      </div>
+      <div class="form-field">
+        <label for="${id('meta_description')}">Meta description <span class="tiny muted" id="${id('meta_description_count')}"></span></label>
+        <textarea id="${id('meta_description')}" name="meta_description" rows="3" maxlength="170" placeholder="155–160 characters shows in full on desktop.">${esc(a.meta_description || '')}</textarea>
+      </div>
+      <div class="editor-row-2">
+        <div class="form-field"><label for="${id('og_image')}">Social image URL</label><input id="${id('og_image')}" name="og_image" value="${esc(a.og_image || '')}" placeholder="https://… (1200×630)"></div>
+        <div class="form-field"><label for="${id('canonical_url')}">Canonical URL</label><input id="${id('canonical_url')}" name="canonical_url" value="${esc(a.canonical_url || '')}" placeholder="Only when this content lives elsewhere"></div>
+      </div>
+      <div class="form-field" style="flex-direction:row;align-items:center;gap:8px">
+        <input id="${id('noindex')}" name="robots_noindex" type="checkbox" ${a.robots_noindex ? 'checked' : ''} style="width:auto">
+        <label for="${id('noindex')}" style="margin:0">Hide from Google (noindex) and drop from the sitemap</label>
+      </div>
+      <p class="tiny muted">A page that says noindex and appears in the sitemap contradicts itself; the build applies both together.</p>
+    </details>
     <div class="editor-grid" style="margin-top:8px">
       <div class="editor-fields">
         <label for="${id('content')}">Content</label>
@@ -1134,6 +1154,23 @@ function articleForm(host, categories, article) {
       scheduleWrap.hidden = statusSelect.value !== 'scheduled';
     });
   }
+  /* A counter, not a limit: something has to tell you that 96 characters of
+     title will be cut off in the result. */
+  const counter = (fieldName, outId, soft) => {
+    const field = document.querySelector(`#${id(fieldName)}`);
+    const out = document.querySelector(`#${id(outId)}`);
+    if (!field || !out) return;
+    const paint = () => {
+      const n = String(field.value || '').length;
+      out.textContent = `${n}/${soft}`;
+      out.style.color = n > soft ? 'var(--red)' : '';
+    };
+    field.addEventListener('input', paint);
+    paint();
+  };
+  counter('meta_title', 'meta_title_count', 60);
+  counter('meta_description', 'meta_description_count', 160);
+
   let pendingPdfPages = [];
   let pendingPdfObjectUrls = [];
 
@@ -1439,7 +1476,19 @@ function articleForm(host, categories, article) {
       if (status === 'scheduled' && scheduledRaw && Number.isNaN(new Date(scheduledRaw).getTime())) {
         throw new Error('That publish time could not be read - pick a date and time again.');
       }
-      const payload = {title,slug,summary:String(f.get('summary') || '').trim().slice(0, 300) || null,content,category_id:f.get('category_id')||null,status,scheduled_for:scheduledFor,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+      /* SEO overrides travel with the row; the build falls back to the generated
+         values for any that are blank. */
+      const safeHttp = (value) => {
+        const raw = String(value || '').trim();
+        if (!raw) return null;
+        if (!/^https?:\/\//i.test(raw)) throw new Error('Canonical URL and social image must start with http:// or https://.');
+        return raw;
+      };
+      const metaTitle = String(f.get('meta_title') || '').trim().slice(0, 70) || null;
+      const metaDescription = String(f.get('meta_description') || '').trim().slice(0, 170) || null;
+      const ogImage = safeHttp(f.get('og_image'));
+      const canonicalUrl = safeHttp(f.get('canonical_url'));
+      const payload = {title,slug,summary:String(f.get('summary') || '').trim().slice(0, 300) || null,content,category_id:f.get('category_id')||null,status,scheduled_for:scheduledFor,featured_image:featured,document_url,meta_title:metaTitle,meta_description:metaDescription,og_image:ogImage,canonical_url:canonicalUrl,robots_noindex:f.get('robots_noindex')==='on',updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article
         ? await supabase.from('articles').update(payload).eq('id',article.id)
         : await supabase.from('articles').insert(payload).select('id').single();
