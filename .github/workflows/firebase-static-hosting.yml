@@ -212,6 +212,22 @@ jobs:
         # robots.txt advertises an endpoint that is not the one being shipped.
         run: node scripts/verify-seo.mjs
 
+      - name: Verify the Vercel mirror still matches Firebase
+        working-directory: OMP-PRD-main
+        # vercel.json is generated from firebase.json by
+        # scripts/build-vercel-config.mjs and committed, because the Vercel
+        # project deploys straight from this branch with no build step. A
+        # generated file that nobody checks rots: add a redirect to
+        # firebase.json and the mirror silently serves a 404 for it. This gate
+        # fails when the committed copy drifts, when a redirect stops being a
+        # 301, when a rewrite loses its self-canonical, or when the two routing
+        # tables resolve any of the ~455 known URLs differently.
+        #
+        # It does NOT touch Firebase Hosting: the mirror is a separate, noindex,
+        # host-scoped deployment used only to test whether Google can fetch the
+        # sitemap from a Vercel host.
+        run: node tools/test_vercel_config.mjs
+
   deploy:
     name: Deploy to Firebase Hosting
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

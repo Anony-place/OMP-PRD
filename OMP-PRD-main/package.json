@@ -6,9 +6,15 @@
     "sanitize-html": "2.17.7"
   },
   "devDependencies": {
-    "@supabase/mcp-server-supabase": "^0.13.0"
+    "@supabase/mcp-server-supabase": "^0.13.0",
+    "path-to-regexp": "6.2.1"
   },
   "scripts": {
+    "vercel:config": "node scripts/build-vercel-config.mjs",
+    "vercel:config:check": "node scripts/build-vercel-config.mjs --check",
+    "vercel:parity": "node scripts/verify-vercel-parity.mjs",
+    "vercel:parity:live": "node scripts/verify-vercel-parity.mjs --live",
+    "vercel:test": "node tools/test_vercel_config.mjs",
     "mcp:supabase": "node_modules/.bin/mcp-server-supabase --project-ref aeehfulikupskyrvcpzb"
   }
 }
