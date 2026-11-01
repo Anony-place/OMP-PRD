@@ -483,9 +483,15 @@ Allow: /
 Disallow: /Anony.su/
 Disallow: /functions/
 
+# Three independent discovery endpoints. Google reads a well-formed RSS 2.0
+# feed as a valid sitemap, so /rss.xml is listed here as a fallback: when the
+# plain /sitemap.xml fetch is the one Search Console keeps failing on a
+# shared *.web.app hostname, a different endpoint (same URLs) is the free fix.
 # Submit this exact URL in Google Search Console on the
 # https://oopsmypassword.web.app URL-prefix property.
 Sitemap: {SITE}/sitemap.xml
+Sitemap: {SITE}/sitemap-index.xml
+Sitemap: {SITE}/rss.xml
 """)
 
     write("manifest.webmanifest", json.dumps({

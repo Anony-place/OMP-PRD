@@ -164,9 +164,22 @@ function checkRobots() {
   const declared = (robots.match(/^Sitemap:[ \t]*(\S+)[ \t]*$/gm) || [])
     .map((l) => l.replace(/^Sitemap:[ \t]*/, '').trim());
   if (!declared.length) fail('robots.txt: declares no Sitemap line');
+  /* Three endpoints, all shipped by the same build and all pointing at the
+     same URL set: the canonical /sitemap.xml, an index that also lists the
+     feed, and /rss.xml — which Google accepts as a valid sitemap. Declaring
+     only the first one is what leaves a site with no fallback when that one
+     fetch keeps failing. Anything else is a stale or wrong endpoint. */
+  const allowedSitemaps = new Set([
+    `${SITE}/sitemap.xml`,
+    `${SITE}/sitemap-index.xml`,
+    `${SITE}/rss.xml`,
+  ]);
   declared.forEach((u) => {
-    if (u !== `${SITE}/sitemap.xml`) fail(`robots.txt: advertises ${u}, but the deployed endpoint is ${SITE}/sitemap.xml`);
+    if (!allowedSitemaps.has(u)) fail(`robots.txt: advertises ${u}, which is not one of the deployed sitemap endpoints`);
   });
+  for (const required of ['sitemap.xml', 'rss.xml']) {
+    if (!declared.includes(`${SITE}/${required}`)) fail(`robots.txt: does not advertise ${SITE}/${required}`);
+  }
 
   /* Anything Disallow'ed must be something we genuinely do not want crawled. */
   const disallowed = (robots.match(/^Disallow:[ \t]*(\S+)[ \t]*$/gm) || [])
@@ -270,6 +283,64 @@ function checkSitemap(file, routes, noindexRoutes) {
   }
 
   console.log(`  SITEMAP ${file}: ${locs.length} URLs, canonical origin, ${broken.length ? broken.length + ' unroutable' : 'all routable'}`);
+}
+
+/* ============================================================== RSS checks */
+/* Google accepts a well-formed RSS 2.0 feed as a sitemap, so /rss.xml is now
+   a submitted discovery endpoint and not only a reader feed. That makes it a
+   crawl surface with the same rules as sitemap.xml: canonical origin, https,
+   200-status URLs only, no redirect, no noindex, no duplicates, no dead
+   origin. It is intentionally NOT required to be exhaustive (feeds are a
+   recent-content channel), but every URL it does carry must be a real page. */
+function checkRssSitemap(noindexRoutes) {
+  const file = path.join(ROOT, 'rss.xml');
+  if (!fs.existsSync(file)) return fail('rss.xml: missing from the deploy payload');
+  const xml = fs.readFileSync(file, 'utf8');
+
+  if (!/^\s*<\?xml version="1\.0" encoding="UTF-8"\?>/.test(xml)) fail('rss.xml: missing XML declaration');
+  if ((xml.match(/<rss[\s>]/g) || []).length !== 1) fail('rss.xml: not exactly one <rss> root');
+  if ((xml.match(/<\/rss>/g) || []).length !== 1) fail('rss.xml: <rss> not closed exactly once');
+  if (!/<rss[^>]+version="2\.0"/.test(xml)) fail('rss.xml: root is not RSS 2.0');
+  if ((xml.match(/<channel>/g) || []).length !== 1) fail('rss.xml: not exactly one <channel>');
+  for (const required of ['<title>', '<link>', '<description>', '<lastBuildDate>']) {
+    if (!xml.includes(required)) fail(`rss.xml: channel is missing ${required}`);
+  }
+  if (!/^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} GMT$/.test(
+    (xml.match(/<lastBuildDate>([\s\S]*?)<\/lastBuildDate>/) || [])[1] || ''
+  )) fail('rss.xml: <lastBuildDate> is not RFC 822');
+
+  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((m) => m[1]);
+  if (!items.length) fail('rss.xml: no <item> entries — an empty feed is not a sitemap');
+
+  const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
+  const seen = new Set();
+  const locs = [];
+  items.forEach((item, i) => {
+    const where = `rss.xml item ${i + 1}`;
+    const raw = (item.match(/<link>([\s\S]*?)<\/link>/) || [])[1];
+    if (!raw) return fail(`${where}: missing <link>`);
+    let url;
+    try { url = new URL(raw); } catch { return fail(`${where}: <link> is not a URL — ${raw}`); }
+    if (url.protocol !== 'https:') return fail(`${where}: not https — ${raw}`);
+    if (url.hash || url.search) return fail(`${where}: query/hash in <link> — ${raw}`);
+    if (url.origin !== SITE) return fail(`${where}: off-origin ${raw}`);
+
+    const route = url.pathname.replace(/\/+$/, '') || '/';
+    if (route.endsWith('.html')) return fail(`${where}: implementation URL ${route}`);
+    if (route !== '/' && url.pathname !== route) return fail(`${where}: trailing slash ${route}`);
+    if (LEGACY && raw.includes(LEGACY)) return fail(`${where}: dead origin ${raw}`);
+    if (noindexRoutes.has(route)) return fail(`${where}: feeds noindex page ${route}`);
+    if (seen.has(route)) return fail(`${where}: duplicate entry ${route}`);
+    seen.add(route);
+
+    const r = router.resolve(route, 0);
+    if (r.type !== 'file') {
+      return fail(`${where}: ${route} resolves to ${r.type}${r.location ? ' (' + r.location + ')' : ''}, not a page`);
+    }
+    locs.push(route);
+  });
+
+  console.log(`  RSS     rss.xml: ${locs.length} indexable URLs, canonical origin, ${locs.length ? 'all routable' : 'nothing usable'}`);
 }
 
 /* ============================================================ PAGES checks */
@@ -506,6 +577,7 @@ checkDomain();
 checkRobots();
 checkSitemap('sitemap.xml', routes, noindexRoutes);
 checkSitemap('google-sitemap.xml', routes, noindexRoutes);
+checkRssSitemap(noindexRoutes);
 
 const a = path.join(ROOT, 'sitemap.xml');
 const b = path.join(ROOT, 'google-sitemap.xml');

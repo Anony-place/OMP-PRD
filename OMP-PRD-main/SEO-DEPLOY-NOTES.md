@@ -89,3 +89,42 @@ Then re-request URL Inspection in Search Console.
    must return 200 with `Content-Type: application/xml`. Then use URL
    Inspection on `/`, `/checker`, `/generator`, `/tools` and one guide
    and click **Request indexing**.
+
+## Three discovery endpoints (added 2026-11-01)
+
+Google reads a well-formed **RSS 2.0** feed as a valid sitemap, so the site now
+ships three endpoints from the same build, all carrying the same URL rules
+(canonical origin, https, 200-status pages only, no
+redirects/noindex/duplicates):
+
+| Endpoint | Content | Use |
+|---|---|---|
+| `/sitemap.xml` | 297 URLs, every indexable page | primary |
+| `/google-sitemap.xml` | byte-identical alias of `sitemap.xml` | rename fallback |
+| `/sitemap-index.xml` | `<sitemapindex>` listing `sitemap.xml` **and** `rss.xml` | index declaration |
+| `/rss.xml` | 52 newest articles + static guides + comparisons + cheat sheets | **submitted as a sitemap** |
+
+Why: on a shared `*.web.app` hostname, Search Console reports
+**"Couldn't fetch"** for `/sitemap.xml` while the file itself returns
+200 + valid XML (reported across 2021–2025, unaffected by hosting provider).
+A different endpoint that Google has not already marked as failed is the free
+workaround until a custom domain is bought.
+
+`robots.txt` advertises all three. `scripts/verify-seo.mjs` now validates the
+feed with the same rigour as `sitemap.xml` (`RSS` group): RSS 2.0 root, single
+channel, RFC 822 `lastBuildDate`, every `<link>` on the canonical origin,
+routable to a real file, no noindex page, no duplicates.
+
+### Search Console steps (free, do these in order)
+
+1. Property **must** be the URL-prefix `https://oopsmypassword.web.app/`.
+2. Sitemaps → delete stale entries (`.com`, `http://`, `cloudfunctions.net`,
+   `google-sitemap.xml`).
+3. Submit, one at a time, waiting for a status between each:
+   `sitemap.xml` → `sitemap-index.xml` → `rss.xml`.
+4. `rss.xml` accepted = the 52 URLs in the feed are queued regardless of the
+   `sitemap.xml` fetch status.
+5. URL Inspection → Live test on the sitemap URL: "Page fetch: Successful"
+   means the GSC error is cosmetic.
+
+This does **not** replace a custom domain. It keeps discovery alive at ₹0.
