@@ -688,21 +688,6 @@
   ],
   "headers": [
     {
-      "source": "/:path((?!sitemap|google-sitemap|rss\\.xml|robots\\.txt|llms|manifest\\.webmanifest|ads\\.txt|sw\\.js).*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "oopsmypassword.vercel.app"
-        }
-      ],
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, nofollow"
-        }
-      ]
-    },
-    {
       "source": "/(.*)",
       "headers": [
         {

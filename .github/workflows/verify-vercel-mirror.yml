@@ -1,16 +1,17 @@
 name: Verify Vercel mirror
 
-# The mirror at oopsmypassword.vercel.app exists to answer one question: can
-# Google fetch this site from a Vercel host when it cannot fetch it from
-# *.web.app? That only stays a valid experiment while the mirror keeps serving
-# the same URLs as production, stays out of the index, and stays reachable
-# without a login wall. This workflow is the proof, and it fails loudly when the
-# experiment silently stops being valid.
+# oopsmypassword.web.app is being moved to oopsmypassword.vercel.app. This
+# workflow is the standing proof that the move is behaving, and it is written to
+# be valid on both sides of the switch:
 #
-# It never touches Firebase Hosting. It only reads both origins over HTTPS.
+#   before the 301   both hosts serve the site; headers and content must match
+#   after the 301    web.app answers 301 to the same path on Vercel, and that
+#                    path must actually serve a page
 #
-#   push to main      header + shape checks, then live parity across all ~455 URLs
-#   workflow_dispatch the same thing, on demand
+# It never writes to either host. It only reads them.
+#
+#   push to main      header, indexability and redirect-integrity checks
+#   workflow_dispatch the same, on demand
 
 on:
   workflow_dispatch:
@@ -41,62 +42,63 @@ jobs:
             [ "$code" = "200" ] || { echo "::error::$endpoint returned $code, a crawler would see a broken sitemap"; exit 1; }
           done
 
-      - name: Sitemap content matches production's URL count
+      - name: Sitemap is self-consistent and points at this host
         run: |
           set -euo pipefail
-          mirror_urls=$(curl -sS "$MIRROR/sitemap.txt" | grep -c '^https://' || true)
-          prod_urls=$(curl -sS "$PROD/sitemap.txt" | grep -c '^https://' || true)
-          echo "mirror=$mirror_urls prod=$prod_urls"
-          [ "$mirror_urls" = "$prod_urls" ] || { echo "::error::mirror sitemap.txt has $mirror_urls URLs, production has $prod_urls"; exit 1; }
+          txt_urls=$(curl -sS "$MIRROR/sitemap.txt" | grep -c '^https://' || true)
+          xml_urls=$(curl -sS "$MIRROR/sitemap.xml" | grep -c '<loc>' || true)
+          echo "sitemap.txt=$txt_urls sitemap.xml=$xml_urls"
+          [ "$txt_urls" = "$xml_urls" ] || { echo "::error::sitemap.txt has $txt_urls URLs but sitemap.xml has $xml_urls"; exit 1; }
+          [ "$txt_urls" -gt 250 ] || { echo "::error::only $txt_urls URLs in the sitemap, expected the full set"; exit 1; }
 
-          # The mirror's own build rewrites the origin, so every line must point
-          # at the mirror. A stray *.web.app URL here would ask Google to index
-          # the production site from a staging sitemap.
+          # A stale *.web.app URL here would ask Google to index the old host
+          # from the new host's sitemap - the exact opposite of a migration.
           foreign=$(curl -sS "$MIRROR/sitemap.txt" | grep -c 'web\.app' || true)
-          [ "$foreign" = "0" ] || { echo "::error::$foreign line(s) in the mirror sitemap point at web.app"; exit 1; }
+          [ "$foreign" = "0" ] || { echo "::error::$foreign line(s) in the sitemap still point at web.app"; exit 1; }
 
-      - name: Noindex covers pages but not crawler endpoints
+      - name: Pages are indexable
         run: |
           set -euo pipefail
-          for page in / /checker /articles/create-strong-password; do
+          # The inverse of the old check. While Vercel was a staging mirror a
+          # host-scoped noindex kept it out of the index; the 301 now lands
+          # here, so the same header would tell Google to drop every page it
+          # was just redirected to.
+          fails=0
+          for page in / /checker /articles/create-strong-password /glossary; do
             headers=$(curl -sSI --retry 3 "$MIRROR$page")
-            printf '%s\n' "$headers" | head -1
-            if ! printf '%s' "$headers" | grep -qi '^x-robots-tag:.*noindex'; then
-              echo "::error::$page is missing X-Robots-Tag noindex - the mirror could be indexed"
-              exit 1
+            code=$(printf '%s' "$headers" | head -1)
+            robots=$(printf '%s' "$headers" | grep -i '^x-robots-tag:' || true)
+            echo "$page -> $code ${robots:-[no x-robots-tag]}"
+            if printf '%s' "$robots" | grep -qi 'noindex'; then
+              echo "::error::$page is noindexed - Google would drop the page it was redirected to"
+              fails=$((fails + 1))
             fi
           done
+          [ "$fails" = "0" ]
 
-          # The whole point is that a crawler CAN read these. A noindex here
-          # would make the sitemap itself unfetchable-looking.
-          for endpoint in /sitemap.xml /sitemap.txt /robots.txt /rss.xml; do
-            headers=$(curl -sSI --retry 3 "$MIRROR$endpoint")
-            if printf '%s' "$headers" | grep -qi '^x-robots-tag:.*noindex'; then
-              echo "::error::$endpoint is noindexed - Google would skip the file we are testing"
-              exit 1
-            fi
-          done
-
-      - name: Canonicals still point at production
+      - name: Canonicals point at this host
         run: |
           set -euo pipefail
-          canonical=$(curl -sS --retry 3 "$MIRROR/" | grep -o '<link rel="canonical"[^>]*>' | head -1)
-          echo "$canonical"
-          printf '%s' "$canonical" | grep -q 'https://oopsmypassword.web.app' \
-            || { echo "::error::the mirror no longer canonicalises to production, duplicate content is now possible"; exit 1; }
+          for page in / /checker; do
+            canonical=$(curl -sS --retry 3 "$MIRROR$page" | grep -o '<link rel="canonical"[^>]*>' | head -1)
+            echo "$page -> $canonical"
+            case "$canonical" in
+              *"https://oopsmypassword.vercel.app"*) ;;
+              *) echo "::error::$page canonicalises somewhere other than this host: $canonical"; exit 1 ;;
+            esac
+          done
+          echo "::notice::canonicals point at the Vercel origin"
 
       - name: Search Console verification tag is still served
         run: |
           set -euo pipefail
           # A URL-prefix property is verified by this meta tag on the home page.
           # If it disappears, Google re-checks ownership later and the property
-          # silently loses Sitemaps and URL Inspection - which would invalidate
-          # the whole sitemap experiment days after it started.
+          # silently loses Sitemaps and URL Inspection.
           #
           # Retried on purpose: a push triggers this workflow AND a Vercel
           # deployment at the same time, so for a few seconds the alias can
-          # still serve the previous build. Failing on that race teaches
-          # everyone to ignore a red run, which is the opposite of the point.
+          # still serve the previous build.
           #
           # Matched with a bash `case`, not `grep -q`: grep exits as soon as it
           # matches, and with `set -o pipefail` a large page can turn that early
@@ -127,8 +129,8 @@ jobs:
         run: |
           set -euo pipefail
           # Vercel Deployment Protection answers 401 with a www-authenticate
-          # header. That is indistinguishable from a broken site to a crawler
-          # and would quietly invalidate the whole experiment.
+          # header - indistinguishable from a broken site to a crawler, and it
+          # would quietly deindex the new host.
           code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 "$MIRROR/checker")
           [ "$code" = "200" ] || { echo "::error::GET /checker returned $code - Deployment Protection or the firewall is in the way"; exit 1; }
 
@@ -136,7 +138,7 @@ jobs:
           echo "googlebot UA -> $googlebot_code"
           [ "$googlebot_code" = "200" ] || { echo "::error::Googlebot user agent got $googlebot_code - bot protection is blocking the crawler"; exit 1; }
 
-      - name: Routing behaves like production
+      - name: Routing behaves like the old host
         run: |
           set -euo pipefail
           read -r code location <<< "$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' "$MIRROR/guides/create-strong-password")"
@@ -149,31 +151,57 @@ jobs:
           echo "unknown path -> $code"
           [ "$code" = "404" ] || { echo "::error::unknown path returned $code, expected 404"; exit 1; }
 
-          code=$(curl -sS -o /dev/null -w '%{http_code}' "$MIRROR/checker")
-          echo "/checker -> $code"
-          [ "$code" = "200" ] || { echo "::error::/checker returned $code"; exit 1; }
-
-  parity:
-    name: Every known URL lands in the same place
+  migration:
+    name: Old host leads to the new one, path for path
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    defaults:
-      run:
-        working-directory: OMP-PRD-main
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: OMP-PRD-main/package-lock.json
-      - name: Install pinned dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Redirect integrity across a sample of real URLs
+        run: |
+          set -euo pipefail
+          # Written to pass BEFORE and AFTER the 301 is switched on:
+          #   before  web.app answers 200 for the page  -> counted as "served"
+          #   after   web.app answers 301 to the same path on Vercel -> the
+          #           destination must actually return 200, not a 404
+          # A migration that redirects to a path nobody serves is worse than no
+          # migration, and this is the check that catches it.
+          mapfile -t paths < <(curl -sS "$MIRROR/sitemap.txt" | awk 'NR % 7 == 1' | sed "s|^$MIRROR||" | head -45)
+          echo "sampling ${#paths[@]} URLs"
 
-      - name: Live parity, production vs mirror
-        # Every known URL, both hosts, several minutes. This workflow gates
-        # nothing - it is the standing proof that the mirror is a faithful copy
-        # of production, and it only gets cheaper to trust by being exhaustive:
-        # a sampled run already found a real title divergence, but a sample can
-        # just as easily miss the one broken URL that matters.
-        run: node scripts/verify-vercel-parity.mjs --live "$MIRROR"
+          redirects=0
+          served=0
+          failures=0
+
+          for path in "${paths[@]}"; do
+            [ -n "$path" ] || continue
+            read -r code location <<< "$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 25 "$PROD$path" || echo '000 ')"
+
+            case "$code" in
+              301|308)
+                if [ "$location" != "$MIRROR$path" ]; then
+                  echo "::error::$path redirected to $location, expected $MIRROR$path"
+                  failures=$((failures + 1))
+                  continue
+                fi
+                mcode=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$MIRROR$path")
+                if [ "$mcode" != "200" ]; then
+                  echo "::error::$path redirected to a destination that answers $mcode"
+                  failures=$((failures + 1))
+                  continue
+                fi
+                redirects=$((redirects + 1))
+                ;;
+              200)
+                served=$((served + 1))
+                ;;
+              *)
+                echo "::error::$path answered $code on the old host"
+                failures=$((failures + 1))
+                ;;
+            esac
+          done
+
+          echo "redirected=$redirects still-served=$served failures=$failures"
+          echo "::notice::old host: $redirects redirected, $served still served, $failures failures"
+          [ "$failures" = "0" ]
+          [ $((redirects + served)) -gt 0 ]

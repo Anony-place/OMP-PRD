@@ -204,43 +204,33 @@ const sitemapPaths = (() => {
   const deadRewrites = vercel.rewrites.filter((r) => /404\.html/.test(cleanTarget(r.destination)));
   assert(deadRewrites.length === 0, 'no rewrite silently resolves to the 404 page');
 
-  section('Staging guard: noindex only on the preview host, crawlers exempt');
+  section('Indexability: nothing here tells Google to drop the site');
+  /* This used to be the opposite assertion. While Vercel was a staging mirror,
+     a host-scoped noindex was the safety layer. Firebase now 301s every path
+     here, so the same header would instruct Google to drop every page it was
+     just redirected to - a self-inflicted deindex. Locking the inversion in
+     means the guard cannot be reintroduced by accident. */
   const noindexRules = vercel.headers.filter((h) =>
     (h.headers || []).some((x) => /noindex/i.test(String(x.value || ''))));
-  const guarded = noindexRules.filter((h) => (h.has || []).some((c) => c.type === 'host'));
-  /* firebase.json already noindexes /Anony.su ({,/**} expands to two rules).
-     Those are legitimate and must survive; only the host-scoped rule is the
-     new staging guard, and there must be exactly one of it. */
-  const copied = noindexRules.length - guarded.length;
-  assert(copied >= 1, `${copied} pre-existing firebase noindex rule(s) carried over unchanged`);
-  assert(guarded.length === 1, `exactly one host-scoped noindex guard (${guarded.length} found)`);
+  const noindexOnPages = noindexRules.filter((h) => {
+    const source = String(h.source || '');
+    /* /Anony.su is deliberately noindexed in firebase.json and must survive. */
+    return !source.includes('Anony');
+  });
+  assert(noindexOnPages.length === 0,
+    `no noindex on the site's own pages (${noindexOnPages.length} found)`);
+  for (const rule of noindexOnPages) console.log(`      ${rule.source}`);
 
-  if (guarded.length === 1) {
-    const rule = guarded[0];
-    const host = (rule.has || []).find((h) => h.type === 'host');
-    assert(Boolean(host), 'the noindex rule is scoped with a host condition');
-    assert(host && host.value === PREVIEW_HOST,
-      `noindex is bound to ${PREVIEW_HOST}, so a future custom domain is not deindexed`);
-    const headerValue = rule.headers.find((x) => /noindex/i.test(String(x.value || '')));
-    assert(/noindex/i.test(headerValue.value) && /nofollow/i.test(headerValue.value),
-      `X-Robots-Tag is "noindex, nofollow" (got: ${headerValue.value})`);
+  const anonyGuarded = noindexRules.filter((h) => String(h.source || '').includes('Anony'));
+  assert(anonyGuarded.length >= 1,
+    'the deliberate /Anony.su noindex is still carried over');
 
-    /* The whole point of the mirror is to test whether Google can FETCH the
-       sitemap. A noindex on the sitemap files themselves is harmless for
-       indexing but the crawler endpoints must stay reachable, so prove the
-       negative lookahead really excludes them. */
-    const source = rule.source;
-    const looksNegative = /\(\?!/.test(source);
-    assert(looksNegative, 'the noindex source uses a negative lookahead to spare crawler files');
-    if (looksNegative) {
-      const m = source.match(/\(\?!([^)]*)\)/);
-      const exempt = m ? m[1].split('|') : [];
-      for (const endpoint of ['sitemap', 'robots\\.txt', 'rss\\.xml']) {
-        assert(exempt.includes(endpoint),
-          `noindex lookahead spares ${endpoint.replace(/\\\\/g, '')} (exempt: ${exempt.join(', ')})`);
-      }
-    }
-  }
+  /* A page nobody can index is the whole failure mode this migration risks. */
+  const home = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert(!/name=["']robots["'][^>]*noindex/i.test(home),
+    'index.html has no robots noindex meta tag');
+  assert(/<link[^>]+rel=["']canonical["']/i.test(home),
+    'index.html still declares a canonical');
 
   section('Parity: Firebase and Vercel resolve every URL the same way');
   try {
