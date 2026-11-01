@@ -1,6 +1,9 @@
 # Vercel migration — production host
 
-The site is moving from `https://oopsmypassword.web.app` to
+**Status: live.** The old host has answered 301 to the new one on every path
+since the Phase B merge, and nothing is served from `web.app` any more.
+
+The site moved from `https://oopsmypassword.web.app` to
 `https://oopsmypassword.vercel.app`.
 
 **Why:** Google could not fetch the sitemap from the `*.web.app` host for months.
@@ -60,6 +63,59 @@ deployment can stay up or be deleted.
 
 Search Console **Change of Address** belongs after B, from the `web.app`
 property to the `vercel.app` property.
+
+## Proof it is working
+
+From the deploy run and the mirror run that followed the switch:
+
+```
+old host 301s to oopsmypassword.vercel.app; sitemap valid through the hop; 0 failure(s)
+old host: 43 redirected, 0 still served, 0 failures
+Search Console verification tags present: 2/2, home page 50661 bytes
+canonicals point at the Vercel origin
+```
+
+The first line is the deploy job sampling real paths: each one answers 301 to the
+same path on the new host, following it returns 200, and `sitemap.xml` is still a
+valid `<urlset>` after the hop. The second is the mirror workflow sampling 43 of
+the 297 sitemap URLs: every one redirected, none still served. The third is the
+reason the migration is worth anything - both Search Console tokens are on the
+live home page. The fourth is the build-time origin rewrite doing its job.
+
+`verify-live-release` also passed against the mirror: 317 artifacts
+byte-identical, after normalising the one string the build rewrites.
+
+## Search Console, in this order
+
+1. **Both properties verified** - `https://oopsmypassword.web.app/` (already was,
+   via the `ilff-…` meta tag) and `https://oopsmypassword.vercel.app/` (via the
+   `MsDOM6…` meta tag on the home page). Do not start until the second one says
+   Verified; Change of Address refuses otherwise.
+2. **Sitemap on the new property** - already submitted, `Success`, 297 pages.
+   If it has not been fetched again since the switch, resubmit it so Google reads
+   the current file.
+3. **Change of Address** - on the *old* property: Settings -> Change of address,
+   choose the `vercel.app` property. It requires the 301s that are now live.
+4. Do not delete the Firebase project. Google keeps following the redirects for
+   months, and Change of Address itself can take weeks to settle.
+
+Why this order and not the other one: Change of Address points Google at a
+destination. If that destination were still answering `noindex` (Phase A), or if
+its sitemap were unreadable, the move would be recorded as "old site gone, new
+site not indexed" - the one outcome worse than not moving.
+
+## What to watch for the next 4-8 weeks
+
+| Signal | Where | What is healthy |
+| --- | --- | --- |
+| Old URLs | Search Console -> old property -> Pages | "Page with redirect" grows towards the whole site. This is the move working |
+| New URLs | new property -> Pages | "Indexed" grows from ~0 towards 297. Slow is normal |
+| Impressions | new property -> Performance | Traffic starts appearing under the `vercel.app` hostname |
+| Sitemap | new property -> Sitemaps | `Success`, `Last read` advancing |
+
+Worry if: the new property shows "Excluded by noindex" (means Phase A regressed),
+"Couldn't fetch" comes back on the sitemap for more than a few days, or the old
+property still shows pages as "Indexed" after a month.
 
 ## What is checked automatically
 
