@@ -269,3 +269,42 @@ ones that affect ranking; everything else affects the person typing.
    auto-merge? (The PR route doubles the wait and needs branch protection.)
 5. **Phase 1 order** — SEO fields first (rankings) or bulk/scheduling first
    (convenience)?
+
+
+---
+
+## 10. Activation (owner, once — about 10 minutes)
+
+Nothing above runs on its own until these exist. Until then the panel still
+saves articles exactly as before; it just reports that the deploy could not
+start.
+
+1. **Apply the migration** — Supabase dashboard → SQL editor → paste
+   `supabase/migrations/20261101120000_publish_jobs_and_scheduling.sql`, or
+   `supabase db push` from a machine with the project linked.
+2. **Create the token** — GitHub → Settings → Developer settings → Fine-grained
+   tokens → *only this repository* → Repository permissions → **Contents: Read
+   and write** (GitHub requires write to create a `repository_dispatch`).
+3. **Supabase secrets** — dashboard → Edge Functions → Secrets, add
+   `GITHUB_PUBLISH_TOKEN` (the token) and `GITHUB_REPO` (`Anony-place/OMP-PRD`).
+4. **Deploy the function** — `supabase functions deploy content-publish`.
+5. **GitHub secret** — repo → Settings → Secrets → Actions →
+   `SUPABASE_SERVICE_ROLE_KEY` (the *service_role* key, not the publishable one).
+   The workflow uses it for exactly two things: promoting scheduled rows and
+   updating `publish_jobs`.
+6. **Enable scheduling** — repo → Settings → Variables → Actions → new variable
+   `AUTOPUBLISH_ENABLED = true`. Without it the 15-minute cron stays dormant.
+7. **Prove it** — publish a test article from the panel, watch the chip go
+   Queued → Building → Live, open the page, then delete it. Or, without the
+   panel, run *Publish content* from the Actions tab with `dry_run` checked.
+
+### If something is wrong
+
+| Symptom | Cause |
+| --- | --- |
+| `deploy could not start: 401` | signed-in session expired — sign in again |
+| `deploy could not start: not an admin` | `profiles.is_admin` is false for that user |
+| `server is not configured for deploys` | step 3 or 4 not done |
+| job stuck on `queued` | the dispatch landed but no workflow file on `main` yet |
+| job stuck on `running` | the build is still going — check the run URL |
+| scheduled article never publishes | `AUTOPUBLISH_ENABLED` unset, or no service key |

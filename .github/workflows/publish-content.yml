@@ -54,7 +54,9 @@ jobs:
   # ------------------------------------------------------------------------
   due:
     name: Promote scheduled articles
-    if: github.event_name == 'schedule'
+    # Off until the owner flips the repository variable. Otherwise every merge
+    # starts a cron that runs 96 times a day only to warn that it has no key.
+    if: github.event_name == 'schedule' && vars.AUTOPUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -107,7 +109,8 @@ jobs:
     if: >-
       always() && !cancelled() &&
       (needs.due.result == 'success' || needs.due.result == 'skipped') &&
-      (github.event_name != 'schedule' || needs.due.outputs.promoted != '0')
+      (github.event_name != 'schedule' ||
+        (vars.AUTOPUBLISH_ENABLED == 'true' && needs.due.outputs.promoted != '0'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
