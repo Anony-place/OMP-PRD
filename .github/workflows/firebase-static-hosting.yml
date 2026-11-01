@@ -357,7 +357,17 @@ jobs:
           SITE_ORIGIN: https://oopsmypassword.vercel.app
           LIVE_REWRITE_FROM: oopsmypassword.vercel.app
           LIVE_REWRITE_TO: oopsmypassword.web.app
-        run: node scripts/verify-live-release.mjs
+        run: |
+          set -euo pipefail
+          # Vercel builds from the committed tree, not from this job's rebuild.
+          # The rebuild pulls the live Supabase catalogue, so any article added
+          # since the last commit exists only here - and comparing it against the
+          # deployed mirror would fail on content the mirror was never meant to
+          # have. Extract HEAD exactly as Vercel received it and check that.
+          tree="$RUNNER_TEMP/pristine"
+          rm -rf "$tree"; mkdir -p "$tree"
+          git archive HEAD | tar -x -C "$tree"
+          node "$tree/OMP-PRD-main/scripts/verify-live-release.mjs" --root "$tree/OMP-PRD-main"
 
       - name: Submit URLs to IndexNow (Bing / Yandex)
         working-directory: OMP-PRD-main
