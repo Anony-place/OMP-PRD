@@ -223,9 +223,11 @@ jobs:
         # 301, when a rewrite loses its self-canonical, or when the two routing
         # tables resolve any of the ~455 known URLs differently.
         #
-        # It does NOT touch Firebase Hosting: the mirror is a separate, noindex,
-        # host-scoped deployment used only to test whether Google can fetch the
-        # sitemap from a Vercel host.
+        # It DOES touch Firebase Hosting now: firebase.json carries the two rules
+        # that 301 every path to oopsmypassword.vercel.app, and those rules are
+        # deliberately NOT in vercel.json (converting them would make Vercel
+        # redirect to itself). The test counts them separately rather than
+        # losing them, and the parity harness proves they cover every known URL.
         run: node tools/test_vercel_config.mjs
 
   deploy:

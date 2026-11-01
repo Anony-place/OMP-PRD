@@ -19,6 +19,16 @@
     "trailingSlash": false,
     "redirects": [
       {
+        "regex": "/(.*)\\.html",
+        "destination": "https://oopsmypassword.vercel.app/:1",
+        "type": 301
+      },
+      {
+        "regex": "/(.*)",
+        "destination": "https://oopsmypassword.vercel.app/:1",
+        "type": 301
+      },
+      {
         "source": "/blog.html",
         "destination": "/articles",
         "type": 301
