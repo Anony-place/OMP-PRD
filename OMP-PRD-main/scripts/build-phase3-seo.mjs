@@ -35,6 +35,26 @@ function escJson(v) {
     .replaceAll('&', '\\u0026');
 }
 
+/* Titles scraped out of generated HTML already contain HTML entities
+   ("A Beginner&#39;s Guide"). Escaping them again encodes the ampersand too,
+   and the live feed ended up serving "A Beginner&amp;#39;s Guide" — W3C's feed
+   validator flagged it. Decode once before escaping so the feed carries the
+   text a reader should see, not leftover markup. */
+const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+function decodeEntities(v) {
+  return String(v ?? '').replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (match, body) => {
+    if (body[0] === '#') {
+      const code = body[1] === 'x' || body[1] === 'X'
+        ? parseInt(body.slice(2), 16)
+        : Number(body.slice(1));
+      return Number.isFinite(code) && code > 0 && code <= 0x10ffff
+        ? String.fromCodePoint(code)
+        : match;
+    }
+    return NAMED_ENTITIES[body.toLowerCase()] ?? match;
+  });
+}
+
 /* RSS <lastBuildDate> must be RFC 822. STATIC_LASTMOD (YYYY-MM-DD) keeps the
    build reproducible; without it the build stamp is used, exactly like the
    sitemap's static <lastmod>. */
@@ -2519,11 +2539,11 @@ async function buildSitemapAndFeeds() {
     <generator>OopsMyPassword static build</generator>
     <atom:link href="${SITE}/rss.xml" rel="self" type="application/rss+xml"/>
 ${feedItems.map((it) => `    <item>
-      <title>${esc(it.title)}</title>
+      <title>${esc(decodeEntities(it.title))}</title>
       <link>${esc(it.link)}</link>
       <guid isPermaLink="true">${esc(it.link)}</guid>
-      <category>${esc(it.category)}</category>
-      <description>${esc(it.desc)}</description>
+      <category>${esc(decodeEntities(it.category))}</category>
+      <description>${esc(decodeEntities(it.desc))}</description>
     </item>`).join('\n')}
   </channel>
 </rss>
@@ -2646,6 +2666,20 @@ ${feedItems.map((it) => `    <item>
 
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), finalXml);
   fs.writeFileSync(path.join(ROOT, 'google-sitemap.xml'), finalXml);
+
+  /* Text sitemap — Google's simplest supported format: one URL per line,
+     UTF-8, and nothing else in the file (no header, no comments).
+     https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+
+     It ships as its own endpoint because on shared free hostnames the *XML*
+     endpoints are the ones Search Console reports "Couldn't fetch" for, while
+     the text endpoint on the exact same host can be read: a Vercel-hosted site
+     in Oct 2026 had /sitemap.xml stuck on "Couldn't fetch" (0 discovered) and
+     /sitemap.txt on the same host showing "Success" (6 discovered). Same URL
+     set, different format, so one format's processing problem cannot take the
+     whole discovery path down with it. */
+  const textSitemap = [...entriesMap.values()].map((u) => u.loc).join('\n') + '\n';
+  fs.writeFileSync(path.join(ROOT, 'sitemap.txt'), textSitemap);
 
   // Also generate a clean /sitemap-index.xml pointing to /sitemap.xml *and*
   // /rss.xml. Google accepts a well-formed RSS 2.0 feed as a sitemap, so the

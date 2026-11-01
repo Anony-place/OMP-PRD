@@ -172,12 +172,13 @@ function checkRobots() {
   const allowedSitemaps = new Set([
     `${SITE}/sitemap.xml`,
     `${SITE}/sitemap-index.xml`,
+    `${SITE}/sitemap.txt`,
     `${SITE}/rss.xml`,
   ]);
   declared.forEach((u) => {
     if (!allowedSitemaps.has(u)) fail(`robots.txt: advertises ${u}, which is not one of the deployed sitemap endpoints`);
   });
-  for (const required of ['sitemap.xml', 'rss.xml']) {
+  for (const required of ['sitemap.xml', 'sitemap.txt', 'rss.xml']) {
     if (!declared.includes(`${SITE}/${required}`)) fail(`robots.txt: does not advertise ${SITE}/${required}`);
   }
 
@@ -283,6 +284,65 @@ function checkSitemap(file, routes, noindexRoutes) {
   }
 
   console.log(`  SITEMAP ${file}: ${locs.length} URLs, canonical origin, ${broken.length ? broken.length + ' unroutable' : 'all routable'}`);
+}
+
+/* ========================================================== TEXT checks */
+/* Google supports a plain-text sitemap: one URL per line, UTF-8, nothing else
+   in the file. It is a real fallback endpoint - on shared hostnames the XML
+   endpoints are the ones that get stuck on "Couldn't fetch" while the text
+   endpoint on the same host is read successfully - so it faces the same bar as
+   sitemap.xml: canonical origin, https, routable 200 pages, no duplicates, and
+   it must list exactly the same URL set (generated from the same entries). */
+function checkTextSitemap(routes, noindexRoutes) {
+  const file = path.join(ROOT, 'sitemap.txt');
+  if (!fs.existsSync(file)) return fail('sitemap.txt: missing from the deploy payload');
+
+  const raw = fs.readFileSync(file, 'utf8');
+  if (!raw.length) return fail('sitemap.txt: empty');
+  if (raw.includes('\r')) fail('sitemap.txt: contains CR characters — the file must be plain UTF-8 with LF line endings');
+  if (raw.charCodeAt(0) === 0xfeff) fail('sitemap.txt: starts with a byte-order mark');
+  if (!raw.endsWith('\n')) fail('sitemap.txt: missing the final newline');
+  if (/^\s*</.test(raw)) fail('sitemap.txt: starts with markup — this endpoint must be plain text, not XML');
+
+  const lines = raw.split('\n');
+  lines.pop(); /* trailing newline */
+  if (!lines.length) fail('sitemap.txt: no URLs');
+
+  const router = createRouter(ROOT, path.join(ROOT, 'firebase.json'));
+  const seen = new Set();
+  const locs = [];
+  lines.forEach((line, i) => {
+    const where = `sitemap.txt line ${i + 1}`;
+    if (/^\s|\s$/.test(line)) return fail(`${where}: leading or trailing whitespace`);
+    if (/\s/.test(line)) return fail(`${where}: whitespace inside the URL`);
+    if (/^#/.test(line)) return fail(`${where}: comments are not allowed in a text sitemap`);
+    if (!/^https:\/\//.test(line)) return fail(`${where}: not https — ${line}`);
+    if (LEGACY && line.includes(LEGACY)) return fail(`${where}: dead origin ${line}`);
+    if (!line.startsWith(SITE + '/')) return fail(`${where}: off-origin ${line}`);
+    if (line !== SITE + '/' && line.endsWith('/')) return fail(`${where}: trailing slash ${line}`);
+    if (line.endsWith('.html')) return fail(`${where}: implementation URL ${line}`);
+    if (/[?&]/.test(line)) return fail(`${where}: query string in ${line}`);
+    if (seen.has(line)) return fail(`${where}: duplicate URL ${line}`);
+    seen.add(line);
+
+    const route = line.slice(SITE.length) || '/';
+    if (noindexRoutes.has(route)) return fail(`${where}: lists noindex page ${route}`);
+    const r = router.resolve(route, 0);
+    if (r.type !== 'file') {
+      return fail(`${where}: ${route} resolves to ${r.type}${r.location ? ' (' + r.location + ')' : ''}, not a page`);
+    }
+    locs.push(route);
+  });
+
+  /* Same generator, same entries: a text sitemap that drifts from the XML one
+     is how a page quietly stops being submitted. */
+  const expected = new Set(routes.map((r) => SITE + r));
+  const missing = [...expected].filter((u) => !seen.has(u));
+  const extra = [...seen].filter((u) => !expected.has(u));
+  if (missing.length) fail(`sitemap.txt: missing pages ${missing.map((u) => u.slice(SITE.length) || '/').join(', ')}`);
+  if (extra.length) fail(`sitemap.txt: lists pages that are not indexable routes ${extra.join(', ')}`);
+
+  console.log(`  TEXT    sitemap.txt: ${locs.length} URLs, one per line, canonical origin, ${locs.length ? 'all routable' : 'nothing usable'}`);
 }
 
 /* ============================================================== RSS checks */
@@ -577,6 +637,7 @@ checkDomain();
 checkRobots();
 checkSitemap('sitemap.xml', routes, noindexRoutes);
 checkSitemap('google-sitemap.xml', routes, noindexRoutes);
+checkTextSitemap(routes, noindexRoutes);
 checkRssSitemap(noindexRoutes);
 
 const a = path.join(ROOT, 'sitemap.xml');

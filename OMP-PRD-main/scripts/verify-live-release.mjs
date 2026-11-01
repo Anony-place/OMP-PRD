@@ -14,7 +14,7 @@ export async function releaseArtifacts(root) {
   const sitemap = await readFile(join(root, 'sitemap.xml'), 'utf8');
   const paths = new Set([
     '/', '/articles', '/learning', '/privacy', '/certificate',
-    '/sitemap.xml', '/google-sitemap.xml', '/sitemap-index.xml', '/rss.xml', '/robots.txt',
+    '/sitemap.xml', '/google-sitemap.xml', '/sitemap-index.xml', '/sitemap.txt', '/rss.xml', '/robots.txt',
     '/assets/css/styles.css', '/assets/css/learning.css',
     '/assets/js/main.js', '/assets/js/learning.js', '/assets/js/academy-local.mjs',
     '/assets/js/academy-views.mjs', '/assets/js/academy-model.mjs', '/assets/js/academy-ui.mjs',

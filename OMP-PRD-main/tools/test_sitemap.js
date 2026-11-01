@@ -309,16 +309,17 @@ function group(name) {
     /* /rss.xml is a second, independent discovery endpoint: Google accepts a
        well-formed RSS 2.0 feed as a sitemap, and /sitemap-index.xml declares
        both. All three are shipped by the same build. */
-    const allowed = new Set(['/sitemap.xml', '/sitemap-index.xml', '/rss.xml']);
+    const allowed = new Set(['/sitemap.xml', '/sitemap-index.xml', '/sitemap.txt', '/rss.xml']);
     declared.forEach((u) => {
       assert(u.startsWith(SITE + '/'), 'robots.txt advertises an off-origin sitemap: ' + u);
       assert(allowed.has(u.slice(SITE.length)), 'robots.txt points at ' + u + ', which is not a deployed sitemap endpoint');
     });
-    ['/sitemap.xml', '/rss.xml'].forEach((p) => {
+    ['/sitemap.xml', '/sitemap.txt', '/rss.xml'].forEach((p) => {
       assert(declared.includes(SITE + p), 'robots.txt does not advertise ' + SITE + p);
     });
     assert(!/Disallow:\s*\/sitemap/i.test(robots), 'robots.txt blocks the sitemap');
     assert(!/Disallow:\s*\/rss/i.test(robots), 'robots.txt blocks the RSS sitemap');
+    assert(!/Disallow:\s*\/sitemap\.txt/i.test(robots), 'robots.txt blocks the text sitemap');
   });
 
   check('the google-sitemap.xml alias is byte-identical to sitemap.xml', () => {

@@ -11,4 +11,5 @@ Disallow: /functions/
 # https://oopsmypassword.web.app URL-prefix property.
 Sitemap: https://oopsmypassword.web.app/sitemap.xml
 Sitemap: https://oopsmypassword.web.app/sitemap-index.xml
+Sitemap: https://oopsmypassword.web.app/sitemap.txt
 Sitemap: https://oopsmypassword.web.app/rss.xml
