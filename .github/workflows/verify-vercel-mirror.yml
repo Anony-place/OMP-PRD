@@ -9,8 +9,8 @@ name: Verify Vercel mirror
 #
 # It never touches Firebase Hosting. It only reads both origins over HTTPS.
 #
-#   push to main      header + shape checks on ~12 URLs, plus ~80-URL spot parity
-#   workflow_dispatch full live parity across all ~455 known URLs
+#   push to main      header + shape checks, then live parity across all ~455 URLs
+#   workflow_dispatch the same thing, on demand
 
 on:
   workflow_dispatch:
@@ -133,13 +133,9 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Live parity, production vs mirror
-        # A full run is 455 URLs x 2 hosts and takes several minutes, so the
-        # push gate samples 80 of them evenly across the corpus - a prefix would
-        # be all "Anony.su" and learning redirects and prove nothing. The full
-        # sweep is one click in the Actions tab.
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            node scripts/verify-vercel-parity.mjs --live "$MIRROR"
-          else
-            node scripts/verify-vercel-parity.mjs --live "$MIRROR" --sample 80
-          fi
+        # Every known URL, both hosts, several minutes. This workflow gates
+        # nothing - it is the standing proof that the mirror is a faithful copy
+        # of production, and it only gets cheaper to trust by being exhaustive:
+        # a sampled run already found a real title divergence, but a sample can
+        # just as easily miss the one broken URL that matters.
+        run: node scripts/verify-vercel-parity.mjs --live "$MIRROR"
