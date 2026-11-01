@@ -52,7 +52,9 @@ rm -f ./*.md
 
 # A rewrite that missed a file is a canonical pointing at the old host again;
 # fail the build instead of shipping it.
-leftover=$(grep -rl "oopsmypassword\.web\.app" . 2>/dev/null | head -5 || true)
+# This script names the old origin on purpose, so it is not evidence of a miss.
+leftover=$(grep -rl "oopsmypassword\.web\.app" . 2>/dev/null \
+  | grep -v '^\./vercel-build\.sh$' | head -5 || true)
 if [ -n "$leftover" ]; then
   echo "::error::files still reference the old origin after the rewrite:"
   printf '%s\n' "$leftover"
