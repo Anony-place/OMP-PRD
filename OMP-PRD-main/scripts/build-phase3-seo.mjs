@@ -173,6 +173,7 @@ function pageTemplate({ title, description, route, activeNav = '/tools', ogType 
   <title>${esc(fullTitle)}</title>
   <meta name="description" content="${esc(fullDesc)}">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="${esc(canonical)}">
   <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="${SITE}/rss.xml">
   <meta name="application-name" content="OopsMyPassword">
