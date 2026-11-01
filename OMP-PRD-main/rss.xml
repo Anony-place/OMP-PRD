@@ -5,6 +5,9 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
+    <lastBuildDate>Sun, 01 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <ttl>60</ttl>
+    <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
       <title>AI Agents Can Hack Other AI Agents: A New Security Threat</title>
@@ -110,6 +113,111 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it</guid>
       <category>Security Research</category>
       <description>Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It</description>
+    </item>
+    <item>
+      <title>What to Do After a Data Breach</title>
+      <link>https://oopsmypassword.web.app/articles/after-a-data-breach</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/after-a-data-breach</guid>
+      <category>Guides</category>
+      <description>What to Do After a Data Breach</description>
+    </item>
+    <item>
+      <title>Are Password Managers Safe?</title>
+      <link>https://oopsmypassword.web.app/articles/are-password-managers-safe</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/are-password-managers-safe</guid>
+      <category>Guides</category>
+      <description>Are Password Managers Safe?</description>
+    </item>
+    <item>
+      <title>How to Check If Your Password Has Been Leaked (Safely)</title>
+      <link>https://oopsmypassword.web.app/articles/check-if-password-was-leaked</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/check-if-password-was-leaked</guid>
+      <category>Guides</category>
+      <description>How to Check If Your Password Has Been Leaked (Safely)</description>
+    </item>
+    <item>
+      <title>Common Password Mistakes (and How to Fix Them)</title>
+      <link>https://oopsmypassword.web.app/articles/common-password-mistakes</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/common-password-mistakes</guid>
+      <category>Guides</category>
+      <description>Common Password Mistakes (and How to Fix Them)</description>
+    </item>
+    <item>
+      <title>How to Create a Strong Password</title>
+      <link>https://oopsmypassword.web.app/articles/create-strong-password</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/create-strong-password</guid>
+      <category>Guides</category>
+      <description>How to Create a Strong Password</description>
+    </item>
+    <item>
+      <title>How Long Should a Password Be?</title>
+      <link>https://oopsmypassword.web.app/articles/how-long-should-a-password-be</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-long-should-a-password-be</guid>
+      <category>Guides</category>
+      <description>How Long Should a Password Be?</description>
+    </item>
+    <item>
+      <title>Passkeys Explained: Passwords Without the Password</title>
+      <link>https://oopsmypassword.web.app/articles/passkeys-explained</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/passkeys-explained</guid>
+      <category>Guides</category>
+      <description>Passkeys Explained: Passwords Without the Password</description>
+    </item>
+    <item>
+      <title>Password Security Best Practices</title>
+      <link>https://oopsmypassword.web.app/articles/password-best-practices</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-best-practices</guid>
+      <category>Guides</category>
+      <description>Password Security Best Practices</description>
+    </item>
+    <item>
+      <title>Password Cracking Times by Length</title>
+      <link>https://oopsmypassword.web.app/articles/password-cracking-time-table</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-cracking-time-table</guid>
+      <category>Guides</category>
+      <description>Password Cracking Times by Length</description>
+    </item>
+    <item>
+      <title>How Password Entropy Works</title>
+      <link>https://oopsmypassword.web.app/articles/password-entropy</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-entropy</guid>
+      <category>Guides</category>
+      <description>How Password Entropy Works</description>
+    </item>
+    <item>
+      <title>Password Manager Benefits — and How to Choose One</title>
+      <link>https://oopsmypassword.web.app/articles/password-manager-benefits</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-manager-benefits</guid>
+      <category>Guides</category>
+      <description>Password Manager Benefits — and How to Choose One</description>
+    </item>
+    <item>
+      <title>Password vs Passkey: An Honest Comparison</title>
+      <link>https://oopsmypassword.web.app/articles/password-vs-passkey</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-vs-passkey</guid>
+      <category>Guides</category>
+      <description>Password vs Passkey: An Honest Comparison</description>
+    </item>
+    <item>
+      <title>Password vs Passphrase: Which to Use</title>
+      <link>https://oopsmypassword.web.app/articles/password-vs-passphrase</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/password-vs-passphrase</guid>
+      <category>Guides</category>
+      <description>Password vs Passphrase: Which to Use</description>
+    </item>
+    <item>
+      <title>How Phishing Attacks Steal Passwords</title>
+      <link>https://oopsmypassword.web.app/articles/phishing-attacks</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/phishing-attacks</guid>
+      <category>Guides</category>
+      <description>How Phishing Attacks Steal Passwords</description>
+    </item>
+    <item>
+      <title>Two-Factor Authentication (2FA): What to Use and Why</title>
+      <link>https://oopsmypassword.web.app/articles/two-factor-authentication</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/two-factor-authentication</guid>
+      <category>Guides</category>
+      <description>Two-Factor Authentication (2FA): What to Use and Why</description>
     </item>
     <item>
       <title>Bitwarden vs 1Password: Security &amp; Vault Comparison</title>

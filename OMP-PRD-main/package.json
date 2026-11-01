@@ -9,7 +9,6 @@
     "@supabase/mcp-server-supabase": "^0.13.0"
   },
   "scripts": {
-    "vercel-build": "npx --yes firebase-tools@latest deploy --only hosting --project oopsmypassword --non-interactive",
     "mcp:supabase": "node_modules/.bin/mcp-server-supabase --project-ref aeehfulikupskyrvcpzb"
   }
 }

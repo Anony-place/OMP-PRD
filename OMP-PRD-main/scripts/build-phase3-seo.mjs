@@ -35,6 +35,19 @@ function escJson(v) {
     .replaceAll('&', '\\u0026');
 }
 
+/* RSS <lastBuildDate> must be RFC 822. STATIC_LASTMOD (YYYY-MM-DD) keeps the
+   build reproducible; without it the build stamp is used, exactly like the
+   sitemap's static <lastmod>. */
+function rfc822(value) {
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const raw = String(value || '').trim();
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? new Date(`${raw}T00:00:00Z`) : new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${DAYS[d.getUTCDay()]}, ${pad(d.getUTCDate())} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()} ` +
+    `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} GMT`;
+}
+
 function clampTitle(raw, suffix = 'OopsMyPassword') {
   const clean = String(raw || '').trim();
   const full = `${clean} | ${suffix}`;
@@ -2447,6 +2460,24 @@ async function buildSitemapAndFeeds() {
   fs.writeFileSync(sitemapFile, sitemapHtml);
 
   // 2. Build /rss.xml (RSS 2.0 Feed)
+  /* Google reads a well-formed RSS 2.0 feed as a valid sitemap, so this feed
+     is a SECOND discovery channel, not just a reader feed. It is submitted to
+     Search Console directly (Sitemaps → add a new sitemap → rss.xml) and
+     declared in robots.txt, which is why it must only ever carry real,
+     canonical, indexable, 200-status URLs — never a draft, a redirect or a
+     noindex page. Links are de-duplicated: one URL listed twice makes the
+     feed look unreliable to both readers and crawlers. */
+  const staticGuides = fs.existsSync(path.join(ROOT, 'guides'))
+    ? fs.readdirSync(path.join(ROOT, 'guides')).filter((f) => f.endsWith('.html')).sort().map((f) => {
+        const slug = f.replace(/\.html$/, '');
+        const title = extractTitleFromFile(path.join(ROOT, 'guides', f), slug);
+        /* Hand-authored guides live at /articles/<slug> (firebase.json
+           rewrites them to guides/<slug>.html), so that is the canonical URL
+           and the only one that belongs in a feed. */
+        return { title, link: `${SITE}/articles/${slug}`, desc: title, category: 'Guides' };
+      })
+    : [];
+
   const rssItems = [
     ...dbArticles.map((a) => ({
       title: a.title,
@@ -2454,6 +2485,7 @@ async function buildSitemapAndFeeds() {
       desc: a.title,
       category: 'Security Research'
     })),
+    ...staticGuides,
     ...COMPARISONS.map((c) => ({
       title: c.title,
       link: `${SITE}/compare/${c.slug}`,
@@ -2467,6 +2499,14 @@ async function buildSitemapAndFeeds() {
       category: c.category
     }))
   ];
+
+  const seenLinks = new Set();
+  const feedItems = rssItems.filter((it) => {
+    if (!it || !it.link || typeof it.link !== 'string' || seenLinks.has(it.link)) return false;
+    seenLinks.add(it.link);
+    return true;
+  });
+
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -2474,8 +2514,11 @@ async function buildSitemapAndFeeds() {
     <link>${SITE}/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
+    <lastBuildDate>${rfc822(process.env.STATIC_LASTMOD)}</lastBuildDate>
+    <ttl>60</ttl>
+    <generator>OopsMyPassword static build</generator>
     <atom:link href="${SITE}/rss.xml" rel="self" type="application/rss+xml"/>
-${rssItems.map((it) => `    <item>
+${feedItems.map((it) => `    <item>
       <title>${esc(it.title)}</title>
       <link>${esc(it.link)}</link>
       <guid isPermaLink="true">${esc(it.link)}</guid>
@@ -2604,11 +2647,18 @@ ${rssItems.map((it) => `    <item>
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), finalXml);
   fs.writeFileSync(path.join(ROOT, 'google-sitemap.xml'), finalXml);
 
-  // Also generate a clean /sitemap-index.xml pointing to /sitemap.xml
+  // Also generate a clean /sitemap-index.xml pointing to /sitemap.xml *and*
+  // /rss.xml. Google accepts a well-formed RSS 2.0 feed as a sitemap, so the
+  // index gives Search Console a third declaration path: if the plain
+  // /sitemap.xml fetch is the one that keeps failing, listing it from an index
+  // (and from the feed) is a real, free workaround, not a cosmetic one.
   const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${SITE}/sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE}/rss.xml</loc>
   </sitemap>
 </sitemapindex>
 `;
