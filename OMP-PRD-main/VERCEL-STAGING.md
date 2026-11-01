@@ -46,11 +46,13 @@ sed -i 's|oopsmypassword\.web\.app|oopsmypassword.vercel.app|g' \
 Created through the Vercel API and deployed from `main` @ `7eb3e79`. Nothing to
 configure by hand. Two things worth knowing:
 
-- **Pushes to `main` do not auto-redeploy the mirror** — the GitHub link was
-  created with `createDeployments: disabled`. After a big change, redeploy from
-  the Vercel dashboard (**Deployments → ⋯ → Redeploy**) or ask for a new
-  deployment. If the mirror falls behind production, the `live parity` job in
-  `verify-vercel-mirror.yml` turns red, which is exactly when to redeploy.
+- **Pushes to `main` do auto-deploy the mirror.** The project was created with
+  `createDeployments: disabled`, which turned out not to stop the Git
+  integration: a merge to `main` produced a `source: git` deployment on its own
+  (`dpl_6jzq4p`). So the mirror tracks production without any manual step, and
+  if it ever does fall behind, the `live parity` job in
+  `verify-vercel-mirror.yml` turns red. Manual redeploy
+  (**Deployments → ⋯ → Redeploy**) stays available as a fallback.
 - **Deployment Protection** is inherited as `all_except_custom_domains`, yet the
   mirror answered Googlebot with `200`, not a login wall (verified by the
   workflow below). If that ever changes, the `No login wall` step fails before
@@ -85,6 +87,9 @@ which runs on every push to `main` and can be run in full from the Actions tab:
 - `/`, `/checker` and an article carry `X-Robots-Tag: noindex`; `sitemap.xml`,
   `sitemap.txt`, `robots.txt` and `rss.xml` do **not**
 - the mirror's canonical is still `https://oopsmypassword.web.app/...`
+- the home page still carries **both** Search Console verification tags — Google
+  re-checks ownership later, and losing it silently kills Sitemaps and URL
+  Inspection days into the experiment
 - no login wall: a Googlebot user agent gets 200, not 401
 - `/guides/create-strong-password` → 301 → `/articles/create-strong-password`,
   an unknown path → 404

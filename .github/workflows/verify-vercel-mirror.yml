@@ -85,6 +85,20 @@ jobs:
           printf '%s' "$canonical" | grep -q 'https://oopsmypassword.web.app' \
             || { echo "::error::the mirror no longer canonicalises to production, duplicate content is now possible"; exit 1; }
 
+      - name: Search Console verification tag is still served
+        run: |
+          set -euo pipefail
+          # A URL-prefix property is verified by this meta tag on the home page.
+          # If it disappears, Google re-checks ownership later and the property
+          # silently loses Sitemaps and URL Inspection - which would invalidate
+          # the whole sitemap experiment days after it started.
+          home=$(curl -sS --retry 3 "$MIRROR/")
+          for token in MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY; do
+            printf '%s' "$home" | grep -q "google-site-verification\" content=\"$token" \
+              || { echo "::error::the home page no longer carries the verification tag $token"; exit 1; }
+            echo "verification tag present: $token"
+          done
+
       - name: No login wall in front of Googlebot
         run: |
           set -euo pipefail
