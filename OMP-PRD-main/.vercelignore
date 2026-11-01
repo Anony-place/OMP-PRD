@@ -1,0 +1,56 @@
+# ---------------------------------------------------------------------------
+# Vercel mirror of the Firebase site.
+#
+# The published site is the committed output at this directory's root: HTML,
+# sitemap.xml / sitemap.txt / sitemap-index.xml, rss.xml, robots.txt, assets/.
+# Everything below is build tooling or backend source that Firebase never serves
+# anyway (firebase.json only serves files found on disk), so shipping it to
+# Vercel would upload ~4 MB of dead weight and expose source paths.
+#
+# Syntax is gitignore-style, relative to the project root (this directory).
+# ---------------------------------------------------------------------------
+
+# Build + QA tooling (Node/Python). Never part of the served site.
+tools/
+scripts/
+node_modules/
+
+# Backend source: Firebase Functions + Supabase Edge Functions, SQL, config.
+functions/
+supabase/
+
+# Repository housekeeping and CI. Vercel has no use for either.
+.github/
+.claude/
+.firebaserc
+firebase.json
+package.json
+package-lock.json
+.gitignore
+.vercelignore
+
+# Internal notes / audit reports. Not linked from any page, not in the sitemap,
+# and several contain operational detail that should not be publicly fetchable.
+*.md
+
+# Local editor + OS debris.
+.DS_Store
+Thumbs.db
+*.log
+
+# Secret-bearing files (already gitignored, listed again as a belt-and-braces
+# guard in case a local run leaves one behind in the upload).
+.env
+.env.*
+gsc-*.json
+service-account*.json
+*credentials*.json
+
+# ---------------------------------------------------------------------------
+# Deliberately NOT ignored, because the whole point of this deployment is to
+# test whether Google can fetch them from a Vercel host:
+#   sitemap.xml  google-sitemap.xml  sitemap-index.xml  sitemap.txt
+#   rss.xml  robots.txt  ads.txt  llms.txt  llms-full.txt
+#   manifest.webmanifest  sw.js  404.html  index.html  assets/**
+#   .well-known/security.txt  and every committed *.html page
+# ---------------------------------------------------------------------------
