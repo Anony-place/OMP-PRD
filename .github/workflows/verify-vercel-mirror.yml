@@ -92,12 +92,36 @@ jobs:
           # If it disappears, Google re-checks ownership later and the property
           # silently loses Sitemaps and URL Inspection - which would invalidate
           # the whole sitemap experiment days after it started.
-          home=$(curl -sS --retry 3 "$MIRROR/")
-          for token in MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY; do
-            printf '%s' "$home" | grep -q "google-site-verification\" content=\"$token" \
-              || { echo "::error::the home page no longer carries the verification tag $token"; exit 1; }
-            echo "verification tag present: $token"
+          #
+          # Retried on purpose: a push triggers this workflow AND a Vercel
+          # deployment at the same time, so for a few seconds the alias can
+          # still serve the previous build. Failing on that race teaches
+          # everyone to ignore a red run, which is the opposite of the point.
+          #
+          # Matched with a bash `case`, not `grep -q`: grep exits as soon as it
+          # matches, and with `set -o pipefail` a large page can turn that early
+          # exit into a false failure.
+          missing=""
+          for attempt in 1 2 3 4 5; do
+            home=$(curl -sS --retry 3 "$MIRROR/")
+            missing=""
+            present=0
+            for token in MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY; do
+              case "$home" in
+                *"google-site-verification"*"$token"*) present=$((present + 1)) ;;
+                *) missing="$missing $token" ;;
+              esac
+            done
+            if [ -z "$missing" ]; then
+              echo "both verification tags present (home page ${#home} bytes)"
+              echo "::notice::Search Console verification tags present: ${present}/2, home page ${#home} bytes"
+              exit 0
+            fi
+            echo "attempt ${attempt}: missing${missing} (home page ${#home} bytes)"
+            [ "$attempt" = "5" ] || sleep 20
           done
+          echo "::error::the home page does not carry the verification tag(s):${missing}"
+          exit 1
 
       - name: No login wall in front of Googlebot
         run: |
