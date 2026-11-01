@@ -8,9 +8,14 @@ A **second, throwaway deployment of the same site** used to answer one question:
 It is **not** a migration. `oopsmypassword.web.app`, `main`, and the existing
 Search Console property are untouched, and nothing on the mirror is indexable.
 
-- Firebase project: `password-e9a30`, origin `https://oopsmypassword.web.app` — unchanged, still production.
-- Vercel project: `oopsmypassword` → `https://oopsmypassword.vercel.app` — read-only mirror, `noindex`.
-- Source of truth for routing stays `firebase.json`. `vercel.json` is generated from it.
+| | |
+| --- | --- |
+| Firebase project | `password-e9a30` → `https://oopsmypassword.web.app` — production, unchanged |
+| Vercel project | `oopsmypassword` (`prj_rqQBI6GWGKYqjh7DJNgNzqMdyHxT`, team `aka-su`) → `https://oopsmypassword.vercel.app` |
+| Root directory | `OMP-PRD-main` |
+| Framework | Vite preset, but every build setting is overridden — nothing is bundled |
+| Install / Build / Output | `echo skip-install` / origin-rewrite (below) / `.` |
+| Source of truth | `firebase.json`; `vercel.json` is generated from it |
 
 ---
 
@@ -18,66 +23,72 @@ Search Console property are untouched, and nothing on the mirror is indexable.
 
 | Layer | What it does | Where |
 | --- | --- | --- |
-| 1. Host-scoped `noindex` | Every HTML response on `oopsmypassword.vercel.app` carries `X-Robots-Tag: noindex, nofollow`. Bound to that **host only**, so a future custom domain on the same project would not inherit it. Sitemap, robots, RSS and manifest are exempt so they can be fetched. | `vercel.json` headers |
-| 2. Canonicals stay on `web.app` | Every HTML page still declares `https://oopsmypassword.web.app/...` as canonical. Even if Google crawls the mirror, the canonical points at the real site. | committed HTML |
+| 1. Host-scoped `noindex` | Every HTML response on `oopsmypassword.vercel.app` carries `X-Robots-Tag: noindex, nofollow`. Bound to that **host only**, so a future custom domain on the same project would not inherit it. Sitemap, robots, RSS and manifest are exempt so they stay fetchable. | `vercel.json` headers |
+| 2. Canonicals stay on `web.app` | Every HTML page still declares `https://oopsmypassword.web.app/...` as canonical. Even if Google crawls the mirror, the canonical points at the real site. | committed HTML (never rewritten) |
 | 3. Firebase is not touched | No `firebase.json` change, no deploy, no origin switch, no GSC change on the `web.app` property, no `ads.txt`/AdSense change. | — |
 | 4. No incoming links | Nothing links to the mirror. It is reachable only if you type the URL. | — |
 
-Result: the mirror can answer "is Google able to fetch from this host?" without
-competing with the real site in the index.
+The only thing the build command rewrites is the **origin inside the mirror's own
+sitemap, RSS and robots files**, so that GSC sees a self-consistent sitemap
+instead of "URLs not allowed for this property". HTML is never touched.
+
+```
+rm -rf tools scripts functions supabase .github .claude node_modules .vercelignore
+rm -f *.md
+sed -i 's|oopsmypassword\.web\.app|oopsmypassword.vercel.app|g' \
+  sitemap.xml sitemap.txt sitemap-index.xml google-sitemap.xml rss.xml robots.txt
+```
 
 ---
 
-## Step 1 — create the project (browser, ~2 minutes)
+## Step 1 — project (already done)
 
-1. <https://vercel.com/new> → **Import Git Repository** → `Anony-place/OMP-PRD`.
-2. **Project Name**: `oopsmypassword` (this is what claims `oopsmypassword.vercel.app`).
-3. **Root Directory**: `OMP-PRD-main` ← important, the site lives there.
-4. **Framework Preset**: `Other`.
-5. **Build and Output Settings** — open the section:
-   - **Build Command**: the line below (it only rewrites the origin inside the
-     sitemap/robots files so the mirror's own files point at the mirror).
-     ```
-     sed -i 's|oopsmypassword\.web\.app|oopsmypassword.vercel.app|g' sitemap.xml sitemap.txt sitemap-index.xml google-sitemap.xml rss.xml robots.txt
-     ```
-   - **Output Directory**: `.`
-   - **Install Command**: leave empty (there is nothing to install).
-6. **Environment Variables**: none.
-7. **Deploy**.
+Created through the Vercel API and deployed from `main` @ `7eb3e79`. Nothing to
+configure by hand. Two things worth knowing:
 
-> Prefer an empty Build Command? Then skip the `sed` and submit
-> `https://oopsmypassword.vercel.app/sitemap.txt` as-is. The sitemap will list
-> `web.app` URLs, which Search Console reports as "URLs not allowed for this
-> property" — the fetch still happens, and **Last read** is still the signal, but
-> you get an extra error to interpret. The `sed` version gives a clean result.
+- **Pushes to `main` do not auto-redeploy the mirror** — the GitHub link was
+  created with `createDeployments: disabled`. After a big change, redeploy from
+  the Vercel dashboard (**Deployments → ⋯ → Redeploy**) or ask for a new
+  deployment. If the mirror falls behind production, the `live parity` job in
+  `verify-vercel-mirror.yml` turns red, which is exactly when to redeploy.
+- **Deployment Protection** is inherited as `all_except_custom_domains`, yet the
+  mirror answered Googlebot with `200`, not a login wall (verified by the
+  workflow below). If that ever changes, the `No login wall` step fails before
+  the experiment can go wrong. In the dashboard: **Settings → Deployment
+  Protection** must show Vercel Authentication **off**, and **Firewall → Attack
+  Challenge Mode** must stay off during the test.
 
-### After the first deploy — two settings that must be checked
-
-Deployment protection and the firewall are the two things that most often make
-Googlebot see a login wall or a 403 instead of the site:
-
-- **Settings → Deployment Protection** → *Vercel Authentication* must be **Off**
-  (this project is public; if it is on, Googlebot gets HTML that is not the page).
-- **Settings → Firewall** → leave **Attack Challenge Mode** off while testing.
-
-If either is on, the test proves nothing.
+To recreate the project from scratch: <https://vercel.com/new> → import
+`Anony-place/OMP-PRD` → name `oopsmypassword` → root `OMP-PRD-main` → framework
+**Other** → build command as above → output `.`.
 
 ---
 
-## Step 2 — verify the mirror locally before trusting it
+## Step 2 — verify locally
 
 ```bash
 cd OMP-PRD-main
-npm ci                                     # installs path-to-regexp 6.2.1
-npm run vercel:test                        # 39 assertions: drift, 301s, rewrites, noindex, parity
-npm run vercel:parity                      # firebase.json vs vercel.json, ~455 URLs, offline
-
-npm run vercel:parity:live                 # the real thing: live web.app vs live vercel.app
-npm run vercel:parity:live -- https://oopsmypassword.vercel.app --limit 40   # quick pass
+npm ci
+npm run vercel:test              # 39 assertions: drift, 301s, rewrites, noindex, parity, .vercelignore
+npm run vercel:parity            # firebase.json vs vercel.json, ~455 URLs, offline (~0.2s)
+npm run vercel:parity:live       # live web.app vs live vercel.app, needs working HTTPS egress
 ```
 
 `vercel:test` is also a CI gate (seo-check job), so a `firebase.json` change that
-forgets the mirror now fails the Firebase deploy instead of silently rotting here.
+forgets the mirror fails the Firebase deploy instead of silently rotting here.
+
+The mirror has its own live check, `.github/workflows/verify-vercel-mirror.yml`,
+which runs on every push to `main` and can be run in full from the Actions tab:
+
+- every sitemap endpoint returns 200, and the mirror's `sitemap.txt` has the same
+  URL count as production with **zero** `web.app` lines in it
+- `/`, `/checker` and an article carry `X-Robots-Tag: noindex`; `sitemap.xml`,
+  `sitemap.txt`, `robots.txt` and `rss.xml` do **not**
+- the mirror's canonical is still `https://oopsmypassword.web.app/...`
+- no login wall: a Googlebot user agent gets 200, not 401
+- `/guides/create-strong-password` → 301 → `/articles/create-strong-password`,
+  an unknown path → 404
+- live parity against production: 80 URLs on push, all ~455 on demand
 
 ---
 
@@ -86,9 +97,9 @@ forgets the mirror now fails the Firebase deploy instead of silently rotting her
 1. <https://search.google.com/search-console> → **Add property** → **URL prefix** →
    `https://oopsmypassword.vercel.app/`
 2. Verify ownership with the **HTML file** method: download the file Search
-   Console gives you, drop it in `OMP-PRD-main/`, commit and push. Vercel
-   redeploys automatically, then click **Verify**. `.vercelignore` does not
-   exclude `google*.html`, so the file ships with the site.
+   Console gives you, drop it in `OMP-PRD-main/`, commit and push. The mirror
+   must then be redeployed (see Step 1); `.vercelignore` does not exclude
+   `google*.html`, so the file ships with the site.
 3. **Indexing → Sitemaps** → submit:
    - `https://oopsmypassword.vercel.app/sitemap.txt` (the format that worked for
      other people stuck on this exact bug), then
@@ -100,24 +111,23 @@ forgets the mirror now fails the Firebase deploy instead of silently rotting her
 
 | Sitemap status | What it means | Next step |
 | --- | --- | --- |
-| **Success**, "Last read" filled, page count > 0 | Google fetched from a Vercel host. The `*.web.app` block is real and host-specific. | The bug is the host, not the file. Stay on Firebase for now, and only consider a real migration when a ₹0 path or a domain is available. |
+| **Success**, "Last read" filled, page count > 0 | Google fetched from a Vercel host. The `*.web.app` block is real and host-specific. | The bug is the host, not the file. Stay on Firebase until a ₹0 path or a domain exists. |
 | **Couldn't fetch** (same as on `web.app`) | Not host-specific at all. Changing host fixes nothing — do not migrate. | Buy nothing, move nothing. Re-check the mirror's `robots.txt`, firewall and Deployment Protection, then fall back to IndexNow + internal linking. |
-| **Has errors** (e.g. "URLs not allowed") | Google *did* fetch the file; only the contents were rejected. | Fetch works — that alone answers the question. Result counts as **Success** for the host test. |
+| **Has errors** (e.g. "URLs not allowed") | Google *did* fetch the file; only the contents were rejected. | Fetch works — that alone answers the question. Treat as **Success** for the host test. |
 | **Pending / no data** | Too early. | Wait. Anything under 48h is noise. |
 
-A useful corroborating signal: **URL Inspection** on
-`https://oopsmypassword.vercel.app/checker`. If Google reports
-"Excluded by 'noindex'" it means Googlebot crawled the mirror successfully —
-fetching works. "Couldn't fetch"/"Blocked" is the opposite answer.
+Corroborating signal: **URL Inspection** on
+`https://oopsmypassword.vercel.app/checker`. "Excluded by 'noindex'" means
+Googlebot crawled the mirror successfully — fetching works.
 
 ---
 
 ## Step 4 — when the test is over
 
-Delete the Vercel project (**Settings → Delete Project**). Nothing on Firebase,
-in the repo, or in the `web.app` Search Console property depends on it. The
-`vercel.json`, the build script and the tests can stay — they cost nothing when
-unused, and they are what makes a future migration a one-hour job instead of a
+Delete the Vercel project (the workflow will start failing, which is expected).
+Nothing on Firebase, in the repo, or in the `web.app` Search Console property
+depends on it. `vercel.json`, the build script and the tests can stay: they cost
+nothing when unused and make a future migration a one-hour job instead of a
 risky one.
 
 ---
@@ -141,6 +151,7 @@ risky one.
 | `firebase.json` | Source of truth: 124 redirects, 15 rewrites, header blocks. |
 | `scripts/build-vercel-config.mjs` | Generates `vercel.json` from it. `--check` fails on drift. |
 | `vercel.json` | Generated. **Never hand-edit** — edit `firebase.json` and re-run the script. |
-| `scripts/verify-vercel-parity.mjs` | Executes both routing tables over ~455 URLs and diffs them, offline or live. |
+| `scripts/verify-vercel-parity.mjs` | Executes both routing tables over ~455 URLs and diffs them, offline or live (`--sample N` for a stratified subset). |
 | `tools/test_vercel_config.mjs` | The CI gate: drift, 301s, dangling destinations, self-canonicals, noindex scope, parity. |
-| `.vercelignore` | Keeps build tooling, backend source and notes out of the upload. |
+| `.github/workflows/verify-vercel-mirror.yml` | Live checks against the deployed mirror: headers, canonicals, routing, no login wall, parity. |
+| `.vercelignore` | Keeps build tooling, backend source and notes out of CLI uploads. |

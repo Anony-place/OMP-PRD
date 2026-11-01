@@ -14,8 +14,8 @@
                         path-to-regexp, the library Vercel itself uses for
                         `source`, so the simulation cannot invent syntax.
 
-     live  --live   both hosts are fetched over HTTP and compared field by
-           field. This is the ground truth after a deploy.
+     live  --live [origin] [--sample N]   both hosts are fetched over HTTP and
+           compared field by field. This is the ground truth after a deploy.
 
    What counts as a match
    ----------------------
@@ -276,9 +276,15 @@ async function followLive(origin, start, max = 6) {
   return { ...describeLive(last), hops, response: last, loop: true };
 }
 
-async function compareLive(vercelOrigin, limit) {
+function stratified(corpus, size) {
+  if (!size || size >= corpus.length) return corpus;
+  const stride = corpus.length / size;
+  return Array.from({ length: size }, (_, i) => corpus[Math.floor(i * stride)]);
+}
+
+async function compareLive(vercelOrigin, limit, sampleSize) {
   const corpus = buildCorpus();
-  const sample = limit ? corpus.slice(0, limit) : corpus;
+  const sample = sampleSize ? stratified(corpus, sampleSize) : (limit ? corpus.slice(0, limit) : corpus);
   const diffs = [];
   const hopDiffs = [];
   let checked = 0;
@@ -312,9 +318,14 @@ const isLive = liveIndex !== -1;
 const vercelOrigin = isLive ? (process.argv[liveIndex + 1] || 'https://oopsmypassword.vercel.app') : null;
 const limitIndex = process.argv.indexOf('--limit');
 const limit = limitIndex !== -1 ? Number(process.argv[limitIndex + 1]) : 0;
+/* --sample N walks the corpus at a fixed stride instead of taking the first N
+   entries. The corpus is sorted, so a prefix is all "Anony.su/" and learning
+   redirects - a preflight would then prove nothing about the rest of the site. */
+const sampleIndex = process.argv.indexOf('--sample');
+const sample = sampleIndex !== -1 ? Number(process.argv[sampleIndex + 1]) : 0;
 
 const started = Date.now();
-const result = isLive ? await compareLive(vercelOrigin, limit) : compareOffline();
+const result = isLive ? await compareLive(vercelOrigin, limit, sample) : compareOffline();
 const seconds = ((Date.now() - started) / 1000).toFixed(1);
 
 if (isLive) {
