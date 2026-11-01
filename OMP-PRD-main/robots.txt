@@ -3,10 +3,12 @@ Allow: /
 Disallow: /Anony.su/
 Disallow: /functions/
 
-# Three independent discovery endpoints. Google reads a well-formed RSS 2.0
-# feed as a valid sitemap, so /rss.xml is listed here as a fallback: when the
-# plain /sitemap.xml fetch is the one Search Console keeps failing on a
-# shared *.web.app hostname, a different endpoint (same URLs) is the free fix.
+# Four independent discovery endpoints over the same URL set. Search Console
+# keeps failing the XML fetch on shared *.web.app hostnames, so the plain-text
+# sitemap (/sitemap.txt, one URL per line) and the RSS 2.0 feed (/rss.xml,
+# which Google also reads as a sitemap) are listed as fallbacks: a different
+# endpoint in a different format is the free fix while a domain is not an
+# option. Submit them one at a time and wait for a status between each.
 # Submit this exact URL in Google Search Console on the
 # https://oopsmypassword.web.app URL-prefix property.
 Sitemap: https://oopsmypassword.web.app/sitemap.xml
