@@ -88,7 +88,14 @@ which runs on every push to `main` and can be run in full from the Actions tab:
 - no login wall: a Googlebot user agent gets 200, not 401
 - `/guides/create-strong-password` → 301 → `/articles/create-strong-password`,
   an unknown path → 404
-- live parity against production: 80 URLs on push, all ~455 on demand
+- live parity against production on **every known URL** (~455), comparing
+  where each URL lands and the `<title>` of the page it lands on
+
+One recurring warning is expected: production regenerates HTML with
+`tools/build.py` at deploy time while the mirror serves the committed copy, so a
+page whose template changed since the last commit can differ in title (e.g.
+`/pentest`). It is reported as a warning because it means "the mirror is one
+commit behind", not "routing broke".
 
 ---
 
