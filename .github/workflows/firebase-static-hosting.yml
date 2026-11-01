@@ -358,16 +358,40 @@ jobs:
           LIVE_REWRITE_FROM: oopsmypassword.vercel.app
           LIVE_REWRITE_TO: oopsmypassword.web.app
         run: |
-          set -euo pipefail
           # Vercel builds from the committed tree, not from this job's rebuild.
           # The rebuild pulls the live Supabase catalogue, so any article added
           # since the last commit exists only here - and comparing it against the
           # deployed mirror would fail on content the mirror was never meant to
-          # have. Extract HEAD exactly as Vercel received it and check that.
+          # have. Check HEAD exactly as Vercel received it.
+          #
+          # Everything here is wrapped so a failure says WHAT failed. stderr does
+          # not reach the check-runs API, and the first version of this step
+          # reported a bare "exit code 1" - which is indistinguishable from a
+          # flaky runner.
+          set -uo pipefail
           tree="$RUNNER_TEMP/pristine"
-          rm -rf "$tree"; mkdir -p "$tree"
-          git archive HEAD | tar -x -C "$tree"
-          node "$tree/OMP-PRD-main/scripts/verify-live-release.mjs" --root "$tree/OMP-PRD-main"
+          rm -rf "$tree"
+          if ! git worktree add --detach --quiet "$tree" HEAD; then
+            echo "::error::could not create a worktree of HEAD"
+            exit 1
+          fi
+          echo "HEAD=$(git rev-parse HEAD)"
+          echo "pristine html files: $(find "$tree/OMP-PRD-main" -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')"
+          set +e
+          out=$(node "$tree/OMP-PRD-main/scripts/verify-live-release.mjs" --root "$tree/OMP-PRD-main" 2>&1)
+          code=$?
+          set -e
+          printf '%s\n' "$out" | tail -20
+          {
+            echo "### Live artifact check"
+            echo '```'
+            printf '%s\n' "$out" | tail -20
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" != "0" ]; then
+            printf '%s\n' "$out" | tail -10 | sed '/^$/d; s/^/::error::/' | head -10
+            exit 1
+          fi
 
       - name: Submit URLs to IndexNow (Bing / Yandex)
         working-directory: OMP-PRD-main
