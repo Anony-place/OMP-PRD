@@ -144,7 +144,8 @@ def head(*, title, desc, path, og_type="website", jsonld=None, extra="", robots=
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
   <meta name="description" content="{desc}">{robots_html}
-  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />{canonical_html}
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />{canonical_html}
   <meta name="application-name" content="{BRAND}">
   <meta name="theme-color" content="#F6F8FC">
   <meta name="color-scheme" content="light dark">{social_html}
