@@ -310,9 +310,17 @@ async function loadTab(tab) {
     panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Articles</h2><button id="new-article" type="button" class="btn btn-primary btn-sm">+ New article</button></div>
       <div class="form-field" style="margin-top:14px;max-width:380px"><label for="article-filter">Filter</label><input id="article-filter" type="search" placeholder="Search title, slug or status…" autocomplete="off"></div>
       <div id="deploy-slot" aria-live="polite"></div>
+      <div id="bulk-bar" class="flex gap-8 wrap" style="margin-top:12px" hidden>
+        <span class="tiny muted" id="bulk-count">0 selected</span>
+        <button class="btn btn-secondary btn-sm" type="button" id="bulk-publish">Publish</button>
+        <button class="btn btn-secondary btn-sm" type="button" id="bulk-draft">Move to draft</button>
+        <button class="btn btn-ghost btn-sm" type="button" id="bulk-delete" style="color:var(--red)">Delete</button>
+      </div>
       <div id="article-editor"></div>
       <div class="admin-list" id="article-list" style="margin-top:18px"></div>
       <div id="article-paging-slot"></div>`;
+    /* Survives repaints of the list, so ticking a box does not lose the others. */
+    const selected = new Set();
     const editor = document.querySelector('#article-editor');
     const listEl = document.querySelector('#article-list');
     const pagingSlot = document.querySelector('#article-paging-slot');
@@ -324,13 +332,52 @@ async function loadTab(tab) {
       if (tabPaging.articles.page > totalPages) tabPaging.articles.page = 1;
       const start = (tabPaging.articles.page - 1) * pageSize;
       const shown = filtered.slice(start, start + pageSize);
-      listEl.innerHTML = shown.map(a => `<div class="admin-row"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · <span class="admin-chip ${a.status === 'published' ? 'is-success' : ''}">${esc(a.status)}</span>${a.document_url ? ' · 📄 doc' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-edit-article="${esc(a.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-article="${esc(a.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
+      listEl.innerHTML = shown.map(a => `<div class="admin-row"><input type="checkbox" class="bulk-check" data-bulk="${esc(a.id)}" ${selected.has(a.id) ? 'checked' : ''} aria-label="Select ${esc(a.title)}" style="width:auto;margin-right:10px;flex:none"><div class="grow"><div class="ttl">${esc(a.title)}</div><div class="meta">/${esc(a.slug)} · <span class="admin-chip ${a.status === 'published' ? 'is-success' : ''}">${esc(a.status)}</span>${a.document_url ? ' · 📄 doc' : ''}</div></div><div class="row-btns"><button type="button" class="btn btn-secondary btn-sm" data-edit-article="${esc(a.id)}">Edit</button><button type="button" class="btn btn-ghost btn-sm" data-delete-article="${esc(a.id)}" style="color:var(--red)">Delete</button></div></div>`).join('')
         || `<div class="admin-empty"><p class="muted">${rows.length ? 'No articles match that filter.' : 'No articles yet.'}</p></div>`;
       
       pagingSlot.innerHTML = '';
       if (filtered.length > pageSize) {
         pagingSlot.appendChild(renderPagination(filtered.length, tabPaging.articles, () => paintList(document.querySelector('#article-filter').value)));
       }
+
+      const paintBulk = () => {
+        const bar = document.querySelector('#bulk-bar');
+        const count = document.querySelector('#bulk-count');
+        if (!bar) return;
+        bar.hidden = selected.size === 0;
+        if (count) count.textContent = `${selected.size} selected`;
+      };
+      listEl.querySelectorAll('[data-bulk]').forEach(cb => {
+        cb.onchange = () => {
+          if (cb.checked) selected.add(cb.dataset.bulk); else selected.delete(cb.dataset.bulk);
+          paintBulk();
+        };
+      });
+      paintBulk();
+
+      /* Bulk actions do ONE database call and ONE deploy, not one each. Ten
+         drafts published one at a time would queue ten builds. */
+      const bulk = async (label, patch, targets) => {
+        const ids = [...selected];
+        if (!ids.length) return;
+        const { error } = patch.__delete
+          ? await supabase.from('articles').delete().in('id', ids)
+          : await supabase.from('articles').update({ ...patch, updated_at: new Date().toISOString() }).in('id', ids);
+        if (error) return flash(panel, `${label} failed: ${error.message}`);
+        selected.clear();
+        const started = await requestPublish(`${label}:${ids.length}`, targets || []);
+        if (started.job_id) pendingDeploy = { jobId: started.job_id, path: '/articles' };
+        loadTab('articles');
+      };
+      const bulkPublish = document.querySelector('#bulk-publish');
+      const bulkDraft = document.querySelector('#bulk-draft');
+      const bulkDelete = document.querySelector('#bulk-delete');
+      if (bulkPublish) bulkPublish.onclick = () => bulk('bulk-publish', { status: 'published', published_at: new Date().toISOString() });
+      if (bulkDraft) bulkDraft.onclick = () => bulk('bulk-draft', { status: 'draft' });
+      if (bulkDelete) bulkDelete.onclick = () => {
+        if (!confirm(`Delete ${selected.size} article(s) permanently?`)) return;
+        bulk('bulk-delete', { __delete: true });
+      };
 
       listEl.querySelectorAll('[data-edit-article]').forEach(btn => btn.onclick = async () => {
         btn.disabled = true;
@@ -1098,6 +1145,11 @@ function articleForm(host, categories, article) {
       <p class="tiny muted" style="margin-top:6px">Leave blank to publish at the next 15-minute check. A published article is rebuilt, committed and deployed automatically.</p>
     </div>
     <div class="form-field">
+      <label for="${id('import')}">Import text from a file (Markdown, HTML or plain text)</label>
+      <input id="${id('import')}" name="import" type="file" accept=".md,.markdown,.html,.htm,.txt,text/markdown,text/html,text/plain" style="padding:10px">
+      <p class="tiny muted" style="margin-top:6px">The file's text is placed in the body below as-is, in the browser, so the same sanitiser and the same renderer apply as if you had typed it. Edit before saving. Use <em>Attach document</em> below when readers should download the original file instead.</p>
+    </div>
+    <div class="form-field">
       <label for="${id('doc')}">Attach document (PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
       <input id="${id('doc')}" name="document" type="file" accept=".pdf,.doc,.docx,.md,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" style="padding:10px">
       <p id="${id('pdf-status')}" class="tiny muted" style="margin-top:6px" aria-live="polite"></p>
@@ -1146,6 +1198,41 @@ function articleForm(host, categories, article) {
   const slugInput = document.querySelector(`#${id('slug')}`);
   const preview = document.querySelector('#article-preview');
   const docInput = document.querySelector(`#${id('doc')}`);
+
+  /* Import puts text in the body, not a file on a server: Markdown stays
+     Markdown, HTML stays HTML, and both then go through exactly the path a
+     typed article takes. That is why the preview after an import is truthful. */
+  const importInput = document.querySelector(`#${id('import')}`);
+  if (importInput) importInput.addEventListener('change', async () => {
+    const file = importInput.files && importInput.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      flash(form, 'Import is limited to 2 MB of text - attach the file instead if it is a document.');
+      importInput.value = '';
+      return;
+    }
+    let text = await file.text();
+    const isHtml = /\.html?$/i.test(file.name);
+    if (/\.txt$/i.test(file.name)) {
+      /* Plain text has no structure at all; blank lines are the only paragraph
+         marker there is, so use them and stop. */
+      text = text.split(/\n\s*\n/).map((p) => p.replace(/\s*\n\s*/g, ' ').trim()).filter(Boolean).join('\n\n');
+    }
+    ta.value = text.trim();
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    /* Never overwrite something already typed: an import is an addition. */
+    const heading = isHtml
+      ? text.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)
+      : text.match(/^\s*#{1,2}\s+(.+)$/m);
+    if (heading && titleInput && !titleInput.value.trim()) {
+      titleInput.value = heading[1].replace(/<[^>]+>/g, '').trim().slice(0, 160);
+    }
+    if (slugInput && !slugInput.value.trim() && titleInput && titleInput.value.trim()) {
+      slugInput.value = slugify(titleInput.value);
+    }
+    flash(form, `Imported ${file.name} into the body - edit it, then save.`);
+    importInput.value = '';
+  });
   const pdfStatus = document.querySelector(`#${id('pdf-status')}`);
   const statusSelect = document.querySelector(`#${id('status')}`);
   const scheduleWrap = document.querySelector(`#${id('schedule-wrap')}`);
@@ -1507,6 +1594,24 @@ function articleForm(host, categories, article) {
           article_id: article?.id || result.data?.id || null
         });
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
+      }
+
+      /* A renamed slug on a live article turns every link and ranking into a 404.
+         Record old -> new; scripts/sync-redirects.mjs turns the row into a real
+         301 in the next build. The save must never fail because of this: before
+         the migration is applied the table simply does not exist. */
+      if (article && a.slug && slug && a.slug !== slug && ['published', 'archived'].includes(a.status)) {
+        try {
+          const { error: redirectError } = await supabase.from('redirects').upsert({
+            from_path: `/articles/${a.slug}`,
+            to_path: `/articles/${slug}`,
+            status_code: 301,
+            note: 'slug renamed in the panel'
+          }, { onConflict: 'from_path' });
+          if (redirectError) console.warn('redirect not recorded:', redirectError.message);
+        } catch (err) {
+          console.warn('redirect not recorded:', err?.message || err);
+        }
       }
 
       /* Publishing is not done until the page exists. Ask for the build, and
