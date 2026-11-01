@@ -240,10 +240,21 @@ async function probe(origin, route, attempts = 3) {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
       });
       const location = response.headers.get('location');
+      const contentType = response.headers.get('content-type') || '';
+      let title = null;
+      /* For a 200 the only cheap way to prove both hosts serve the SAME page -
+         not merely the same status - is the title. Bodies are only read for
+         HTML, and only the <title> is kept. */
+      if (response.status >= 200 && response.status < 300 && /text\/html/i.test(contentType)) {
+        const body = (await response.text()).slice(0, 40000);
+        const found = body.match(/<title[^>]*>([\s\S]{0,200}?)<\/title>/i);
+        title = found ? found[1].replace(/\s+/g, ' ').trim() : null;
+      }
       return {
         status: response.status,
         location: location ? new URL(location, url).pathname : null,
-        contentType: response.headers.get('content-type') || '',
+        contentType,
+        title,
         robots: response.headers.get('x-robots-tag') || '',
       };
     } catch (error) {
@@ -253,10 +264,12 @@ async function probe(origin, route, attempts = 3) {
   }
 }
 
-function describeLive(probeResult) {
+/* A 200 has no Location header, so the caller supplies the route it actually
+   ended up on. Reading the header here is what used to throw on every page. */
+function describeLive(probeResult, finalRoute) {
   if (probeResult.error) return { kind: 'error', target: probeResult.error };
   const s = probeResult.status;
-  if (s >= 200 && s < 300) return { kind: 'ok', target: normaliseTarget(new URL(probeResult.location || '').pathname || '') };
+  if (s >= 200 && s < 300) return { kind: 'ok', target: normaliseTarget(finalRoute) };
   if (s >= 300 && s < 400) return { kind: 'redirect', target: normaliseTarget(probeResult.location) };
   if (s === 404) return { kind: '404', target: '/404.html' };
   return { kind: `http-${s}`, target: probeResult.location || '' };
@@ -268,12 +281,12 @@ async function followLive(origin, start, max = 6) {
   let last;
   while (hops <= max) {
     last = await probe(origin, route);
-    const described = describeLive(last);
-    if (described.kind !== 'redirect') return { ...described, hops, response: last };
+    const described = describeLive(last, route);
+    if (described.kind !== 'redirect') return { ...described, hops, response: last, finalRoute: route };
     route = described.target;
     hops += 1;
   }
-  return { ...describeLive(last), hops, response: last, loop: true };
+  return { ...describeLive(last, route), hops, response: last, finalRoute: route, loop: true };
 }
 
 function stratified(corpus, size) {
@@ -287,6 +300,7 @@ async function compareLive(vercelOrigin, limit, sampleSize) {
   const sample = sampleSize ? stratified(corpus, sampleSize) : (limit ? corpus.slice(0, limit) : corpus);
   const diffs = [];
   const hopDiffs = [];
+  const contentDiffs = [];
   let checked = 0;
 
   for (const route of sample) {
@@ -304,11 +318,15 @@ async function compareLive(vercelOrigin, limit, sampleSize) {
       diffs.push({ route, firebase: { ...left, type: left.response?.contentType }, vercel: { ...right, type: right.response?.contentType } });
     } else if (left.hops !== right.hops) {
       hopDiffs.push({ route, firebase: left, vercel: right });
+    } else if (left.kind === 'ok' && left.response?.title !== right.response?.title) {
+      /* Same status, same content type, same route - different page. Either the
+         mirror is stale (redeploy it) or the build diverged. */
+      contentDiffs.push({ route, firebase: left.response?.title, vercel: right.response?.title });
     }
     if (checked % 25 === 0) process.stdout.write(`  ... ${checked}/${sample.length}\n`);
   }
 
-  return { corpus: sample.length, diffs, hopDiffs };
+  return { corpus: sample.length, diffs, hopDiffs, contentDiffs };
 }
 
 /* ------------------------------------------------------------------- main */
@@ -335,6 +353,22 @@ if (isLive) {
 }
 console.log(`  checked ${result.corpus} URLs in ${seconds}s`);
 
+/* GitHub annotations are the only channel that survives this sandbox's blocked
+   log API, so mismatches are emitted as ::error::/::warning:: as well. */
+const escape = (text) => String(text).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+const annotate = (level, message) => {
+  if (process.env.GITHUB_ACTIONS) console.log(`::${level}::${escape(message)}`);
+};
+
+const contentDiffs = result.contentDiffs || [];
+if (contentDiffs.length) {
+  console.log(`  ! ${contentDiffs.length} page(s) serve a different <title> - the mirror is probably stale`);
+  for (const d of contentDiffs.slice(0, 8)) {
+    console.log(`      ${d.route}\n        live:   ${d.firebase}\n        mirror: ${d.vercel}`);
+    annotate('warning', `title differs for ${d.route}: live="${d.firebase}" mirror="${d.vercel}"`);
+  }
+}
+
 const hopDiffs = result.hopDiffs || [];
 if (hopDiffs.length) {
   /* Same destination, different number of hops. Worth knowing (each hop is a
@@ -356,6 +390,7 @@ for (const diff of result.diffs.slice(0, 60)) {
   console.log(`  ${key}`);
   console.log(`      firebase: ${diff.firebase.kind}  ${diff.firebase.target || ''}`);
   console.log(`      vercel  : ${diff.vercel.kind}  ${diff.vercel.target || ''}`);
+  annotate('error', `${key}: live=${diff.firebase.kind} ${diff.firebase.target || ''} mirror=${diff.vercel.kind} ${diff.vercel.target || ''}`);
 }
 if (result.diffs.length > 60) console.log(`  ... ${result.diffs.length - 60} more`);
 process.exit(1);
