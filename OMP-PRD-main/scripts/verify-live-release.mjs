@@ -85,5 +85,18 @@ export async function verifyLiveRelease({ root = process.cwd(), origin = process
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  verifyLiveRelease().catch((error) => { console.error(error.message); process.exitCode = 1; });
+  /* --root points the check at a tree other than the working copy. The deploy
+     job rebuilds the site from the live database before shipping it to
+     Firebase; the Vercel deployment is built from the COMMITTED tree instead.
+     Comparing the two directly would compare a database snapshot against a
+     commit and fail for a reason that has nothing to do with either host. */
+  const rootIndex = process.argv.indexOf('--root');
+  const root = rootIndex !== -1 ? process.argv[rootIndex + 1] : process.cwd();
+  verifyLiveRelease({ root }).catch((error) => {
+    console.error(error.message);
+    /* stderr does not survive into the check-runs API, so a failure here would
+       read as a bare "exit code 1" - which is how a real outage gets ignored. */
+    if (process.env.GITHUB_ACTIONS) console.log(`::error::${error.message}`);
+    process.exitCode = 1;
+  });
 }
