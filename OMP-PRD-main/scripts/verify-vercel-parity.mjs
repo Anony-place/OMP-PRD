@@ -301,6 +301,7 @@ async function compareLive(vercelOrigin, limit, sampleSize) {
   const diffs = [];
   const hopDiffs = [];
   const contentDiffs = [];
+  const firewallDiffs = [];
   let checked = 0;
 
   for (const route of sample) {
@@ -314,7 +315,15 @@ async function compareLive(vercelOrigin, limit, sampleSize) {
     const sameTarget = left.target === right.target;
     const sameType = left.kind !== 'ok' ||
       ((left.response?.contentType || '').split(';')[0] === (right.response?.contentType || '').split(';')[0]);
-    if (!sameKind || !sameTarget || !sameType) {
+
+    /* Vercel's edge returns 403 for exploit-probe paths (/wp-login.php,
+       /xmlrpc.php, stray .env lookups) that Firebase simply 404s. That is the
+       platform firewall doing its job, not a routing difference - but only
+       while production says the path does not exist. A real page answering 403
+       on the mirror is still a failure, and still fails below. */
+    if (left.kind === '404' && right.kind === 'http-403') {
+      firewallDiffs.push({ route, firebase: left, vercel: right });
+    } else if (!sameKind || !sameTarget || !sameType) {
       diffs.push({ route, firebase: { ...left, type: left.response?.contentType }, vercel: { ...right, type: right.response?.contentType } });
     } else if (left.hops !== right.hops) {
       hopDiffs.push({ route, firebase: left, vercel: right });
@@ -326,7 +335,7 @@ async function compareLive(vercelOrigin, limit, sampleSize) {
     if (checked % 25 === 0) process.stdout.write(`  ... ${checked}/${sample.length}\n`);
   }
 
-  return { corpus: sample.length, diffs, hopDiffs, contentDiffs };
+  return { corpus: sample.length, diffs, hopDiffs, contentDiffs, firewallDiffs };
 }
 
 /* ------------------------------------------------------------------- main */
@@ -359,6 +368,15 @@ const escape = (text) => String(text).replace(/%/g, '%25').replace(/\r/g, '%0D')
 const annotate = (level, message) => {
   if (process.env.GITHUB_ACTIONS) console.log(`::${level}::${escape(message)}`);
 };
+
+const firewallDiffs = result.firewallDiffs || [];
+if (firewallDiffs.length) {
+  console.log(`  i ${firewallDiffs.length} path(s) 404 on production and 403 on the mirror - Vercel's edge firewall, not routing`);
+  for (const d of firewallDiffs.slice(0, 5)) {
+    console.log(`      ${d.route}`);
+    annotate('warning', `${d.route}: production 404, mirror 403 (Vercel edge firewall on an exploit-probe path)`);
+  }
+}
 
 const contentDiffs = result.contentDiffs || [];
 if (contentDiffs.length) {
