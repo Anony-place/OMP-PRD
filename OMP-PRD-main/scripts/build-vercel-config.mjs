@@ -175,11 +175,40 @@ function headersToVercel(block) {
 
 /* ------------------------------------------------------------------ main */
 
+/* content/redirects.json - rows the panel wrote when a slug changed. Kept as a
+   committed file rather than fetched here, so the generator stays offline,
+   deterministic and testable. scripts/sync-redirects.mjs refreshes it. */
+function readManagedRedirects() {
+  const at = path.join(ROOT, 'content', 'redirects.json');
+  if (!fs.existsSync(at)) return [];
+  const data = JSON.parse(fs.readFileSync(at, 'utf8'));
+  return (data.redirects || [])
+    .filter((rule) => rule && typeof rule.from === 'string' && rule.from.startsWith('/'))
+    .map((rule) => ({
+      source: rule.from,
+      destination: rule.to,
+      statusCode: Number(rule.status) === 308 ? 308 : 301,
+    }));
+}
+
 export function buildVercelConfig(firebaseConfig) {
   const hosting = firebaseConfig.hosting;
   const report = { redirects: 0, redirectsFrom: 0, rewrites: 0, rewritesFrom: 0, headers: 0, headersFrom: 0 };
 
-  const redirects = [];
+  /* Managed redirects: old paths the panel retired (a renamed slug), written to
+     content/redirects.json by scripts/sync-redirects.mjs. They go first so an
+     old article URL wins over any broad legacy rule it might now fall under. */
+  const managed = readManagedRedirects();
+  const managedSources = new Set(managed.map((rule) => rule.source));
+  const redirects = [...managed];
+  for (const rule of managed) {
+    const clash = (hosting.redirects || []).find((r) => r.source === rule.source && !isSelfRedirect(r));
+    if (clash) {
+      throw new Error(
+        `content/redirects.json and firebase.json both redirect ${rule.source}. ` +
+        'Delete one - two rules for the same path means the second never runs.');
+    }
+  }
   const skipped = [];
   for (const rule of hosting.redirects || []) {
     /* The move itself lives in firebase.json: every path 301s to the same path
@@ -197,6 +226,7 @@ export function buildVercelConfig(firebaseConfig) {
     report.redirectsFrom += 1;
   }
   report.redirects = redirects.length;
+  report.managed = managed.length;
 
   const rewrites = [];
   for (const rule of hosting.rewrites || []) {

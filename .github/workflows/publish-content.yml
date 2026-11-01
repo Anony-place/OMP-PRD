@@ -154,6 +154,17 @@ jobs:
           node scripts/build-phase3-seo.mjs
           node scripts/fix-site-origin.mjs
 
+      - name: Sync managed redirects
+        working-directory: OMP-PRD-main
+        # Rows the panel wrote when a slug changed become a committed file, which
+        # the generator turns into real 301s in vercel.json. Without this step a
+        # renamed slug would still 404 - the row would exist and nothing would
+        # read it.
+        run: |
+          set -euo pipefail
+          node scripts/sync-redirects.mjs
+          node scripts/build-vercel-config.mjs
+
       - name: Gates - nothing ships if one of these fails
         working-directory: OMP-PRD-main
         run: |
@@ -172,7 +183,8 @@ jobs:
           # touch ~45 template files for unrelated reasons, and a bot commit full
           # of those is a commit nobody can review or revert safely.
           git add articles products osint pentest sitemap.xml sitemap.txt \
-                  sitemap-index.xml google-sitemap.xml rss.xml 2>/dev/null || true
+                  sitemap-index.xml google-sitemap.xml rss.xml \
+                  content/redirects.json vercel.json 2>/dev/null || true
           git add assets/data/academy-catalogue.json 2>/dev/null || true
 
           if git diff --cached --quiet; then
