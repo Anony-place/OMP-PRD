@@ -212,6 +212,15 @@ jobs:
         # robots.txt advertises an endpoint that is not the one being shipped.
         run: node scripts/verify-seo.mjs
 
+      - name: Preview and page render the same thing
+        working-directory: OMP-PRD-main
+        # The editor preview and the published page are two sanitizers with two
+        # allowlists. They drifted once and the authors paid for it: <kbd>,
+        # <mark> and <dl> looked right in the editor and were unwrapped on the
+        # page. This fails the build when the two lists disagree, and checks the
+        # SVG rules while it is there.
+        run: node tools/test_richtext_parity.mjs
+
       - name: Verify the Vercel mirror still matches Firebase
         working-directory: OMP-PRD-main
         # vercel.json is generated from firebase.json by

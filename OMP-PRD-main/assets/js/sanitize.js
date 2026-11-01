@@ -24,7 +24,11 @@
     p: 1, pre: 1, q: 1, s: 1, samp: 1, small: 1, span: 1, strike: 1,
     strong: 1, sub: 1, summary: 1, sup: 1, table: 1, tbody: 1, td: 1,
     th: 1, thead: 1, tr: 1, u: 1, ul: 1, video: 1, audio: 1, source: 1,
-    track: 1
+    track: 1,
+    /* Present in functions/safe-article-html.cjs before this list was - the
+       preview unwrapped them and the page kept them, which is the mirror image
+       of the bug in the other direction. */
+    section: 1, article: 1, tfoot: 1, colgroup: 1, col: 1
   };
 
   /* Dropped together with ALL of their content. NOTE: iframe stays here —
@@ -195,6 +199,51 @@
     return null;
   }
 
+  /* ---------------------------------------------------------------- svg --
+     Inline diagrams. Built in the SVG namespace, because createElement('svg')
+     produces an element that renders as nothing at all - which is how a pasted
+     diagram disappears without an error.
+
+     Only drawing primitives are copied. Anything else - script, style,
+     foreignObject, use with an external reference, SMIL animation - is dropped
+     together with its children, so a diagram can carry a drawing and nothing
+     that executes. Attribute names keep their case: viewBox lowercased is a
+     0x0 canvas. */
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  var SVG_SHAPES = {
+    svg: 1, g: 1, path: 1, rect: 1, circle: 1, ellipse: 1, line: 1,
+    polyline: 1, polygon: 1, text: 1, tspan: 1, defs: 1, lineargradient: 1,
+    radialgradient: 1, stop: 1, marker: 1, title: 1, desc: 1
+  };
+  var SVG_ATTR = /^(viewBox|preserveAspectRatio|xmlns|role|aria-label|aria-hidden|class|id|d|fill|fill-opacity|fill-rule|stroke|stroke-width|stroke-linecap|stroke-linejoin|stroke-dasharray|stroke-dashoffset|stroke-opacity|opacity|transform|x|y|x1|y1|x2|y2|cx|cy|r|rx|ry|width|height|points|offset|stop-color|stop-opacity|font-size|font-family|font-weight|text-anchor|dominant-baseline|dx|dy|gradientUnits|gradientTransform|markerWidth|markerHeight|refX|refY|orient|markerUnits)$/;
+
+  function buildSvg(node) {
+    function copy(src) {
+      var tag = String(src.tagName || '').toLowerCase();
+      if (!SVG_SHAPES[tag]) return null;          /* dropped with its children */
+      var el = document.createElementNS(SVG_NS, tag);
+      var names = src.getAttributeNames ? src.getAttributeNames() : [];
+      for (var i = 0; i < names.length; i++) {
+        var name = names[i];
+        if (!SVG_ATTR.test(name)) continue;       /* href, style, on* and friends */
+        var value = src.getAttribute(name);
+        if (value == null || /^\s*(javascript|data):/i.test(value)) continue;
+        el.setAttribute(name, value);
+      }
+      for (var j = 0; j < src.childNodes.length; j++) {
+        var child = src.childNodes[j];
+        if (child.nodeType === 3) { el.appendChild(document.createTextNode(child.nodeValue)); continue; }
+        if (child.nodeType !== 1) continue;
+        var built = copy(child);
+        if (built) el.appendChild(built);
+      }
+      return el;
+    }
+    var out = copy(node);
+    if (out) note('converted', 'svg'); else note('dropped', 'svg');
+    return out;
+  }
+
   function walk(src, dstParent) {
     for (var i = 0; i < src.childNodes.length; i++) {
       var node = src.childNodes[i];
@@ -212,6 +261,11 @@
         } else {
           note('dropped', 'iframe');
         }
+        continue;
+      }
+      if (tag === 'svg') {
+        var drawing = buildSvg(node);
+        if (drawing) dstParent.appendChild(drawing);
         continue;
       }
       if (DROP_CONTENT[tag]) { note('dropped', tag); continue; }
