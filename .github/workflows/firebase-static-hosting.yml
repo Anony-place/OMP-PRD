@@ -305,37 +305,64 @@ jobs:
           test -n "$FIREBASE_TOKEN" || { echo "::error::FIREBASE_TOKEN is not configured for this job"; exit 1; }
           firebase deploy --project "$FIREBASE_PROJECT_ID" --only hosting --token "$FIREBASE_TOKEN" --non-interactive
 
-      - name: Prove Googlebot can fetch the live sitemap
-        # Search Console "Couldn't fetch" is this check failing in production.
-        # Hosting can take a few seconds to propagate, so retry briefly.
+      - name: Prove a crawler still reaches a sitemap, through the redirect
+        # Before the move this asserted a 200 on the old host. That assertion is
+        # now the failure mode: the old host's whole job is to answer 301. What a
+        # crawler needs instead is that the redirect lands somewhere real, so:
+        #   - every sampled path 301s to the same path on the new host
+        #   - following it returns 200
+        #   - the sitemap is still valid XML after the hop
+        # A site move that 301s into a 404 is worse than no move at all.
         working-directory: OMP-PRD-main
+        env:
+          NEW_HOST: oopsmypassword.vercel.app
         run: |
           set -euo pipefail
           SITE_HOST="${SITE_ORIGIN#http://}"
           SITE_HOST="${SITE_HOST#https://}"
           SITE_HOST="${SITE_HOST%%/*}"
-          URL="https://${SITE_HOST}/sitemap.xml"
           UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-          code=""
-          for i in 1 2 3 4 5 6; do
-            code=$(curl -sS -o /tmp/live-sitemap.xml -w '%{http_code}' -A "$UA" "$URL" || true)
-            if [ "$code" = "200" ] && grep -q '<urlset' /tmp/live-sitemap.xml && grep -q '<?xml' /tmp/live-sitemap.xml; then
-              echo "Live sitemap OK (HTTP $code) at $URL"
-              head -c 240 /tmp/live-sitemap.xml; echo
-              exit 0
-            fi
-            echo "attempt $i: HTTP ${code:-000}; waiting for Hosting..."
-            sleep 10
+          fails=0
+          for path in / /checker /sitemap.xml /robots.txt /articles/create-strong-password; do
+            redirect=""
+            for i in 1 2 3 4 5; do
+              redirect=$(curl -sSI -A "$UA" "https://$SITE_HOST$path" \
+                | tr -d '\r' | grep -iE '^(HTTP/|location:)' | tr '\n' ' ' || true)
+              case "$redirect" in
+                *"301"*"$NEW_HOST$path"*) break ;;
+              esac
+              echo "attempt $i: $path -> ${redirect:-no response}"
+              sleep 10
+            done
+            case "$redirect" in
+              *"301"*"$NEW_HOST$path"*) echo "$path -> 301 https://$NEW_HOST$path" ;;
+              *) echo "::error::$path does not 301 to https://$NEW_HOST$path ($redirect)"; fails=$((fails + 1)) ;;
+            esac
+            landed=$(curl -sS -o /dev/null -w '%{http_code}' -A "$UA" -L "https://$SITE_HOST$path" || true)
+            [ "$landed" = "200" ] || { echo "::error::$path ends at HTTP $landed after following the redirect"; fails=$((fails + 1)); }
           done
-          echo "::error::Live sitemap at $URL is not fetchable (last HTTP ${code:-000}). Search Console will report Couldn't fetch."
-          exit 1
+          curl -sSL -A "$UA" "https://$SITE_HOST/sitemap.xml" -o /tmp/live-sitemap.xml
+          grep -q '<urlset' /tmp/live-sitemap.xml || { echo '::error::the sitemap is not a valid urlset after the redirect'; fails=$((fails + 1)); }
+          echo "::notice::old host 301s to $NEW_HOST; sitemap valid through the hop; $fails failure(s)"
+          [ "$fails" = "0" ]
 
       - name: Verify exact live release artifacts and real 404s
         working-directory: OMP-PRD-main
+        # Runs against the host that now serves pages. The bytes there differ
+        # from the committed build by exactly one string - the origin the Vercel
+        # build rewrites - so the digest comparison normalises that string back
+        # rather than being switched off. A check that stops checking is worse
+        # than no check, because the badge stays green.
+        env:
+          SITE_ORIGIN: https://oopsmypassword.vercel.app
+          LIVE_REWRITE_FROM: oopsmypassword.vercel.app
+          LIVE_REWRITE_TO: oopsmypassword.web.app
         run: node scripts/verify-live-release.mjs
 
       - name: Submit URLs to IndexNow (Bing / Yandex)
         working-directory: OMP-PRD-main
+        env:
+          NEW_HOST: oopsmypassword.vercel.app
         # Best-effort. IndexNow needs no secret: ownership is proven by the
         # public /<key>.txt that the previous step just deployed. Never fails
         # the deploy — Google does not use IndexNow, and a transient API error
@@ -358,20 +385,29 @@ jobs:
             echo "::warning::SITE_ORIGIN is unset; skipping IndexNow."
             exit 0
           fi
+          # The old host 301s now. Submitting its URLs would ask Bing to crawl a
+          # redirect chain, and its key file is behind the same redirect - so the
+          # submission would be rejected. Submit the URLs that actually serve the
+          # pages.
+          TARGET_HOST="${NEW_HOST:-$SITE_HOST}"
 
           # Give Hosting a moment to propagate the key file before submitting.
           for i in 1 2 3 4 5; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://$SITE_HOST/$KEY_FILE" || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://$TARGET_HOST/$KEY_FILE" || true)
             [ "$code" = "200" ] && break
             echo "key file not live yet (HTTP $code); waiting..."
             sleep 10
           done
 
-          URLS=$(python3 - <<'PY'
+          URLS=$(python3 - "$TARGET_HOST" <<'PY'
+          import sys
           import xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          host = sys.argv[1]
           ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-          print('\n'.join(u.find(ns + 'loc').text
-                          for u in ET.parse('sitemap.xml').getroot().findall(ns + 'url')))
+          # Same paths as the built sitemap, pointed at the host that serves them.
+          for u in ET.parse('sitemap.xml').getroot().findall(ns + 'url'):
+              print('https://' + host + (urlsplit(u.find(ns + 'loc').text).path or '/'))
           PY
           )
           COUNT=$(printf '%s\n' "$URLS" | grep -c . || true)
@@ -384,7 +420,7 @@ jobs:
                             "key": sys.argv[2],
                             "keyLocation": sys.argv[3] + "/" + sys.argv[2] + ".txt",
                             "urlList": urls}))
-          ' "$SITE_HOST" "$KEY" "https://$SITE_HOST" > /tmp/indexnow.json
+          ' "$TARGET_HOST" "$KEY" "https://$TARGET_HOST" > /tmp/indexnow.json
 
           status=$(curl -s -o /tmp/indexnow.out -w '%{http_code}' \
             -X POST "https://api.indexnow.org/indexnow" \
