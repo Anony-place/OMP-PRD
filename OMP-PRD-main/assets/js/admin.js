@@ -309,6 +309,7 @@ async function loadTab(tab) {
     const rows = articles || [];
     panel.innerHTML = `<div class="flex justify-between items-center wrap gap-12"><h2 class="h-3">Articles</h2><button id="new-article" type="button" class="btn btn-primary btn-sm">+ New article</button></div>
       <div class="form-field" style="margin-top:14px;max-width:380px"><label for="article-filter">Filter</label><input id="article-filter" type="search" placeholder="Search title, slug or status…" autocomplete="off"></div>
+      <div id="deploy-slot" aria-live="polite"></div>
       <div id="article-editor"></div>
       <div class="admin-list" id="article-list" style="margin-top:18px"></div>
       <div id="article-paging-slot"></div>`;
@@ -358,6 +359,11 @@ async function loadTab(tab) {
     paintList('');
     document.querySelector('#article-filter').addEventListener('input', e => paintList(e.target.value));
     document.querySelector('#new-article').onclick = () => { articleForm(editor, categories || [], null); editor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    if (pendingDeploy) {
+      const slot = document.querySelector('#deploy-slot');
+      if (slot) publishChip(slot, pendingDeploy.jobId, pendingDeploy.path);
+      pendingDeploy = null;
+    }
   } else if (tab === 'tools') {
     const [{ data: tools, error }, { data: categories }] = await Promise.all([
       supabase.from('tools').select('id,name,slug,route,is_active,sort_order,category_id').order('sort_order').order('name'),
@@ -983,8 +989,92 @@ async function removeStorageObjects(locations) {
   }));
 }
 
+/* A deploy started in the editor must survive the tab re-render that follows a
+   save, so the job id is parked here and picked up by loadTab('articles'). */
+let pendingDeploy = null;
+
+/* ---------------------------------------------------------------- publish -- */
+
+/* Saving a published article only writes a row. Its page, canonical, <title>,
+   JSON-LD and sitemap entry are static files that a build has to produce and
+   commit - otherwise the post exists in the feed and nowhere Google can read.
+
+   requestPublish() asks the content-publish function to start that build. It
+   deliberately does NOT claim success: the job row is the truth, and the chip
+   below watches it until it says live. */
+async function requestPublish(reason, targets) {
+  try {
+    const { data, error } = await supabase.functions.invoke('content-publish', {
+      body: { reason, targets }
+    });
+    if (error) return { error: error.message };
+    if (data?.error) return { error: data.error, job_id: data.job_id };
+    return data || {};
+  } catch (err) {
+    return { error: err?.message || String(err) };
+  }
+}
+
+/* A deploy is a minute or two of nothing happening. Without visible progress
+   people publish twice, which queues a second build for the same article. */
+function publishChip(host, jobId, livePath) {
+  const chip = document.createElement('div');
+  chip.className = 'admin-chip';
+  chip.style.marginTop = '12px';
+  chip.setAttribute('role', 'status');
+  chip.setAttribute('aria-live', 'polite');
+  chip.textContent = 'Deploy queued…';
+  host.appendChild(chip);
+
+  const labels = {
+    queued: 'Deploy queued…',
+    running: 'Building pages…',
+    deploying: 'Building pages… (deploying)',
+    live: 'Live',
+    failed: 'Deploy failed',
+    skipped: 'Nothing to deploy'
+  };
+  let ticks = 0;
+  const stop = setInterval(async () => {
+    ticks += 1;
+    const { data } = await supabase.from('publish_jobs')
+      .select('status,detail,run_url').eq('id', jobId).maybeSingle();
+    if (data) {
+      chip.textContent = labels[data.status] || data.status;
+      if (data.status === 'live' && livePath) {
+        const link = document.createElement('a');
+        link.href = livePath;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = ' · Open page';
+        chip.appendChild(link);
+      }
+      if (data.status === 'failed') {
+        chip.style.color = 'var(--red)';
+        chip.title = data.detail || '';
+        if (data.run_url) {
+          const link = document.createElement('a');
+          link.href = data.run_url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = ' · Open build log';
+          chip.appendChild(link);
+        }
+      }
+      if (['live', 'failed', 'skipped'].includes(data.status)) clearInterval(stop);
+    }
+    /* Ten minutes is the whole budget: a deploy that has not said anything by
+       then is not going to, and a chip that spins forever is a lie. */
+    if (ticks > 120) {
+      clearInterval(stop);
+      chip.textContent = 'Deploy status unknown - check the Actions tab';
+    }
+  }, 5000);
+  return chip;
+}
+
 function articleForm(host, categories, article) {
-  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,featured_image:'',document_url:''};
+  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,scheduled_for:null,featured_image:'',document_url:''};
   const uid = article ? String(article.id).slice(0, 8) : 'new';
   const id = n => `af-${uid}-${n}`;
   host.innerHTML = `<form id="article-form" class="card card-pad" style="margin-top:18px">
@@ -999,8 +1089,13 @@ function articleForm(host, categories, article) {
     <div class="form-field"><label for="${id('summary')}">Summary</label><textarea id="${id('summary')}" name="summary" rows="3" maxlength="300" placeholder="One or two sentences shown on the article list. Left blank, an excerpt is generated from the body.">${esc(a.summary)}</textarea></div>
     <div class="editor-row-3">
       <div class="form-field"><label for="${id('category')}">Category</label><select id="${id('category')}" name="category_id"><option value="">None</option>${categories.map(c=>`<option value="${esc(c.id)}" ${c.id===a.category_id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
-      <div class="form-field"><label for="${id('status')}">Status</label><select id="${id('status')}" name="status"><option value="draft" ${a.status==='draft'?'selected':''}>Draft</option><option value="published" ${a.status==='published'?'selected':''}>Published</option><option value="archived" ${a.status==='archived'?'selected':''}>Archived</option></select></div>
+      <div class="form-field"><label for="${id('status')}">Status</label><select id="${id('status')}" name="status"><option value="draft" ${a.status==='draft'?'selected':''}>Draft</option><option value="published" ${a.status==='published'?'selected':''}>Published now</option><option value="scheduled" ${a.status==='scheduled'?'selected':''}>Scheduled</option><option value="archived" ${a.status==='archived'?'selected':''}>Archived</option></select></div>
       <div class="form-field"><label for="${id('image')}">Featured image URL</label><input id="${id('image')}" name="featured_image" value="${esc(a.featured_image || '')}" placeholder="https://…"></div>
+    </div>
+    <div class="form-field" id="${id('schedule-wrap')}" ${a.status === 'scheduled' ? '' : 'hidden'}>
+      <label for="${id('scheduled_for')}">Publish at (browser time)</label>
+      <input id="${id('scheduled_for')}" name="scheduled_for" type="datetime-local" value="${a.scheduled_for ? new Date(a.scheduled_for).toISOString().slice(0,16) : ''}">
+      <p class="tiny muted" style="margin-top:6px">Leave blank to publish at the next 15-minute check. A published article is rebuilt, committed and deployed automatically.</p>
     </div>
     <div class="form-field">
       <label for="${id('doc')}">Attach document (PDF / DOC / DOCX / MD / TXT — max 25 MB)</label>
@@ -1032,6 +1127,13 @@ function articleForm(host, categories, article) {
   const preview = document.querySelector('#article-preview');
   const docInput = document.querySelector(`#${id('doc')}`);
   const pdfStatus = document.querySelector(`#${id('pdf-status')}`);
+  const statusSelect = document.querySelector(`#${id('status')}`);
+  const scheduleWrap = document.querySelector(`#${id('schedule-wrap')}`);
+  if (statusSelect && scheduleWrap) {
+    statusSelect.addEventListener('change', () => {
+      scheduleWrap.hidden = statusSelect.value !== 'scheduled';
+    });
+  }
   let pendingPdfPages = [];
   let pendingPdfObjectUrls = [];
 
@@ -1327,7 +1429,17 @@ function articleForm(host, categories, article) {
       /* Title came from the body heading? Remove that heading so the
          title doesn't render twice on the public page. */
       content = stripExtractedHeading(content, title, !rawTitle);
-      const payload = {title,slug,summary:String(f.get('summary') || '').trim().slice(0, 300) || null,content,category_id:f.get('category_id')||null,status,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
+      /* Scheduling is a promise the cron keeps, so the timestamp is stored in
+         UTC and the picker is read as browser-local time (that is what a person
+         means when they type 9am). Empty means "as soon as the cron next runs". */
+      const scheduledRaw = String(f.get('scheduled_for') || '').trim();
+      const scheduledFor = status === 'scheduled'
+        ? (scheduledRaw ? new Date(scheduledRaw).toISOString() : new Date().toISOString())
+        : null;
+      if (status === 'scheduled' && scheduledRaw && Number.isNaN(new Date(scheduledRaw).getTime())) {
+        throw new Error('That publish time could not be read - pick a date and time again.');
+      }
+      const payload = {title,slug,summary:String(f.get('summary') || '').trim().slice(0, 300) || null,content,category_id:f.get('category_id')||null,status,scheduled_for:scheduledFor,featured_image:featured,document_url,updated_at:new Date().toISOString(),published_at:status==='published'?(a.published_at||new Date().toISOString()):null};
       const result = article
         ? await supabase.from('articles').update(payload).eq('id',article.id)
         : await supabase.from('articles').insert(payload).select('id').single();
@@ -1346,6 +1458,17 @@ function articleForm(host, categories, article) {
           article_id: article?.id || result.data?.id || null
         });
         if (mediaErr) console.warn('media row not recorded:', mediaErr.message);
+      }
+
+      /* Publishing is not done until the page exists. Ask for the build, and
+         keep the answer where the list can pick it up after it re-renders. */
+      if (status === 'published') {
+        const started = await requestPublish(`article:${slug}`, [`/articles/${slug}`]);
+        if (started.error) {
+          flash(form, `Saved, but the deploy could not start: ${started.error}`);
+        } else if (started.job_id) {
+          pendingDeploy = { jobId: started.job_id, path: `/articles/${slug}` };
+        }
       }
 
       const oldPdfImages = [];
