@@ -1,0 +1,145 @@
+name: Verify Vercel mirror
+
+# The mirror at oopsmypassword.vercel.app exists to answer one question: can
+# Google fetch this site from a Vercel host when it cannot fetch it from
+# *.web.app? That only stays a valid experiment while the mirror keeps serving
+# the same URLs as production, stays out of the index, and stays reachable
+# without a login wall. This workflow is the proof, and it fails loudly when the
+# experiment silently stops being valid.
+#
+# It never touches Firebase Hosting. It only reads both origins over HTTPS.
+#
+#   push to main      header + shape checks on ~12 URLs, plus ~80-URL spot parity
+#   workflow_dispatch full live parity across all ~455 known URLs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: vercel-mirror-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIRROR: https://oopsmypassword.vercel.app
+  PROD: https://oopsmypassword.web.app
+
+jobs:
+  headers:
+    name: Mirror serves the right bytes to a crawler
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Sitemap endpoints are fetchable
+        run: |
+          set -euo pipefail
+          for endpoint in sitemap.txt sitemap.xml sitemap-index.xml google-sitemap.xml rss.xml robots.txt; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 --retry-delay 2 "$MIRROR/$endpoint")
+            echo "$endpoint -> $code"
+            [ "$code" = "200" ] || { echo "::error::$endpoint returned $code, a crawler would see a broken sitemap"; exit 1; }
+          done
+
+      - name: Sitemap content matches production's URL count
+        run: |
+          set -euo pipefail
+          mirror_urls=$(curl -sS "$MIRROR/sitemap.txt" | grep -c '^https://' || true)
+          prod_urls=$(curl -sS "$PROD/sitemap.txt" | grep -c '^https://' || true)
+          echo "mirror=$mirror_urls prod=$prod_urls"
+          [ "$mirror_urls" = "$prod_urls" ] || { echo "::error::mirror sitemap.txt has $mirror_urls URLs, production has $prod_urls"; exit 1; }
+
+          # The mirror's own build rewrites the origin, so every line must point
+          # at the mirror. A stray *.web.app URL here would ask Google to index
+          # the production site from a staging sitemap.
+          foreign=$(curl -sS "$MIRROR/sitemap.txt" | grep -c 'web\.app' || true)
+          [ "$foreign" = "0" ] || { echo "::error::$foreign line(s) in the mirror sitemap point at web.app"; exit 1; }
+
+      - name: Noindex covers pages but not crawler endpoints
+        run: |
+          set -euo pipefail
+          for page in / /checker /articles/create-strong-password; do
+            headers=$(curl -sSI --retry 3 "$MIRROR$page")
+            printf '%s\n' "$headers" | head -1
+            if ! printf '%s' "$headers" | grep -qi '^x-robots-tag:.*noindex'; then
+              echo "::error::$page is missing X-Robots-Tag noindex - the mirror could be indexed"
+              exit 1
+            fi
+          done
+
+          # The whole point is that a crawler CAN read these. A noindex here
+          # would make the sitemap itself unfetchable-looking.
+          for endpoint in /sitemap.xml /sitemap.txt /robots.txt /rss.xml; do
+            headers=$(curl -sSI --retry 3 "$MIRROR$endpoint")
+            if printf '%s' "$headers" | grep -qi '^x-robots-tag:.*noindex'; then
+              echo "::error::$endpoint is noindexed - Google would skip the file we are testing"
+              exit 1
+            fi
+          done
+
+      - name: Canonicals still point at production
+        run: |
+          set -euo pipefail
+          canonical=$(curl -sS --retry 3 "$MIRROR/" | grep -o '<link rel="canonical"[^>]*>' | head -1)
+          echo "$canonical"
+          printf '%s' "$canonical" | grep -q 'https://oopsmypassword.web.app' \
+            || { echo "::error::the mirror no longer canonicalises to production, duplicate content is now possible"; exit 1; }
+
+      - name: No login wall in front of Googlebot
+        run: |
+          set -euo pipefail
+          # Vercel Deployment Protection answers 401 with a www-authenticate
+          # header. That is indistinguishable from a broken site to a crawler
+          # and would quietly invalidate the whole experiment.
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 "$MIRROR/checker")
+          [ "$code" = "200" ] || { echo "::error::GET /checker returned $code - Deployment Protection or the firewall is in the way"; exit 1; }
+
+          googlebot_code=$(curl -sS -o /dev/null -w '%{http_code}' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' "$MIRROR/sitemap.txt")
+          echo "googlebot UA -> $googlebot_code"
+          [ "$googlebot_code" = "200" ] || { echo "::error::Googlebot user agent got $googlebot_code - bot protection is blocking the crawler"; exit 1; }
+
+      - name: Routing behaves like production
+        run: |
+          set -euo pipefail
+          read -r code location <<< "$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' "$MIRROR/guides/create-strong-password")"
+          echo "legacy guide -> $code $location"
+          [ "$code" = "301" ] || { echo "::error::legacy /guides/ URL returned $code, expected 301"; exit 1; }
+          printf '%s' "$location" | grep -q '/articles/create-strong-password' \
+            || { echo "::error::legacy URL redirected to $location"; exit 1; }
+
+          code=$(curl -sS -o /dev/null -w '%{http_code}' "$MIRROR/this-page-does-not-exist")
+          echo "unknown path -> $code"
+          [ "$code" = "404" ] || { echo "::error::unknown path returned $code, expected 404"; exit 1; }
+
+          code=$(curl -sS -o /dev/null -w '%{http_code}' "$MIRROR/checker")
+          echo "/checker -> $code"
+          [ "$code" = "200" ] || { echo "::error::/checker returned $code"; exit 1; }
+
+  parity:
+    name: Every known URL lands in the same place
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: OMP-PRD-main
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: OMP-PRD-main/package-lock.json
+      - name: Install pinned dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Live parity, production vs mirror
+        # A full run is 455 URLs x 2 hosts and takes several minutes, so the
+        # push gate samples 80 of them evenly across the corpus - a prefix would
+        # be all "Anony.su" and learning redirects and prove nothing. The full
+        # sweep is one click in the Actions tab.
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node scripts/verify-vercel-parity.mjs --live "$MIRROR"
+          else
+            node scripts/verify-vercel-parity.mjs --live "$MIRROR" --sample 80
+          fi
