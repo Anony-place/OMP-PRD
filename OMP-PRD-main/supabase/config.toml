@@ -9,3 +9,9 @@ verify_jwt = true
 [functions.learning-certificate-verify]
 verify_jwt = false
 
+# Publishing from the panel: the function verifies the caller's session itself
+# (auth.getUser) and then checks is_admin before dispatching a deploy, so a valid
+# JWT is required but never sufficient.
+[functions.content-publish]
+verify_jwt = true
+

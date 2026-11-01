@@ -1,0 +1,261 @@
+name: Publish content
+
+# Publishing from the panel stops where the database stops: /articles lists the
+# row immediately, but the article's own page - canonical, <title>, JSON-LD,
+# sitemap entry - is static HTML that only exists after a build is committed.
+#
+# This workflow closes that gap. One dispatch, one commit, one deploy:
+#
+#   admin panel -> content-publish edge function -> repository_dispatch
+#     -> build from the database
+#     -> gates (SEO, sitemap, routing) - nothing is committed if one fails
+#     -> commit ONLY generated content paths
+#     -> push to main -> Vercel deploys (~60s)
+#     -> poll the live URL until it answers 200
+#     -> publish_jobs says "live", which is what the panel shows
+#
+# Schedule (every 15 min) additionally promotes articles whose scheduled_for
+# has passed, then runs the same build.
+
+on:
+  repository_dispatch:
+    types: [content-publish]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: What is being rebuilt (shown in publish_jobs)
+        required: false
+        default: manual
+      dry_run:
+        description: Build and gate, but do not commit
+        type: boolean
+        default: false
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: write
+
+# Queue, never cancel: every run may hold a commit.
+concurrency:
+  group: publish-content
+  cancel-in-progress: false
+
+env:
+  SITE_ORIGIN: https://oopsmypassword.web.app
+  LIVE_ORIGIN: https://oopsmypassword.vercel.app
+  SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
+  SUPABASE_PUBLISHABLE_KEY: sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
+
+jobs:
+  # ------------------------------------------------------------------------
+  # Promote articles whose publish time has arrived. Only on the cron: a
+  # dispatch already knows what it is publishing.
+  # ------------------------------------------------------------------------
+  due:
+    name: Promote scheduled articles
+    # Off until the owner flips the repository variable. Otherwise every merge
+    # starts a cron that runs 96 times a day only to warn that it has no key.
+    if: github.event_name == 'schedule' && vars.AUTOPUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      promoted: ${{ steps.promote.outputs.promoted }}
+      paths: ${{ steps.promote.outputs.paths }}
+    steps:
+      - name: Flip due rows to published
+        id: promote
+        env:
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SERVICE_KEY:-}" ]; then
+            # Without the key the cron cannot promote anything. Say so once, in a
+            # form that shows up as an annotation, instead of failing every 15
+            # minutes for a reason nobody reads.
+            echo "::warning::SUPABASE_SERVICE_ROLE_KEY is not set - scheduled publishing is inactive"
+            echo "promoted=0" >> "$GITHUB_OUTPUT"
+            echo "paths=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          body=$(printf '{"status":"published","published_at":"%s","updated_at":"%s"}' "$now" "$now")
+          response=$(curl -sS -X PATCH \
+            "$SUPABASE_URL/rest/v1/articles?status=eq.scheduled&scheduled_for=lte.$now&select=slug" \
+            -H "apikey: $SERVICE_KEY" \
+            -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            --data "$body")
+          count=$(printf '%s' "$response" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
+          paths=$(printf '%s' "$response" | python3 -c 'import json,sys; print("\n".join("/articles/"+r["slug"] for r in json.load(sys.stdin)))')
+          echo "promoted=$count" >> "$GITHUB_OUTPUT"
+          {
+            echo "paths<<EOF"
+            printf '%s\n' "$paths"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "promoted $count article(s)"
+
+  # ------------------------------------------------------------------------
+  # Build, gate, commit, deploy, confirm.
+  # ------------------------------------------------------------------------
+  build:
+    name: Build, commit and deploy
+    needs: [due]
+    # needs is skipped for non-schedule triggers, so accept that too.
+    # Non-schedule triggers skip `due` entirely; the cron skips the build when it
+    # promoted nothing, so an idle schedule costs one API call, not 96 rebuilds.
+    if: >-
+      always() && !cancelled() &&
+      (needs.due.result == 'success' || needs.due.result == 'skipped') &&
+      (github.event_name != 'schedule' ||
+        (vars.AUTOPUBLISH_ENABLED == 'true' && needs.due.outputs.promoted != '0'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      JOB_ID: ${{ github.event.client_payload.job }}
+      REASON: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}
+      TARGETS: ${{ github.event.client_payload.targets && join(github.event.client_payload.targets, ' ') || needs.due.outputs.paths || '' }}
+      DRY_RUN: ${{ inputs.dry_run || false }}
+      SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: the push step rebases over anything a human pushed
+          # while this run was building, and a shallow clone cannot do that.
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install
+        working-directory: OMP-PRD-main
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Mark the job as running
+        if: env.JOB_ID != ''
+        run: |
+          set -euo pipefail
+          [ -n "${SERVICE_KEY:-}" ] || exit 0
+          curl -sS -X PATCH "$SUPABASE_URL/rest/v1/publish_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"status\":\"running\",\"run_url\":\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > /dev/null
+
+      - name: Build the pages the database describes
+        working-directory: OMP-PRD-main
+        run: |
+          set -euo pipefail
+          node scripts/build-static-seo.mjs
+          node functions/sync-sitemap-core.js
+          node scripts/build-phase3-seo.mjs
+          node scripts/fix-site-origin.mjs
+
+      - name: Gates - nothing ships if one of these fails
+        working-directory: OMP-PRD-main
+        run: |
+          set -euo pipefail
+          node scripts/verify-seo.mjs
+          node tools/test_sitemap.js
+          node tools/test_vercel_config.mjs
+          python3 tools/qa.py
+
+      - name: Commit generated content only
+        id: commit
+        working-directory: OMP-PRD-main
+        run: |
+          set -euo pipefail
+          # Explicit paths, never `git add -A`: build.py and the academy build
+          # touch ~45 template files for unrelated reasons, and a bot commit full
+          # of those is a commit nobody can review or revert safely.
+          git add articles products osint pentest sitemap.xml sitemap.txt \
+                  sitemap-index.xml google-sitemap.xml rss.xml 2>/dev/null || true
+          git add assets/data/academy-catalogue.json 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No page changed - nothing to commit."
+            exit 0
+          fi
+
+          files=$(git diff --cached --name-only | wc -l | tr -d ' ')
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "files=$files"
+          git -c user.name="omp-bot" -c user.email="bot@oopsmypassword.invalid" \
+              commit -q -m "content: publish from panel (${REASON})" \
+              -m "Generated by .github/workflows/publish-content.yml from the Supabase rows."
+          echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Push (rebase over anything a human pushed meanwhile)
+        if: steps.commit.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash --quiet origin main && git push --quiet origin HEAD:main; then
+              echo "pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "attempt $attempt did not land; retrying"
+            sleep 5
+          done
+          echo "::error::could not push the generated pages"
+          exit 1
+
+      - name: Mark the job as deploying
+        if: steps.commit.outputs.changed == 'true' && env.DRY_RUN != 'true' && env.JOB_ID != ''
+        run: |
+          set -euo pipefail
+          [ -n "${SERVICE_KEY:-}" ] || exit 0
+          curl -sS -X PATCH "$SUPABASE_URL/rest/v1/publish_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"status\":\"deploying\",\"commit_sha\":\"${{ steps.commit.outputs.sha }}\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > /dev/null
+
+      - name: Wait until the pages answer 200 on the live host
+        id: live
+        if: steps.commit.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          set -euo pipefail
+          # Empty targets means "the home page is enough" - a rebuild whose reason
+          # the workflow cannot map to a URL still deserves a liveness check.
+          paths="${TARGETS:-/}"
+          deadline=$((SECONDS + 480))
+          while [ $SECONDS -lt $deadline ]; do
+            ok=0; bad=0
+            for path in $paths; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$LIVE_ORIGIN$path" || true)
+              if [ "$code" = "200" ]; then ok=$((ok + 1)); else bad=$((bad + 1)); echo "$path -> $code"; fi
+            done
+            if [ "$bad" = "0" ]; then
+              echo "::notice::live: $ok path(s) answering 200 on $LIVE_ORIGIN"
+              echo "live=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::pages did not answer 200 within 8 minutes - check the Vercel deployment"
+          exit 1
+
+      - name: Mark the job as live
+        if: always() && env.JOB_ID != ''
+        env:
+          OUTCOME: ${{ steps.live.outcome }}
+          CHANGED: ${{ steps.commit.outputs.changed }}
+        run: |
+          set -euo pipefail
+          [ -n "${SERVICE_KEY:-}" ] || exit 0
+          if [ "$CHANGED" != "true" ] || [ "$DRY_RUN" = "true" ]; then
+            status=skipped; detail="no page changed"
+          elif [ "$OUTCOME" = "success" ]; then
+            status=live; detail="live on $LIVE_ORIGIN"
+          else
+            status=failed; detail="deploy did not confirm within 8 minutes"
+          fi
+          curl -sS -X PATCH "$SUPABASE_URL/rest/v1/publish_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"status\":\"$status\",\"detail\":\"$detail\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > /dev/null
+          echo "::notice::publish_job $JOB_ID -> $status ($detail)"
