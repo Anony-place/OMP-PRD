@@ -52,8 +52,13 @@ export async function verifyLiveRelease({ root = process.cwd(), origin = process
   if (site.protocol !== 'https:' || site.username || site.password || site.pathname !== '/' || site.search || site.hash)
     throw new Error('SITE_ORIGIN must be an HTTPS origin without credentials, path or query');
   const artifacts = await releaseArtifacts(root);
+  /* Collect instead of throwing on the first one. A single failure tells you a
+     host is broken; the shape of five tells you why, and the diagnostic fields
+     below are what turned a bare "exit code 1" into an answer. */
+  const failures = [];
   for (const item of artifacts) {
     let failure;
+    let seen = '';
     for (let attempt = 1; attempt <= attempts; attempt++) {
       try {
         const url = new URL(item.route, site);
@@ -62,6 +67,7 @@ export async function verifyLiveRelease({ root = process.cwd(), origin = process
           redirect: 'manual', signal: AbortSignal.timeout(20000),
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
         });
+        seen = `HTTP ${response.status}, ${response.headers.get('content-type') || 'no content-type'}, nosniff=${response.headers.get('x-content-type-options') || 'absent'}`;
         if (response.status !== item.status) throw new Error(`HTTP ${response.status}, expected ${item.status}`);
         if (!response.headers.get('content-type')?.includes(item.type)) throw new Error('Wrong Content-Type');
         if (response.headers.get('x-content-type-options')?.toLowerCase() !== 'nosniff') throw new Error('Missing nosniff security header');
@@ -77,8 +83,13 @@ export async function verifyLiveRelease({ root = process.cwd(), origin = process
         if (attempt < attempts) await new Promise((done) => setTimeout(done, delayMs));
       }
     }
-    if (failure) throw new Error(`${item.route}: ${failure.message}`);
-    log(`✓ Live artifact ${item.route} (HTTP ${item.status})`);
+    if (!failure) { log(`✓ Live artifact ${item.route} (HTTP ${item.status})`); continue; }
+    failures.push(`${item.route}: ${failure.message} [${seen}]`);
+  }
+  if (failures.length) {
+    const shown = failures.slice(0, 12).join('\n  ');
+    throw new Error(`${failures.length}/${artifacts.length} live artifact(s) wrong:\n  ${shown}` +
+      (failures.length > 12 ? `\n  ... ${failures.length - 12} more` : ''));
   }
   log(`${artifacts.length} exact live artifacts verified. Google indexing requires separate evidence.`);
   return artifacts.length;
@@ -96,7 +107,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     console.error(error.message);
     /* stderr does not survive into the check-runs API, so a failure here would
        read as a bare "exit code 1" - which is how a real outage gets ignored. */
-    if (process.env.GITHUB_ACTIONS) console.log(`::error::${error.message}`);
+    if (process.env.GITHUB_ACTIONS) {
+      for (const line of error.message.split('\n').slice(0, 15)) console.log(`::error::${line.trim()}`);
+    }
     process.exitCode = 1;
   });
 }
