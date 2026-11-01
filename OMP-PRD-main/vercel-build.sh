@@ -16,7 +16,11 @@
 # the inline build command is capped at 256 characters and cannot be reviewed,
 # tested or diffed.
 #
-# Usage (CI):  bash scripts/vercel-build.sh
+# Usage (Vercel build command):  bash vercel-build.sh
+#
+# This file sits at the project root on purpose: .vercelignore excludes the
+# scripts/ directory from the upload, so a script living there is not present
+# when the build command runs (it failed with exit 127 exactly once).
 # ============================================================
 set -euo pipefail
 

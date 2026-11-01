@@ -11,6 +11,10 @@
 # ---------------------------------------------------------------------------
 
 # Build + QA tooling (Node/Python). Never part of the served site.
+#
+# Note: the Vercel build command is `bash vercel-build.sh` and that file lives at
+# this directory's root, NOT in scripts/ - anything under scripts/ is stripped
+# from the upload before the build runs, so the command would exit 127.
 tools/
 scripts/
 node_modules/

@@ -14,7 +14,7 @@ host, not the file.
 | New host | `oopsmypassword.vercel.app` (Vercel project `oopsmypassword`, team `aka-su`) |
 | Root directory | `OMP-PRD-main` |
 | Framework preset | Vite, with every setting overridden — nothing is bundled |
-| Install / Build / Output | `echo skip-install` / `bash scripts/vercel-build.sh` / `.` |
+| Install / Build / Output | `echo skip-install` / `bash vercel-build.sh` / `.` |
 | Source of truth for routing | `firebase.json` — `vercel.json` is generated from it |
 
 ## How the move works
@@ -22,7 +22,7 @@ host, not the file.
 1. `firebase.json` gets one extra rule at the **top**: every path 301s to
    `https://oopsmypassword.vercel.app` + the same path. Redirects run before
    anything else on Firebase Hosting, so the old host stops serving pages.
-2. `scripts/vercel-build.sh` (run by Vercel at build time) rewrites the
+2. `vercel-build.sh` (run by Vercel at build time) rewrites the
    origin inside every HTML, XML, TXT, JS and JSON file, so the new host's
    canonicals, `og:url`, JSON-LD `@id`, sitemap and RSS all point at itself.
    No canonical ever points at a URL that redirects.
@@ -99,7 +99,7 @@ property to the `vercel.app` property.
 | --- | --- |
 | `firebase.json` | Source of truth: 125 redirects (the 301 to Vercel + 124 legacy), 15 rewrites, header blocks |
 | `scripts/build-vercel-config.mjs` | Generates `vercel.json`, skips the self-redirect, `--check` fails on drift |
-| `scripts/vercel-build.sh` | Vercel build: origin rewrite, then strip build tooling |
+| `vercel-build.sh` | Vercel build: origin rewrite, then strip build tooling |
 | `vercel.json` | Generated. Never hand-edit |
 | `scripts/verify-vercel-parity.mjs` | Both routing tables over ~455 URLs, offline or live |
 | `tools/test_vercel_config.mjs` | CI gate |
