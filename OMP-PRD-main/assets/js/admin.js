@@ -9,6 +9,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
 import { ACADEMY_CONFIG } from './academy-config.mjs';
 import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
+import { installAutosave, draftKey, pruneDrafts } from './admin/autosave.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
 
@@ -1419,6 +1420,43 @@ function articleForm(host, categories, article) {
   form.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('change', () => setDirty(form, true)));
   document.querySelector('#refresh-preview').onclick = paintPreview;
 
+  /* Autosave. The key includes the article id so two articles open in two tabs
+     do not overwrite each other's draft, and the textarea is read directly
+     because it is the only field large enough to matter. */
+  pruneDrafts();
+  const autosave = installAutosave({
+    form,
+    key: draftKey('article', article?.id),
+    savedAt: article?.updated_at || null,
+    read: () => ({
+      title: titleInput.value,
+      slug: slugInput.value,
+      summary: document.querySelector(`#${id('summary')}`)?.value || '',
+      category_id: document.querySelector(`#${id('category')}`)?.value || '',
+      status: document.querySelector(`#${id('status')}`)?.value || 'draft',
+      featured_image: document.querySelector(`#${id('image')}`)?.value || '',
+      scheduled_for: document.querySelector(`#${id('scheduled_for')}`)?.value || '',
+      content: ta.value
+    }),
+    apply: draft => {
+      const set = (selector, value) => {
+        const field = document.querySelector(selector);
+        if (field && value !== undefined && value !== null) field.value = value;
+      };
+      set(`#${id('title')}`, draft.title);
+      set(`#${id('slug')}`, draft.slug);
+      set(`#${id('summary')}`, draft.summary);
+      set(`#${id('category')}`, draft.category_id);
+      set(`#${id('status')}`, draft.status);
+      set(`#${id('image')}`, draft.featured_image);
+      set(`#${id('scheduled_for')}`, draft.scheduled_for);
+      ta.value = draft.content || '';
+      setDirty(form, true);
+      paintPreview();
+      flash(form, 'Draft restored from this browser. Save it to keep it.');
+    }
+  });
+
   /* Slug follows the title until the author edits it themselves. */
   let slugTouched = !!(article && article.slug);
   slugInput.addEventListener('input', () => { slugTouched = true; });
@@ -1644,6 +1682,9 @@ function articleForm(host, categories, article) {
       }
       await removeStorageObjects([oldDoc, ...oldPdfImages]);
       clearPendingPdfPages();
+      /* Saved for real: the draft has done its job. The next editor instance
+         must not offer to restore work that is already in the database. */
+      autosave.clear();
       clearDirty(form);
       await refreshAdminStats();
       loadTab('articles');
