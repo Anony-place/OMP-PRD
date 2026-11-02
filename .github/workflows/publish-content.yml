@@ -115,10 +115,14 @@ jobs:
     timeout-minutes: 20
     env:
       JOB_ID: ${{ github.event.client_payload.job }}
-      REASON: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}
+      # The reason reaches a commit message. It comes from outside (the panel,
+      # or anyone who can dispatch), so it is flattening to one short line
+      # before it is used rather than trusted as typed.
+      REASON_RAW: ${{ github.event.client_payload.reason || inputs.reason || 'scheduled rebuild' }}
       TARGETS: ${{ github.event.client_payload.targets && join(github.event.client_payload.targets, ' ') || needs.due.outputs.paths || '' }}
       DRY_RUN: ${{ inputs.dry_run || false }}
       SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -179,6 +183,10 @@ jobs:
         working-directory: OMP-PRD-main
         run: |
           set -euo pipefail
+          # One line, 80 characters, no control characters: this text comes from
+          # whoever dispatched the build and ends up in a commit subject.
+          REASON="$(printf '%s' "${REASON_RAW:-scheduled rebuild}" | tr -d '\r\n' | cut -c1-80)"
+          export REASON
           # Explicit paths, never `git add -A`: build.py and the academy build
           # touch ~45 template files for unrelated reasons, and a bot commit full
           # of those is a commit nobody can review or revert safely.
@@ -271,3 +279,26 @@ jobs:
             -H "Content-Type: application/json" \
             --data "{\"status\":\"$status\",\"detail\":\"$detail\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > /dev/null
           echo "::notice::publish_job $JOB_ID -> $status ($detail)"
+
+      # Last, because it has to win. The step above runs on always() and writes
+      # "skipped - no page changed" when the commit step never produced an
+      # output, which is exactly what a failed gate looks like from there. A
+      # build that failed must not be recorded as a publish that had nothing to
+      # do; that is the difference between "try again" and "there was nothing to
+      # try".
+      - name: Mark the job as failed
+        if: failure() || cancelled()
+        run: |
+          set -euo pipefail
+          [ -n "${JOB_ID:-}" ] || exit 0
+          [ -n "${SERVICE_KEY:-}" ] || exit 0
+          # The run URL is what turns "failed" into something a person can act
+          # on; the detail says which half failed, in words the panel shows.
+          detail="the build or a gate failed - open the run log"
+          if [ "${{ job.status }}" = "cancelled" ]; then detail="the run was cancelled"; fi
+          curl -sS -X PATCH "$SUPABASE_URL/rest/v1/publish_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"failed\",\"detail\":\"$detail\",\"run_url\":\"${RUN_URL}\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+            > /dev/null || true
+          echo "::error::$detail"
