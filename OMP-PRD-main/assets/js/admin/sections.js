@@ -28,6 +28,7 @@ export const SECTION_TABS = [
   { key: 'redirects', label: 'Redirects' },
   { key: 'categories', label: 'Categories' },
   { key: 'activity', label: 'Activity' },
+  { key: 'setup', label: 'Setup' },
   { key: 'search', label: 'Search' },
   { key: 'export', label: 'Export' }
 ];
@@ -222,6 +223,97 @@ async function mountRedirects(ctx) {
   };
 
   await paint();
+}
+
+/* ------------------------------------------------------------------ setup */
+
+async function mountSetup(ctx) {
+  const { supabase, esc, panel } = ctx;
+  const { diagnose, summarise, asText } = await import('./setup.js');
+
+  panel.innerHTML = `<div class="admin-section-head">
+      <div><h2 class="h-3">Setup</h2><p class="tiny muted">What the publishing pipeline needs, and which parts are missing. This screen never starts a deploy.</p></div>
+      <button id="setup-refresh" type="button" class="btn btn-secondary btn-sm">Check again</button>
+    </div>
+    <div id="setup-summary" class="card card-pad" style="margin-top:16px" aria-live="polite"></div>
+    <div id="setup-list" class="admin-list" style="margin-top:16px"></div>
+    <div class="flex gap-8 wrap" style="margin-top:14px">
+      <button id="setup-copy" type="button" class="btn btn-ghost btn-sm">Copy as text</button>
+    </div>`;
+
+  const summaryHost = document.querySelector('#setup-summary');
+  const listHost = document.querySelector('#setup-list');
+
+  const run = async () => {
+    summaryHost.innerHTML = '<p class="tiny muted">Checking…</p>';
+    listHost.innerHTML = '';
+
+    /* Table probes are one row each with the user's own session. A permission
+       error also lands here, which is correct: if you cannot read the table,
+       the panel cannot use it. */
+    const tableNames = ['articles', 'publish_jobs', 'redirects', 'article_revisions', 'audit_log', 'article_categories'];
+    const tables = {};
+    await Promise.all(tableNames.map(async (table) => {
+      const { error } = await supabase.from(table).select('*', { head: true, count: 'exact' }).limit(1);
+      tables[table] = !error;
+    }));
+    /* The category function is what makes deletion safe; probe the function
+       itself rather than its table, which has existed all along. */
+    const { error: categoryProbe } = await supabase.rpc('delete_article_category', { category: '00000000-0000-0000-0000-000000000000' });
+    tables.categories = Boolean(categoryProbe) && !/could not find the function|does not exist|schema cache/i.test(categoryProbe.message);
+
+    let probes = { tables };
+    try {
+      /* ping reports booleans about the function's own secrets and writes
+         nothing. If it cannot be reached, the function is not deployed - which
+         is a real answer, not a failure to check. */
+      const { data, error } = await supabase.functions.invoke('content-publish', {
+        body: { action: 'ping' }
+      });
+      if (error || !data?.ok) {
+        probes.function = 'unreachable';
+      } else {
+        probes.function = 'ok';
+        probes.configured = data.configured || {};
+      }
+    } catch {
+      probes.function = 'unreachable';
+    }
+
+    const checks = diagnose(probes);
+    const summary = summarise(checks);
+    const tone = summary.canPublish ? 'var(--green, #1a7f37)' : 'var(--amber, #9a6700)';
+
+    summaryHost.innerHTML = `<p style="color:${tone};font-weight:600">${esc(summary.headline)}</p>
+      <p class="tiny muted" style="margin-top:6px">${summary.ok} of ${summary.total} ready${summary.unknown ? ` · ${summary.unknown} could not be checked` : ''}</p>`;
+
+    const marks = { ok: '✓', missing: '✗', unknown: '?' };
+    const colours = { ok: 'var(--green, #1a7f37)', missing: 'var(--red, #c0392b)', unknown: 'var(--muted, #667085)' };
+
+    listHost.innerHTML = checks.map(check => `<div class="admin-row" style="align-items:flex-start">
+        <div class="grow">
+          <p><strong style="color:${colours[check.state]};margin-right:8px">${marks[check.state]}</strong>${esc(check.label)}</p>
+          <p class="tiny muted" style="margin-top:4px">${esc(check.why)}</p>
+          ${check.state === 'missing' ? `<p class="tiny" style="margin-top:6px"><code>${esc(check.fix)}</code></p>` : ''}
+          ${check.state === 'unknown' ? '<p class="tiny muted" style="margin-top:6px">Could not be checked from here - not the same as missing.</p>' : ''}
+        </div>
+      </div>`).join('');
+
+    document.querySelector('#setup-copy').onclick = async () => {
+      const text = asText(checks, summary);
+      try {
+        await navigator.clipboard.writeText(text);
+        summaryHost.insertAdjacentHTML('beforeend', '<p class="tiny muted" style="margin-top:6px">Copied.</p>');
+      } catch {
+        /* Clipboard permission is not guaranteed; showing the text is a fine
+           fallback and keeps this usable on a locked-down browser. */
+        window.prompt('Copy this:', text);
+      }
+    };
+  };
+
+  document.querySelector('#setup-refresh').onclick = run;
+  await run();
 }
 
 /* --------------------------------------------------------------- activity */
@@ -776,6 +868,7 @@ const SECTIONS = {
   revisions: mountRevisions,
   categories: mountCategories,
   activity: mountActivity,
+  setup: mountSetup,
   redirects: mountRedirects,
   search: mountSearch,
   export: mountExport

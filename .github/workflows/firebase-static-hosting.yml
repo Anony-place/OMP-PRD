@@ -238,6 +238,10 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: Setup tells the truth about what is missing
+        working-directory: OMP-PRD-main
+        run: node tools/test_setup.mjs
+
       - name: A Word document cannot smuggle a link
         working-directory: OMP-PRD-main
         # Converts a real .docx with the vendored converter, then proves the

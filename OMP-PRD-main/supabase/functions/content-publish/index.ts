@@ -75,6 +75,34 @@ Deno.serve(async (req) => {
   } catch {
     /* an empty body is a legitimate "something changed, rebuild it" */
   }
+  /* ---- is the chain connected? ----------------------------------------
+     Answers the question the panel cannot answer from the browser: are the
+     GitHub token and repo set on this function? It reports booleans only -
+     never a value, never a prefix, never a length. It starts no deploy and
+     writes no row, so it is safe to call on every visit to the setup screen. */
+  if (String(body.action || "") === "ping") {
+    let tables: Record<string, boolean> = {};
+    for (const table of ["publish_jobs", "redirects", "audit_log", "article_revisions"]) {
+      const { error } = await admin.from(table).select("*", { head: true, count: "exact" }).limit(1);
+      tables[table] = !error;
+    }
+    const { data: latest } = await admin
+      .from("publish_jobs").select("id,status,created_at")
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+
+    return json({
+      ok: true,
+      action: "ping",
+      configured: {
+        github_token: Boolean(githubToken),
+        repo: Boolean(repo),
+        repo_name: repo || null,
+      },
+      tables,
+      latest_job: latest || null,
+    });
+  }
+
   /* ---- create an article from outside the panel -----------------------
      The panel writes articles straight to the table with the user's own
      session. Anything else - a script, a CI job, an editor - needs a path that
