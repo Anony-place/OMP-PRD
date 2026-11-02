@@ -238,6 +238,10 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: Categories cannot lose their articles
+        working-directory: OMP-PRD-main
+        run: node tools/test_categories.mjs
+
       - name: Autosave cannot overwrite newer work
         working-directory: OMP-PRD-main
         run: node tools/test_autosave.mjs
