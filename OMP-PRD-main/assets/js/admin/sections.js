@@ -21,6 +21,7 @@
    ============================================================ */
 
 import { mountMedia } from './media.js';
+import { mountNewsletter } from './newsletter.js';
 
 /* Tab order is the order people need things: what shipped, what redirects,
    what is in the library, and a backup of it. */
@@ -32,6 +33,7 @@ export const SECTION_TABS = [
   { key: 'media', label: 'Media' },
   { key: 'activity', label: 'Activity' },
   { key: 'setup', label: 'Setup' },
+  { key: 'newsletter', label: 'Newsletter' },
   { key: 'search', label: 'Search' },
   { key: 'export', label: 'Export' }
 ];
@@ -873,6 +875,7 @@ const SECTIONS = {
   media: mountMedia,
   activity: mountActivity,
   setup: mountSetup,
+  newsletter: mountNewsletter,
   redirects: mountRedirects,
   search: mountSearch,
   export: mountExport

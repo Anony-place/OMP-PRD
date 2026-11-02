@@ -88,6 +88,9 @@
 .admin-kpi-error { display:flex; flex-direction:column; justify-content:center; }
 .admin-kpi-skeleton { height:112px; border-radius:14px; border:1px solid var(--border); background:var(--surface); opacity:.7; }
 .admin-tabs { padding-bottom:2px; border-bottom:1px solid var(--border); }
+/* Two groups of tabs: the content the site is made of, then the operations
+   that keep it publishing. A divider is cheaper than a second tab bar. */
+.admin-tab-divider { width:1px; align-self:stretch; min-height:24px; background:var(--border); margin:0 2px; }
 .admin-panel { min-height:280px; }
 .admin-section-head { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
 .admin-message-toolbar {
