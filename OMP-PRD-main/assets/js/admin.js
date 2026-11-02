@@ -10,6 +10,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
 import { ACADEMY_CONFIG } from './academy-config.mjs';
 import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
 import { installAutosave, draftKey, pruneDrafts } from './admin/autosave.js';
+import { load as loadPanelSettings, current as panelSettings } from './admin/panel-settings.js';
 import { docxToHtml } from './admin/docx.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
@@ -309,6 +310,11 @@ async function loadTab(tab) {
   }
 
   if (tab === 'articles') {
+    /* Warm the settings cache here, not on the save path: the article form
+       reads it synchronously to decide what a new draft starts as, and a save
+       should not wait on a second round trip. A failed read is not fatal - the
+       cache falls back to draft + deploy. */
+    await loadPanelSettings(supabase);
     const [{ data: articles, error }, { data: categories }] = await Promise.all([
       /* Bounded: the filter box searches what is loaded, so an unbounded
          table would download every article on every tab switch. */
@@ -416,7 +422,7 @@ async function loadTab(tab) {
     };
     paintList('');
     document.querySelector('#article-filter').addEventListener('input', e => paintList(e.target.value));
-    document.querySelector('#new-article').onclick = () => { articleForm(editor, categories || [], null); editor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    document.querySelector('#new-article').onclick = () => { articleForm(editor, categories || [], null, panelSettings()); editor.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     if (pendingDeploy) {
       const slot = document.querySelector('#deploy-slot');
       if (slot) publishChip(slot, pendingDeploy.jobId, pendingDeploy.path);
@@ -1006,8 +1012,12 @@ function publishChip(host, jobId, livePath) {
   return chip;
 }
 
-function articleForm(host, categories, article) {
-  const a = article || {title:'',slug:'',summary:'',content:'',status:'draft',category_id:null,published_at:null,scheduled_for:null,featured_image:'',document_url:'',meta_title:'',meta_description:'',og_image:'',canonical_url:'',robots_noindex:false};
+function articleForm(host, categories, article, defaults) {
+  /* A new article starts from the panel's Settings row - status and category -
+     so the defaults live in one place instead of being remembered by whoever
+     is writing. Editing an existing article always uses the row's own values. */
+  const start = defaults || panelSettings();
+  const a = article || {title:'',slug:'',summary:'',content:'',status:start.default_status,category_id:start.default_category_id,published_at:null,scheduled_for:null,featured_image:'',document_url:'',meta_title:'',meta_description:'',og_image:'',canonical_url:'',robots_noindex:false};
   const uid = article ? String(article.id).slice(0, 8) : 'new';
   const id = n => `af-${uid}-${n}`;
   host.innerHTML = `<form id="article-form" class="card card-pad" style="margin-top:18px">
@@ -1585,7 +1595,10 @@ function articleForm(host, categories, article) {
 
       /* Publishing is not done until the page exists. Ask for the build, and
          keep the answer where the list can pick it up after it re-renders. */
-      if (status === 'published') {
+      /* Settings can turn this off for a session of small edits. It defaults to
+         on, and a settings read that failed also lands on "on": silently not
+         deploying is indistinguishable from a successful publish. */
+      if (status === 'published' && panelSettings().autodeploy_on_save) {
         const started = await requestPublish(`article:${slug}`, [`/articles/${slug}`]);
         if (started.error) {
           flash(form, `Saved, but the deploy could not start: ${started.error}`);

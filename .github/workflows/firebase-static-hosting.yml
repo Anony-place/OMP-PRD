@@ -305,6 +305,13 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_autosave.mjs
 
+      - name: Panel settings cannot quietly change what a save does
+        working-directory: OMP-PRD-main
+        # The settings switch decides whether saving a published article starts
+        # a deploy. A default that drifts to "published", or a switch that saves
+        # but is never read, changes what one click does without changing a page.
+        run: node tools/test_settings.mjs
+
       - name: Admin sections are wired
         working-directory: OMP-PRD-main
         # A tab with no mount is a blank screen, and a section that interpolates

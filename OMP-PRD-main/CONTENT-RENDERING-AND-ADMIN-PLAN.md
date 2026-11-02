@@ -235,7 +235,7 @@ involved in A at all.
 | A - one pipeline, inline SVG | **done** (#45) | Both sanitizers share one allowlist and a CI parity test fails when they drift. `svg` kept as a drawing (geometry + presentation attrs only), `foreignObject`/`use`/`script`/`animate`/`href` dropped, `viewBox` case preserved, client builds in the SVG namespace. `.prose` CSS for svg/table/figure/mark/kbd/dl. |
 | C - redirects + bulk | **done** (#46) | `redirects` table, `sync-redirects.mjs` -> `content/redirects.json` -> `vercel.json` (merged ahead of legacy rules, duplicate source throws). Slug rename writes the row; a failed write warns instead of blocking the save. Bulk publish/draft/delete = one update + one deploy. |
 | B - import | **done** | `.md` / `.html` / `.txt` import into the editor (same sanitiser path as typing). `scripts/new-article.mjs` publishes from a file (front matter, dry run, loud refusals) through `content-publish` `{"action":"create"}`, which checks `is_admin` server-side and inserts with the service role. `.docx` imports through a vendored mammoth (assets/vendor, 621 KB, loaded on first use, no CDN and therefore no CSP change); its output is treated as pasted text and sanitised like everything else - `tools/test_docx_import.mjs` proves a `javascript:` href carried inside a Word document is removed. |
-| D - full panel | **in progress** | New sections now live in `assets/js/admin/sections.js` behind a context object, so `admin.js` stops growing. Shipped: **Access** (who can open the panel: promote/demote by email through `set_admin_access()`, which refuses self-removal, refuses to leave zero admins, and writes to the audit log), **Newsletter** (confirmed vs waiting-to-confirm, growth, stuck deliveries with the addresses, unsubscribe/re-subscribe through `newsletter_set_status()` - the tables stay revoked from every browser role), **Media** (buckets, search, sort, "used in N places" per file, refuse to delete a referenced file, orphan list for the free storage tier, Markdown/HTML/URL snippets - `tools/test_media.mjs`), **Setup** (a checklist of the nine pieces the pipeline needs, each with the exact command, plus a `{"action":"ping"}` on the function that reports configuration without starting a deploy), **Deploys** (publish_jobs history), **Activity** (audit_log: who changed which row and which fields, never the values), **Categories** (create/rename/reorder/delete with an explicit move-or-uncategorise decision, enforced by `delete_article_category()`), **Autosave** (a draft per article in localStorage, offered only when newer than the saved row - `tools/test_autosave.mjs`), **Revisions** (trigger-captured history + restore, including deleted articles), **Redirects** (CRUD + loop/chain warnings + deploy now), **Search** (database-wide, not just the loaded page), **Export** (JSON backup + Markdown). `tools/test_article_revisions.mjs` runs the revisions migration against a real Postgres (pglite). `tools/test_admin_sections.mjs` guards the wiring. Remaining: settings, users, newsletter, academy editor - and the mechanical split of the remaining `admin.js`. |
+| D - full panel | **in progress** | New sections now live in `assets/js/admin/sections.js` behind a context object, so `admin.js` stops growing. Shipped: **Access** (who can open the panel: promote/demote by email through `set_admin_access()`, which refuses self-removal, refuses to leave zero admins, and writes to the audit log), **Newsletter** (confirmed vs waiting-to-confirm, growth, stuck deliveries with the addresses, unsubscribe/re-subscribe through `newsletter_set_status()` - the tables stay revoked from every browser role), **Media** (buckets, search, sort, "used in N places" per file, refuse to delete a referenced file, orphan list for the free storage tier, Markdown/HTML/URL snippets - `tools/test_media.mjs`), **Setup** (a checklist of the nine pieces the pipeline needs, each with the exact command, plus a `{"action":"ping"}` on the function that reports configuration without starting a deploy), **Deploys** (publish_jobs history), **Activity** (audit_log: who changed which row and which fields, never the values), **Categories** (create/rename/reorder/delete with an explicit move-or-uncategorise decision, enforced by `delete_article_category()`), **Autosave** (a draft per article in localStorage, offered only when newer than the saved row - `tools/test_autosave.mjs`), **Revisions** (trigger-captured history + restore, including deleted articles), **Redirects** (CRUD + loop/chain warnings + deploy now), **Search** (database-wide, not just the loaded page), **Export** (JSON backup + Markdown). `tools/test_article_revisions.mjs` runs the revisions migration against a real Postgres (pglite). `tools/test_admin_sections.mjs` guards the wiring. Remaining: academy editor, and the mechanical split of the remaining `admin.js`. |
 
 ### The publish pipeline is checked too
 
@@ -332,3 +332,45 @@ function secret `GITHUB_PUBLISH_TOKEN`, and the repository secret
 `AUTOPUBLISH_ENABLED = true`. Without the first, a publish request records a
 `failed` job and answers 503 instead of claiming success; without the second, the
 workflow runs but can never report a job as live.
+
+### Settings, and the line it draws
+
+The Settings tab is deliberately small: it edits what changes the panel's *next*
+action, not what the site says.
+
+| Editable | Where it is read |
+|---|---|
+| `default_status` | the new-article form (`articleForm`), so a draft starts as a draft |
+| `default_category_id` | the same form's category select |
+| `autodeploy_on_save` | the save path: with it off, a published article saves without starting a build |
+
+Plus one button that is not a setting - **Publish the whole site now** - because a
+switch that turns automatic deploys off with no manual deploy anywhere would be a
+trap.
+
+Everything else on that screen is read-only on purpose. The canonical origin, the
+sitemap path and the mailto on `/contact` are written into every page by
+`scripts/build-static-seo.mjs`. An editable field for any of them is one keystroke
+away from rewriting every canonical tag on the site at once, which is the single
+change most likely to cost the rankings the rest of this work was for. The screen
+shows the values, names the file, and says why it will not take input.
+
+Two implementation notes worth keeping:
+
+- `assets/js/admin/panel-settings.js` is the only place that knows the shape. It
+  caches one read per page load and falls back to `{ draft, null, true }` on any
+  failure - including a client that throws. The fallback deploys, because a save
+  that silently does not deploy is indistinguishable from a successful publish.
+  `normalise()` is pure, so `tools/test_settings.mjs` proves that `"Publshed"`,
+  `"Guides"` and `"false"` all land on the safe side without a database.
+- The table is `panel_settings`, not `site_settings`. The live database already
+  has a `site_settings` key/value table from the vnext experiment - zero rows, an
+  anon-readable `site_public` policy, and no code anywhere that uses it. Writing
+  panel switches into it would have meant either a publicly readable setting or
+  deleting a policy nobody documented.
+
+`tools/test_settings.mjs` (48 checks) covers the fallbacks, the caching, the
+one-row contract, and asserts that the save path actually consults the switch -
+a setting that saves but is never read is a checkbox that lies. The section also
+mounts in `tools/test_admin_sections_render.mjs` against both a full and an empty
+database.
