@@ -45,10 +45,15 @@ const BASE = `
       select nullif(current_setting('test.uid', true), '')::uuid
     $$;
 
+  /* Columns match supabase/00_schema_migrations.sql for the fields the panel
+     reads. created_at matters: the admin list is ordered by it, and a fixture
+     without it turns a working migration into a failing test. */
   create table public.profiles (
     id uuid primary key references auth.users(id) on delete cascade,
     email text,
-    is_admin boolean not null default false
+    display_name text,
+    is_admin boolean not null default false,
+    created_at timestamptz not null default now()
   );
   alter table public.profiles enable row level security;
 
