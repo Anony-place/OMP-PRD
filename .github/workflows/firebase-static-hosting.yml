@@ -238,6 +238,13 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: The publish pipeline cannot lie about a dry run or a failure
+        working-directory: OMP-PRD-main
+        # This is the one file nobody can run locally. A wrong `if:` there does
+        # not fail a test, it pushes to main at 3am or records a failed build as
+        # "nothing to do". Asserted here instead.
+        run: node tools/test_publish_workflow.mjs
+
       - name: Every panel section renders, with data and without
         working-directory: OMP-PRD-main
         # Mounts all eleven sections in a real DOM against a fake Supabase, once
