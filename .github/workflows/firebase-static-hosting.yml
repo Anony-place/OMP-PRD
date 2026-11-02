@@ -82,6 +82,7 @@ jobs:
           node tools/test_academy_local.mjs
           node tools/test_newsletter.js
           node tools/test_site_contracts.js
+          node tools/test_article_revisions.mjs
           node tools/test_site_database.js
           node tools/test_functions.cjs
           node tools/products_app_harness.js

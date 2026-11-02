@@ -24,6 +24,7 @@
    what is in the library, and a backup of it. */
 export const SECTION_TABS = [
   { key: 'deploys', label: 'Deploys' },
+  { key: 'revisions', label: 'Revisions' },
   { key: 'redirects', label: 'Redirects' },
   { key: 'search', label: 'Search' },
   { key: 'export', label: 'Export' }
@@ -368,10 +369,136 @@ async function mountExport(ctx) {
   };
 }
 
+/* -------------------------------------------------------------- revisions */
+
+async function mountRevisions(ctx) {
+  const { supabase, esc, panel, notice, flash, requestPublish, publishChip } = ctx;
+
+  panel.innerHTML = `<div class="admin-section-head">
+      <div><h2 class="h-3">Revisions</h2><p class="tiny muted">Every save keeps the version it replaced, and a deleted article keeps its last one. Restoring puts a version back; it does not delete the one it replaces.</p></div>
+    </div>
+    <div class="form-field" style="margin-top:16px;max-width:460px">
+      <label for="rev-q">Find an article</label>
+      <input id="rev-q" type="search" placeholder="Title or slug…" autocomplete="off">
+    </div>
+    <div id="rev-articles" class="admin-list" style="margin-top:12px"></div>
+    <div id="rev-history" style="margin-top:20px"></div>
+    <div id="rev-msg" aria-live="polite"></div>`;
+
+  const articlesHost = document.querySelector('#rev-articles');
+  const historyHost = document.querySelector('#rev-history');
+  const msg = document.querySelector('#rev-msg');
+  const input = document.querySelector('#rev-q');
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const findArticles = async (query) => {
+    const q = String(query || '').trim().replace(/[,()%]/g, ' ').trim();
+    let request = supabase.from('articles').select('id,title,slug,status,updated_at')
+      .order('updated_at', { ascending: false }).limit(15);
+    if (q.length >= 2) request = request.or(`title.ilike.%${q}%,slug.ilike.%${q}%`);
+    const { data, error } = await request;
+    if (error) return articlesHost.innerHTML = notice(error.message);
+    if (!data || !data.length) return articlesHost.innerHTML = '<p class="tiny muted">No article matches.</p>';
+
+    articlesHost.innerHTML = data.map(row => `<div class="admin-row">
+        <div class="grow">
+          <p><strong>${esc(row.title || row.slug || '(untitled)')}</strong></p>
+          <p class="tiny muted" style="margin-top:4px">${esc(row.status || '')} · ${esc(row.slug || '')} · edited ${esc(ago(row.updated_at))}</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" data-history="${esc(row.id)}" data-slug="${esc(row.slug || '')}" data-title="${esc(row.title || row.slug || '')}">History</button>
+      </div>`).join('');
+
+    articlesHost.querySelectorAll('[data-history]').forEach(btn => {
+      btn.onclick = () => openHistory(btn.dataset.history, btn.dataset.title, btn.dataset.slug);
+    });
+  };
+
+  const openHistory = async (articleId, title, slug) => {
+    msg.innerHTML = '';
+    historyHost.innerHTML = `<h3 class="h-4">${esc(title)}</h3><p class="tiny muted" style="margin-top:6px">Loading versions…</p>`;
+    const { data, error } = await supabase.from('article_revisions')
+      .select('id,title,content,reason,created_at,created_by,status')
+      .eq('article_id', articleId)
+      .order('created_at', { ascending: false })
+      .limit(40);
+
+    if (error) {
+      return historyHost.innerHTML = error.code === '42P01' || /does not exist/i.test(error.message)
+        ? notice('article_revisions does not exist yet - apply supabase/migrations/20261101150000_article_revisions.sql first.')
+        : notice(error.message);
+    }
+    if (!data || !data.length) {
+      return historyHost.innerHTML = `<h3 class="h-4">${esc(title)}</h3>
+        <p class="tiny muted" style="margin-top:6px">No versions yet. One appears the first time this article is edited.</p>`;
+    }
+
+    const rows = data.map((version, index) => {
+      const size = String(version.content || '').length;
+      const who = version.created_by && user && version.created_by === user.id ? 'you' : '';
+      /* The body is rendered with the same pipeline as the editor preview, so
+         what the author reads here cannot differ from what readers get. */
+      const preview = typeof window !== 'undefined' && window.OMPMarkdown?.renderSafe
+        ? window.OMPMarkdown.renderSafe(version.content || '')
+        : (typeof window !== 'undefined' && window.OMPSanitize ? window.OMPSanitize(version.content || '') : esc(version.content || ''));
+      return `<div class="admin-row" style="align-items:flex-start">
+        <div class="grow">
+          <p><strong>${esc(ago(version.created_at))}</strong> <span class="tiny muted">${esc(when(version.created_at))}${who ? ' · ' + esc(who) : ''}</span></p>
+          <p class="tiny muted" style="margin-top:4px">${version.reason === 'delete' ? 'the article was deleted - this is its last copy' : 'replaced by a save'} · ${size.toLocaleString()} characters${index === 0 ? ' · newest' : ''}</p>
+          <details style="margin-top:8px"><summary class="tiny">Show that version</summary>
+            <div class="prose" style="margin-top:8px;max-height:320px;overflow:auto">${preview}</div>
+          </details>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" data-restore="${esc(version.id)}">Restore</button>
+      </div>`;
+    }).join('');
+
+    historyHost.innerHTML = `<h3 class="h-4">${esc(title)}</h3>
+      <p class="tiny muted" style="margin-top:6px">${data.length} version(s), newest first.</p>
+      <div class="admin-list" style="margin-top:12px">${rows}</div>`;
+
+    historyHost.querySelectorAll('[data-restore]').forEach(btn => btn.onclick = async () => {
+      const confirmed = confirm('Restore this version?\n\nThe article goes back to how it was, and the version it replaces is kept.');
+      if (!confirmed) return;
+      btn.disabled = true;
+      const { error: restoreError } = await supabase.rpc('restore_article_revision', { revision_id: btn.dataset.restore });
+      btn.disabled = false;
+      if (restoreError) return flash(msg, `Restore failed: ${restoreError.message}`);
+
+      await openHistory(articleId, title, slug);
+      flash(msg, 'Restored. Nothing is public until you publish - the old page is still live.');
+      const slot = document.createElement('div');
+      msg.appendChild(slot);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-primary btn-sm';
+      button.style.marginTop = '8px';
+      button.textContent = 'Publish the restored version';
+      button.onclick = async () => {
+        button.disabled = true;
+        /* The deploy targets the article's page, not the revision: a revision
+           is not a URL. */
+        const started = await requestPublish('restore', slug ? [`/articles/${slug}`] : []);
+        if (started.error) { button.disabled = false; return flash(msg, started.error); }
+        if (started.job_id && typeof publishChip === 'function') publishChip(slot, started.job_id, slug ? `/articles/${slug}` : null);
+        else flash(msg, 'Deploy queued.');
+      };
+      slot.appendChild(button);
+    });
+  };
+
+  let timer;
+  input.addEventListener('input', event => {
+    clearTimeout(timer);
+    timer = setTimeout(() => findArticles(event.target.value), 250);
+  });
+  await findArticles('');
+}
+
 /* ---------------------------------------------------------------- routing */
 
 const SECTIONS = {
   deploys: mountDeploys,
+  revisions: mountRevisions,
   redirects: mountRedirects,
   search: mountSearch,
   export: mountExport
