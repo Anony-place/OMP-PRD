@@ -160,7 +160,10 @@
 .admin-media-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .admin-media-name { font-size: .78rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .admin-media-meta { font-size: .72rem; color: var(--muted-2); margin-top: 2px; }
-.admin-media-actions { display: flex; gap: 6px; margin-top: 8px; }
+.admin-media-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+/* Four actions on a narrow card: wrap instead of squashing the labels. */
+.admin-media-card .btn-sm { padding-left: 8px; padding-right: 8px; }
+.admin-media-card ul { line-height: 1.5; }
 
 @media (max-width:900px) {
   .admin-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }

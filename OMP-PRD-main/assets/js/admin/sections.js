@@ -20,6 +20,8 @@
    available here, so nothing here does slow work before painting.
    ============================================================ */
 
+import { mountMedia } from './media.js';
+
 /* Tab order is the order people need things: what shipped, what redirects,
    what is in the library, and a backup of it. */
 export const SECTION_TABS = [
@@ -27,6 +29,7 @@ export const SECTION_TABS = [
   { key: 'revisions', label: 'Revisions' },
   { key: 'redirects', label: 'Redirects' },
   { key: 'categories', label: 'Categories' },
+  { key: 'media', label: 'Media' },
   { key: 'activity', label: 'Activity' },
   { key: 'setup', label: 'Setup' },
   { key: 'search', label: 'Search' },
@@ -867,6 +870,7 @@ const SECTIONS = {
   deploys: mountDeploys,
   revisions: mountRevisions,
   categories: mountCategories,
+  media: mountMedia,
   activity: mountActivity,
   setup: mountSetup,
   redirects: mountRedirects,
