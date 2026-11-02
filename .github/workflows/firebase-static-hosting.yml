@@ -228,6 +228,13 @@ jobs:
         # cheap to check and expensive to discover.
         run: node tools/test_admin_sections.mjs
 
+      - name: Publishing from a terminal
+        working-directory: OMP-PRD-main
+        # scripts/new-article.mjs is the path code uses to publish. Its failures
+        # are dry-run only: which title wins, what slug a title becomes, and
+        # what it refuses to send.
+        run: node tools/test_new_article.mjs
+
       - name: Verify the Vercel mirror still matches Firebase
         working-directory: OMP-PRD-main
         # vercel.json is generated from firebase.json by
