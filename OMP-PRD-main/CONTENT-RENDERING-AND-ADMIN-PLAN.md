@@ -387,3 +387,42 @@ The Deploys tab now says so, after 30 minutes, with the secret named and a link 
 the runs. Before 30 minutes it says nothing, because a fresh queue row is a
 normal few minutes and a warning on every publish is noise - asserted in
 `test_admin_sections_render` in both directions.
+
+### A policy is not a permission
+
+The Setup tab reported three tables as missing: Redirects, Article history,
+Activity. All three had existed for days. The fix it offered - "apply
+`20261101140000_redirects.sql`" - was the wrong instruction for a table that was
+already there, which is the exact failure `setup.js` was written to avoid.
+
+The cause is the half of Supabase's permission model that a policy does not
+cover. `create policy ... for select to authenticated` says which *rows* a role
+may read. The `grant` says the role may read the table at all. On a normal
+project the second half is invisible, because tables created by the `postgres`
+role inherit `grant all to anon, authenticated, service_role` from the project's
+default privileges. Tables created through the Management API do not inherit
+them, and every table in the November migrations was created that way.
+
+What that cost, measured on the live project:
+
+| Table | What was broken |
+|---|---|
+| `redirects` | the panel could not list or write a row, and `scripts/sync-redirects.mjs` reads it with the publishable key - so a rename made in the panel never became a 301, and the ranking it was meant to protect stayed a 404 |
+| `article_revisions` | Revisions showed "no versions" for articles that had them |
+| `audit_log` | Activity was empty |
+| `publish_jobs` | the `content-publish` function could not INSERT the job row, so every publish would have failed with "could not record the job" |
+
+`20261102130000_api_grants.sql` grants exactly what each table needs, and the
+four original migrations now carry their own grants so a fresh project is
+correct without it. `tools/test_api_grants.mjs` (26 checks) reads every migration
+from 2026-11-01 onward, requires a grant for each table it creates, and asserts
+the specific privileges the code depends on - `anon` SELECT on `redirects`
+because the build uses the publishable key, `service_role` INSERT/UPDATE on
+`publish_jobs` because the function writes with the service role, and no browser
+write grant on history. Removing the grants makes it fail twelve times.
+
+The Setup screen also learned the difference now: a probe that is refused with
+`42501` is reported as **denied** ("the table exists - this session may not read
+it; that is a missing grant, not a missing migration") instead of **missing**.
+Both still count as "not ready"; only one of them sends the reader to the wrong
+file.

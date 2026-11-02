@@ -10,12 +10,17 @@
    because they need the user's own session; everything here is pure, so it can
    be tested without a browser or a database.
 
-   A check has three states and they are not the same thing:
+   A check has four states and they are not the same thing:
      ok       the probe succeeded
      missing  the probe ran and the thing is not there
+     denied   the table exists, but this role may not read it - a grant is
+              missing, not a migration
      unknown  the probe could not run (no network, function not deployed)
    "Unknown" must never be rendered as "missing": telling someone to re-run a
-   migration that is already applied is worse than saying nothing.
+   migration that is already applied is worse than saying nothing. "Denied" is
+   the same mistake in a worse disguise - it is what a policy without a GRANT
+   looks like from the browser, and it sent the owner looking for a migration
+   that had been applied for days.
    ============================================================ */
 
 export const CHECKS = [
@@ -104,7 +109,11 @@ export function diagnose(probes = {}) {
         return tables.categories ? 'ok' : 'missing';
       default:
         if (tables[id] === undefined) return 'unknown';
-        return tables[id] ? 'ok' : 'missing';
+        if (tables[id]) return 'ok';
+        /* The probe ran and was refused: the table is there. Saying "missing"
+           here is the lie that costs an afternoon. */
+        if (Array.isArray(tables.denied) && tables.denied.includes(id)) return 'denied';
+        return 'missing';
     }
   };
 
@@ -115,6 +124,7 @@ export function summarise(checks) {
   const total = checks.length;
   const ok = checks.filter((check) => check.state === 'ok').length;
   const missing = checks.filter((check) => check.state === 'missing').length;
+  const denied = checks.filter((check) => check.state === 'denied').length;
   const unknown = checks.filter((check) => check.state === 'unknown').length;
 
   /* The publish path is the thing that has to work for an article to reach the
@@ -124,7 +134,7 @@ export function summarise(checks) {
   const blocked = checks.filter((check) => publishPath.includes(check.id) && check.state !== 'ok');
 
   return {
-    total, ok, missing, unknown,
+    total, ok, missing, denied, unknown,
     blocked: blocked.map((check) => check.id),
     canPublish: blocked.length === 0,
     headline: blocked.length === 0
@@ -135,7 +145,7 @@ export function summarise(checks) {
 
 /* Plain text, so it can be copied into a message instead of described. */
 export function asText(checks, summary) {
-  const mark = { ok: '[x]', missing: '[ ]', unknown: '[?]' };
+  const mark = { ok: '[x]', missing: '[ ]', denied: '[!]', unknown: '[?]' };
   const lines = [
     `OopsMyPassword admin setup - ${summary.ok}/${summary.total} ready`,
     '',

@@ -67,7 +67,9 @@ create policy "article_revisions_select_admin" on public.article_revisions
   for select to authenticated using (public.is_admin());
 
 /* No insert/update/delete policy: rows arrive from the trigger (security
-   definer) and leave by cascade. Nobody writes history by hand. */
+   definer) and leave by cascade. Nobody writes history by hand. The SELECT grant
+   is separate from the policy - a policy chosen rows, a grant allows the table. */
+grant select on public.article_revisions to authenticated;
 
 -- ---------------------------------------------------------------------------
 --  Capture

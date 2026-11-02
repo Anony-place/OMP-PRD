@@ -73,6 +73,33 @@ const jobs = missingTables.find((c) => c.id === 'publish_jobs');
 assert(jobs.state === 'missing', 'a table that the probe reached and did not find is missing');
 assert(jobs.fix.includes('20261101120000'), 'and the fix names the exact migration');
 
+section('A refusal is not an absence');
+/* The exact failure this was written for: the tables existed, but the role had
+   policies without grants, so every probe came back "permission denied" and the
+   screen told the owner to apply migrations that had been applied for days. */
+const refused = diagnose({
+  tables: {
+    articles: true, publish_jobs: true, categories: true,
+    redirects: false, article_revisions: false, audit_log: false,
+    denied: ['redirects', 'article_revisions', 'audit_log']
+  },
+  function: 'ok',
+  configured: { github_token: true, repo: true }
+});
+const redirectCheck = refused.find((c) => c.id === 'redirects');
+assert(redirectCheck.state === 'denied', 'a permission error is reported as denied, not missing');
+assert(diagnose({ tables: { redirects: false }, function: 'ok' }).find((c) => c.id === 'redirects').state === 'missing',
+  'without the denied list, the same false is still "missing" - the two cases are told apart by the probe, not guessed');
+const refusedSummary = summarise(refused);
+assert(refusedSummary.denied === 3, 'the summary counts refused checks separately');
+assert(refusedSummary.missing === 0, 'and does not add them to the missing count');
+assert(summarise(refused).canPublish === true,
+  'a refused redirects table does not block publishing, which it is not part of');
+const refusedText = asText(refused, refusedSummary);
+assert(/\[!\]/.test(refusedText), 'the copied checklist marks a refusal with its own symbol');
+assert(!/20261101140000/.test(refusedText.split('Redirects')[1]?.split('\n')[0] || ''),
+  'a refused table does not tell the reader to apply the migration that is already applied');
+
 section('The function is the thing that can be unreachable');
 const noFunction = diagnose({
   tables: { articles: true, publish_jobs: true, redirects: true, article_revisions: true, audit_log: true, categories: true },
