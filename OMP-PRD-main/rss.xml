@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Nov 2026 10:14:12 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 02 Nov 2026 15:15:42 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -92,6 +92,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys</guid>
       <category>Security Research</category>
       <description>CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys</description>
+    </item>
+    <item>
+      <title>PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site</title>
+      <link>https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site</guid>
+      <category>Security Research</category>
+      <description>PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site</description>
     </item>
     <item>
       <title>Sherlock vs Maigret: Which Username OSINT Tool Should You Use?</title>

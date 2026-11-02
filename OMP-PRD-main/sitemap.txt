@@ -230,6 +230,7 @@ https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-ar
 https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account
 https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
+https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it
