@@ -305,6 +305,15 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_autosave.mjs
 
+      - name: Every new table is granted, not just policied
+        working-directory: OMP-PRD-main
+        # A policy chooses rows; a grant allows the table. Tables created through
+        # the Management API do not inherit the project's default privileges, so
+        # a migration that writes a policy and stops leaves the table unreadable -
+        # which reads on screen as "apply this migration", for a migration that
+        # has been applied for days.
+        run: node tools/test_api_grants.mjs
+
       - name: Panel settings cannot quietly change what a save does
         working-directory: OMP-PRD-main
         # The settings switch decides whether saving a published article starts

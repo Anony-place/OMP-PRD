@@ -40,5 +40,11 @@ drop policy if exists "redirects_write_admin" on public.redirects;
 create policy "redirects_write_admin" on public.redirects
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
+/* scripts/sync-redirects.mjs reads this with the publishable key on every
+   build, so anon needs SELECT or a redirect added in the panel never becomes a
+   301. The panel writes with an admin session. */
+grant select on public.redirects to anon;
+grant select, insert, update, delete on public.redirects to authenticated;
+
 comment on table public.redirects is
   'Old path -> new path. Generated into vercel.json by scripts/build-vercel-config.mjs; never edit that file by hand.';

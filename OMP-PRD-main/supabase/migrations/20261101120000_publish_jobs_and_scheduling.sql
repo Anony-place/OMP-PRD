@@ -69,3 +69,8 @@ create policy "publish_jobs_select_admin" on public.publish_jobs
 
 revoke insert, update, delete on public.publish_jobs from anon, authenticated;
 grant select on public.publish_jobs to authenticated;
+/* The edge function and the workflow both write this table with the service
+   role. A GRANT is not implied by a policy, and a table created through the
+   Management API does not inherit the project's default privileges - so without
+   this line every publish failed with "could not record the job". */
+grant select, insert, update on public.publish_jobs to service_role;

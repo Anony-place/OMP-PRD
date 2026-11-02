@@ -274,10 +274,19 @@ async function mountSetup(ctx) {
        the panel cannot use it. */
     const tableNames = ['articles', 'publish_jobs', 'redirects', 'article_revisions', 'audit_log', 'article_categories'];
     const tables = {};
+    /* A refusal is not an absence. Without this, a table that exists but has no
+       GRANT for this role reads as "apply the migration" - and the migration has
+       been applied for days. PostgREST answers a missing table with 42P01 and a
+       missing grant with 42501, so the two are separable. */
+    const denied = [];
     await Promise.all(tableNames.map(async (table) => {
       const { error } = await supabase.from(table).select('*', { head: true, count: 'exact' }).limit(1);
       tables[table] = !error;
+      if (error && (error.code === '42501' || /permission denied/i.test(String(error.message || '')))) {
+        denied.push(table);
+      }
     }));
+    tables.denied = denied;
     /* The category function is what makes deletion safe; probe the function
        itself rather than its table, which has existed all along. */
     const { error: categoryProbe } = await supabase.rpc('delete_article_category', { category: '00000000-0000-0000-0000-000000000000' });
@@ -308,14 +317,15 @@ async function mountSetup(ctx) {
     summaryHost.innerHTML = `<p style="color:${tone};font-weight:600">${esc(summary.headline)}</p>
       <p class="tiny muted" style="margin-top:6px">${summary.ok} of ${summary.total} ready${summary.unknown ? ` · ${summary.unknown} could not be checked` : ''}</p>`;
 
-    const marks = { ok: '✓', missing: '✗', unknown: '?' };
-    const colours = { ok: 'var(--green, #1a7f37)', missing: 'var(--red, #c0392b)', unknown: 'var(--muted, #667085)' };
+    const marks = { ok: '✓', missing: '✗', denied: '!', unknown: '?' };
+    const colours = { ok: 'var(--green, #1a7f37)', missing: 'var(--red, #c0392b)', denied: 'var(--amber, #9a6700)', unknown: 'var(--muted, #667085)' };
 
     listHost.innerHTML = checks.map(check => `<div class="admin-row" style="align-items:flex-start">
         <div class="grow">
           <p><strong style="color:${colours[check.state]};margin-right:8px">${marks[check.state]}</strong>${esc(check.label)}</p>
           <p class="tiny muted" style="margin-top:4px">${esc(check.why)}</p>
           ${check.state === 'missing' ? `<p class="tiny" style="margin-top:6px"><code>${esc(check.fix)}</code></p>` : ''}
+          ${check.state === 'denied' ? '<p class="tiny" style="margin-top:6px">The table exists - this session may not read it. That is a missing <code>grant</code>, not a missing migration: apply <code>supabase/migrations/20261102130000_api_grants.sql</code>.</p>' : ''}
           ${check.state === 'unknown' ? '<p class="tiny muted" style="margin-top:6px">Could not be checked from here - not the same as missing.</p>' : ''}
         </div>
       </div>`).join('');

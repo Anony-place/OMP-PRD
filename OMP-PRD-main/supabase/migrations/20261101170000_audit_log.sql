@@ -46,6 +46,9 @@ drop policy if exists "audit_log_select_admin" on public.audit_log;
 create policy "audit_log_select_admin" on public.audit_log
   for select to authenticated using (public.is_admin());
 
+/* Read by an admin session, written only by the definer trigger. */
+grant select on public.audit_log to authenticated;
+
 comment on table public.audit_log is
   'Who changed which row, and which fields. Not a backup: values are not stored.';
 
