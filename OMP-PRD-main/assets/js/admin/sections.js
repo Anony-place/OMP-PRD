@@ -419,7 +419,9 @@ async function mountRevisions(ctx) {
     const { data, error } = await supabase.from('article_revisions')
       .select('id,title,content,reason,created_at,created_by,status')
       .eq('article_id', articleId)
-      .order('created_at', { ascending: false })
+      /* seq, not created_at: two saves in the same microsecond share a
+         timestamp and the order would be whatever the planner returned. */
+      .order('seq', { ascending: false })
       .limit(40);
 
     if (error) {

@@ -130,7 +130,7 @@ let current = await one(`select content, title from public.articles where id = $
 assert(current.content === 'version one', 'the old body is back');
 assert(current.title === 'First draft', 'and the snapshot\'s own title comes back with it - a version is a whole row, not a patch');
 
-revisions = await all(`select * from public.article_revisions where article_id = $1 order by created_at desc`, [article.id]);
+revisions = await all(`select * from public.article_revisions where article_id = $1 order by seq desc`, [article.id]);
 assert(revisions[0].content === 'version two', 'the version that was replaced just now is itself kept');
 
 section('A deleted article is not gone');
@@ -156,8 +156,14 @@ for (let index = 2; index <= 55; index += 1) {
 const kept = await one(`select count(*)::int as n from public.article_revisions where article_id = $1`, [revivedId]);
 assert(kept.n === 40, `55 edits keep the newest 40 versions (kept ${kept.n})`);
 const newest = await one(
-  `select content from public.article_revisions where article_id = $1 order by created_at desc limit 1`, [revivedId]);
+  `select content from public.article_revisions where article_id = $1 order by seq desc limit 1`, [revivedId]);
 assert(newest.content === 'v54', 'and the newest one is the one edited a moment ago');
+
+section('Newest is well defined, not a coin flip');
+const order = await all(`select seq from public.article_revisions where article_id = $1 order by seq asc`, [revivedId]);
+assert(order.length === 40, 'the same rows are ordered deterministically');
+assert(order.every((row, index) => index === 0 || Number(row.seq) > Number(order[index - 1].seq)),
+  'seq increases with every snapshot, so two saves in one microsecond are still ranked');
 
 section('Only an admin restores');
 await asUser(editor);
