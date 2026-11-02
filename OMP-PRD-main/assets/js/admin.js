@@ -10,6 +10,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
 import { ACADEMY_CONFIG } from './academy-config.mjs';
 import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
 import { installAutosave, draftKey, pruneDrafts } from './admin/autosave.js';
+import { docxToHtml } from './admin/docx.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
 
@@ -1157,7 +1158,7 @@ function articleForm(host, categories, article) {
     </div>
     <div class="form-field">
       <label for="${id('import')}">Import text from a file (Markdown, HTML or plain text)</label>
-      <input id="${id('import')}" name="import" type="file" accept=".md,.markdown,.html,.htm,.txt,text/markdown,text/html,text/plain" style="padding:10px">
+      <input id="${id('import')}" name="import" type="file" accept=".md,.markdown,.html,.htm,.txt,.docx,text/markdown,text/html,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="padding:10px">
       <p class="tiny muted" style="margin-top:6px">The file's text is placed in the body below as-is, in the browser, so the same sanitiser and the same renderer apply as if you had typed it. Edit before saving. Use <em>Attach document</em> below when readers should download the original file instead.</p>
     </div>
     <div class="form-field">
@@ -1213,6 +1214,16 @@ function articleForm(host, categories, article) {
   /* Import puts text in the body, not a file on a server: Markdown stays
      Markdown, HTML stays HTML, and both then go through exactly the path a
      typed article takes. That is why the preview after an import is truthful. */
+  /* An import must never silently destroy what is already typed, and it must
+     never silently glue two documents together either. Ask, once, with the
+     choice spelled out. */
+  const replaceOrAppend = (current, next, noun) => {
+    const existing = String(current || '').trim();
+    if (!existing) return next;
+    const replace = confirm(`Replace what is in the body with the imported ${noun}?\n\nCancel keeps both: the ${noun} is added at the end.`);
+    return replace ? next : `${existing}\n\n---\n\n${next}`;
+  };
+
   const importInput = document.querySelector(`#${id('import')}`);
   if (importInput) importInput.addEventListener('change', async () => {
     const file = importInput.files && importInput.files[0];
@@ -1222,6 +1233,42 @@ function articleForm(host, categories, article) {
       importInput.value = '';
       return;
     }
+    /* .docx is a zip, not text: it is converted first, then treated exactly
+       like pasted HTML. The converter's output is not trusted - it can carry a
+       javascript: link straight out of the document - so it goes through the
+       same sanitizer as everything else, in renderBody(). */
+    if (/\.docx$/i.test(file.name)) {
+      flash(form, 'Reading the document…');
+      let converted;
+      try {
+        converted = await docxToHtml(file);
+      } catch (error) {
+        flash(form, `Could not read ${file.name}: ${error.message}. A .doc saved from an older Word will not work - save it as .docx.`);
+        importInput.value = '';
+        return;
+      }
+      ta.value = replaceOrAppend(ta.value, converted.html, 'document');
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+      if (titleInput && !titleInput.value.trim()) {
+        const heading = converted.html.match(/<h[12][^>]*>([\s\S]*?)<\/h[12]>/i);
+        if (heading) {
+          titleInput.value = heading[1].replace(/<[^>]+>/g, '').trim().slice(0, 160);
+          if (slugInput && !slugInput.value.trim()) slugInput.value = slugify(titleInput.value);
+        }
+      }
+      const notes = [];
+      if (converted.images) notes.push(`${converted.images} image(s) dropped - add them from the media library`);
+      if (converted.messages.length) notes.push(`${converted.messages.length} formatting note(s) ignored`);
+      flash(form, `Imported ${file.name}${notes.length ? ' (' + notes.join(', ') + ')' : ''}. Check it, then save.`);
+      importInput.value = '';
+      return;
+    }
+    if (/\.doc$/i.test(file.name)) {
+      flash(form, 'A .doc file is the old binary format and cannot be read here. Open it in Word and save as .docx, or attach it as a document instead.');
+      importInput.value = '';
+      return;
+    }
+
     let text = await file.text();
     const isHtml = /\.html?$/i.test(file.name);
     if (/\.txt$/i.test(file.name)) {

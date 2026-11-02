@@ -25,7 +25,8 @@ const { JSDOM } = require_('jsdom');
    warning is expected and only noise here. */
 process.removeAllListeners('warning');
 process.on('warning', (warning) => {
-  if (warning.name !== 'MODULE_TYPELESS_PACKAGE_JSON') console.warn(warning);
+  /* The code, not the name: Node sets name='Warning' and code='MODULE_TYPELESS_PACKAGE_JSON'. */
+  if (warning.code !== 'MODULE_TYPELESS_PACKAGE_JSON') console.warn(warning);
 });
 
 const dom = new JSDOM('<!doctype html><body><div id="host"></div></body>', { url: 'https://oopsmypassword.web.app/Anony.su/' });
