@@ -16,7 +16,12 @@
                            Contents: read & write  (GitHub requires write to
                            create a repository_dispatch event)
      GITHUB_REPO           e.g. Anony-place/OMP-PRD
-     PUBLISH_FUNCTION_KEY  shared secret the workflow uses to report back
+
+   Nothing here needs a secret for the workflow to report back: it writes
+   publish_jobs with the repository's own GITHUB_TOKEN and the service role key
+   it already has. An earlier version of this comment named a
+   PUBLISH_FUNCTION_KEY that was never read by anything - kept out of the list
+   so nobody sets a secret that has no effect.
    ============================================================================ */
 
 import { createClient } from "npm:@supabase/supabase-js@2.115.0";
@@ -156,9 +161,30 @@ Deno.serve(async (req) => {
     };
     if (status === "published") record.published_at = new Date().toISOString();
     if (scheduledFor) record.scheduled_for = scheduledFor;
-    for (const field of ["excerpt", "seo_title", "seo_description", "cover_image_url", "document_url"]) {
-      if (input[field]) record[field] = String(input[field]).slice(0, 2000);
+    /* Canonical column names first - those are what public.articles has
+       (summary, featured_image, meta_*). The older spellings are still
+       accepted from a script written against the docs of the day, and are
+       mapped onto the real column rather than sent through, because sending
+       "excerpt" to Postgres is a 42703, not a rename. */
+    const aliases: Record<string, string> = {
+      summary: "summary",
+      excerpt: "summary",
+      description: "summary",
+      meta_title: "meta_title",
+      seo_title: "meta_title",
+      meta_description: "meta_description",
+      seo_description: "meta_description",
+      featured_image: "featured_image",
+      cover_image_url: "featured_image",
+      image: "featured_image",
+      document_url: "document_url",
+      og_image: "og_image",
+      canonical_url: "canonical_url",
+    };
+    for (const [from, to] of Object.entries(aliases)) {
+      if (input[from] && !record[to]) record[to] = String(input[from]).slice(0, 2000);
     }
+    if (typeof input.robots_noindex === "boolean") record.robots_noindex = input.robots_noindex;
 
     /* Category by name or slug: a script should not have to know a uuid. */
     const category = input.category ? String(input.category) : "";

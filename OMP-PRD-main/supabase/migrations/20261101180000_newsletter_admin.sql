@@ -19,6 +19,56 @@
 --  the panel's JavaScript.
 -- ============================================================================
 
+-- ---------------------------------------------------------------------------
+--  The two tables this migration reads, if they are not there.
+--
+--  20260930140000_drop_article_newsletter.sql removed them on purpose: the site
+--  stopped rendering a signup form, and empty tables with no writer are dead
+--  weight. The panel's Newsletter tab was added later and still reads them, so
+--  on the live database this file failed with
+--  "relation public.newsletter_subscribers does not exist" - a migration that
+--  works against the test fixture and not against production, the same way the
+--  revisions trigger did.
+--
+--  Nothing is resurrected that holds data: these creates are if-not-exists and
+--  the tables were verified empty when they were dropped. Re-creating them is
+--  what lets the tab show an honest zero instead of an error, and what gives a
+--  future signup form somewhere to write.
+-- ---------------------------------------------------------------------------
+create table if not exists public.newsletter_subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique check (length(email) between 3 and 254 and email = lower(email)),
+  status text not null default 'pending' check (status in ('pending','active','unsubscribed')),
+  confirmation_hash text,
+  confirmation_expires_at timestamptz,
+  requested_at timestamptz not null default now(),
+  confirmed_at timestamptz,
+  consent_version text not null default 'article-updates-v1',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.newsletter_deliveries (
+  article_id uuid not null references public.articles(id) on delete cascade,
+  subscriber_id uuid not null references public.newsletter_subscribers(id) on delete cascade,
+  state text not null default 'pending' check (state in ('pending','sending','sent','failed','cancelled')),
+  attempts integer not null default 0,
+  available_at timestamptz not null default now(),
+  first_attempt_at timestamptz,
+  sent_at timestamptz,
+  provider_id text,
+  primary key (article_id, subscriber_id)
+);
+
+create index if not exists newsletter_delivery_pending
+  on public.newsletter_deliveries (available_at) where state in ('pending','sending');
+
+alter table public.newsletter_subscribers enable row level security;
+alter table public.newsletter_deliveries enable row level security;
+/* A list of email addresses is service_role's business. The panel reads counts
+   through the two definer functions below, never through these tables. */
+revoke all on public.newsletter_subscribers, public.newsletter_deliveries from anon, authenticated;
+grant all on public.newsletter_subscribers, public.newsletter_deliveries to service_role;
+
 create or replace function public.newsletter_overview()
 returns jsonb
 language plpgsql

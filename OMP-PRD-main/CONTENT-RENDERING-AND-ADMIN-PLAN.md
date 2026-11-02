@@ -261,3 +261,74 @@ A new admin feature goes in `assets/js/admin/sections.js` (or a sibling module)
 and receives `{ supabase, esc, notice, flash, loadTab, requestPublish, publishChip, panel }`.
 It never imports `admin.js`; that is what keeps the graph acyclic. Add the tab to
 `SECTION_TABS`, a route to `SECTIONS`, and the tab bar picks it up without an HTML edit.
+
+### The fixture had a table production has never had
+
+The panel's article form, the `content-publish` function, `scripts/new-article.mjs`
+and the revisions migration were all written against column names that exist only
+in `tools/lib/pg.mjs`: `excerpt`, `seo_title`, `seo_description`, `cover_image_url`.
+`public.articles` has `summary`, `featured_image` and - after
+`20261101130000_article_seo_overrides` - `meta_title`, `meta_description`. Every
+suite passed, because every suite ran against the fixture. Three consequences,
+all found by asking the live database instead of the fixture:
+
+1. `record_article_revision()` read `old.excerpt`. The trigger is `BEFORE UPDATE`,
+   so the first edit of any article in production would have raised
+   `42703: record "old" has no field "excerpt"` and rolled the save back. The
+   migration had never been applied, which is the only reason nobody noticed.
+2. `restore_article_revision()` wrote the same four names, so "put it back" would
+   have failed the same way, and it also inserted a NULL into `content`, which is
+   `not null`.
+3. `scripts/new-article.mjs` documented the fixture's front matter, so the CLI
+   created articles with no summary and no SEO overrides - silently, since a
+   field the function does not know about is dropped, not rejected.
+
+Fixed in the migration, the function (which now maps the retired spellings onto
+the real columns instead of sending them to Postgres) and the CLI (which accepts
+both, documents the real ones). `tools/lib/pg.mjs` no longer carries the fictional
+columns, and `tools/test_article_schema_parity.mjs` is the guard: it reads the
+column list out of `supabase/00_schema_migrations.sql` plus every `add column` in
+`supabase/`, compares it with the fixture, and checks every column the panel
+payload, the function and the revisions trigger touch. A column that only the
+fixture knows about is a red build, not a production incident.
+
+### The newsletter tables had been dropped on purpose
+
+`20260930140000_drop_article_newsletter.sql` removed `newsletter_subscribers` and
+`newsletter_deliveries` with the newsletter feature itself. The panel's Newsletter
+tab shipped later and read them, so `20261101180000_newsletter_admin.sql` referred
+to two tables that no longer existed - another migration that worked against the
+fixture and not against the database. The migration now creates them
+idempotently before defining the two functions. Nothing is resurrected that holds
+data (both were empty when dropped), and the tab shows an honest zero until a
+signup form ships.
+
+### What is live now
+
+Applied to `aeehfulikupskyrvcpzb` on 2026-11-02, in this order, each recorded in
+`supabase_migrations.schema_migrations`:
+
+| Migration | Effect verified live |
+|---|---|
+| `20261101120000_publish_jobs_and_scheduling` | `publish_jobs` (10 columns, admin-only read, no browser writes); `articles_status_check` widened to `draft/scheduled/published/archived`; `scheduled_for` + partial index |
+| `20261101130000_article_seo_overrides` | `meta_title`, `meta_description`, `og_image`, `canonical_url`, `robots_noindex` |
+| `20261101140000_redirects` | `redirects` with path-shape constraints, public read, admin write |
+| `20261101150000_article_revisions` | snapshot table + capture trigger + restore; a real article edit wrote one revision and was rolled back |
+| `20261101160000_categories` | case-insensitive unique name index, `delete_article_category()`, `clean_category()` |
+| `20261101170000_audit_log` | `audit_log` + generic trigger on articles/products/tools/categories |
+| `20261101180000_newsletter_admin` | tables re-created, `newsletter_overview()`, `newsletter_set_status()` |
+| `20261101190000_admin_users` | `list_admins()`, `admin_counts()`, `set_admin_access()` |
+
+A rolled-back end-to-end write proves the chain: insert → `audit_log` row; content
+edit → `article_revisions` row; status flip to `scheduled` → accepted by the
+constraint and audited without a revision; delete → final snapshot with
+`reason = 'delete'`, history outliving the row.
+
+`content-publish` is deployed (`verify_jwt: true`, admin checked inside) and its
+`GITHUB_REPO` secret is set. Still owed by the owner, because neither can be done
+from the repository: a fine-grained PAT (Contents: read & write) set as the
+function secret `GITHUB_PUBLISH_TOKEN`, and the repository secret
+`SUPABASE_SERVICE_ROLE_KEY` plus the repository variable
+`AUTOPUBLISH_ENABLED = true`. Without the first, a publish request records a
+`failed` job and answers 503 instead of claiming success; without the second, the
+workflow runs but can never report a job as live.
