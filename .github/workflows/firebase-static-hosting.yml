@@ -314,6 +314,14 @@ jobs:
         # has been applied for days.
         run: node tools/test_api_grants.mjs
 
+      - name: A failed publish says why, not "non-2xx"
+        working-directory: OMP-PRD-main
+        # supabase-js replaces the function's own explanation with one sentence
+        # about HTTP. The body is where "GitHub rejected the dispatch (HTTP 403)"
+        # lives, and that sentence is the difference between fixing a token and
+        # pressing the button again.
+        run: node tools/test_publish_errors.mjs
+
       - name: Panel settings cannot quietly change what a save does
         working-directory: OMP-PRD-main
         # The settings switch decides whether saving a published article starts

@@ -11,6 +11,7 @@ import { ACADEMY_CONFIG } from './academy-config.mjs';
 import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
 import { installAutosave, draftKey, pruneDrafts } from './admin/autosave.js';
 import { load as loadPanelSettings, current as panelSettings } from './admin/panel-settings.js';
+import { failureMessage } from './admin/publish-error.js';
 import { docxToHtml } from './admin/docx.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
@@ -946,7 +947,10 @@ async function requestPublish(reason, targets) {
     const { data, error } = await supabase.functions.invoke('content-publish', {
       body: { reason, targets }
     });
-    if (error) return { error: error.message };
+    /* Not error.message: the SDK replaces the function's own sentence with
+       "Edge Function returned a non-2xx status code". The real reason - a 403
+       from GitHub, a missing token, an unrecorded job - is in the body. */
+    if (error) return { error: await failureMessage(error) };
     if (data?.error) return { error: data.error, job_id: data.job_id };
     return data || {};
   } catch (err) {

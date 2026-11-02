@@ -426,3 +426,26 @@ The Setup screen also learned the difference now: a probe that is refused with
 it; that is a missing grant, not a missing migration") instead of **missing**.
 Both still count as "not ready"; only one of them sends the reader to the wrong
 file.
+
+### "Edge Function returned a non-2xx status code"
+
+That is what the panel said when the first real publish failed. It is the
+sentence `supabase-js` writes for any non-2xx answer, and it replaces the one
+the function had prepared: the body said `GitHub rejected the dispatch (HTTP
+403)` - a token without Contents: write - and it was thrown away before the
+reader saw it.
+
+The job row had it all along, which is worth remembering: the pipeline was
+telling the truth, and the panel was swallowing it.
+
+`assets/js/admin/publish-error.js` reads the body back out of the failed
+`Response` and returns the function's own sentence, falling back to the SDK's
+only when the SDK's is a new fact ("Failed to send a request to the Edge
+Function" means no network, which is worth saying). `requestPublish` uses it for
+every caller - the save path, the bulk actions, Redirects and the Settings
+deletegate button - so the message is the same everywhere.
+
+`tools/test_publish_errors.mjs` (18 checks) drives it with stand-ins for the
+error object: a JSON body with an error, an empty body, a body that is not JSON,
+a missing response, a thrown Error, and a null. The SDK's sentence must never
+reach the reader when there is a body that says more.
