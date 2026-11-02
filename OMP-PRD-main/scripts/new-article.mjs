@@ -29,10 +29,14 @@
      slug: password-managers-compared
      status: published
      category: guides            # name or slug
-     excerpt: One paragraph for cards and search results.
-     seo_title: ...              # optional, defaults to the title
-     seo_description: ...        # optional, defaults to the excerpt
-     cover_image_url: /assets/img/...
+     summary: One paragraph for cards and search results.
+     meta_title: ...             # optional, defaults to the title
+     meta_description: ...       # optional, defaults to the summary
+     featured_image: /assets/img/...
+     # excerpt / seo_title / seo_description / cover_image_url are accepted as
+     # aliases, because they were the documented names for a while. They are
+     # written to the real columns: summary / meta_title / meta_description /
+     # featured_image.
      scheduled_for: 2026-12-01T09:00:00Z   # only with status: scheduled
      ---
 
@@ -69,7 +73,7 @@ if (!file) {
     slug: how-password-managers-work
     status: published
     category: guides
-    excerpt: One line for the cards.
+    summary: One line for the cards.
     ---
 
     Body goes here.
@@ -121,10 +125,10 @@ const article = {
   status,
   content: body.trim(),
   category: meta.category || undefined,
-  excerpt: meta.excerpt || meta.description || undefined,
-  seo_title: meta.seo_title || undefined,
-  seo_description: meta.seo_description || undefined,
-  cover_image_url: meta.cover_image_url || meta.image || undefined,
+  summary: meta.summary || meta.excerpt || meta.description || undefined,
+  meta_title: meta.meta_title || meta.seo_title || undefined,
+  meta_description: meta.meta_description || meta.seo_description || undefined,
+  featured_image: meta.featured_image || meta.cover_image_url || meta.image || undefined,
   scheduled_for: meta.scheduled_for || undefined
 };
 
@@ -140,8 +144,10 @@ if (article.scheduled_for && Number.isNaN(Date.parse(article.scheduled_for))) pr
 /* A front-matter typo that silently becomes part of the body is the kind of
    thing you only notice after a deploy. */
 for (const key of Object.keys(meta)) {
-  if (!['title', 'slug', 'status', 'category', 'excerpt', 'description', 'seo_title', 'seo_description',
-        'cover_image_url', 'image', 'scheduled_for'].includes(key)) {
+  if (!['title', 'slug', 'status', 'category', 'summary', 'description',
+        'meta_title', 'meta_description', 'featured_image', 'image', 'scheduled_for',
+        /* documented aliases, kept so an older file does not warn */
+        'excerpt', 'seo_title', 'seo_description', 'cover_image_url'].includes(key)) {
     console.warn(`  ! unknown front-matter field "${key}" - ignored`);
   }
 }

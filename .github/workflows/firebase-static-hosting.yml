@@ -245,6 +245,15 @@ jobs:
         # "nothing to do". Asserted here instead.
         run: node tools/test_publish_workflow.mjs
 
+      - name: The test database describes the same table as production
+        working-directory: OMP-PRD-main
+        # The fixture used to have columns public.articles has never had, so
+        # code written against it passed here and threw 42703 live - a save
+        # trigger that broke every edit, and a column list no migration could
+        # apply. Comparing the SQL, the fixture and the code is the only thing
+        # that catches it before the first real save does.
+        run: node tools/test_article_schema_parity.mjs
+
       - name: Every panel section renders, with data and without
         working-directory: OMP-PRD-main
         # Mounts all eleven sections in a real DOM against a fake Supabase, once

@@ -32,10 +32,16 @@ create table if not exists public.article_revisions (
   status       text,
   category_id  uuid,
   content      text,
-  excerpt      text,
-  seo_title    text,
-  seo_description text,
-  cover_image_url text,
+  /* These are the column names public.articles actually has
+     (00_schema_migrations.sql: summary/featured_image, plus meta_* from
+     20261101130000). An earlier draft of this migration used
+     excerpt/seo_title/seo_description/cover_image_url, names that exist only in
+     the test fixture - which is how a trigger that breaks every save passed its
+     tests and would have thrown 42703 in production on the first edit. */
+  summary      text,
+  meta_title   text,
+  meta_description text,
+  featured_image text,
   published_at timestamptz,
   scheduled_for timestamptz,
   /* 'update' - the row was replaced; 'delete' - the row is gone and this is
@@ -82,22 +88,22 @@ begin
        new.content     is not distinct from old.content
    and new.title       is not distinct from old.title
    and new.slug        is not distinct from old.slug
-   and new.excerpt     is not distinct from old.excerpt
-   and new.seo_title   is not distinct from old.seo_title
-   and new.seo_description is not distinct from old.seo_description
-   and new.cover_image_url is not distinct from old.cover_image_url
+   and new.summary     is not distinct from old.summary
+   and new.meta_title  is not distinct from old.meta_title
+   and new.meta_description is not distinct from old.meta_description
+   and new.featured_image is not distinct from old.featured_image
    and new.category_id is not distinct from old.category_id
   ) then
     return new;
   end if;
 
   insert into public.article_revisions (
-    article_id, title, slug, status, category_id, content, excerpt,
-    seo_title, seo_description, cover_image_url, published_at, scheduled_for,
+    article_id, title, slug, status, category_id, content, summary,
+    meta_title, meta_description, featured_image, published_at, scheduled_for,
     reason, created_by
   ) values (
-    old.id, old.title, old.slug, old.status, old.category_id, old.content, old.excerpt,
-    old.seo_title, old.seo_description, old.cover_image_url, old.published_at, old.scheduled_for,
+    old.id, old.title, old.slug, old.status, old.category_id, old.content, old.summary,
+    old.meta_title, old.meta_description, old.featured_image, old.published_at, old.scheduled_for,
     case when tg_op = 'DELETE' then 'delete' else 'update' end,
     auth.uid()
   );
@@ -150,11 +156,11 @@ begin
 
   update public.articles set
     title = snapshot.title,
-    content = snapshot.content,
-    excerpt = snapshot.excerpt,
-    seo_title = snapshot.seo_title,
-    seo_description = snapshot.seo_description,
-    cover_image_url = snapshot.cover_image_url,
+    content = coalesce(snapshot.content, ''),
+    summary = snapshot.summary,
+    meta_title = snapshot.meta_title,
+    meta_description = snapshot.meta_description,
+    featured_image = snapshot.featured_image,
     category_id = snapshot.category_id,
     updated_at = now()
   where id = snapshot.article_id
@@ -165,19 +171,19 @@ begin
      may have been reused since, so it is made unique rather than trusted. */
   if target is null then
     insert into public.articles (
-      id, title, slug, status, category_id, content, excerpt,
-      seo_title, seo_description, cover_image_url, updated_at
+      id, title, slug, status, category_id, content, summary,
+      meta_title, meta_description, featured_image, updated_at
     ) values (
       snapshot.article_id,
       coalesce(snapshot.title, 'Restored article'),
       snapshot.slug || '-restored-' || to_char(now(), 'YYYYMMDDHH24MISS'),
       'draft',
       snapshot.category_id,
-      snapshot.content,
-      snapshot.excerpt,
-      snapshot.seo_title,
-      snapshot.seo_description,
-      snapshot.cover_image_url,
+      coalesce(snapshot.content, ''),
+      snapshot.summary,
+      snapshot.meta_title,
+      snapshot.meta_description,
+      snapshot.featured_image,
       now()
     )
     returning id into target;

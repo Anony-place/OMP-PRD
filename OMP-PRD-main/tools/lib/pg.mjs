@@ -82,15 +82,24 @@ const BASE = `
       constraint articles_status_check check (status in ('draft','published','archived')),
     category_id uuid references public.article_categories(id) on delete set null,
     content text,
+    /* The column list below is public.articles as it exists in production:
+       supabase/00_schema_migrations.sql plus the add-column statements in
+       supabase/migrations. It used to carry excerpt/seo_title/seo_description/
+       cover_image_url as well - names the real table has never had - so code
+       written against this fixture passed here and threw 42703 live.
+       tools/test_article_schema_parity.mjs now fails if they drift apart. */
     summary text,
-    excerpt text,
-    seo_title text,
-    seo_description text,
-    cover_image_url text,
     featured_image text,
     document_url text,
     published_at timestamptz,
+    created_at timestamptz not null default now(),
     scheduled_for timestamptz,
+    meta_title text,
+    meta_description text,
+    og_image text,
+    canonical_url text,
+    robots_noindex boolean not null default false,
+    created_by uuid references auth.users(id) on delete set null,
     updated_at timestamptz not null default now()
   );
   alter table public.articles enable row level security;
