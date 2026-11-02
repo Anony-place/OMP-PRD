@@ -70,7 +70,11 @@ const BASE = `
     id uuid primary key default gen_random_uuid(),
     title text,
     slug text unique,
-    status text not null default 'draft',
+    /* Named, because the revisions migration replaces it by name to add
+       'scheduled'. An unnamed constraint here would make that migration pass in
+       this fixture and fail against the real database. */
+    status text not null default 'draft'
+      constraint articles_status_check check (status in ('draft','published','archived')),
     category_id uuid references public.article_categories(id) on delete set null,
     content text,
     summary text,

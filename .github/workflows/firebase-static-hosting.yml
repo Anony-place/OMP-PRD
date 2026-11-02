@@ -238,6 +238,10 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: Who changed what is recorded
+        working-directory: OMP-PRD-main
+        run: node tools/test_audit_log.mjs
+
       - name: Categories cannot lose their articles
         working-directory: OMP-PRD-main
         run: node tools/test_categories.mjs

@@ -27,6 +27,7 @@ export const SECTION_TABS = [
   { key: 'revisions', label: 'Revisions' },
   { key: 'redirects', label: 'Redirects' },
   { key: 'categories', label: 'Categories' },
+  { key: 'activity', label: 'Activity' },
   { key: 'search', label: 'Search' },
   { key: 'export', label: 'Export' }
 ];
@@ -220,6 +221,94 @@ async function mountRedirects(ctx) {
     slot.appendChild(button);
   };
 
+  await paint();
+}
+
+/* --------------------------------------------------------------- activity */
+
+async function mountActivity(ctx) {
+  const { supabase, esc, panel, notice } = ctx;
+
+  panel.innerHTML = `<div class="admin-section-head">
+      <div><h2 class="h-3">Activity</h2><p class="tiny muted">Who changed what. Field names, not values - it answers "who unpublished this", not "what did it say".</p></div>
+      <button id="activity-refresh" type="button" class="btn btn-secondary btn-sm">Refresh</button>
+    </div>
+    <div class="admin-message-toolbar">
+      <label class="admin-search"><span class="sr-only">Search activity</span><input id="activity-q" type="search" placeholder="Title, slug, email…" autocomplete="off"></label>
+      <label class="admin-status-filter"><span class="sr-only">Filter by table</span><select id="activity-table">
+        <option value="all">Everything</option>
+        <option value="articles">Articles</option>
+        <option value="products">Products</option>
+        <option value="tools">Tools</option>
+        <option value="article_categories">Categories</option>
+      </select></label>
+    </div>
+    <div id="activity-list" class="admin-list" style="margin-top:16px"></div>`;
+
+  const list = document.querySelector('#activity-list');
+  const search = document.querySelector('#activity-q');
+  const tableFilter = document.querySelector('#activity-table');
+  let token = 0;
+
+  const paint = async () => {
+    const mine = ++token;
+    list.innerHTML = '<p class="tiny muted">Loading…</p>';
+
+    let request = supabase.from('audit_log')
+      .select('id,at,actor,actor_email,table_name,action,changed,detail')
+      .order('at', { ascending: false })
+      .limit(200);
+    if (tableFilter.value !== 'all') request = request.eq('table_name', tableFilter.value);
+
+    const { data, error } = await request;
+    if (mine !== token) return;
+    if (error) {
+      return list.innerHTML = error.code === '42P01' || /does not exist/i.test(error.message)
+        ? notice('audit_log does not exist yet - apply supabase/migrations/20261101170000_audit_log.sql first.')
+        : notice(error.message);
+    }
+
+    const query = search.value.trim().toLowerCase();
+    const rows = (data || []).filter(row => {
+      if (!query) return true;
+      const haystack = [row.actor_email, row.detail?.title, row.detail?.name, row.detail?.slug, row.table_name]
+        .filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(query);
+    });
+
+    if (!rows.length) {
+      list.innerHTML = `<p class="tiny muted">${query ? 'Nothing matches.' : 'Nothing recorded yet. The log fills as the panel is used.'}</p>`;
+      return;
+    }
+
+    /* One line per entry, newest first. The verb is the thing being scanned for,
+       so it leads and it is coloured. */
+    const tone = { insert: 'var(--green, #1a7f37)', update: 'var(--muted, #667085)', delete: 'var(--red, #c0392b)' };
+    const noun = { articles: 'article', products: 'product', tools: 'tool', article_categories: 'category' };
+
+    list.innerHTML = rows.map(row => {
+      const label = row.detail?.title || row.detail?.name || row.detail?.slug || '(unnamed)';
+      const who = row.actor_email || 'automation (service role)';
+      const fields = Array.isArray(row.changed) && row.changed.length
+        ? row.changed.filter(field => field !== 'updated_at').slice(0, 8).join(', ')
+        : '';
+      return `<div class="admin-row">
+        <div class="grow">
+          <p><strong style="color:${tone[row.action] || 'inherit'}">${esc(row.action)}</strong>
+             ${esc(noun[row.table_name] || row.table_name)}: ${esc(label)}</p>
+          <p class="tiny muted" style="margin-top:4px">${esc(who)} · ${esc(when(row.at))}${fields ? ' · ' + esc(fields) : ''}</p>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  let timer;
+  search.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(paint, 250);
+  });
+  tableFilter.addEventListener('change', paint);
+  document.querySelector('#activity-refresh').onclick = paint;
   await paint();
 }
 
@@ -686,6 +775,7 @@ const SECTIONS = {
   deploys: mountDeploys,
   revisions: mountRevisions,
   categories: mountCategories,
+  activity: mountActivity,
   redirects: mountRedirects,
   search: mountSearch,
   export: mountExport
