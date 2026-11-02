@@ -237,6 +237,14 @@ involved in A at all.
 | B - import | **done** | `.md` / `.html` / `.txt` import into the editor (same sanitiser path as typing). `scripts/new-article.mjs` publishes from a file (front matter, dry run, loud refusals) through `content-publish` `{"action":"create"}`, which checks `is_admin` server-side and inserts with the service role. `.docx` imports through a vendored mammoth (assets/vendor, 621 KB, loaded on first use, no CDN and therefore no CSP change); its output is treated as pasted text and sanitised like everything else - `tools/test_docx_import.mjs` proves a `javascript:` href carried inside a Word document is removed. |
 | D - full panel | **in progress** | New sections now live in `assets/js/admin/sections.js` behind a context object, so `admin.js` stops growing. Shipped: **Access** (who can open the panel: promote/demote by email through `set_admin_access()`, which refuses self-removal, refuses to leave zero admins, and writes to the audit log), **Newsletter** (confirmed vs waiting-to-confirm, growth, stuck deliveries with the addresses, unsubscribe/re-subscribe through `newsletter_set_status()` - the tables stay revoked from every browser role), **Media** (buckets, search, sort, "used in N places" per file, refuse to delete a referenced file, orphan list for the free storage tier, Markdown/HTML/URL snippets - `tools/test_media.mjs`), **Setup** (a checklist of the nine pieces the pipeline needs, each with the exact command, plus a `{"action":"ping"}` on the function that reports configuration without starting a deploy), **Deploys** (publish_jobs history), **Activity** (audit_log: who changed which row and which fields, never the values), **Categories** (create/rename/reorder/delete with an explicit move-or-uncategorise decision, enforced by `delete_article_category()`), **Autosave** (a draft per article in localStorage, offered only when newer than the saved row - `tools/test_autosave.mjs`), **Revisions** (trigger-captured history + restore, including deleted articles), **Redirects** (CRUD + loop/chain warnings + deploy now), **Search** (database-wide, not just the loaded page), **Export** (JSON backup + Markdown). `tools/test_article_revisions.mjs` runs the revisions migration against a real Postgres (pglite). `tools/test_admin_sections.mjs` guards the wiring. Remaining: settings, users, newsletter, academy editor - and the mechanical split of the remaining `admin.js`. |
 
+### Every section renders, and that is now checked
+
+`tools/test_admin_sections_render.mjs` mounts all eleven sections in a real DOM
+against a fake Supabase client - once with rows, once against an empty database.
+The empty case is the one that matters: a fresh install has no deploys, no
+redirects and no subscribers, and that is exactly when somebody is on the screen
+looking for the reason nothing works.
+
 ### Rule for phase D from here
 
 A new admin feature goes in `assets/js/admin/sections.js` (or a sibling module)

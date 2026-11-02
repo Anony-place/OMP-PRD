@@ -238,6 +238,15 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: Every panel section renders, with data and without
+        working-directory: OMP-PRD-main
+        # Mounts all eleven sections in a real DOM against a fake Supabase, once
+        # with rows and once against an empty database. The empty case is the
+        # one that matters: a fresh install has no deploys, no redirects and no
+        # subscribers, and that is exactly when somebody is looking at the
+        # screen to find out why nothing works.
+        run: node tools/test_admin_sections_render.mjs
+
       - name: Nobody can lock themselves out of the panel
         working-directory: OMP-PRD-main
         # Granting access is a function now, not a hand-written UPDATE: a missing
