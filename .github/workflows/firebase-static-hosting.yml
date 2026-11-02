@@ -238,6 +238,14 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: The subscriber list is admin-only
+        working-directory: OMP-PRD-main
+        # newsletter_subscribers is revoked from every browser role. The two
+        # functions are the only door, and the checks are about the door: a
+        # non-admin gets an error, an admin cannot confirm somebody on their
+        # behalf, and unsubscribing cancels queued mail.
+        run: node tools/test_newsletter_admin.mjs
+
       - name: Media cannot delete a file a page still uses
         working-directory: OMP-PRD-main
         run: node tools/test_media.mjs
