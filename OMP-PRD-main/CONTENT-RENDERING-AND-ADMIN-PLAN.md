@@ -224,3 +224,22 @@ involved in A at all.
 4. **Phase D depth** — all 13 sections, or the first 6 and re-assess?
 5. **Panel split** — refactor `admin.js` into modules first (slower start, safer
    after), or keep patching the single file (faster start, worse later)?
+
+
+---
+
+## Delivery log
+
+| Phase | State | What shipped |
+|---|---|---|
+| A - one pipeline, inline SVG | **done** (#45) | Both sanitizers share one allowlist and a CI parity test fails when they drift. `svg` kept as a drawing (geometry + presentation attrs only), `foreignObject`/`use`/`script`/`animate`/`href` dropped, `viewBox` case preserved, client builds in the SVG namespace. `.prose` CSS for svg/table/figure/mark/kbd/dl. |
+| C - redirects + bulk | **done** (#46) | `redirects` table, `sync-redirects.mjs` -> `content/redirects.json` -> `vercel.json` (merged ahead of legacy rules, duplicate source throws). Slug rename writes the row; a failed write warns instead of blocking the save. Bulk publish/draft/delete = one update + one deploy. |
+| B - import | **partial** | `.md` / `.html` / `.txt` import into the editor (same sanitiser path as typing). `.docx` still open, and the CLI/API create path (`scripts/new-article.mjs`) is not written yet. |
+| D - full panel | **started** | New sections now live in `assets/js/admin/sections.js` behind a context object, so `admin.js` stops growing. Shipped: **Deploys** (publish_jobs history), **Redirects** (CRUD + loop/chain warnings + deploy now), **Search** (database-wide, not just the loaded page), **Export** (JSON backup + Markdown). `tools/test_admin_sections.mjs` guards the wiring. Remaining: revisions + restore, autosave, category CRUD, media upgrades, settings, users, newsletter, academy editor, audit log - and the mechanical split of the remaining `admin.js`. |
+
+### Rule for phase D from here
+
+A new admin feature goes in `assets/js/admin/sections.js` (or a sibling module)
+and receives `{ supabase, esc, notice, flash, loadTab, requestPublish, publishChip, panel }`.
+It never imports `admin.js`; that is what keeps the graph acyclic. Add the tab to
+`SECTION_TABS`, a route to `SECTIONS`, and the tab bar picks it up without an HTML edit.

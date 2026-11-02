@@ -221,6 +221,13 @@ jobs:
         # SVG rules while it is there.
         run: node tools/test_richtext_parity.mjs
 
+      - name: Admin sections are wired
+        working-directory: OMP-PRD-main
+        # A tab with no mount is a blank screen, and a section that interpolates
+        # a database value without escaping is an XSS in the admin. Both are
+        # cheap to check and expensive to discover.
+        run: node tools/test_admin_sections.mjs
+
       - name: Verify the Vercel mirror still matches Firebase
         working-directory: OMP-PRD-main
         # vercel.json is generated from firebase.json by

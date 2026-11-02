@@ -398,9 +398,16 @@ const $ = (d, s) => d.querySelector(s);
     out = S('<a href="/other.html">a</a><a href="#sec">b</a>');
     ok(out.includes('href="/other.html"') && out.includes('href="#sec"'), 'relative and # hrefs kept');
 
-    // 6. iframe/object/embed/svg/form dropped with content
-    out = S('<iframe src="https://evil"></iframe><object data="x"></object><svg onload="alert(1)"></svg><form action="/x"><p>formchild</p></form><p>kept</p>');
-    ok(!out.includes('iframe') && !out.includes('object') && !out.includes('svg') && !out.includes('formchild') && out.includes('<p>kept</p>'), 'dangerous containers dropped with content');
+    // 6. iframe/object/embed/form dropped with content
+    out = S('<iframe src="https://evil"></iframe><object data="x"></object><form action="/x"><p>formchild</p></form><p>kept</p>');
+    ok(!out.includes('iframe') && !out.includes('object') && !out.includes('formchild') && out.includes('<p>kept</p>'), 'dangerous containers dropped with content');
+
+    // 6b. <svg> is a drawing now, not a dropped container - but only the drawing.
+    //     The element survives so diagrams render; the handler, the script and
+    //     the HTML-inside-SVG escape hatch do not.
+    out = S('<svg onload="alert(1)"><script>alert(2)</script><foreignObject><img src=x onerror=alert(3)></foreignObject><rect width="4" height="4"/></svg>');
+    ok(out.includes('<svg') && out.includes('<rect') && !out.includes('onload') && !out.includes('alert')
+       && !out.toLowerCase().includes('foreignobject'), 'svg kept as a drawing, never as a script host');
 
     // 7. data: image allowed, javascript: data blocked, remote img allowed
     out = S('<img src="data:image/png;base64,AAAA">');
