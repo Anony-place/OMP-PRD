@@ -21,12 +21,32 @@ test("Parser-based publication sanitizer blocks encoded schemes, events and dang
   ]) {
     const dom = new JSDOM(sanitize(payload));
     const d = dom.window.document;
+    /* <svg> is deliberately allowed: an inline diagram is content, and the
+       sanitizer keeps only drawing primitives and geometry attributes. It is
+       asserted separately below, so this list stays about elements that have no
+       legitimate reason to exist in an article. */
     assert.equal(
       d.querySelectorAll(
-        "script,iframe,svg,math,object,embed,form,input,style,base,meta,link",
+        "script,iframe,math,object,embed,form,input,style,base,meta,link",
       ).length,
       0,
     );
+    /* SVG may survive, but never as a script host: no handlers (checked in the
+       attribute loop), no script, no HTML-inside-SVG escape hatch, and no
+       external references. */
+    for (const svg of d.querySelectorAll("svg")) {
+      assert.equal(svg.querySelectorAll("script,foreignObject,use,image,animate,set,animateTransform").length, 0);
+      for (const a of svg.attributes) {
+        assert.ok(!/^on/i.test(a.name));
+        assert.ok(!/href/i.test(a.name), "svg must not carry href/xlink:href");
+      }
+      for (const el of svg.querySelectorAll("*")) {
+        for (const a of el.attributes) {
+          assert.ok(!/^on/i.test(a.name));
+          assert.ok(!/href/i.test(a.name), "svg must not carry href/xlink:href");
+        }
+      }
+    }
     for (const el of d.querySelectorAll("*"))
       for (const a of el.attributes) {
         assert.ok(!/^on|^style$/i.test(a.name));
