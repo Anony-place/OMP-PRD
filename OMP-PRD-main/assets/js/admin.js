@@ -8,6 +8,7 @@
    (tools/test_runtime.js asserts they agree). */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
 import { ACADEMY_CONFIG } from './academy-config.mjs';
+import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
 
@@ -272,7 +273,7 @@ async function dashboard() {
   shell(`<div class="card card-pad">
     <div class="admin-topbar"><div><div class="badge badge-demo">Private admin</div><h1 class="h-2 mt-16">OMP Control Center</h1><p class="muted" style="margin-top:6px">Content, products, tools, media and support in one place.</p></div><div class="admin-top-actions"><span class="tiny muted" id="admin-session-label">Signed in</span><button id="logout" class="btn btn-ghost">Sign out</button></div></div>
     <div id="admin-kpis" class="admin-kpis" aria-label="Admin overview"></div>
-    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="pentest">Pentest</button><button class="btn btn-secondary" type="button" data-tab="media">Media Library</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button></div>
+    <div class="admin-actions admin-tabs" style="margin-top:24px" role="group" aria-label="Admin sections"><button class="btn btn-secondary" type="button" data-tab="articles">Articles</button><button class="btn btn-secondary" type="button" data-tab="tools">Tools</button><button class="btn btn-secondary" type="button" data-tab="products">Products</button><button class="btn btn-secondary" type="button" data-tab="osint">OSINT</button><button class="btn btn-secondary" type="button" data-tab="pentest">Pentest</button><button class="btn btn-secondary" type="button" data-tab="media">Media Library</button><button class="btn btn-secondary" type="button" data-tab="messages">Messages</button>${SECTION_TABS.map(section => `<button class="btn btn-secondary" type="button" data-tab="${section.key}">${section.label}</button>`).join('')}</div>
     <section id="panel" class="admin-panel" aria-live="polite"></section>
   </div>`);
   document.querySelector('#logout').onclick = async () => { await supabase.auth.signOut(); loginView(); };
@@ -296,6 +297,15 @@ async function loadTab(tab) {
   const panel = document.querySelector('#panel');
   if (!panel) return;
   const stale = () => mine !== tabToken || !document.body.contains(panel);
+
+  /* Sections that live in assets/js/admin/sections.js get the panel's own
+     helpers passed in rather than importing admin.js back - the context object
+     is what keeps the two files from depending on each other in a cycle. */
+  if (isSection(tab)) {
+    return mountSection(tab, {
+      supabase, esc, notice, flash, loadTab, requestPublish, publishChip, panel
+    });
+  }
 
   if (tab === 'articles') {
     const [{ data: articles, error }, { data: categories }] = await Promise.all([
