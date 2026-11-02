@@ -1,0 +1,186 @@
+-- ============================================================================
+--  Every save keeps what was there before it.
+--
+--  The panel writes the article body straight into the row. One paste, one
+--  save, and yesterday's article is gone - there is no undo in Postgres and no
+--  copy anywhere else until the next deploy rebuilds the page. This migration
+--  makes the previous version a row of its own, so "put it back" is a button.
+--
+--  Written as a trigger, not as panel code, for one reason: capture that depends
+--  on every caller remembering to capture is capture that stops working the
+--  first time something new writes to the table - the CLI, a script, the SQL
+--  editor. The trigger cannot be forgotten.
+-- ============================================================================
+
+create table if not exists public.article_revisions (
+  id           uuid primary key default gen_random_uuid(),
+  /* Deliberately NOT a foreign key. With "on delete cascade" the final snapshot
+     - the one written by the delete trigger - is cascaded away in the same
+     transaction, so deleting an article destroys the only copy of it. History
+     has to outlive the row it describes; the restore path re-creates the
+     article with this id. */
+  article_id   uuid not null,
+  /* Snapshot of the row as it was, not a diff: a diff is smaller and useless
+     when the schema moves, and this table is small enough to be blunt. */
+  title        text,
+  slug         text,
+  status       text,
+  category_id  uuid,
+  content      text,
+  excerpt      text,
+  seo_title    text,
+  seo_description text,
+  cover_image_url text,
+  published_at timestamptz,
+  scheduled_for timestamptz,
+  /* 'update' - the row was replaced; 'delete' - the row is gone and this is
+     the last copy of it. */
+  reason       text not null default 'update' check (reason in ('update', 'delete')),
+  created_at   timestamptz not null default now(),
+  created_by   uuid references auth.users(id) on delete set null
+);
+
+create index if not exists article_revisions_article_idx
+  on public.article_revisions (article_id, created_at desc);
+
+comment on table public.article_revisions is
+  'Previous version of an article, written by trigger on update and delete. Restored from the panel.';
+
+alter table public.article_revisions enable row level security;
+
+drop policy if exists "article_revisions_select_admin" on public.article_revisions;
+create policy "article_revisions_select_admin" on public.article_revisions
+  for select to authenticated using (public.is_admin());
+
+/* No insert/update/delete policy: rows arrive from the trigger (security
+   definer) and leave by cascade. Nobody writes history by hand. */
+
+-- ---------------------------------------------------------------------------
+--  Capture
+-- ---------------------------------------------------------------------------
+create or replace function public.record_article_revision()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  keep_per_article constant integer := 40;
+begin
+  /* Only a change worth undoing is worth a row. Bumping updated_at, a
+     published_at set by the cron, or a status flip with no other edit is not:
+     history full of noise is history nobody reads. */
+  if tg_op = 'UPDATE' and (
+       new.content     is not distinct from old.content
+   and new.title       is not distinct from old.title
+   and new.slug        is not distinct from old.slug
+   and new.excerpt     is not distinct from old.excerpt
+   and new.seo_title   is not distinct from old.seo_title
+   and new.seo_description is not distinct from old.seo_description
+   and new.cover_image_url is not distinct from old.cover_image_url
+   and new.category_id is not distinct from old.category_id
+  ) then
+    return new;
+  end if;
+
+  insert into public.article_revisions (
+    article_id, title, slug, status, category_id, content, excerpt,
+    seo_title, seo_description, cover_image_url, published_at, scheduled_for,
+    reason, created_by
+  ) values (
+    old.id, old.title, old.slug, old.status, old.category_id, old.content, old.excerpt,
+    old.seo_title, old.seo_description, old.cover_image_url, old.published_at, old.scheduled_for,
+    case when tg_op = 'DELETE' then 'delete' else 'update' end,
+    auth.uid()
+  );
+
+  /* Bounded on purpose: a long-lived article edited daily would otherwise keep
+     every version for ever, and the table is read by a person scrolling. */
+  delete from public.article_revisions
+   where article_id = old.id
+     and id not in (
+       select id from public.article_revisions
+        where article_id = old.id
+        order by created_at desc
+        limit keep_per_article
+     );
+
+  return case when tg_op = 'DELETE' then old else new end;
+end;
+$$;
+
+drop trigger if exists articles_record_revision on public.articles;
+create trigger articles_record_revision
+  before update or delete on public.articles
+  for each row execute function public.record_article_revision();
+
+-- ---------------------------------------------------------------------------
+--  Restore
+--
+--  Restoring is an UPDATE of the article with the snapshot's values, so the
+--  current version becomes a revision in the same breath. Nothing is lost by
+--  undoing.
+-- ---------------------------------------------------------------------------
+create or replace function public.restore_article_revision(revision_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  snapshot public.article_revisions;
+  target uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'not an admin' using errcode = '42501';
+  end if;
+
+  select * into snapshot from public.article_revisions where id = revision_id;
+  if snapshot.id is null then
+    raise exception 'no such revision' using errcode = 'P0002';
+  end if;
+
+  update public.articles set
+    title = snapshot.title,
+    content = snapshot.content,
+    excerpt = snapshot.excerpt,
+    seo_title = snapshot.seo_title,
+    seo_description = snapshot.seo_description,
+    cover_image_url = snapshot.cover_image_url,
+    category_id = snapshot.category_id,
+    updated_at = now()
+  where id = snapshot.article_id
+  returning id into target;
+
+  /* A deleted article has no row to update. The snapshot still has to be
+     restorable, or "delete" means "gone" and this table was pointless. The slug
+     may have been reused since, so it is made unique rather than trusted. */
+  if target is null then
+    insert into public.articles (
+      id, title, slug, status, category_id, content, excerpt,
+      seo_title, seo_description, cover_image_url, updated_at
+    ) values (
+      snapshot.article_id,
+      coalesce(snapshot.title, 'Restored article'),
+      snapshot.slug || '-restored-' || to_char(now(), 'YYYYMMDDHH24MISS'),
+      'draft',
+      snapshot.category_id,
+      snapshot.content,
+      snapshot.excerpt,
+      snapshot.seo_title,
+      snapshot.seo_description,
+      snapshot.cover_image_url,
+      now()
+    )
+    returning id into target;
+  end if;
+
+  return target;
+end;
+$$;
+
+comment on function public.restore_article_revision(uuid) is
+  'Puts a snapshot back. Restores a deleted article as a draft with a unique slug. Admin only.';
+
+revoke all on function public.restore_article_revision(uuid) from public, anon;
+grant execute on function public.restore_article_revision(uuid) to authenticated;
