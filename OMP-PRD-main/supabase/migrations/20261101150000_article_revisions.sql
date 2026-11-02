@@ -14,6 +14,11 @@
 
 create table if not exists public.article_revisions (
   id           uuid primary key default gen_random_uuid(),
+  /* Monotonic tiebreaker. created_at defaults to now(), which is the
+     transaction timestamp: two saves inside the same microsecond share it, and
+     "the newest version" then depends on the order the planner happened to
+     return. A sequence makes newest well-defined. */
+  seq          bigint generated always as identity,
   /* Deliberately NOT a foreign key. With "on delete cascade" the final snapshot
      - the one written by the delete trigger - is cascaded away in the same
      transaction, so deleting an article destroys the only copy of it. History
@@ -40,8 +45,11 @@ create table if not exists public.article_revisions (
   created_by   uuid references auth.users(id) on delete set null
 );
 
+/* Guard for anyone who applied an earlier copy of this migration. */
+alter table public.article_revisions add column if not exists seq bigint generated always as identity;
+
 create index if not exists article_revisions_article_idx
-  on public.article_revisions (article_id, created_at desc);
+  on public.article_revisions (article_id, seq desc);
 
 comment on table public.article_revisions is
   'Previous version of an article, written by trigger on update and delete. Restored from the panel.';
@@ -101,7 +109,7 @@ begin
      and id not in (
        select id from public.article_revisions
         where article_id = old.id
-        order by created_at desc
+        order by seq desc
         limit keep_per_article
      );
 
