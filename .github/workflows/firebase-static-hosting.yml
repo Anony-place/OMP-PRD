@@ -238,6 +238,13 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_article_revisions.mjs
 
+      - name: Nobody can lock themselves out of the panel
+        working-directory: OMP-PRD-main
+        # Granting access is a function now, not a hand-written UPDATE: a missing
+        # WHERE used to mean everyone, and the same statement the other way
+        # removed the last admin. The test also asserts the change is recorded.
+        run: node tools/test_admin_users.mjs
+
       - name: The subscriber list is admin-only
         working-directory: OMP-PRD-main
         # newsletter_subscribers is revoked from every browser role. The two
