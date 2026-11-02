@@ -26,6 +26,7 @@ export const SECTION_TABS = [
   { key: 'deploys', label: 'Deploys' },
   { key: 'revisions', label: 'Revisions' },
   { key: 'redirects', label: 'Redirects' },
+  { key: 'categories', label: 'Categories' },
   { key: 'search', label: 'Search' },
   { key: 'export', label: 'Export' }
 ];
@@ -217,6 +218,189 @@ async function mountRedirects(ctx) {
       else flash(msg, 'Deploy queued.');
     };
     slot.appendChild(button);
+  };
+
+  await paint();
+}
+
+/* ------------------------------------------------------------- categories */
+
+async function mountCategories(ctx) {
+  const { supabase, esc, panel, notice, flash, requestPublish, publishChip } = ctx;
+
+  panel.innerHTML = `<div class="admin-section-head">
+      <div><h2 class="h-3">Categories</h2><p class="tiny muted">The filter chips on /articles. A category's slug is what the chip links to, so it is set once and stays.</p></div>
+    </div>
+    <form id="cat-form" class="card card-pad" style="margin-top:16px">
+      <div class="form-grid">
+        <div class="form-field"><label for="cat-name">Name</label><input id="cat-name" name="name" placeholder="Guides" required maxlength="60"></div>
+        <div class="form-field"><label for="cat-order">Order</label><input id="cat-order" name="sort_order" type="number" value="0" min="0" max="999" step="10"></div>
+      </div>
+      <p class="tiny muted" style="margin:8px 0 12px">The slug is made from the name. Two categories cannot share a name - the second would be invisible in the filter.</p>
+      <div id="cat-msg" aria-live="polite"></div>
+      <button type="submit" class="btn btn-primary btn-sm">Add category</button>
+    </form>
+    <div id="cat-list" class="admin-list" style="margin-top:18px"></div>`;
+
+  const list = document.querySelector('#cat-list');
+  const msg = document.querySelector('#cat-msg');
+
+  const paint = async () => {
+    list.innerHTML = '<p class="tiny muted">Loading…</p>';
+    const [categories, articles] = await Promise.all([
+      supabase.from('article_categories').select('id,name,slug,sort_order').order('sort_order').order('name'),
+      supabase.from('articles').select('category_id').limit(2000)
+    ]);
+    if (categories.error) return list.innerHTML = notice(categories.error.message);
+
+    const counts = new Map();
+    for (const row of articles.data || []) {
+      if (!row.category_id) continue;
+      counts.set(row.category_id, (counts.get(row.category_id) || 0) + 1);
+    }
+    const uncategorised = (articles.data || []).filter(row => !row.category_id).length;
+    const rows = categories.data || [];
+
+    if (!rows.length) {
+      list.innerHTML = '<p class="tiny muted">No categories yet. Without one, every article sits under "All".</p>';
+      return;
+    }
+
+    list.innerHTML = rows.map(category => {
+      const count = counts.get(category.id) || 0;
+      return `<div class="admin-row">
+        <div class="grow">
+          <p><strong>${esc(category.name)}</strong> <span class="tiny muted">#/${esc(category.slug)}</span></p>
+          <p class="tiny muted" style="margin-top:4px">${count} article${count === 1 ? '' : 's'} · order ${esc(String(category.sort_order ?? 0))}</p>
+        </div>
+        <div class="flex gap-8 wrap">
+          <button type="button" class="btn btn-ghost btn-sm" data-rename="${esc(category.id)}">Rename</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-order="${esc(category.id)}">Order</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-remove="${esc(category.id)}" data-count="${count}" style="color:var(--red)">Delete</button>
+        </div>
+      </div>`;
+    }).join('') + (uncategorised
+      ? `<p class="tiny muted" style="margin-top:12px">${uncategorised} article(s) are not in any category. They still appear under All.</p>`
+      : '');
+
+    list.querySelectorAll('[data-rename]').forEach(button => button.onclick = async () => {
+      const row = rows.find(item => item.id === button.dataset.rename);
+      const name = prompt('New name', row?.name || '');
+      if (name === null) return;
+      const clean = name.trim();
+      if (!clean) return flash(msg, 'A category needs a name.');
+      /* The slug is deliberately untouched: it is the filter chip's link, and
+         changing it breaks every shared "#/c/<slug>" URL. */
+      const { error } = await supabase.from('article_categories').update({ name: clean }).eq('id', button.dataset.rename);
+      if (error) return flash(msg, /unique|duplicate/i.test(error.message)
+        ? `There is already a category called "${clean}".`
+        : error.message);
+      await paint();
+      flash(msg, 'Renamed. The slug is unchanged, so existing links still filter.');
+    });
+
+    list.querySelectorAll('[data-order]').forEach(button => button.onclick = async () => {
+      const row = rows.find(item => item.id === button.dataset.order);
+      const value = prompt('Position in the filter row (lower first)', String(row?.sort_order ?? 0));
+      if (value === null) return;
+      const order = Number.parseInt(value, 10);
+      if (!Number.isFinite(order) || order < 0) return flash(msg, 'Order must be a number from 0 up.');
+      const { error } = await supabase.from('article_categories').update({ sort_order: order }).eq('id', button.dataset.order);
+      if (error) return flash(msg, error.message);
+      await paint();
+    });
+
+    list.querySelectorAll('[data-remove]').forEach(button => button.onclick = async () => {
+      const row = rows.find(item => item.id === button.dataset.remove);
+      const count = Number(button.dataset.count || 0);
+      let moveTo = null;
+
+      if (count > 0) {
+        /* Deleting used to un-file every article in the category with no
+           warning at all. Now the count is read out loud and the choice is
+           explicit. */
+        const others = rows.filter(item => item.id !== row.id);
+        const options = others.map((item, index) => `${index + 1}. ${item.name}`).join('\n');
+        const answer = prompt(
+          `"${row.name}" has ${count} article${count === 1 ? '' : 's'}.\n\n` +
+          `Type the number of a category to move them to, or leave empty to leave them uncategorised.\n\n${options || '(no other categories)'}`,
+          ''
+        );
+        if (answer === null) return;
+        const trimmed = answer.trim();
+        if (trimmed) {
+          const index = Number.parseInt(trimmed, 10) - 1;
+          if (!others[index]) return flash(msg, 'That is not one of the numbers listed.');
+          moveTo = others[index].id;
+        }
+      } else if (!confirm(`Delete "${row.name}"? It has no articles.`)) {
+        return;
+      }
+
+      button.disabled = true;
+      const { data, error } = await supabase.rpc('delete_article_category', { category: row.id, move_to: moveTo });
+      button.disabled = false;
+
+      if (error) {
+        return flash(msg, /could not find the function|does not exist/i.test(error.message)
+          ? 'The category function is not installed yet - apply supabase/migrations/20261101160000_categories.sql.'
+          : error.message);
+      }
+      await paint();
+
+      const moved = Number(data || 0);
+      flash(msg, moved > 0
+        ? `Deleted "${row.name}" and ${moveTo ? 'moved' : 'uncategorised'} ${moved} article(s).`
+        : `Deleted "${row.name}".`);
+
+      if (moved > 0) {
+        const slot = document.createElement('div');
+        msg.appendChild(slot);
+        const publish = document.createElement('button');
+        publish.type = 'button';
+        publish.className = 'btn btn-primary btn-sm';
+        publish.style.marginTop = '8px';
+        publish.textContent = 'Update the site now';
+        publish.onclick = async () => {
+          publish.disabled = true;
+          const started = await requestPublish('categories', ['/articles']);
+          if (started.error) { publish.disabled = false; return flash(msg, started.error); }
+          if (started.job_id && typeof publishChip === 'function') publishChip(slot, started.job_id, '/articles');
+          else flash(msg, 'Deploy queued.');
+        };
+        slot.appendChild(publish);
+      }
+    });
+  };
+
+  document.querySelector('#cat-form').onsubmit = async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get('name') || '').trim();
+    const sortOrder = Number.parseInt(String(data.get('sort_order') || '0'), 10);
+    msg.innerHTML = '';
+    if (!name) return flash(msg, 'A category needs a name.');
+
+    /* The slug comes from the database trigger, so it uses the same rule the
+       CLI and the editor use. The insert sends the name and lets the trigger
+       do it, rather than three copies of a regexp drifting apart. */
+    const { error } = await supabase.from('article_categories').insert({
+      name,
+      slug: name,
+      sort_order: Number.isFinite(sortOrder) ? sortOrder : 0
+    });
+    if (error) {
+      return flash(msg, /unique|duplicate/i.test(error.message)
+        ? `There is already a category with that name.`
+        : /needs a slug/.test(error.message)
+          ? 'That name has no letters or digits, so it cannot make a link. Add a word.'
+          : error.message);
+    }
+    form.reset();
+    document.querySelector('#cat-order').value = '0';
+    await paint();
+    flash(msg, `Added "${name}". It appears in the filter once the site rebuilds.`);
   };
 
   await paint();
@@ -501,6 +685,7 @@ async function mountRevisions(ctx) {
 const SECTIONS = {
   deploys: mountDeploys,
   revisions: mountRevisions,
+  categories: mountCategories,
   redirects: mountRedirects,
   search: mountSearch,
   export: mountExport
