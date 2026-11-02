@@ -105,6 +105,17 @@ async function mountDeploys(ctx) {
 
     list.innerHTML = data.map(job => {
       const tone = STATUS_TONE[job.status] || 'inherit';
+      /* A job that has not moved in half an hour is not "in progress", it is
+         stuck - and the most likely reason is that the workflow finished but
+         could not report back, because the repository has no
+         SUPABASE_SERVICE_ROLE_KEY. Saying "queued" forever is the same lie the
+         publish pipeline used to tell about failed gates: it looks like work in
+         progress when the work is already over. */
+      const ageMinutes = Math.floor((Date.now() - new Date(job.created_at).getTime()) / 60000);
+      const stuck = ['queued', 'running', 'deploying'].includes(job.status) && ageMinutes >= 30;
+      const stuckNote = stuck
+        ? `<p class="tiny" style="margin-top:6px;color:var(--amber, #9a6700)">No update for ${ageMinutes}m. Either the run has not started, or it finished and could not report back - that needs the repository secret <code>SUPABASE_SERVICE_ROLE_KEY</code>. <a href="${esc(job.run_url || 'https://github.com/Anony-place/OMP-PRD/actions')}" target="_blank" rel="noopener">Check the runs</a>.</p>`
+        : '';
       const targets = Array.isArray(job.targets) && job.targets.length ? job.targets.join(', ') : 'whole site';
       const links = [
         job.run_url ? `<a class="tiny" href="${esc(job.run_url)}" target="_blank" rel="noopener">run log</a>` : '',
@@ -118,6 +129,7 @@ async function mountDeploys(ctx) {
           </div>
           <p class="tiny muted" style="margin-top:4px">${esc(when(job.created_at))} <span title="${esc(ago(job.created_at))}"></span></p>
           ${job.detail ? `<p class="tiny" style="margin-top:6px;color:${tone}">${esc(job.detail)}</p>` : ''}
+          ${stuckNote}
         </div>
         <div class="tiny">${links}</div>
       </div>`;

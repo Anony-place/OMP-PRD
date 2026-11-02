@@ -62,7 +62,12 @@ const section = (name) => console.log(`\n${name}`);
 const NOW = new Date().toISOString();
 
 const DATA = {
-  publish_jobs: [{ id: 'job-1', status: 'live', reason: 'article:x', targets: ['/articles/x'], detail: null, run_url: 'https://github.com/x/y/actions/runs/1', commit_sha: 'abcdef1234567', created_at: NOW, updated_at: NOW }],
+  publish_jobs: [
+    { id: 'job-1', status: 'live', reason: 'article:x', targets: ['/articles/x'], detail: null, run_url: 'https://github.com/x/y/actions/runs/1', commit_sha: 'abcdef1234567', created_at: NOW, updated_at: NOW },
+    /* Two hours old and still queued: the case where the workflow ran and could
+       not report back. It must not be painted as work in progress. */
+    { id: 'job-0', status: 'queued', reason: 'article:y', targets: [], detail: null, run_url: null, commit_sha: null, created_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(), updated_at: NOW }
+  ],
   redirects: [{ from_path: '/articles/old', to_path: '/articles/new', status_code: 301, note: 'renamed', created_at: NOW }],
   articles: [{ id: 'a-1', title: 'Kerberos', slug: 'kerberos', status: 'published', updated_at: NOW, content: '<p>hi</p>', category_id: 'c-1' }],
   article_revisions: [{ id: 'r-1', title: 'Kerberos', content: '<p>older</p>', reason: 'update', created_at: NOW, created_by: null, status: 'published', seq: 2 }],
@@ -170,7 +175,7 @@ function makeContext({ empty }) {
 const settle = () => new Promise((resolve) => setTimeout(resolve, 30));
 
 const EXPECTED = {
-  deploys: [/Deploys/, /live/],
+  deploys: [/Deploys/, /live/, /could not report back/],
   revisions: [/Revisions/, /Kerberos/],
   redirects: [/Redirects/, /articles\/old/, /articles\/new/],
   categories: [/Categories/, /Guides/, /1 article/],
@@ -255,6 +260,20 @@ for (const tab of sections.SECTION_TABS) {
   await settle();
   const text = ctx.panel.textContent.replace(/\s+/g, ' ');
   assert(!/null|undefined/.test(text), `"${tab.key}" shows no raw null/undefined to the reader`);
+}
+
+section('A job that started a minute ago is not called stuck');
+{
+  const original = DATA.publish_jobs;
+  const base = original[0];
+  DATA.publish_jobs = [{ ...base, id: 'job-fresh', status: 'queued', created_at: new Date(Date.now() - 60 * 1000).toISOString() }];
+  const ctx = makeContext({ empty: false });
+  await sections.mountSection('deploys', ctx);
+  const html = ctx.panel.innerHTML;
+  assert(!/could not report back/.test(html),
+    'a queued job younger than 30 minutes does not show the "could not report back" warning');
+  assert(/queued/.test(html), 'and it is still shown, as queued');
+  DATA.publish_jobs = original;
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed\n`);

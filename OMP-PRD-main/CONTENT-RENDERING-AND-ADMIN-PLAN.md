@@ -374,3 +374,16 @@ one-row contract, and asserts that the save path actually consults the switch -
 a setting that saves but is never read is a checkbox that lies. The section also
 mounts in `tools/test_admin_sections_render.mjs` against both a full and an empty
 database.
+
+### "Queued" is not a status, it is a hope
+
+A job that has not moved in half an hour is stuck, and the likeliest reason is
+the one the panel could not see: the workflow ran, finished, and could not report
+back because the repository has no `SUPABASE_SERVICE_ROLE_KEY`. Every status write
+in `publish-content.yml` degrades to `exit 0` when that secret is missing, so the
+run looks green and the queue row stays at `queued` for ever.
+
+The Deploys tab now says so, after 30 minutes, with the secret named and a link to
+the runs. Before 30 minutes it says nothing, because a fresh queue row is a
+normal few minutes and a warning on every publish is noise - asserted in
+`test_admin_sections_render` in both directions.
