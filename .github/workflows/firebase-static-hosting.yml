@@ -71,7 +71,10 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Academy Edge Functions
-        run: deno check --node-modules-dir=none --no-lock supabase/functions/learning-progress/index.ts supabase/functions/learning-quiz-submit/index.ts supabase/functions/learning-certificate-verify/index.ts supabase/functions/newsletter/index.ts
+        # content-publish is the function the panel and the CLI both call to
+        # publish. Its inputs are untyped JSON from outside the app, so a type
+        # error is the difference between "create failed" and a wrong row.
+        run: deno check --node-modules-dir=none --no-lock supabase/functions/learning-progress/index.ts supabase/functions/learning-quiz-submit/index.ts supabase/functions/learning-certificate-verify/index.ts supabase/functions/newsletter/index.ts supabase/functions/content-publish/index.ts
       - name: Database and publishing regression gate (no live services)
         run: |
           node tools/test_academy_backend.js
@@ -222,10 +225,13 @@ jobs:
         run: node tools/test_richtext_parity.mjs
 
       - name: Install test engines (no browsers)
+        working-directory: OMP-PRD-main
         # The revisions migration is checked against a real Postgres and the
         # autosave against a real DOM. Both engines are already pinned in
         # tools/qa-deps; --ignore-scripts skips the browser download that step
-        # exists for in the other job.
+        # exists for in the other job. working-directory is not optional here:
+        # this job has no repo-wide default, and the package lives under
+        # OMP-PRD-main like the rest of the site.
         run: npm ci --prefix tools/qa-deps --ignore-scripts --no-audit --no-fund
 
       - name: Revisions are captured and restorable
