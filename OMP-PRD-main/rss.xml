@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 03 Nov 2026 13:41:40 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 03 Nov 2026 13:51:42 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -421,6 +421,27 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet</guid>
       <category>Web App Security</category>
       <description>Copy-ready curl commands for REST testing, custom headers and auth, file uploads, redirects and TLS inspection, timing breakdowns and the verbose flags that explain a failed request.</description>
+    </item>
+    <item>
+      <title>Hydra Cheat Sheet: SSH, HTTP Form &amp; Service Brute-Force Commands</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/hydra-brute-force-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/hydra-brute-force-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Copy-ready Hydra commands for SSH, FTP, RDP, SMB and HTTP form logins: single-user and user-list modes, HTTP POST form syntax, thread control, resume files and the lockout risks that end an engagement early.</description>
+    </item>
+    <item>
+      <title>Metasploit Cheat Sheet: msfconsole, Modules &amp; Meterpreter Commands</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/metasploit-command-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/metasploit-command-cheatsheet</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Copy-ready msfconsole commands for searching and running modules, configuring options, managing sessions, and using msfvenom - plus the database setup that makes search fast and the realism check on what a payload actually gets past.</description>
+    </item>
+    <item>
+      <title>John the Ripper Cheat Sheet: Cracking Modes, Rules &amp; Converters</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/john-the-ripper-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/john-the-ripper-cheatsheet</guid>
+      <category>Password Security</category>
+      <description>Copy-ready John the Ripper commands: wordlist, rule-based mangling and incremental modes; the *2john converters for SSH keys, ZIP, PDF and Office files; format detection, session restore and --show.</description>
     </item>
   </channel>
 </rss>
