@@ -272,12 +272,21 @@ const $ = (d, s) => d.querySelector(s);
     type(w, input, 'password');
     click(w, btn);
     await waitFor(() => !btn.disabled && d.querySelector('[data-breach-status]').textContent.trim() !== '', 8000);
-    ok(d.querySelector('[data-breach-status]').textContent.includes('Found in the demo corpus') || d.querySelector('[data-breach-status]').textContent.includes('Breach detected!'), '"password" detected as breached');
+    /* A password that is genuinely in the bundled well-known list is flagged even
+       when the live lookup fails - a hit is a hit. */
+    ok(d.querySelector('[data-breach-status]').textContent.includes('well-known breached-password list') || d.querySelector('[data-breach-status]').textContent.includes('Breach detected!'), '"password" detected as breached');
     ok(/^[0-9A-F]{5}[0-9A-F]{35}$/.test(d.querySelector('[data-breach-hash] .prefix').parentElement.textContent.replace(/\s/g, '')), 'SHA-1 shown with prefix');
     type(w, input, 'W7$kQ2!vB9#mPz4@xL8d-unlikely');
     click(w, btn);
-    await waitFor(() => !btn.disabled && (d.querySelector('[data-breach-status]').textContent.includes('Not found') || d.querySelector('[data-breach-status]').textContent.includes('Good news')), 8000);
-    ok(d.querySelector('[data-breach-status]').textContent.includes('Not found in the demo corpus') || d.querySelector('[data-breach-status]').textContent.includes('Good news! Not found in Have I Been Pwned'), 'random string not found, labeled correctly');
+    /* This jsdom run has no network, so the live API cannot answer. The old
+       behaviour compared against a ~330-password demo list and rendered a green
+       "Not found", which reads as a clean bill of health when nothing was
+       checked. The tool must now say the check did not happen. */
+    await waitFor(() => !btn.disabled && d.querySelector('[data-breach-status]').textContent.trim() !== '', 8000);
+    const offlineText = d.querySelector('[data-breach-status]').textContent;
+    ok(/Could not reach the breach database/i.test(offlineText), 'a failed lookup says the check did not happen');
+    ok(!/No matching hash was found/i.test(offlineText), 'a failed lookup never reports "not found"');
+    ok(!/callout-tip/.test(d.querySelector('[data-breach-status]').innerHTML), 'a failed lookup is not shown in the success colour');
     dom.window.close();
   }
 

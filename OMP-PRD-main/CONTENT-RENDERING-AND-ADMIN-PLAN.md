@@ -486,3 +486,57 @@ reader can see. Noindexed and unpublished rows are never candidates - a related
 card that 404s or that we ask search engines to ignore is worse than no card.
 
 The card markup reuses the hub's `feed-row` list, so this needed no CSS.
+
+### The tools were never run
+
+Every gate in this repository read HTML. The tools are JavaScript, so nothing
+ever executed one, and a dead button, a mock result or a wrong answer all kept
+the badge green.
+
+`tools/test_tools_live.mjs` (49 checks) loads each tool in jsdom, types into it,
+presses the button and asserts the result follows from the input: two different
+passwords must not score the same, a generated value must change on a second
+run, entropy must rise with length, a 65,535-port scanner comparison must not
+say the same thing about Nmap and RustScan. All ten tools work.
+
+`tools/test_mobile_ux.mjs` (45 checks) reads the stylesheet and applies the
+cascade for a 390px viewport. It found three things a desktop never shows:
+
+- `.input` was 15.2px, `.form-field input` 15.7px and `.cli-field input`
+  14.1px. iOS Safari zooms the page when a field below 16px is focused, and does
+  not zoom back out - the site then sits magnified and half off-screen.
+- the icon buttons were 38px, the slider thumb 22px and secondary buttons 32px,
+  all below the 44px a finger hits reliably.
+- eight tools announced nothing when their result changed, so a screen-reader
+  user pressed "check" and heard silence.
+
+All three are fixed in one touch block at the end of `styles.css`, keyed to
+`(max-width: 640px), (pointer: coarse)` so an iPad gets it too. The slider keeps
+its thin visual track by painting the gradient in a 6px band inside a 44px hit
+area.
+
+### The breach check could say "safe" without checking
+
+The worst finding of the audit, because it is the one a person acts on.
+
+`breach.js` called the Pwned Passwords range API and, when that failed - offline,
+blocked extension, corporate proxy, rate limit, a 3.5 second timeout - silently
+fell back to a bundled list of ~330 famous passwords and rendered a **green tick
+with "Not found in the demo corpus"**. Nobody reads that as "the check failed".
+They read it as "you are safe", and they do not check again.
+
+The fallback now distinguishes the two cases it was conflating:
+
+- **a hit in the bundled list** is still a hit, and still warns - that password
+  is genuinely a well-known breached one
+- **a miss** proves nothing, so there is no verdict: a neutral "Could not reach
+  the breach database" with the reason, a retry, and the sentence that a "not
+  found" answer only means something when the database actually responded
+
+The page copy promised the old behaviour in two places and is corrected with it,
+because a page that describes a fallback the code no longer performs is a lie
+that survives review.
+
+The file header had said "the demo corpus contains only ~330 famous compromised
+passwords - 'Not found' proves nothing" since it was written. The comment knew.
+The interface did not.
