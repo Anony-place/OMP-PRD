@@ -119,8 +119,21 @@ if (stated) {
 section('The interactive app wires the same way back');
 
 const app = fs.readFileSync(path.join(root, 'assets/js/learning.js'), 'utf8');
-assert(/prevLessonView/.test(app) && /prevLessonView\(path, topic\)/.test(app),
-  'the in-browser lesson view renders the previous lesson too');
+
+/* It is not enough for the link to be somewhere in this file: the reader
+   rewrites the forward block with refreshNextStep() after every answered
+   self-check, and anything rendered beside that block is erased. The previous
+   link has to be produced by the same function that rebuilds it. */
+const nextStepBody = (() => {
+  const start = app.indexOf('function nextStepView(');
+  if (start < 0) return '';
+  const end = app.indexOf('\n}', start);
+  return app.slice(start, end);
+})();
+assert(nextStepBody.includes('prevLessonView(path, topic)'),
+  'the previous link is part of the block the reader re-renders, so answering a self-check cannot erase it');
+assert(!/lesson-next-slot">\$\{prevLessonView/.test(app),
+  'it is not also rendered beside that block (which would duplicate it)');
 assert(/export function prevLessonView/.test(fs.readFileSync(path.join(root, 'assets/js/academy-views.mjs'), 'utf8')),
   'both views share one implementation');
 
