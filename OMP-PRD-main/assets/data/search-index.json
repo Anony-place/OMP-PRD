@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "type": "Guide",
+      "title": "AI Agents Can Hack Other AI Agents: A New Security Threat",
+      "desc": "AI agents are becoming capable of performing complex cyber operations. Here is what recent real-world incidents actually show about AI agent security, agent…",
+      "url": "/articles/ai-agents-can-hack-other-ai-agents",
+      "kw": "ai agents can hack other ai agents guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Android App Blocked to Protect Your Device? What to Do",
+      "desc": "Android says “App blocked to protect your device”? Learn what the warning means, how to check an APK, and what to do safely before installing it.",
+      "url": "/articles/android-app-blocked-to-protect-your-device-what-to-do",
+      "kw": "android app blocked to protect your device what to do guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT",
+      "desc": "Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…",
+      "url": "/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt",
+      "kw": "are custom gpts safe how to spot a malicious chatgpt gpt guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Best Free OSINT Tools for Beginners in 2026",
+      "desc": "A practical beginner guide to free OSINT tools for usernames, emails, domains, metadata, historical web research, infrastructure, and digital investigations.",
+      "url": "/articles/best-free-osint-tools-for-beginners",
+      "kw": "best free osint tools for beginners guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Cloudflare Verification Asking You to Press Win+R? It’s a Scam",
+      "desc": "If a website shows a Cloudflare-style “Verify you are human” page and then tells you to press Windows + R , press Ctrl + V , and hit Enter , stop. That is not…",
+      "url": "/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam",
+      "kw": "cloudflare verification asking you to press winr its a scam guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Cyber Security Salary in the USA in 2026: Full Guide",
+      "desc": "If you're considering a career in cybersecurity, one of the biggest questions is: how much can you earn in cybersecurity in the USA? The answer depends on your…",
+      "url": "/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
+      "kw": "cyber security salary in usa complete guide to cybersecurity salaries in 2026 guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Fake Login Popup Showing a Real URL?",
+      "desc": "You click a link and a Google or Microsoft login window appears. The window looks legitimate. It has a familiar logo, a lock icon, browser controls, and even…",
+      "url": "/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
+      "kw": "fake login popup showing a real url how browser in the browser phishing works guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Holehe vs Epieos: Free vs Freemium Email Lookup",
+      "desc": "Holehe checks 120+ sites free from the terminal; Epieos answers in the browser with Google-linked details. Honest comparison plus when to use each.",
+      "url": "/articles/holehe-vs-epieos-email-lookup-comparison",
+      "kw": "holehe vs epieos email lookup comparison guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "How Does AI Work? A Beginner's Guide to Artificial Intelligence",
+      "desc": "Learn how AI works from training data and neural networks to tokens, Transformers, inference, hallucinations, and AI agents—with a simple beginner-friendly…",
+      "url": "/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence",
+      "kw": "how does ai work a beginners guide to artificial intelligence guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "How to Spot Fake Passkey Setup Scams Before They Steal Your",
+      "desc": "Passkeys are designed to make online accounts safer. They use public-key cryptography instead of asking you to type a reusable password, and properly…",
+      "url": "/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account",
+      "kw": "how to spot fake passkey setup scams before they steal your account guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Is SMS 2FA Safe in 2026?",
+      "desc": "If an account offers two-factor authentication (2FA) by text message, turning it on is generally better than protecting the account with a password alone. But…",
+      "url": "/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead",
+      "kw": "is sms 2fa safe in 2026 what it protects where it fails and what to use instead guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys",
+      "desc": "Critical Langflow Vulnerability CVE-2026-0768 Exploited to Steal OpenAI and AWS Keys Critical Langflow vulnerability CVE-2026-0768 is being exploited in the…",
+      "url": "/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys",
+      "kw": "langflow cve 2026 0768 exploited to steal openai aws keys guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "PHP2Shell Explained: Risks, Fixes & How to Protect Your Site",
+      "desc": "PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site Published 1 November 2026 · Reading time about 8 minutes · Category: Web Security In late…",
+      "url": "/articles/php2shell-explained-risks-fixes-how-to-protect-your-site",
+      "kw": "php2shell explained risks fixes how to protect your site guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Sherlock vs Maigret: Which Username OSINT Tool Should You Use?",
+      "desc": "Sherlock checks 400+ sites fast; Maigret covers 3000+ sites with full reports. Honest comparison on speed, depth, reports and ease of use — plus when to use…",
+      "url": "/articles/sherlock-vs-maigret-username-osint-comparison",
+      "kw": "sherlock vs maigret username osint comparison guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Top 5 Books for Learning Ethical Hacking PDF",
+      "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
+      "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
+      "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Zero-Day Vulnerability Explained",
+      "desc": "Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It. what is zero day vulnerability in cyber security ?",
+      "url": "/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it",
+      "kw": "zero day vulnerability explained meaning examples and how to protect against it guide articles"
+    },
+    {
+      "type": "Cheat Sheet",
+      "title": "curl Command Cheat Sheet: Headers, Auth, Files & Debugging",
+      "desc": "Copy-ready curl commands for REST testing, custom headers and auth, file uploads, redirects and TLS inspection, timing breakdowns and the verbose flags.",
+      "url": "/cheatsheets/curl-command-cheatsheet",
+      "kw": "curl command cheatsheet cheat sheet cheatsheets"
+    },
+    {
+      "type": "Cheat Sheet",
+      "title": "Hydra Cheat Sheet: SSH, HTTP Form & Service Brute-Force Commands",
+      "desc": "Copy-ready Hydra commands for SSH, FTP, RDP, SMB and HTTP form logins: single-user and user-list modes, HTTP POST form syntax, thread control, resume.",
+      "url": "/cheatsheets/hydra-brute-force-cheatsheet",
+      "kw": "hydra brute force cheatsheet cheat sheet cheatsheets"
+    },
+    {
+      "type": "Cheat Sheet",
+      "title": "John the Ripper Cheat Sheet: Cracking Modes, Rules & Converters",
+      "desc": "Copy-ready John the Ripper commands: wordlist, rule-based mangling and incremental modes; the *2john converters for SSH keys, ZIP, PDF and Office files.",
+      "url": "/cheatsheets/john-the-ripper-cheatsheet",
+      "kw": "john the ripper cheatsheet cheat sheet cheatsheets"
+    },
+    {
+      "type": "Cheat Sheet",
+      "title": "Metasploit Cheat Sheet: msfconsole, Modules & Meterpreter…",
+      "desc": "Copy-ready msfconsole commands for searching and running modules, configuring options, managing sessions, and using msfvenom - plus the database setup.",
+      "url": "/cheatsheets/metasploit-command-cheatsheet",
+      "kw": "metasploit command cheatsheet cheat sheet cheatsheets"
+    },
+    {
+      "type": "Comparison",
+      "title": "Gobuster vs Feroxbuster: Content Discovery Compared",
+      "desc": "Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where.",
+      "url": "/compare/gobuster-vs-feroxbuster",
+      "kw": "gobuster vs feroxbuster comparison compare"
+    },
+    {
+      "type": "Comparison",
+      "title": "LinPEAS vs WinPEAS: Privilege Escalation Enumeration",
+      "desc": "Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.",
+      "url": "/compare/linpeas-vs-winpeas",
+      "kw": "linpeas vs winpeas comparison compare"
+    },
+    {
+      "type": "Comparison",
+      "title": "Nikto vs Nuclei: Web Server Scanning Compared",
+      "desc": "Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering.",
+      "url": "/compare/nikto-vs-nuclei",
+      "kw": "nikto vs nuclei comparison compare"
+    },
+    {
+      "type": "Comparison",
+      "title": "Nmap vs RustScan: Port Scanning Speed Compared",
+      "desc": "Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.",
+      "url": "/compare/nmap-vs-rustscan",
+      "kw": "nmap vs rustscan comparison compare"
+    },
+    {
+      "type": "Comparison",
+      "title": "TruffleHog vs Gitleaks: Secret Scanning Compared",
+      "desc": "Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration.",
+      "url": "/compare/trufflehog-vs-gitleaks",
+      "kw": "trufflehog vs gitleaks comparison compare"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Canary Token (Honeytoken)? Security Glossary",
+      "desc": "A Canary Token (or honeytoken) is a decoy credential, fake API key, tracked document, or unique DNS/HTTP URL planted in sensitive systems that has no.",
+      "url": "/glossary/canary-token",
+      "kw": "canary token glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is CORS Misconfiguration? Security Glossary",
+      "desc": "A Cross-Origin Resource Sharing (CORS) misconfiguration occurs when a server dynamically reflects an arbitrary Origin header in.",
+      "url": "/glossary/cors-misconfiguration",
+      "kw": "cors misconfiguration glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is CSPRNG (Cryptographically Secure PRNG)? Security Glossary",
+      "desc": "A Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) produces unpredictable random bytes seeded by operating-system hardware entropy.",
+      "url": "/glossary/csprng",
+      "kw": "csprng glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is CSRF (Cross-Site Request Forgery)? Security Glossary",
+      "desc": "Cross-Site Request Forgery (CSRF) is an attack that tricks an authenticated user browser into sending an unwanted state-changing HTTP request (such as.",
+      "url": "/glossary/csrf-cross-site-request-forgery",
+      "kw": "csrf cross site request forgery glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is CVE & CVSS Score? Security Glossary",
+      "desc": "CVE (Common Vulnerabilities and Exposures) is the standardized global identifier for publicly disclosed security flaws (e.g., CVE-2026-0768), while CVSS.",
+      "url": "/glossary/cve-and-cvss",
+      "kw": "cve and cvss glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Diceware Passphrase? Security Glossary",
+      "desc": "Diceware is a provably random method for generating strong, memorable passphrases by selecting random words from a numbered word list using physical dice.",
+      "url": "/glossary/diceware-passphrase",
+      "kw": "diceware passphrase glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is EDR & XDR (Endpoint Detection & Response)? Security…",
+      "desc": "EDR (Endpoint Detection and Response) continuously monitors workstation and server process trees, memory, file changes, and network sockets to detect and.",
+      "url": "/glossary/edr-and-xdr",
+      "kw": "edr and xdr glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Google Dorking (Search Engine Recon)? Security Glossary",
+      "desc": "Google Dorking (Google Hacking) is the use of advanced search engine operators—such as site:, filetype:, inurl:, intitle:, and intext:—to locate publicly.",
+      "url": "/glossary/google-dorking",
+      "kw": "google dorking glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is IDN Homograph Attack (Punycode Spoofing)? Security…",
+      "desc": "An IDN homograph attack registers a domain name containing non-ASCII Unicode characters (such as Cyrillic \"а\" instead of Latin \"a\") that look visually.",
+      "url": "/glossary/idn-homograph-attack",
+      "kw": "idn homograph attack glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Kerberoasting? Security Glossary",
+      "desc": "Kerberoasting is an Active Directory post-exploitation technique where any authenticated domain user requests Kerberos TGS service tickets for accounts.",
+      "url": "/glossary/kerberoasting",
+      "kw": "kerberoasting glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Lateral Movement? Security Glossary",
+      "desc": "Lateral movement refers to the techniques an attacker uses after compromising one endpoint to pivot across the internal network to other workstations.",
+      "url": "/glossary/lateral-movement",
+      "kw": "lateral movement glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Privilege Escalation? Security Glossary",
+      "desc": "Privilege escalation is the act of exploiting a bug, misconfiguration, or weak permission to gain higher access rights—either vertically (from a standard.",
+      "url": "/glossary/privilege-escalation",
+      "kw": "privilege escalation glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is SBOM (Software Bill of Materials)? Security Glossary",
+      "desc": "A Software Bill of Materials (SBOM) is a machine-readable inventory (in CycloneDX or SPDX format) listing every open-source and third-party library.",
+      "url": "/glossary/sbom-software-bill-of-materials",
+      "kw": "sbom software bill of materials glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Banner Grabbing? Security Glossary",
+      "desc": "Banner grabbing is the technique of reading the initial handshake or response headers returned by a network service (such as SSH, HTTP, SMTP, or FTP) to.",
+      "url": "/glossary/shodan-banner-grabbing",
+      "kw": "shodan banner grabbing glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is SIEM & SOAR? Security Glossary",
+      "desc": "SIEM (Security Information and Event Management) aggregates, normalizes, and correlates security logs across an organization to detect threats, while.",
+      "url": "/glossary/siem-and-soar",
+      "kw": "siem and soar glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Subdomain Takeover? Security Glossary",
+      "desc": "Subdomain takeover occurs when a subdomain (such as promo.example.com) has a dangling DNS CNAME or A record pointing to an external cloud resource (S3.",
+      "url": "/glossary/subdomain-takeover",
+      "kw": "subdomain takeover glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Typosquatting & Combo-Squatting? Security Glossary",
+      "desc": "Typosquatting (and combo-squatting) is the registration of lookalike domains that differ from a trusted brand by a single mistyped letter, character swap.",
+      "url": "/glossary/typosquatting",
+      "kw": "typosquatting glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is Zero Trust Architecture (ZTA)? Security Glossary",
+      "desc": "Zero Trust Architecture (NIST SP 800-207) is a security model that eliminates implicit trust based on network location (\"inside the corporate LAN/VPN\").",
+      "url": "/glossary/zero-trust-architecture",
+      "kw": "zero trust architecture glossary glossary"
+    }
+  ]
+}

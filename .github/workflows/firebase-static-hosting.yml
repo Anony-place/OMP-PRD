@@ -153,7 +153,10 @@ jobs:
         # sitemap-index.xml and the HTML sitemap), so without it every
         # DB-published page is an orphan and verify-seo fails - which is exactly
         # what the last run reported.
-        run: node scripts/build-phase3-seo.mjs
+        run: |
+          node scripts/build-phase3-seo.mjs
+          # Indexes the pages just built so the search box can find them.
+          node scripts/build-search-index.mjs
 
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
@@ -231,6 +234,19 @@ jobs:
         # scrollbar. Reads the stylesheet and applies the cascade at 390px.
         run: node tools/test_mobile_ux.mjs
 
+      - name: Every page can be found in search
+        working-directory: OMP-PRD-main
+        # The search box is the only way into 300+ pages, and its index used to
+        # be hand-maintained: 9 published pages were unfindable by their own
+        # titles. This fails when a page exists but search never learned of it.
+        run: node tools/test_search_index.mjs
+
+      - name: The mobile menu opens, closes and behaves
+        working-directory: OMP-PRD-main
+        # Escape, focus placement and a stale "Close menu" label are invisible
+        # to a markup scan, so this drives the real page in jsdom on both the
+        # marketing header and the Academy bar.
+        run: node tools/test_mobile_nav.mjs
       - name: Every comparison is reachable
         working-directory: OMP-PRD-main
         # A comparison needs three edits in two files: the COMPARISONS entry, a
@@ -449,7 +465,10 @@ jobs:
         # sitemap-index.xml and the HTML sitemap), so without it every
         # DB-published page is an orphan and verify-seo fails - which is exactly
         # what the last run reported.
-        run: node scripts/build-phase3-seo.mjs
+        run: |
+          node scripts/build-phase3-seo.mjs
+          # Indexes the pages just built so the search box can find them.
+          node scripts/build-search-index.mjs
 
       - name: Normalize production site origin
         working-directory: OMP-PRD-main
