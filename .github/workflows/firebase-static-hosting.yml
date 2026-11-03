@@ -204,6 +204,15 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: The generator reads every column its template uses
+        working-directory: OMP-PRD-main
+        # The article template has always supported per-article SEO overrides;
+        # the query never asked for the columns, so every override silently
+        # resolved to undefined. Nothing failed - the pages were just not the
+        # pages the panel said they were. This runs the real generator against
+        # fixtures and fails if a field is read but not selected.
+        run: node tools/test_static_build.mjs
+
       - name: Site-wide link, anchor and SEO sweep
         working-directory: OMP-PRD-main
         run: python3 tools/qa.py

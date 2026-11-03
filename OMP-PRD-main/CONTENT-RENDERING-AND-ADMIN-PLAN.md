@@ -449,3 +449,40 @@ deletegate button - so the message is the same everywhere.
 error object: a JSON body with an error, an empty body, a body that is not JSON,
 a missing response, a thrown Error, and a null. The SDK's sentence must never
 reach the reader when there is a body that says more.
+
+### The panel's SEO fields went nowhere
+
+`articles` has had `meta_title`, `meta_description`, `og_image`, `canonical_url`
+and `robots_noindex` since the editor was written, and `articleHtml()` has read
+all five since the template was written. The build query asked for none of them.
+
+So a filled-in meta title changed nothing, a noindexed article still went into
+the sitemap, and a custom canonical was ignored - all with no error, because
+`undefined` is a valid value for every one of those fallbacks. The panel looked
+like it worked.
+
+One select list was the whole fix. What made it survive this long is that
+nothing ever ran the generator: the CI gate built the site and checked the
+output it produced, and the output was consistently wrong.
+
+`tools/test_static_build.mjs` (40 checks) now runs the real generator against a
+fake Supabase in a temp directory and asserts on the files it writes: every
+override reaches the page, a noindexed page carries the meta tag and stays out
+of the sitemap, and an article without overrides still gets the generated
+defaults. Strip the five columns from the select and six checks fail.
+
+### Related articles
+
+Every article used to end at one link to the Articles hub - sixteen pages
+pointing at one index and at nothing else. Each page now closes with three
+related articles, picked by `scripts/lib/related.mjs`:
+
+1. same category first, so a deep dive leads to its neighbours
+2. then the most recent, so a new article is never stranded
+
+Ties break on slug, because two articles published in the same second would
+otherwise swap places between builds and the publisher would commit a diff no
+reader can see. Noindexed and unpublished rows are never candidates - a related
+card that 404s or that we ask search engines to ignore is worse than no card.
+
+The card markup reuses the hub's `feed-row` list, so this needed no CSS.
