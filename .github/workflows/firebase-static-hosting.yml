@@ -204,6 +204,24 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: Every tool actually works
+        working-directory: OMP-PRD-main
+        # The tools run in the browser, so nothing else in this workflow ever
+        # executed one: the gates read HTML, and the markup was fine while a
+        # button did nothing. This drives each tool the way a person does and
+        # asserts the output is computed - two inputs must not produce the same
+        # result, a generated value must change, and a failed breach lookup must
+        # never be dressed up as "not found".
+        run: NODE_PATH=$PWD/tools/qa-deps/node_modules node tools/test_tools_live.mjs
+
+      - name: The tools can be used with a thumb
+        working-directory: OMP-PRD-main
+        # Three phone failures nobody sees on a desktop: a field under 16px
+        # makes iOS zoom the page and leave it zoomed, a control under 44px is a
+        # coin-flip to tap, and a min-width above the viewport is a horizontal
+        # scrollbar. Reads the stylesheet and applies the cascade at 390px.
+        run: node tools/test_mobile_ux.mjs
+
       - name: Every comparison is reachable
         working-directory: OMP-PRD-main
         # A comparison needs three edits in two files: the COMPARISONS entry, a

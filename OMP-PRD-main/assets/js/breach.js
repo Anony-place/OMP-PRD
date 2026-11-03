@@ -80,6 +80,41 @@
       });
   }
 
+  /* The one state this tool must never fake.
+
+     When api.pwnedpasswords.com is unreachable - offline, blocked by an
+     extension, rate limited, behind a corporate proxy - there is no answer. The
+     old code quietly compared against a 330-entry demo list and rendered a
+     green tick with "Not found in the demo corpus", which reads as "you are
+     safe". A person who has just been told their password is fine does not
+     check again.
+
+     So a failed lookup says it failed: neutral styling, the reason, and a
+     retry. If the demo list does contain the password, that is a real hit and
+     still worth warning about - it is only the "not found" that proves
+     nothing. */
+  function setUnavailable(reason) {
+    statusEl.className = 'breach-result show';
+    statusEl.innerHTML = '';
+    var div = document.createElement('div');
+    div.className = 'callout';
+    div.innerHTML = '<svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>';
+    var p = document.createElement('p');
+    var strong = document.createElement('strong');
+    strong.textContent = 'Could not reach the breach database, so this password was not checked. ';
+    p.appendChild(strong);
+    p.appendChild(document.createTextNode(reason + ' Your password was not sent anywhere; nothing about it has been recorded. Try again, or check the same password on haveibeenpwned.com.'));
+    div.appendChild(p);
+
+    var note = document.createElement('p');
+    note.className = 'tiny muted mt-8';
+    note.textContent = 'This is not a result. A "not found" answer only means something when the database actually responded.';
+    div.appendChild(note);
+
+    statusEl.appendChild(div);
+    resultEl.classList.add('show');
+  }
+
   function setStatus(type, count, isLive) {
     statusEl.className = 'breach-result show';
     statusEl.innerHTML = '';
@@ -95,23 +130,24 @@
         ? 'Breach detected! Found ' + (count ? count.toLocaleString() : 'multiple') + ' times in public breaches. '
         : 'Good news! Not found in Have I Been Pwned\'s 900M+ breach database. ';
     } else {
-      strong.textContent = type === 'found'
-        ? 'Found in the demo corpus. '
-        : 'Not found in the demo corpus. ';
+      /* Reached only for a genuine hit in the bundled list. The "not found"
+         case never gets here - see setUnavailable. */
+      strong.textContent = 'Found in the well-known breached-password list. ';
     }
     p.appendChild(strong);
     p.appendChild(document.createTextNode(type === 'found'
       ? 'This password appears in known breach databases. If you use it anywhere, replace it immediately.'
-      : (isLive
-        ? 'No matching hash was found in over 900 million compromised passwords. Always maintain unique credentials and MFA.'
-        : 'The offline demo list is tiny on purpose (~330 passwords).')));
+      : 'No matching hash was found in over 900 million compromised passwords. Always maintain unique credentials and MFA.'));
     div.appendChild(p);
 
     var note = document.createElement('p');
     note.className = 'tiny muted mt-8';
+    /* Only claim a query when a query happened. The bundled-list hit never
+       touched the network, and saying otherwise is a false privacy claim in the
+       one place a reader is most likely to trust it. */
     note.textContent = isLive
-      ? 'Zero-knowledge verified: Only the 5-character SHA-1 prefix was queried using k-anonymity. Your password never left your browser.'
-      : 'Note: SHA-1 prefix used for k-anonymity model compatibility.';
+      ? 'Zero-knowledge verified: only the 5-character SHA-1 prefix was queried using k-anonymity. Your password never left your browser.'
+      : 'Found in the built-in list of well-known breached passwords. No network request completed, and your password was not sent anywhere.';
     div.appendChild(note);
 
     statusEl.appendChild(div);
@@ -151,15 +187,30 @@
         hashEl.appendChild(code);
       }
 
-      // Try live HIBP k-anonymity range API first; fallback to local demo if offline
-      return checkLiveHibp(prefix, suffix).catch(function () {
+      /* A failed lookup is reported as a failed lookup. The bundled list is
+         consulted only to see whether this password is one everybody already
+         knows - a hit is worth warning about even offline; a miss is not
+         evidence of anything. */
+      return checkLiveHibp(prefix, suffix).catch(function (error) {
         return demoPrefixes().then(function (prefixes) {
-          return { found: prefixes.has(prefix), count: 0, live: false };
+          return {
+            found: prefixes.has(prefix),
+            count: 0,
+            live: false,
+            unavailable: !prefixes.has(prefix),
+            reason: /abort/i.test(String(error && error.name)) || /abort/i.test(String(error && error.message))
+              ? 'The request timed out after 3.5 seconds.'
+              : 'The breach database did not respond.'
+          };
         });
       });
     }).then(function (res) {
-      setStatus(res.found ? 'found' : 'clear', res.count, res.live);
-      resultEl.classList.add('show');
+      if (res.unavailable) {
+        setUnavailable(res.reason || 'The breach database did not respond.');
+      } else {
+        setStatus(res.found ? 'found' : 'clear', res.count, res.live);
+        resultEl.classList.add('show');
+      }
       btn.disabled = false;
       btn.textContent = 'Check for breaches';
     }).catch(function () {

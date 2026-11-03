@@ -1687,3 +1687,62 @@ img.osint-tile { padding: 6px; }
 .prose dl { margin: 20px 0; }
 .prose dt { font-weight: 600; margin-top: 12px; }
 .prose dd { margin: 4px 0 0 20px; }
+
+/* ------------------------------------------------------------------
+   Touch and narrow screens.
+
+   Two things break a tool on a phone even though the markup is correct, and
+   neither is visible on a desktop:
+
+   1. iOS Safari zooms the whole page when a focused field computes below 16px,
+      and does not zoom back out on blur. The page then sits magnified and
+      half off-screen, which reads as "this site is broken on my phone". Every
+      field a person types into is pushed to 16px here. It is applied on
+      pointer: coarse as well as by width, because an iPad is 768px wide and
+      still gets the same zoom.
+
+   2. A control below 44px is below the size a finger hits reliably. The
+      smallest things in this UI were the 38px icon buttons, the 22px slider
+      thumb and the 32px secondary buttons - all fine with a mouse, all a
+      coin-flip with a thumb.
+
+   The slider keeps its thin visual track: the element grows to 44px and the
+   gradient is painted in a 6px band down the middle, so the picture is the same
+   while the thing you can grab is not.
+   ------------------------------------------------------------------ */
+@media (max-width: 640px), (pointer: coarse) {
+  .pw-input,
+  .input,
+  select.input,
+  .form-field input,
+  .form-field textarea,
+  .form-field select,
+  .cli-field input[type="text"],
+  .osint-search input,
+  .osint-fgroup select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 44px; padding-block: 10px; }
+  .icon-btn { width: 44px; height: 44px; }
+
+  input[type="range"] {
+    height: 44px;
+    background-size: 100% 6px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; }
+  input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; }
+
+  /* Tab bars, filter chips, preset buttons and the checklist rows are all
+     thumb targets too. The checklist is one tap per item and there are sixteen
+     of them, so it is the row - not the 16px checkbox - that has to be hittable. */
+  [data-inspector-tab],
+  [data-hub-filter-cat],
+  [data-url-preset] { min-height: 44px; }
+
+  .checklist-item { min-height: 44px; padding-block: 10px; }
+}
