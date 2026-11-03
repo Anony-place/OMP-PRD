@@ -204,6 +204,15 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: Install jsdom for the tool tests
+        working-directory: OMP-PRD-main
+        # Only jsdom is needed here - downloading the Playwright browsers would
+        # add a minute to every run for a suite that parses and executes, but
+        # never renders.
+        run: |
+          npm ci --prefix tools/qa-deps --no-audit --no-fund
+          test -d tools/qa-deps/node_modules/jsdom || { echo '::error::jsdom did not install'; exit 1; }
+
       - name: Every tool actually works
         working-directory: OMP-PRD-main
         # The tools run in the browser, so nothing else in this workflow ever
@@ -212,7 +221,7 @@ jobs:
         # asserts the output is computed - two inputs must not produce the same
         # result, a generated value must change, and a failed breach lookup must
         # never be dressed up as "not found".
-        run: NODE_PATH=$PWD/tools/qa-deps/node_modules node tools/test_tools_live.mjs
+        run: node tools/test_tools_live.mjs
 
       - name: The tools can be used with a thumb
         working-directory: OMP-PRD-main
