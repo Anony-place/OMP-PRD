@@ -247,6 +247,12 @@ jobs:
         # to a markup scan, so this drives the real page in jsdom on both the
         # marketing header and the Academy bar.
         run: node tools/test_mobile_nav.mjs
+      - name: The Academy is a course, not a pile of pages
+        working-directory: OMP-PRD-main
+        # Walks every course lesson by lesson using only the links in the built
+        # HTML: a broken "next", a missing "previous", or a hub that promises a
+        # self-check on lessons that never had one.
+        run: node tools/test_academy_course.mjs
       - name: Every comparison is reachable
         working-directory: OMP-PRD-main
         # A comparison needs three edits in two files: the COMPARISONS entry, a

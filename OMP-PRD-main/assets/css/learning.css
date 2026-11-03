@@ -5366,3 +5366,41 @@
     min-height: 44px;
   }
 }
+
+/* The way back to the previous lesson. It sits directly above the "next" card,
+   so a reader who wants to re-read the last lesson does not have to return to
+   the syllabus and find it there. */
+.lesson-prev {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 820px;
+  margin-top: 30px;
+  padding: 16px 20px;
+  border: 1px solid var(--academy-border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+}
+.lesson-prev:hover,
+.lesson-prev:focus-visible {
+  border-color: var(--academy-accent);
+}
+.lesson-prev-label {
+  font-size: 0.6rem;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lesson-prev strong {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px), (pointer: coarse) {
+  .lesson-prev { min-height: 44px; padding: 14px 16px; }
+}
