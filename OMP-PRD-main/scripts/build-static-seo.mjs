@@ -2,16 +2,24 @@ import safeArticleHTML from '../functions/safe-article-html.cjs';
 import { mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { STATIC_ROUTES, isValidSlug, priorityForRoute } from '../functions/sitemap-core.mjs';
+import { pickRelated } from './lib/related.mjs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
 const SITE = (process.env.SITE_ORIGIN || 'https://oopsmypassword.web.app').replace(/\/+$/, '');
 const ROOT = process.cwd();
 const sharedFooter = await readFile(join(ROOT, 'tools/site-footer.html'), 'utf8');
+
 const ARTICLES_DIR = join(ROOT, 'articles');
 const PRODUCTS_DIR = join(ROOT, 'products');
 const PRODUCT_FIELDS = 'slug,name,summary,description,product_type,price,currency,cta_label,featured,featured_image,external_url,status,published_at,updated_at,created_at';
 const PRODUCT_TYPES = { book: 'Book', course: 'Course', tool: 'Tool', template: 'Template', resource: 'Resource', other: 'Resource' };
+/* Every column articleHtml() reads. The template has supported per-article SEO
+   overrides - meta title, meta description, OG image, canonical, noindex - since
+   they were added, but this select never asked for them, so the panel's fields
+   resolved to undefined and every page silently fell back to the generated
+   defaults. Asking for a column is what makes the override real. */
+const ARTICLE_FIELDS = 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image,meta_title,meta_description,og_image,canonical_url,robots_noindex,category_id';
 const OSINT_FIELDS = 'slug,name,summary,overview,install_guide,key_features,faqs,use_case,category_id,pricing,access_types,official_url,github_url,docs_url,logo_url,featured,status,published_at,updated_at,created_at';
 const PENTEST_FIELDS = OSINT_FIELDS;
 const OSINT_PRICING = { free: 'Free', freemium: 'Freemium', paid: 'Paid' };
@@ -152,12 +160,15 @@ function normalizeInjected(html, title) {
   });
   return { html: withAnchors, toc };
 }
-async function fetchRows(table, fields) {
+async function fetchRows(table, fields, { publishedOnly = true } = {}) {
   const rows = [], seen = new Set();
   for (;;) {
     // Servers can cap responses below the requested limit. Advance by the real
     // count and continue until empty, rather than silently dropping later posts.
-    const params = new URLSearchParams({ select: fields, status: 'eq.published', order: 'slug.asc', limit: '500', offset: String(rows.length) });
+    const params = new URLSearchParams({ select: fields, order: 'slug.asc', limit: '500', offset: String(rows.length) });
+    // article_categories has no status column; filtering it would be a 400 and
+    // a build that stops for a table with nothing to approve.
+    if (publishedOnly) params.set('status', 'eq.published');
     const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
       // A publishable key is not a JWT; public reads need only the apikey header.
       headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: 'application/json' },
@@ -196,7 +207,24 @@ function commonHead({ title, description, canonical, ogType, ogImage, jsonld = [
   const cards = ogImage ? `<meta property="og:image" content="${esc(ogImage)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="${esc(ogImage)}">` : '';
   return `<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="${esc(ogType || 'website')}"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(canonical)}">${cards}<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="${esc(canonical)}"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script>${jsonld.map((x) => `<script type="application/ld+json">${escJson(x)}</script>`).join('')}${published ? `<meta property="article:published_time" content="${esc(published)}">` : ''}${modified ? `<meta property="article:modified_time" content="${esc(modified)}">` : ''}</head>`;
 }
-function articleHtml(article) {
+/* The three links under an article. Card markup matches the hub listings, so
+   nothing new needs styling; the fallback keeps the old callout for a site
+   with one article, where there is nothing to relate to. */
+function relatedSection(related, categoryNames) {
+  const cards = (Array.isArray(related) ? related : [])
+    .filter((r) => r && isValidSlug(r.slug) && String(r.title || '').trim())
+    .map((r) => {
+      const cardTitle = String(r.title).trim();
+      const cardSummary = metaDescription(String(r.summary || '').trim());
+      const categoryName = String(categoryNames.get(r.category_id) || '').trim();
+      return `<article class="feed-row"><div class="feed-row-main">${categoryName ? `<span class="chip">${esc(categoryName)}</span>` : ''}<h3 class="feed-title"><a href="/articles/${encodeURIComponent(r.slug)}">${esc(cardTitle)}</a></h3>${cardSummary ? `<p class="feed-excerpt">${esc(cardSummary)}</p>` : ''}</div></article>`;
+    }).join('');
+  if (!cards) {
+    return '<section class="section-tight"><div class="container container-narrow"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></div></section>';
+  }
+  return `<section class="section-tight"><div class="container"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px">${cards}</div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section>`;
+}
+function articleHtml(article, related = [], categoryNames = new Map()) {
   const title = String(article.title || 'Article').trim();
   const slug = String(article.slug || '').trim();
   const summary = metaDescription(String(article.summary || '').trim() || extractPlainText(article.content));
@@ -223,13 +251,14 @@ function articleHtml(article) {
   const toc = normalized.toc;
   const tocHtml = toc.length ? `<aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul>${toc.map((item) => `<li><a href="#${esc(item.id)}">${esc(item.text)}</a></li>`).join('')}</ul></aside>` : '';
   const body = toc.length
-    ? `<div class="container"><div class="article-layout">${tocHtml}<article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div></div>`
-    : `<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div></article></div>`;
+    ? `<div class="container"><div class="article-layout">${tocHtml}<article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"></article></div></div>`
+    : `<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">${content}<hr class="hr-fade" style="margin-top:48px"></article></div>`;
+  const relatedHtml = relatedSection(related, categoryNames);
   let head = commonHead({ title: metaTitle || documentTitle(title, 'OopsMyPassword'), description: metaDesc, canonical, ogType: 'article', ogImage: image, jsonld: [articleSchema, breadcrumbSchema], published, modified });
   /* A noindexed page must not ask to be indexed through one signal and not the
      other; the sitemap filter below honours the same flag. */
   if (noindex) head = head.replace('</head>', '<meta name="robots" content="noindex,follow"></head>');
-  return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  return `${head}<body>${siteHeader('/articles')}${siteMobileMenu('/articles')}<main id="main"><section class="article-hero"><div class="container container-narrow"><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">${esc(title)}</h1><p class="lead mt-8">${esc(summary)}</p><div class="article-meta"><span class="chip">${ICON_BOOK} Article</span>${dateLabel ? `<span class="chip">Updated ${esc(dateLabel)}</span>` : ''}</div></div></section><section class="section-tight">${body}</section>${relatedHtml}</main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 // Append the brand suffix only when the result still fits the search-result
 // budget. A long, descriptive headline is more useful than a truncated one, and
@@ -422,18 +451,26 @@ function sitemapXml({ articles, products, osint = [], pentest = [], pentestCateg
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;
 }
 async function main() {
-  const [articles, products, osintTools, osintCats, pentestTools, pentestCats] = await Promise.all([
-    fetchRows('articles', 'slug,title,summary,content,status,published_at,updated_at,created_at,featured_image'),
+  const [articles, products, osintTools, osintCats, articleCats, pentestTools, pentestCats] = await Promise.all([
+    fetchRows('articles', ARTICLE_FIELDS),
     fetchRows('products', PRODUCT_FIELDS),
     fetchRows('osint_tools', OSINT_FIELDS),
     fetchRows('osint_categories', 'id,name,slug,status'),
+    fetchRows('article_categories', 'id,name,slug', { publishedOnly: false }),
     fetchRows('pentest_tools', PENTEST_FIELDS),
     fetchRows('pentest_categories', 'id,name,slug,description,status,sort_order,published_at,updated_at'),
   ]);
   await rm(ARTICLES_DIR, { recursive: true, force: true });
   await mkdir(ARTICLES_DIR, { recursive: true });
   let articlePages = 0;
-  for (const article of articles) if (isValidSlug(article.slug)) { await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article), 'utf8'); articlePages++; }
+  /* category_id -> name, so a related card can say where the article sits. */
+  const categoryNames = new Map(articleCats.map((c) => [c.id, String(c.name || '').trim()]));
+  for (const article of articles) {
+    if (!isValidSlug(article.slug)) continue;
+    const related = pickRelated(article, articles, { limit: 3 });
+    await writeFile(join(ARTICLES_DIR, `${article.slug}.html`), articleHtml(article, related, categoryNames), 'utf8');
+    articlePages++;
+  }
   await rm(PRODUCTS_DIR, { recursive: true, force: true });
   await mkdir(PRODUCTS_DIR, { recursive: true });
   let productPages = 0;
