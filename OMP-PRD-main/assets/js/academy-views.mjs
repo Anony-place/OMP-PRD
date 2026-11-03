@@ -216,7 +216,7 @@ export function hubView(data, context = {}) {
             <ol class="hero-loop">
               <li><span>${icon("book")}</span><div><strong>Read the concept</strong><small>A focused explanation, its history and real examples.</small></div></li>
               <li><span>${icon("lab")}</span><div><strong>Practice it</strong><small>External exercises you run yourself, and the defensive view.</small></div></li>
-              <li><span>${icon("award")}</span><div><strong>Check yourself</strong><small>A 4-question interactive self-check on every lesson to verify what you learned.</small></div></li>
+              <li><span>${icon("award")}</span><div><strong>Check yourself</strong><small>A 4-question self-check where one is published, plus a one-tap reviewed mark on the rest.</small></div></li>
             </ol>
           </aside>`
         : ""
@@ -237,7 +237,7 @@ export function hubView(data, context = {}) {
       <strong>${inProgressLessons}</strong>
       <span>Lesson${inProgressLessons === 1 ? "" : "s"} in progress</span>
     </div>
-    <p class="small muted" style="margin:0">Interactive 4-question self-checks available on all ${totalLessons} lessons.</p>
+    <p class="small muted" style="margin:0">Self-checks where published; every lesson can be marked reviewed on this device.</p>
   </div>
   <div class="dashboard-stat-card">
     <span class="academy-kicker">Next Recommended Step</span>
@@ -971,6 +971,17 @@ export function lessonDiagramView(t) {
   </div>`;
 }
 
+/* A lesson could only ever point forward. A learner who arrived on lesson 40
+   from search had no way to reach lesson 39 without going back up to the course
+   syllabus and hunting for it. The first lesson of a course has no way back, so
+   it renders nothing. */
+export function prevLessonView(path, topic) {
+  const index = path.topics.indexOf(topic);
+  const prev = index > 0 ? path.topics[index - 1] : null;
+  if (!prev) return "";
+  return `<a class="lesson-prev" href="${esc(prev.url)}"><span class="lesson-prev-label">← Previous lesson</span><strong>${esc(prev.name)}</strong></a>`;
+}
+
 export function staticLessonView(data, page) {
   const t = page.topic,
     p = page.path,
@@ -984,7 +995,7 @@ export function staticLessonView(data, page) {
   );
   const takeaways = all.find((s) => s.id === "defensive");
   const resources = (t.content.references || []).map(safeHttpUrl).filter(Boolean);
-  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div>${lessonDiagramView(t)}<section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
+  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div>${lessonDiagramView(t)}<section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}${prevLessonView(p, t)}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
 }
 export function publicView(data, page, context = {}) {
   if (page.type === "overview") return hubView(data, { ...context, categories: data.categories });
