@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinPEAS vs WinPEAS: Privilege Escalation Enumeration</title>
+  <meta name="description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/linpeas-vs-winpeas">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="LinPEAS vs WinPEAS: Privilege Escalation Enumeration">
+  <meta property="og:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/linpeas-vs-winpeas">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LinPEAS vs WinPEAS: Privilege Escalation Enumeration">
+  <meta name="twitter:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LinPEAS vs WinPEAS: Privilege Escalation Enumeration","description":"Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/linpeas-vs-winpeas","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are LinPEAS and WinPEAS the same project?","acceptedAnswer":{"@type":"Answer","text":"Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters."}},{"@type":"Question","name":"Does a red line mean I have root or SYSTEM?","acceptedAnswer":{"@type":"Answer","text":"No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report."}},{"@type":"Question","name":"Why is the output so long?","acceptedAnswer":{"@type":"Answer","text":"Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable."}},{"@type":"Question","name":"Will PEAS get me caught during an authorised test?","acceptedAnswer":{"@type":"Answer","text":"Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because \"it was only enumeration\" is not a defence if it was not in scope."}},{"@type":"Question","name":"Can I run these against production?","acceptedAnswer":{"@type":"Answer","text":"Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"LinPEAS vs WinPEAS","item":"https://oopsmypassword.web.app/compare/linpeas-vs-winpeas"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>LinPEAS vs WinPEAS</span></nav>
+    <h1 class="h-1 mt-16">LinPEAS vs WinPEAS: Privilege Escalation Enumeration</h1>
+    <p class="lead mt-8">Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> They are the same tool for two operating systems, so the comparison is not &quot;which is better&quot; but &quot;what each one can and cannot see&quot;. LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, colour-coded list of things a human still has to read.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose LinPEAS (Linux) if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for Linux post-exploitation enumeration: SUID and capabilities, sudo rules, cron and systemd timers, writable paths, container escapes, credential files and keys, plus a fast mode that skips the slow filesystem sweeps.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose WinPEAS (Windows) if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for Windows enumeration: service binary permissions, unquoted service paths, token privileges such as SeImpersonatePrivilege, AlwaysInstallElevated, stored credentials, autologon registry values and scheduled tasks.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">LinPEAS (Linux)</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">WinPEAS (Windows)</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Runs on</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Linux - a bash script assembled from many small checks</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Windows - a .NET executable, with a PowerShell script alternative</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">What it needs</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A shell, and preferably an execution method that leaves no file behind</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A shell; the executable is often dropped to disk, which is a detection event</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Typical output</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Thousands of lines, colour-coded by how exploitable each finding is usually considered</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">The same idea, with sections for services, tokens, registry and credentials</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Coverage: users</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Local users, groups, sudo rules, home directory permissions</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Local accounts, group membership, logon sessions, token privileges</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Coverage: files</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">SUID/SGID binaries, capabilities, world-writable files and directories</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Service binaries and their ACLs, unquoted paths, writable Program Files paths</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Coverage: scheduled work</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">cron jobs, systemd units and timers, at jobs</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Scheduled tasks, services with weak start permissions</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Coverage: credentials</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">SSH keys, .git-credentials, history files, config with passwords, cloud metadata</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Credential Manager entries, autologon values, unattend.xml, group policy preferences</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Container awareness</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Flags broken container boundaries, mounted sockets, privileged containers</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Not the primary use case</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Hard mode</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Optional, exhaustive, much slower and much louder</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">The default output is already verbose</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">What it cannot do</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Exploit anything. It reports; you still have to reason, and verify</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Same - a red line means &quot;worth testing&quot;, not &quot;vulnerable&quot;</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Main risk</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A production host notices: file reads, process spawns and network callbacks are all visible</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">The same, plus the dropped binary is a strong signature for endpoint tools</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">The colours are a starting point, not a finding list</h2>
+      <p>Both tools colour their output, and the convention is widely misread. Red means &quot;this often leads somewhere&quot;, not &quot;this is exploitable&quot;. A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.</p>
+      <p>The practical consequence is that a PEAS run is not a scan result you can paste into a report. It is a search index. The work is opening the red lines one at a time and asking the only question that matters: can I control anything this binary or service reads, executes or loads?</p>
+      <p>Experienced testers run PEAS with a narrowed focus - one section at a time, or in the fast mode that skips the expensive filesystem walk - precisely because reading everything at once produces a list too long to reason about.</p>
+      <h2 class="mt-32">Where the two diverge</h2>
+      <p>On Linux, privilege escalation is largely about files: which ones are set-uid, which directories are writable by your user, which cron job runs as root and reads from a path you can write to. That is why LinPEAS spends most of its output on filesystem facts, and why capabilities - a detail older checklists ignore entirely - get their own section.</p>
+      <p>On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organises its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.</p>
+      <p>Neither tool can see what it was not designed to see. LinPEAS will not tell you a Windows domain trusts an unconstrained delegation; WinPEAS will not read a Linux sudoers file. On a mixed network the answer is not to pick a winner - it is to know which host you are on.</p>
+      <h2 class="mt-32">Running either one safely and lawfully</h2>
+      <p>Both tools are noisy by nature. On the Linux side, the script spawns a large number of short-lived processes, walks the filesystem and may attempt outbound lookups; on the Windows side, the executable is dropped to disk and scanned. Any competent endpoint protection or SIEM will produce alerts, which is fine in a lab and a problem in production.</p>
+      <p>That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorised access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.</p>
+      <p>If you are learning, use your own virtual machines. Metasploitable, the published Hack The Box and TryHackMe labs, and a local Windows VM with weak configuration are enough to see what real output looks like.</p>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>LinPEAS (Linux) Example</h3>
+          <pre><code># Standard run to a file, then read it back locally
+./linpeas.sh -a &gt; linpeas-full.txt 2&gt;/dev/null
+
+# Fast pass: skip the slow filesystem sweeps first
+timeout 180 ./linpeas.sh -o system_information,software_information,container -q</code></pre>
+        </div>
+        <div>
+          <h3>WinPEAS (Windows) Example</h3>
+          <pre><code># Run WinPEAS and write a readable report
+.\winPEASx64.exe &gt; winpeas.txt 2&gt;&amp;1
+
+# Narrow the scope to the sections that usually pay
+.\winPEASx64.exe servicesinfo userinfo &gt; winpeas-targeted.txt</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Are LinPEAS and WinPEAS the same project?</h3><p>Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters.</p>
+<h3>Does a red line mean I have root or SYSTEM?</h3><p>No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report.</p>
+<h3>Why is the output so long?</h3><p>Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable.</p>
+<h3>Will PEAS get me caught during an authorised test?</h3><p>Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because &quot;it was only enumeration&quot; is not a defence if it was not in scope.</p>
+<h3>Can I run these against production?</h3><p>Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Academy Lessons &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/cheatsheets/linux-privilege-escalation-cheatsheet"><strong>Linux Privilege Escalation Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/cheatsheets/active-directory-enumeration-cheatsheet"><strong>Active Directory Enumeration Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/glossary/privilege-escalation"><strong>Privilege Escalation Glossary</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/bitwarden-vs-1password"><strong>Bitwarden vs 1Password</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-proton-pass"><strong>Bitwarden vs Proton Pass</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/keepassxc-vs-bitwarden"><strong>KeePassXC vs Bitwarden</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>

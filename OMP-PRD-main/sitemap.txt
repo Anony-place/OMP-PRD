@@ -165,8 +165,11 @@ https://oopsmypassword.web.app/compare/wireshark-vs-tcpdump
 https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks
 https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster
 https://oopsmypassword.web.app/compare/nikto-vs-nuclei
+https://oopsmypassword.web.app/compare/nmap-vs-rustscan
+https://oopsmypassword.web.app/compare/linpeas-vs-winpeas
 https://oopsmypassword.web.app/cheatsheets
 https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet
+https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/ffuf-web-fuzzing-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/wireshark-display-filters-cheatsheet

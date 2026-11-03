@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 03 Nov 2026 13:33:22 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 03 Nov 2026 13:41:40 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -332,6 +332,20 @@
       <description>Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering and which scanner to run first.</description>
     </item>
     <item>
+      <title>Nmap vs RustScan: Port Scanning Speed Compared</title>
+      <link>https://oopsmypassword.web.app/compare/nmap-vs-rustscan</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/nmap-vs-rustscan</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when the speed advantage is real.</description>
+    </item>
+    <item>
+      <title>LinPEAS vs WinPEAS: Privilege Escalation Enumeration</title>
+      <link>https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.</description>
+    </item>
+    <item>
       <title>Nmap Command Cheat Sheet: Discovery, Stealth &amp; NSE</title>
       <link>https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet</guid>
@@ -400,6 +414,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet</guid>
       <category>Defensive Security</category>
       <description>First-hour Linux &amp; account compromise triage checklist: preserving volatile network/process state, isolating hosts, and revoking active sessions.</description>
+    </item>
+    <item>
+      <title>curl Command Cheat Sheet: Headers, Auth, Files &amp; Debugging</title>
+      <link>https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet</guid>
+      <category>Web App Security</category>
+      <description>Copy-ready curl commands for REST testing, custom headers and auth, file uploads, redirects and TLS inspection, timing breakdowns and the verbose flags that explain a failed request.</description>
     </item>
   </channel>
 </rss>

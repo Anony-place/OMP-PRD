@@ -70,6 +70,23 @@ for (const slug of slugs) {
   assert(html.includes('"@type":"FAQPage"') || html.includes('"@type": "FAQPage"'), `compare/${slug} carries FAQ structured data`);
 }
 
+section('Every cheat sheet is reachable too');
+
+/* Same three-edit problem: CHEATSHEETS entry, STATIC_ROUTES route, built file. */
+const sheetSource = fs.readFileSync(path.join(root, 'scripts/build-phase3-seo.mjs'), 'utf8');
+const sheetStart = sheetSource.indexOf('export const CHEATSHEETS');
+const sheetEnd = sheetSource.indexOf('\n];', sheetStart);
+const sheetSlugs = [...sheetSource.slice(sheetStart, sheetEnd).matchAll(/^\s{4}slug: '([a-z0-9-]+)'/gm)].map((m) => m[1]);
+const sheetHub = fs.readFileSync(path.join(root, 'cheatsheets.html'), 'utf8');
+
+assert(sheetSlugs.length >= 10, `CHEATSHEETS lists ${sheetSlugs.length} cheat sheets`);
+for (const slug of sheetSlugs) {
+  assert(fs.existsSync(path.join(root, 'cheatsheets', `${slug}.html`)), `cheatsheets/${slug}.html exists`);
+  assert(routes.has(`/cheatsheets/${slug}`), `/cheatsheets/${slug} is in STATIC_ROUTES`);
+  assert(sitemap.includes(`/cheatsheets/${slug}<`), `/cheatsheets/${slug} is in sitemap.xml`);
+  assert(sheetHub.includes(`/cheatsheets/${slug}"`), `the cheat sheet hub lists ${slug}`);
+}
+
 section('No comparison links to a page that does not exist');
 
 for (const slug of slugs) {
