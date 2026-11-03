@@ -96,7 +96,19 @@ It is listed here once, as a fact, not as a task.
 
 Write 8 comparison pages and 4 cheat sheets. Not articles.
 
-Companions to the 12 that exist, in rough order of how winnable they are:
+**Written so far** (all 1,400–2,000 words, each with a short answer at the top,
+six or more FAQ entries with FAQPage schema, and two or three long-form
+sections the old ones did not have):
+
+- `trufflehog-vs-gitleaks` — secret scanning. Verification vs pattern matching
+  is a real, defensible technical difference, and the query is asked by people
+  about to choose a scanner for a repo they own.
+- `gobuster-vs-feroxbuster` — content discovery. Pairs with the existing
+  `ffuf-vs-gobuster`; the three pages now link to each other.
+- `nikto-vs-nuclei` — web server scanning. High-volume, currently answered by
+  thin blog posts.
+
+Companions still to write, in rough order of how winnable they are:
 
 - `gobuster vs feroxbuster`
 - `nikto vs nuclei`

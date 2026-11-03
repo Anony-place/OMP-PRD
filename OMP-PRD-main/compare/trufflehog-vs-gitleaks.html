@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TruffleHog vs Gitleaks: Secret Scanning Compared | OopsMyPassword</title>
+  <meta name="description" content="Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="TruffleHog vs Gitleaks: Secret Scanning Compared | OopsMyPassword">
+  <meta property="og:description" content="Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TruffleHog vs Gitleaks: Secret Scanning Compared | OopsMyPassword">
+  <meta name="twitter:description" content="Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"TruffleHog vs Gitleaks: Secret Scanning Compared","description":"Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does TruffleHog replace Gitleaks?","acceptedAnswer":{"@type":"Answer","text":"No. They answer different questions. Gitleaks asks \"does this diff contain something that looks like a secret\", and answers it in milliseconds, before the commit exists. TruffleHog asks \"is this credential still alive\", which requires a network round trip and is worth paying for during an audit, not on every keystroke."}},{"@type":"Question","name":"Are verified findings always live credentials?","acceptedAnswer":{"@type":"Answer","text":"They are the strongest signal either tool produces, but treat them as evidence rather than proof. A provider may answer a verification request for an expired-but-recognised token, a key may be valid but scoped to nothing, and a detector may be matching a format that a different service also uses. Confirm in the provider console before you write the incident report."}},{"@type":"Question","name":"Can Gitleaks scan only the commits in a pull request?","acceptedAnswer":{"@type":"Answer","text":"Yes. In CI, pass the commit range to the git mode, for example --log-opts with the merge-base range, so the job looks at the change rather than the whole history. Scanning only the diff keeps runtime low, but it also means a secret committed before the job existed stays invisible until you run a full history scan."}},{"@type":"Question","name":"How do I stop Gitleaks flagging a test fixture?","acceptedAnswer":{"@type":"Answer","text":"Add the finding fingerprint to .gitleaksignore, or build a baseline file from a known-good commit and pass --baseline-path. Both are deliberate and reviewable, which is the point: an allowlist that lives in the repository shows up in code review, while a rule that silently ignores an entire file does not."}},{"@type":"Question","name":"Is the AGPL licence a problem if we run TruffleHog in CI?","acceptedAnswer":{"@type":"Answer","text":"Running an AGPL tool inside your own build pipeline is ordinary use and does not normally impose obligations on your code. The licence matters when you redistribute the software or offer a modified version as a service. If your company has a strict policy on copyleft licences, check before standardising on it - that is a question for your legal team, not for a comparison table."}},{"@type":"Question","name":"What should we do when either tool finds a live key?","acceptedAnswer":{"@type":"Answer","text":"Revoke first, investigate second. Issue a new credential, deploy it, then check the provider activity log for requests you cannot account for. Rotating is cheap and reversible; assuming nobody used the key is neither."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"TruffleHog vs Gitleaks","item":"https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>TruffleHog vs Gitleaks</span></nav>
+    <h1 class="h-1 mt-16">TruffleHog vs Gitleaks: Secret Scanning Compared</h1>
+    <p class="lead mt-8">Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration and the false-positive trade-off.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> Use Gitleaks to stop secrets from being committed - it is fast, MIT-licensed and belongs in a pre-commit hook. Use TruffleHog when you already have a mess to clean up, because it verifies findings against the provider and tells you which keys are still live.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose TruffleHog if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for audits and incident triage: verifies each finding against the real provider API, scans git, S3, Docker images, CI logs and whole organisations, so a 900-finding report collapses into the handful of keys that actually work.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Gitleaks if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for prevention: a fast, dependency-free binary with readable TOML rules, fingerprints to ignore accepted legacy findings, and a pre-commit hook that stops the secret before it ever enters history.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">TruffleHog</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Gitleaks</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Written in</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Go - single static binary, Docker image, official GitHub Action</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Go - single static binary, Docker image, official GitHub Action</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Detection model</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Verified detectors: pattern match, then an optional live check against the provider API</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Rules: regular expressions plus entropy scoring, defined in TOML</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Are findings verified?</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Yes - --only-verified keeps only credentials the provider confirms are active</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">No - matching only; a live key and a dead one look identical</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Sources it can scan</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Git history, filesystem, S3, GCS, Docker images, CircleCI and GitHub Actions logs, whole GitHub/GitLab organisations</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Git history, a directory tree, or standard input</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Custom rules</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Custom detectors, written in Go and compiled into the tool</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Drop a TOML file with a regex and an entropy floor - no code</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Ignoring accepted findings</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Exclusions and result filtering on re-runs</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Fingerprint file (.gitleaksignore) and --baseline-path for a known-findings baseline</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Speed</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Fast when matching; slower with verification on, because each hit is an outbound HTTPS call</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Very fast - no network calls, no verification stage</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Output formats</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">JSON, plus a plain listing</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">JSON, CSV, SARIF, JUnit - SARIF uploads straight to GitHub code scanning</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Pre-commit hook</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Possible, but heavy for every commit</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Purpose-built: gitleaks protect --staged</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Licence</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">AGPL-3.0, with a paid enterprise edition</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">MIT</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Best first use</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A quarterly audit across every repository and bucket you own</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A pre-commit hook and a CI job on every pull request</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">Why verification changes the triage</h2>
+      <p>A secret scanner has one job that matters more than coverage: telling you which findings are real. Both tools find keys. Only one tells you whether the key still works.</p>
+      <p>Run Gitleaks across ten repositories and you will get a report with hundreds of entries. Some are AWS keys that were rotated in 2023, some are example strings in test fixtures, some are live. The report does not distinguish, so a human has to open every hit and check it by hand. In practice that means the report gets skimmed, the live key on page nine gets missed, and the scan becomes something the team learns to ignore.</p>
+      <p>TruffleHog takes the same hits and calls the provider with each one. An AWS key is checked with STS, a GitHub token with the user endpoint, a Stripe key with a harmless read. What comes back is two lists: credentials the provider accepted, and everything else. The first list is usually short enough to fix today.</p>
+      <p>That difference is not a feature on a comparison table. It decides whether the tool changes behaviour.</p><ul><li>A verified finding is evidence that something is exposed now, which is usually enough to justify an emergency rotation.</li><li>An unverified finding is a lead. It may be a dead key, a placeholder, or a key that was never valid.</li><li>Verification costs network calls, so it belongs in audits and scheduled runs - not in the pre-commit hook that has to finish in under a second.</li></ul>
+      <h2 class="mt-32">Where each one belongs in a pipeline</h2>
+      <p>The two tools are not competing for the same slot. Putting them on a timeline makes the split obvious.</p>
+      <p>Before the commit, Gitleaks runs as a pre-commit hook and refuses the commit. Nothing has been pushed, nothing needs rotating, and the cost of the finding is a nuisance rather than an incident. This is the only stage where a secret scan is cheap.</p>
+      <p>On the pull request, either tool works. Gitleaks is the lighter choice because a diff is small and the run has to finish quickly; SARIF output gives inline annotations on the exact line. TruffleHog adds value here only if you configure verification, which turns a red build into a clear message: this key is live, rotate it now.</p>
+      <p>On a schedule, TruffleHog earns its place. Point it at every repository in the organisation, at the buckets, and at the Docker images that were built before anyone set up the hook. This is the run that finds the secret committed two years ago, which no pre-commit hook will ever see.</p>
+      <h2 class="mt-32">The limits both tools share</h2>
+      <p>Neither tool can find a format it does not know. An internal API key with a custom prefix, a licence key in a base64 blob, or a password split across two variables will pass both scanners. If your organisation has its own token format, Gitleaks needs a TOML rule and TruffleHog needs a custom detector; neither ships with knowledge of your private systems.</p>
+      <p>Neither tool rotates anything. Finding a live key is the start of an incident, not the end of one: the credential has to be revoked at the provider, issued again, redeployed, and the old one checked in the provider logs for use that was not yours.</p>
+      <p>And neither is a substitute for not storing secrets in repositories at all. A scanner catches the mistake after it has been made. Removing secrets from history is worth doing, but it does not undo the exposure - assume anything that reached a remote is compromised and rotate it.</p>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>TruffleHog Example</h3>
+          <pre><code># Scan a repository and keep only credentials the provider confirms are live
+trufflehog git https://github.com/example-org/repo --only-verified --json &gt; verified.json
+
+# Audit an entire folder that may contain images, archives and build output
+trufflehog filesystem ./exports --results=verified,unknown</code></pre>
+        </div>
+        <div>
+          <h3>Gitleaks Example</h3>
+          <pre><code># Write a baseline once, then fail only on secrets that are new since then
+gitleaks git . --baseline-path .gitleaks-baseline.json --report-format sarif --report-path gitleaks.sarif
+
+# Stop a secret before it is committed (pre-commit hook)
+gitleaks protect --staged --redact</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Does TruffleHog replace Gitleaks?</h3><p>No. They answer different questions. Gitleaks asks &quot;does this diff contain something that looks like a secret&quot;, and answers it in milliseconds, before the commit exists. TruffleHog asks &quot;is this credential still alive&quot;, which requires a network round trip and is worth paying for during an audit, not on every keystroke.</p>
+<h3>Are verified findings always live credentials?</h3><p>They are the strongest signal either tool produces, but treat them as evidence rather than proof. A provider may answer a verification request for an expired-but-recognised token, a key may be valid but scoped to nothing, and a detector may be matching a format that a different service also uses. Confirm in the provider console before you write the incident report.</p>
+<h3>Can Gitleaks scan only the commits in a pull request?</h3><p>Yes. In CI, pass the commit range to the git mode, for example --log-opts with the merge-base range, so the job looks at the change rather than the whole history. Scanning only the diff keeps runtime low, but it also means a secret committed before the job existed stays invisible until you run a full history scan.</p>
+<h3>How do I stop Gitleaks flagging a test fixture?</h3><p>Add the finding fingerprint to .gitleaksignore, or build a baseline file from a known-good commit and pass --baseline-path. Both are deliberate and reviewable, which is the point: an allowlist that lives in the repository shows up in code review, while a rule that silently ignores an entire file does not.</p>
+<h3>Is the AGPL licence a problem if we run TruffleHog in CI?</h3><p>Running an AGPL tool inside your own build pipeline is ordinary use and does not normally impose obligations on your code. The licence matters when you redistribute the software or offer a modified version as a service. If your company has a strict policy on copyleft licences, check before standardising on it - that is a question for your legal team, not for a comparison table.</p>
+<h3>What should we do when either tool finds a live key?</h3><p>Revoke first, investigate second. Issue a new credential, deploy it, then check the provider activity log for requests you cannot account for. Rotating is cheap and reversible; assuming nobody used the key is neither.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Academy Lessons &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/pentest/trufflehog"><strong>TruffleHog Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/pentest/gitleaks"><strong>Gitleaks Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/hash-inspector"><strong>Hash &amp; JWT Inspector</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/gobuster-vs-feroxbuster"><strong>Gobuster vs Feroxbuster</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a><a class="card card-pad card-link" href="/compare/nikto-vs-nuclei"><strong>Nikto vs Nuclei</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-1password"><strong>Bitwarden vs 1Password</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>
