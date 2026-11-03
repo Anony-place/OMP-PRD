@@ -146,6 +146,33 @@
   }
 
   var livePromise = null;
+
+  /* Hand-maintained STATIC_INDEX is only half the site. The other half is
+     generated from the built HTML by scripts/build-search-index.mjs — without
+     it, a visitor searching "curl" or "nikto" found nothing even though the
+     page exists. Local JSON, so it resolves instantly and never blocks search. */
+  var extraItems = [];
+  var extraPromise = null;
+  function fetchExtra() {
+    if (extraPromise) return extraPromise;
+    /* Wrapped because a browser without fetch() must still get a working
+       search box — the hand-listed index is the floor, not the ceiling. */
+    try { extraPromise = fetch('/assets/data/search-index.json', { credentials: 'same-origin' })
+      .then(function (r) { return r && r.ok ? r.json() : null; })
+      .then(function (doc) {
+        var list = doc && Array.isArray(doc.items) ? doc.items : [];
+        extraItems = list.filter(function (it) {
+          return it && typeof it.title === 'string' && typeof it.url === 'string' && it.title;
+        });
+        return extraItems;
+      })
+      .catch(function () { return extraItems; }); /* search still works without it */
+    } catch (e) {
+      extraPromise = Promise.resolve(extraItems);
+    }
+    return extraPromise;
+  }
+
   function buildItemsFromData(academy, articlesList, toolsList, productsList, osintList, pentestList) {
     var items = [];
     var seen = {};
@@ -319,7 +346,7 @@
   }
 
   function searchAll(q, live) {
-    var pool = STATIC_INDEX.concat(live || []);
+    var pool = STATIC_INDEX.concat(extraItems, live || []);
     var scored = [];
     var seen = {};
     for (var i = 0; i < pool.length; i++) {
@@ -508,6 +535,9 @@
     input.value = '';
     render();
     input.focus();
+    fetchExtra().then(function () {
+      if (overlay && !overlay.hidden) render(); /* generated pages (compare/cheat sheets/glossary) */
+    });
     fetchLive().then(function (items) {
       liveItems = items || [];
       if (overlay && !overlay.hidden) render(); /* re-render with fresh articles/tools */
@@ -665,6 +695,7 @@
     if (!injectTrigger()) return;
     buildOverlay();
     document.addEventListener('keydown', onGlobalKey);
+    fetchExtra(); /* warm the generated index before the first Ctrl+K */
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSearch);

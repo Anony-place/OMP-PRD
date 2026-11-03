@@ -44,22 +44,79 @@
   var navToggle = document.querySelector('[data-nav-toggle]');
   var mobileMenu = document.getElementById('mobile-menu');
   if (navToggle && mobileMenu) {
-    navToggle.addEventListener('click', function () {
-      var open = mobileMenu.classList.toggle('open');
+    var iconMenu = navToggle.querySelector('.icon-menu');
+    var iconClose = navToggle.querySelector('.icon-close');
+
+    /* One place sets every piece of menu state. Before this, the button-driven
+       path and the link-driven path disagreed, so tapping a link shut the menu
+       but left the toggle announcing "Close menu" on a closed menu. */
+    function setNavOpen(open, returnFocus) {
+      mobileMenu.classList.toggle('open', open);
       document.body.classList.toggle('nav-open', open);
       navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      navToggle.querySelector('.icon-menu').style.display = open ? 'none' : '';
-      navToggle.querySelector('.icon-close').style.display = open ? '' : 'none';
-    });
-    mobileMenu.addEventListener('click', function (e) {
-      if (e.target.closest('a')) {
-        mobileMenu.classList.remove('open');
-        document.body.classList.remove('nav-open');
-        navToggle.setAttribute('aria-expanded', 'false');
-        navToggle.querySelector('.icon-menu').style.display = '';
-        navToggle.querySelector('.icon-close').style.display = 'none';
+      if (iconMenu) iconMenu.style.display = open ? 'none' : '';
+      if (iconClose) iconClose.style.display = open ? '' : 'none';
+      if (open) {
+        /* The menu covers the page, so a screen reader must land inside it
+           instead of being left on the button with the page hidden behind. */
+        var first = mobileMenu.querySelector('a, button');
+        if (first) first.focus();
+      } else if (returnFocus) {
+        navToggle.focus();
       }
+    }
+
+    function navIsOpen() { return mobileMenu.classList.contains('open'); }
+    function navFocusables() {
+      var all = Array.prototype.slice.call(mobileMenu.querySelectorAll('a[href], button:not([disabled])'));
+      /* Prefer what is actually rendered, but never hand back an empty cycle if
+         layout information is unavailable — an empty list would let Tab escape. */
+      var visible = all.filter(function (el) { return el.getClientRects().length || el.offsetParent !== null; });
+      /* The toggle sits on top of the open menu and is the only visible way to
+         close it, so it belongs inside the cycle. Leaving it out stranded a
+         keyboard user in a loop of menu links. */
+      return [navToggle].concat(visible.length ? visible : all);
+    }
+
+    navToggle.addEventListener('click', function () {
+      var opening = !navIsOpen();
+      setNavOpen(opening, !opening); /* closing by button keeps focus on the button */
+    });
+
+    mobileMenu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNavOpen(false, false);
+    });
+
+    /* Escape is how a keyboard user expects to leave an open overlay. Without
+       this the only way out was to tab all the way back to the toggle. */
+    document.addEventListener('keydown', function (e) {
+      if (!navIsOpen()) return;
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        setNavOpen(false, true);
+        return;
+      }
+      /* Keep Tab inside the overlay: everything behind it is covered. */
+      if (e.key === 'Tab') {
+        var items = navFocusables();
+        if (!items.length) return;
+        var firstEl = items[0];
+        var lastEl = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === firstEl) {
+          e.preventDefault(); lastEl.focus();
+        } else if (!e.shiftKey && document.activeElement === lastEl) {
+          e.preventDefault(); firstEl.focus();
+        }
+      }
+    });
+
+    /* A resize past the breakpoint hides the menu via CSS. If it was open the
+       page would stay scroll-locked with no visible menu, so close it properly. */
+    window.addEventListener('resize', function () {
+      if (!navIsOpen()) return;
+      var toggleVisible = navToggle.getClientRects().length > 0;
+      if (!toggleVisible) setNavOpen(false, false);
     });
   }
 
