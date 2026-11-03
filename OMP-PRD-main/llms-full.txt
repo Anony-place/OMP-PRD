@@ -18,7 +18,7 @@
 - [OMP Academy Home](https://oopsmypassword.web.app/learning): 118+ interactive lessons with 4-question self-checks and Full/Step reader modes.
 - [OSINT Hub](https://oopsmypassword.web.app/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
-- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 12 head-to-head technical comparisons.
+- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 15 head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 10 interactive, printable command references.
 - [Security Glossary](https://oopsmypassword.web.app/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](https://oopsmypassword.web.app/articles): Long-form cybersecurity guides and threat analysis.
@@ -36,6 +36,9 @@
 - [OWASP Amass vs Subfinder: Subdomain Recon Comparison](https://oopsmypassword.web.app/compare/amass-vs-subfinder): Compare OWASP Amass and ProjectDiscovery Subfinder for passive subdomain discovery, ASN & BGP mapping, DNS brute-forcing, and Unix pipeline speed.
 - [Shodan vs Censys: Internet Exposure Search Comparison](https://oopsmypassword.web.app/compare/shodan-vs-censys): Compare Shodan and Censys for external attack-surface discovery, TLS certificate hunting, ICS/IoT banner analysis, and origin IP discovery behind CDNs.
 - [Wireshark vs tcpdump: Packet Capture & Analysis Guide](https://oopsmypassword.web.app/compare/wireshark-vs-tcpdump): Compare Wireshark and tcpdump for live network packet capture, BPF capture filters, display filter forensics, TLS decryption, and incident response.
+- [TruffleHog vs Gitleaks: Secret Scanning Compared](https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks): Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration and the false-positive trade-off.
+- [Gobuster vs Feroxbuster: Content Discovery Compared](https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster): Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where each one fits in a web assessment.
+- [Nikto vs Nuclei: Web Server Scanning Compared](https://oopsmypassword.web.app/compare/nikto-vs-nuclei): Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering and which scanner to run first.
 
 ## CLI Cheat Sheets
 - [Nmap Command Cheat Sheet: Discovery, Stealth & NSE](https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet): Copy-ready Nmap CLI commands for host discovery, SYN/TCP/UDP port scanning, service fingerprinting, NSE vulnerability scripts, and output formats.

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gobuster vs Feroxbuster: Content Discovery Compared</title>
+  <meta name="description" content="Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="Gobuster vs Feroxbuster: Content Discovery Compared">
+  <meta property="og:description" content="Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gobuster vs Feroxbuster: Content Discovery Compared">
+  <meta name="twitter:description" content="Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Gobuster vs Feroxbuster: Content Discovery Compared","description":"Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Feroxbuster always better than Gobuster?","acceptedAnswer":{"@type":"Answer","text":"No. Feroxbuster is better at one job - deep, recursive HTTP content discovery - and does not do DNS enumeration, virtual host discovery or cloud bucket checks at all. If you are mapping an unknown host, Gobuster covers four of those surfaces and Feroxbuster covers one."}},{"@type":"Question","name":"Which one is faster?","acceptedAnswer":{"@type":"Answer","text":"They are close enough that the answer depends on your settings, not the tool: thread count, rate limits, wordlist size and whether recursion is on all matter more than the language they are written in. A recursive Feroxbuster run sends far more requests than a flat Gobuster run, so raw speed comparisons between the two are usually comparing different amounts of work."}},{"@type":"Question","name":"Can they share wordlists?","acceptedAnswer":{"@type":"Answer","text":"Yes, and they should. Both read a plain newline-delimited wordlist, so the SecLists collections work unchanged: Wordlists like common.txt or raft-medium-directories.txt are the usual starting points. A custom wordlist built from the target technology stack will outperform any generic list with either tool."}},{"@type":"Question","name":"Why does Gobuster report every word as found?","acceptedAnswer":{"@type":"Answer","text":"The application is answering 200 to paths that do not exist. Pick a random string that is certain not to exist, request it, note the response length, and pass that number to --exclude-length. If the length varies slightly per request, add a second exclusion for line count or switch to a tool that calibrates automatically."}},{"@type":"Question","name":"Is content discovery legal without permission?","acceptedAnswer":{"@type":"Answer","text":"No. Directory brute-forcing sends thousands of unsolicited requests to a system, which is unauthorised access in most jurisdictions regardless of whether anything is exploited. Run these tools only against systems you own, your own lab, or a target with written authorisation that defines the scope and the allowed request rate."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Gobuster vs Feroxbuster","item":"https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>Gobuster vs Feroxbuster</span></nav>
+    <h1 class="h-1 mt-16">Gobuster vs Feroxbuster: Content Discovery Compared</h1>
+    <p class="lead mt-8">Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where each one fits in a web assessment.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> Gobuster is the dependable default for a fast, single-purpose sweep, and it is the only one of the two with DNS, vhost and cloud-bucket modes. Feroxbuster is the better choice when the target is a single application you expect to be deep - it recurses, filters soft-404s automatically and harvests new paths from the responses it already received.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Gobuster if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for breadth: dedicated dir, dns, vhost, fuzz, s3 and gcs modes, a tiny memory footprint, and output that is easy to diff between runs. Reach for it when you need the whole hostname or DNS surface, not one site.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Feroxbuster if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for depth: recursive by default, auto-calibrated against wildcard responses, extension-aware, able to resume an interrupted scan, and it extracts links from the pages it has already fetched.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Gobuster</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Feroxbuster</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Written in</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Go</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Rust</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Recursion</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Not built in - you script it or run a second pass per directory found</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Default behaviour, depth controlled with --depth</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Wildcard / soft-404 handling</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Manual: compare response length and pass --exclude-length</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Automatic calibration, plus --autotune to retune if the server starts lying mid-scan</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Enumeration modes</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">dir, dns, vhost, fuzz, s3, gcs - each a separate subcommand</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">HTTP content discovery, with link extraction and forced extension collection</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Extension handling</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">-x to append a fixed list to every request</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">-x for a fixed list, or --collect-extensions to learn extensions from a response</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Finding new targets</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">No - it only tests words you give it</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--extract-links reads the responses it already has and queues the paths it finds</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Resuming after a timeout</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Not supported; start again</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--resume-from reloads the previous state file</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Filtering options</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Status codes (-b) and response length</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Status, size, word count, line count and regex, on both include and exclude</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Rate and thread control</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">-t threads, --delay between requests</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--rate-limit, --time-limit, and a configurable thread ceiling</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Configuration</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Command-line flags only</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">ferox-config.toml plus per-directory defaults</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Typical in-the-field use</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Fast first sweep, then DNS and vhost work on the same host</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Long, unattended recursive crawl of one application</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">Recursion is the real fork in the road</h2>
+      <p>The first request finds /admin/. The interesting question is what sits behind it. Gobuster has no answer to that on its own: it reports /admin/ and moves on, and finding /admin/backup/ means running the whole wordlist again with a different URL, for every directory you find. Scripting that loop by hand is where most people first reach for a different tool.</p>
+      <p>Feroxbuster treats recursion as the normal case. Give it a URL and a wordlist and it keeps going: every directory it discovers becomes a new base for the same wordlist, until --depth is reached. A single command therefore covers a tree that would otherwise need a shell loop with bookkeeping, and it keeps a state file so a scan interrupted by a network drop can continue rather than restart.</p>
+      <p>The cost is traffic. Recursion multiplies the number of requests by the number of directories found, and an application with twenty nested paths is suddenly a five-figure request count. On a production target that is exactly the volume that gets you noticed, or rate-limited, or asked to stop. Set --rate-limit and --time-limit before you start, not after.</p>
+      <h2 class="mt-32">Wildcard responses will ruin your results</h2>
+      <p>Many modern applications answer 200 to everything, serving a friendly &quot;page not found&quot; page with the same layout for any path you invent. A scanner that trusts the status code reports every single word in the wordlist as a hit. The report is not just noisy - it is useless, because the one real directory is somewhere in nine thousand identical lines.</p>
+      <p>The fix is calibration: request a handful of paths that almost certainly do not exist, record the shape of the response (status, length, word count, line count), and treat anything matching that shape as noise. Gobuster makes you do this by hand - notice the length of a random path, then pass --exclude-length. It works, and it is fast once you know the number.</p>
+      <p>Feroxbuster measures it for you before the scan starts, and --autotune re-checks periodically because some servers answer differently once you send real traffic. This is the single biggest practical difference between the two, and it is why an unattended overnight scan is a Feroxbuster job.</p>
+      <h2 class="mt-32">Gobuster is not only a directory tool</h2>
+      <p>The comparison usually stops at directories, which undersells Gobuster. Its dns mode resolves subdomains against a resolver, vhost mode probes the Host header while keeping the same IP, and the s3 and gcs modes check bucket names on cloud storage endpoints. Feroxbuster has no equivalent: it is an HTTP content discovery tool and does not speak DNS or talk to bucket APIs.</p>
+      <p>In a real assessment the two are used one after the other. Gobuster vhost and dns modes map the host surface; Feroxbuster crawls the applications that surface. Choosing between them only matters if you were going to install just one, and the honest answer there is Gobuster, because it covers more ground before you know what the target looks like.</p>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>Gobuster Example</h3>
+          <pre><code># Directory sweep, excluding a known 4242-byte soft-404 page
+gobuster dir -u https://target.example.com -w /usr/share/seclists/Discovery/Web-Content/common.txt -x php,html,js -b 404,403 --exclude-length 4242 -t 30
+
+# Virtual host discovery on the same IP
+gobuster vhost -u https://target.example.com -w subdomains.txt --append-domain</code></pre>
+        </div>
+        <div>
+          <h3>Feroxbuster Example</h3>
+          <pre><code># Recursive crawl with automatic wildcard calibration and a request ceiling
+feroxbuster -u https://target.example.com -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,js --depth 3 --rate-limit 80 --time-limit 30m --extract-links
+
+# Continue an interrupted scan where it stopped
+feroxbuster --resume-from ferox-1717440000.state</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Is Feroxbuster always better than Gobuster?</h3><p>No. Feroxbuster is better at one job - deep, recursive HTTP content discovery - and does not do DNS enumeration, virtual host discovery or cloud bucket checks at all. If you are mapping an unknown host, Gobuster covers four of those surfaces and Feroxbuster covers one.</p>
+<h3>Which one is faster?</h3><p>They are close enough that the answer depends on your settings, not the tool: thread count, rate limits, wordlist size and whether recursion is on all matter more than the language they are written in. A recursive Feroxbuster run sends far more requests than a flat Gobuster run, so raw speed comparisons between the two are usually comparing different amounts of work.</p>
+<h3>Can they share wordlists?</h3><p>Yes, and they should. Both read a plain newline-delimited wordlist, so the SecLists collections work unchanged: Wordlists like common.txt or raft-medium-directories.txt are the usual starting points. A custom wordlist built from the target technology stack will outperform any generic list with either tool.</p>
+<h3>Why does Gobuster report every word as found?</h3><p>The application is answering 200 to paths that do not exist. Pick a random string that is certain not to exist, request it, note the response length, and pass that number to --exclude-length. If the length varies slightly per request, add a second exclusion for line count or switch to a tool that calibrates automatically.</p>
+<h3>Is content discovery legal without permission?</h3><p>No. Directory brute-forcing sends thousands of unsolicited requests to a system, which is unauthorised access in most jurisdictions regardless of whether anything is exploited. Run these tools only against systems you own, your own lab, or a target with written authorisation that defines the scope and the allowed request rate.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Academy Lessons &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/pentest/ffuf"><strong>ffuf Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/compare/ffuf-vs-gobuster"><strong>ffuf vs Gobuster Comparison</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/cheatsheets/ffuf-web-fuzzing-cheatsheet"><strong>ffuf Web Fuzzing Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/nikto-vs-nuclei"><strong>Nikto vs Nuclei</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-1password"><strong>Bitwarden vs 1Password</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-proton-pass"><strong>Bitwarden vs Proton Pass</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -204,6 +204,13 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: Every comparison is reachable
+        working-directory: OMP-PRD-main
+        # A comparison needs three edits in two files: the COMPARISONS entry, a
+        # route in sitemap-core.mjs, and the build. Miss the route and the page
+        # renders, links fine, and appears in no sitemap - no error, no traffic.
+        run: node tools/test_comparisons_wired.mjs
+
       - name: The generator reads every column its template uses
         working-directory: OMP-PRD-main
         # The article template has always supported per-article SEO overrides;

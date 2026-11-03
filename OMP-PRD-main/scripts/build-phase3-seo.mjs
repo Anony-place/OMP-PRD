@@ -575,6 +575,216 @@ export const COMPARISONS = [
       { label: 'Wireshark Display Filters Cheat Sheet', url: '/cheatsheets/wireshark-display-filters-cheatsheet' },
       { label: 'Packets & Layered Stack Lesson', url: '/learning/cyber-security/cyber-security-track/packets-and-the-layered-stack' }
     ]
+  },
+  {
+    slug: 'trufflehog-vs-gitleaks',
+    title: 'TruffleHog vs Gitleaks: Secret Scanning Compared',
+    shortTitle: 'TruffleHog vs Gitleaks',
+    category: 'Web App Security',
+    toolA: 'TruffleHog',
+    toolB: 'Gitleaks',
+    published: '2026-11-03',
+    updated: '2026-11-03',
+    summary: 'Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration and the false-positive trade-off.',
+    quickAnswer: 'Use Gitleaks to stop secrets from being committed - it is fast, MIT-licensed and belongs in a pre-commit hook. Use TruffleHog when you already have a mess to clean up, because it verifies findings against the provider and tells you which keys are still live.',
+    verdictA: 'Best for audits and incident triage: verifies each finding against the real provider API, scans git, S3, Docker images, CI logs and whole organisations, so a 900-finding report collapses into the handful of keys that actually work.',
+    verdictB: 'Best for prevention: a fast, dependency-free binary with readable TOML rules, fingerprints to ignore accepted legacy findings, and a pre-commit hook that stops the secret before it ever enters history.',
+    rows: [
+      ['Written in', 'Go - single static binary, Docker image, official GitHub Action', 'Go - single static binary, Docker image, official GitHub Action'],
+      ['Detection model', 'Verified detectors: pattern match, then an optional live check against the provider API', 'Rules: regular expressions plus entropy scoring, defined in TOML'],
+      ['Are findings verified?', 'Yes - --only-verified keeps only credentials the provider confirms are active', 'No - matching only; a live key and a dead one look identical'],
+      ['Sources it can scan', 'Git history, filesystem, S3, GCS, Docker images, CircleCI and GitHub Actions logs, whole GitHub/GitLab organisations', 'Git history, a directory tree, or standard input'],
+      ['Custom rules', 'Custom detectors, written in Go and compiled into the tool', 'Drop a TOML file with a regex and an entropy floor - no code'],
+      ['Ignoring accepted findings', 'Exclusions and result filtering on re-runs', 'Fingerprint file (.gitleaksignore) and --baseline-path for a known-findings baseline'],
+      ['Speed', 'Fast when matching; slower with verification on, because each hit is an outbound HTTPS call', 'Very fast - no network calls, no verification stage'],
+      ['Output formats', 'JSON, plus a plain listing', 'JSON, CSV, SARIF, JUnit - SARIF uploads straight to GitHub code scanning'],
+      ['Pre-commit hook', 'Possible, but heavy for every commit', 'Purpose-built: gitleaks protect --staged'],
+      ['Licence', 'AGPL-3.0, with a paid enterprise edition', 'MIT'],
+      ['Best first use', 'A quarterly audit across every repository and bucket you own', 'A pre-commit hook and a CI job on every pull request']
+    ],
+    sections: [
+      {
+        heading: 'Why verification changes the triage',
+        paragraphs: [
+          'A secret scanner has one job that matters more than coverage: telling you which findings are real. Both tools find keys. Only one tells you whether the key still works.',
+          'Run Gitleaks across ten repositories and you will get a report with hundreds of entries. Some are AWS keys that were rotated in 2023, some are example strings in test fixtures, some are live. The report does not distinguish, so a human has to open every hit and check it by hand. In practice that means the report gets skimmed, the live key on page nine gets missed, and the scan becomes something the team learns to ignore.',
+          'TruffleHog takes the same hits and calls the provider with each one. An AWS key is checked with STS, a GitHub token with the user endpoint, a Stripe key with a harmless read. What comes back is two lists: credentials the provider accepted, and everything else. The first list is usually short enough to fix today.',
+          'That difference is not a feature on a comparison table. It decides whether the tool changes behaviour.'
+        ],
+        bullets: [
+          'A verified finding is evidence that something is exposed now, which is usually enough to justify an emergency rotation.',
+          'An unverified finding is a lead. It may be a dead key, a placeholder, or a key that was never valid.',
+          'Verification costs network calls, so it belongs in audits and scheduled runs - not in the pre-commit hook that has to finish in under a second.'
+        ]
+      },
+      {
+        heading: 'Where each one belongs in a pipeline',
+        paragraphs: [
+          'The two tools are not competing for the same slot. Putting them on a timeline makes the split obvious.',
+          'Before the commit, Gitleaks runs as a pre-commit hook and refuses the commit. Nothing has been pushed, nothing needs rotating, and the cost of the finding is a nuisance rather than an incident. This is the only stage where a secret scan is cheap.',
+          'On the pull request, either tool works. Gitleaks is the lighter choice because a diff is small and the run has to finish quickly; SARIF output gives inline annotations on the exact line. TruffleHog adds value here only if you configure verification, which turns a red build into a clear message: this key is live, rotate it now.',
+          'On a schedule, TruffleHog earns its place. Point it at every repository in the organisation, at the buckets, and at the Docker images that were built before anyone set up the hook. This is the run that finds the secret committed two years ago, which no pre-commit hook will ever see.'
+        ]
+      },
+      {
+        heading: 'The limits both tools share',
+        paragraphs: [
+          'Neither tool can find a format it does not know. An internal API key with a custom prefix, a licence key in a base64 blob, or a password split across two variables will pass both scanners. If your organisation has its own token format, Gitleaks needs a TOML rule and TruffleHog needs a custom detector; neither ships with knowledge of your private systems.',
+          'Neither tool rotates anything. Finding a live key is the start of an incident, not the end of one: the credential has to be revoked at the provider, issued again, redeployed, and the old one checked in the provider logs for use that was not yours.',
+          'And neither is a substitute for not storing secrets in repositories at all. A scanner catches the mistake after it has been made. Removing secrets from history is worth doing, but it does not undo the exposure - assume anything that reached a remote is compromised and rotate it.'
+        ]
+      }
+    ],
+    workflowA: '# Scan a repository and keep only credentials the provider confirms are live\ntrufflehog git https://github.com/example-org/repo --only-verified --json > verified.json\n\n# Audit an entire folder that may contain images, archives and build output\ntrufflehog filesystem ./exports --results=verified,unknown',
+    workflowB: '# Write a baseline once, then fail only on secrets that are new since then\ngitleaks git . --baseline-path .gitleaks-baseline.json --report-format sarif --report-path gitleaks.sarif\n\n# Stop a secret before it is committed (pre-commit hook)\ngitleaks protect --staged --redact',
+    faqs: [
+      { q: 'Does TruffleHog replace Gitleaks?', a: 'No. They answer different questions. Gitleaks asks "does this diff contain something that looks like a secret", and answers it in milliseconds, before the commit exists. TruffleHog asks "is this credential still alive", which requires a network round trip and is worth paying for during an audit, not on every keystroke.' },
+      { q: 'Are verified findings always live credentials?', a: 'They are the strongest signal either tool produces, but treat them as evidence rather than proof. A provider may answer a verification request for an expired-but-recognised token, a key may be valid but scoped to nothing, and a detector may be matching a format that a different service also uses. Confirm in the provider console before you write the incident report.' },
+      { q: 'Can Gitleaks scan only the commits in a pull request?', a: 'Yes. In CI, pass the commit range to the git mode, for example --log-opts with the merge-base range, so the job looks at the change rather than the whole history. Scanning only the diff keeps runtime low, but it also means a secret committed before the job existed stays invisible until you run a full history scan.' },
+      { q: 'How do I stop Gitleaks flagging a test fixture?', a: 'Add the finding fingerprint to .gitleaksignore, or build a baseline file from a known-good commit and pass --baseline-path. Both are deliberate and reviewable, which is the point: an allowlist that lives in the repository shows up in code review, while a rule that silently ignores an entire file does not.' },
+      { q: 'Is the AGPL licence a problem if we run TruffleHog in CI?', a: 'Running an AGPL tool inside your own build pipeline is ordinary use and does not normally impose obligations on your code. The licence matters when you redistribute the software or offer a modified version as a service. If your company has a strict policy on copyleft licences, check before standardising on it - that is a question for your legal team, not for a comparison table.' },
+      { q: 'What should we do when either tool finds a live key?', a: 'Revoke first, investigate second. Issue a new credential, deploy it, then check the provider activity log for requests you cannot account for. Rotating is cheap and reversible; assuming nobody used the key is neither.' }
+    ],
+    relatedLinks: [
+      { label: 'TruffleHog Pentest Guide', url: '/pentest/trufflehog' },
+      { label: 'Gitleaks Pentest Guide', url: '/pentest/gitleaks' },
+      { label: 'Hash & JWT Inspector', url: '/hash-inspector' }
+    ]
+  },
+  {
+    slug: 'gobuster-vs-feroxbuster',
+    title: 'Gobuster vs Feroxbuster: Content Discovery Compared',
+    shortTitle: 'Gobuster vs Feroxbuster',
+    category: 'Web App Security',
+    toolA: 'Gobuster',
+    toolB: 'Feroxbuster',
+    published: '2026-11-03',
+    updated: '2026-11-03',
+    summary: 'Compare Gobuster and Feroxbuster for directory and content discovery: recursion, wildcard filtering, extension handling, link extraction, speed and where each one fits in a web assessment.',
+    quickAnswer: 'Gobuster is the dependable default for a fast, single-purpose sweep, and it is the only one of the two with DNS, vhost and cloud-bucket modes. Feroxbuster is the better choice when the target is a single application you expect to be deep - it recurses, filters soft-404s automatically and harvests new paths from the responses it already received.',
+    verdictA: 'Best for breadth: dedicated dir, dns, vhost, fuzz, s3 and gcs modes, a tiny memory footprint, and output that is easy to diff between runs. Reach for it when you need the whole hostname or DNS surface, not one site.',
+    verdictB: 'Best for depth: recursive by default, auto-calibrated against wildcard responses, extension-aware, able to resume an interrupted scan, and it extracts links from the pages it has already fetched.',
+    rows: [
+      ['Written in', 'Go', 'Rust'],
+      ['Recursion', 'Not built in - you script it or run a second pass per directory found', 'Default behaviour, depth controlled with --depth'],
+      ['Wildcard / soft-404 handling', 'Manual: compare response length and pass --exclude-length', 'Automatic calibration, plus --autotune to retune if the server starts lying mid-scan'],
+      ['Enumeration modes', 'dir, dns, vhost, fuzz, s3, gcs - each a separate subcommand', 'HTTP content discovery, with link extraction and forced extension collection'],
+      ['Extension handling', '-x to append a fixed list to every request', '-x for a fixed list, or --collect-extensions to learn extensions from a response'],
+      ['Finding new targets', 'No - it only tests words you give it', '--extract-links reads the responses it already has and queues the paths it finds'],
+      ['Resuming after a timeout', 'Not supported; start again', '--resume-from reloads the previous state file'],
+      ['Filtering options', 'Status codes (-b) and response length', 'Status, size, word count, line count and regex, on both include and exclude'],
+      ['Rate and thread control', '-t threads, --delay between requests', '--rate-limit, --time-limit, and a configurable thread ceiling'],
+      ['Configuration', 'Command-line flags only', 'ferox-config.toml plus per-directory defaults'],
+      ['Typical in-the-field use', 'Fast first sweep, then DNS and vhost work on the same host', 'Long, unattended recursive crawl of one application']
+    ],
+    sections: [
+      {
+        heading: 'Recursion is the real fork in the road',
+        paragraphs: [
+          'The first request finds /admin/. The interesting question is what sits behind it. Gobuster has no answer to that on its own: it reports /admin/ and moves on, and finding /admin/backup/ means running the whole wordlist again with a different URL, for every directory you find. Scripting that loop by hand is where most people first reach for a different tool.',
+          'Feroxbuster treats recursion as the normal case. Give it a URL and a wordlist and it keeps going: every directory it discovers becomes a new base for the same wordlist, until --depth is reached. A single command therefore covers a tree that would otherwise need a shell loop with bookkeeping, and it keeps a state file so a scan interrupted by a network drop can continue rather than restart.',
+          'The cost is traffic. Recursion multiplies the number of requests by the number of directories found, and an application with twenty nested paths is suddenly a five-figure request count. On a production target that is exactly the volume that gets you noticed, or rate-limited, or asked to stop. Set --rate-limit and --time-limit before you start, not after.'
+        ]
+      },
+      {
+        heading: 'Wildcard responses will ruin your results',
+        paragraphs: [
+          'Many modern applications answer 200 to everything, serving a friendly "page not found" page with the same layout for any path you invent. A scanner that trusts the status code reports every single word in the wordlist as a hit. The report is not just noisy - it is useless, because the one real directory is somewhere in nine thousand identical lines.',
+          'The fix is calibration: request a handful of paths that almost certainly do not exist, record the shape of the response (status, length, word count, line count), and treat anything matching that shape as noise. Gobuster makes you do this by hand - notice the length of a random path, then pass --exclude-length. It works, and it is fast once you know the number.',
+          'Feroxbuster measures it for you before the scan starts, and --autotune re-checks periodically because some servers answer differently once you send real traffic. This is the single biggest practical difference between the two, and it is why an unattended overnight scan is a Feroxbuster job.'
+        ]
+      },
+      {
+        heading: 'Gobuster is not only a directory tool',
+        paragraphs: [
+          'The comparison usually stops at directories, which undersells Gobuster. Its dns mode resolves subdomains against a resolver, vhost mode probes the Host header while keeping the same IP, and the s3 and gcs modes check bucket names on cloud storage endpoints. Feroxbuster has no equivalent: it is an HTTP content discovery tool and does not speak DNS or talk to bucket APIs.',
+          'In a real assessment the two are used one after the other. Gobuster vhost and dns modes map the host surface; Feroxbuster crawls the applications that surface. Choosing between them only matters if you were going to install just one, and the honest answer there is Gobuster, because it covers more ground before you know what the target looks like.'
+        ]
+      }
+    ],
+    workflowA: '# Directory sweep, excluding a known 4242-byte soft-404 page\ngobuster dir -u https://target.example.com -w /usr/share/seclists/Discovery/Web-Content/common.txt -x php,html,js -b 404,403 --exclude-length 4242 -t 30\n\n# Virtual host discovery on the same IP\ngobuster vhost -u https://target.example.com -w subdomains.txt --append-domain',
+    workflowB: '# Recursive crawl with automatic wildcard calibration and a request ceiling\nferoxbuster -u https://target.example.com -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,js --depth 3 --rate-limit 80 --time-limit 30m --extract-links\n\n# Continue an interrupted scan where it stopped\nferoxbuster --resume-from ferox-1717440000.state',
+    faqs: [
+      { q: 'Is Feroxbuster always better than Gobuster?', a: 'No. Feroxbuster is better at one job - deep, recursive HTTP content discovery - and does not do DNS enumeration, virtual host discovery or cloud bucket checks at all. If you are mapping an unknown host, Gobuster covers four of those surfaces and Feroxbuster covers one.' },
+      { q: 'Which one is faster?', a: 'They are close enough that the answer depends on your settings, not the tool: thread count, rate limits, wordlist size and whether recursion is on all matter more than the language they are written in. A recursive Feroxbuster run sends far more requests than a flat Gobuster run, so raw speed comparisons between the two are usually comparing different amounts of work.' },
+      { q: 'Can they share wordlists?', a: 'Yes, and they should. Both read a plain newline-delimited wordlist, so the SecLists collections work unchanged: Wordlists like common.txt or raft-medium-directories.txt are the usual starting points. A custom wordlist built from the target technology stack will outperform any generic list with either tool.' },
+      { q: 'Why does Gobuster report every word as found?', a: 'The application is answering 200 to paths that do not exist. Pick a random string that is certain not to exist, request it, note the response length, and pass that number to --exclude-length. If the length varies slightly per request, add a second exclusion for line count or switch to a tool that calibrates automatically.' },
+      { q: 'Is content discovery legal without permission?', a: 'No. Directory brute-forcing sends thousands of unsolicited requests to a system, which is unauthorised access in most jurisdictions regardless of whether anything is exploited. Run these tools only against systems you own, your own lab, or a target with written authorisation that defines the scope and the allowed request rate.' }
+    ],
+    relatedLinks: [
+      { label: 'ffuf Pentest Guide', url: '/pentest/ffuf' },
+      { label: 'ffuf vs Gobuster Comparison', url: '/compare/ffuf-vs-gobuster' },
+      { label: 'ffuf Web Fuzzing Cheat Sheet', url: '/cheatsheets/ffuf-web-fuzzing-cheatsheet' }
+    ]
+  },
+  {
+    slug: 'nikto-vs-nuclei',
+    title: 'Nikto vs Nuclei: Web Server Scanning Compared',
+    shortTitle: 'Nikto vs Nuclei',
+    category: 'Web App Security',
+    toolA: 'Nikto',
+    toolB: 'Nuclei',
+    published: '2026-11-03',
+    updated: '2026-11-03',
+    summary: 'Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering and which scanner to run first.',
+    quickAnswer: 'Nuclei is the scanner you build a workflow around: a YAML template engine with thousands of community checks, severity filtering and enough concurrency to scan a large estate. Nikto is the quick, legacy sanity check for server misconfiguration - still cheap to run, still noisy, still useful on an old box you have never seen before.',
+    verdictA: 'Best for a first look at an unfamiliar web server: a single command that reports outdated components, dangerous files left in place, missing security headers and default pages, with no template setup at all.',
+    verdictB: 'Best for everything after that: templates you can read and write in an afternoon, protocol coverage beyond HTTP, severity-based triage, and the concurrency to run the same checks across hundreds of hosts.',
+    rows: [
+      ['Written in', 'Perl - needs a Perl runtime', 'Go - single static binary'],
+      ['Detection model', 'A fixed set of checks shipped with the tool', 'A YAML template engine; the checks are files you can read, edit and add'],
+      ['Check coverage', 'Several thousand potentially dangerous files, CGI paths and server-version checks', 'Thousands of community templates covering CVEs, misconfigurations, exposures and default logins'],
+      ['Protocols', 'HTTP and HTTPS', 'HTTP, DNS, TCP, SSL, WebSocket, headless browser and local code'],
+      ['Custom checks', 'Requires editing Perl plugins inside the tool', 'Drop a .yaml file in a templates directory - no code'],
+      ['Severity filtering', 'None - every finding has the same weight', 'Yes: -severity critical,high,medium'],
+      ['Concurrency', 'Largely sequential; slow against a large estate', 'Highly concurrent, with tunable rate limits'],
+      ['False positives', 'Common: version-banner matching reports issues an updated build has already fixed', 'Depends entirely on template quality; matchers can require a specific response body'],
+      ['Session and auth handling', 'Basic auth and a static cookie', 'Full request templating, so authenticated flows are expressible'],
+      ['Staying current', 'Slow release cadence; the bundled database ages with the install', 'Templates update daily and independently of the binary'],
+      ['Reporting', 'Text, HTML, XML, CSV, JSON', 'JSON, JSONL, SARIF and JUnit, with integrations for ticketing and dashboards'],
+      ['Best first use', 'A five-minute misconfiguration sweep of a single host', 'A recurring scan across everything you own, triaged by severity']
+    ],
+    sections: [
+      {
+        heading: 'What each one is actually for',
+        paragraphs: [
+          'These tools are often listed together as "web vulnerability scanners", which hides the fact that they were built for different decades and different problems.',
+          'Nikto was written to answer a narrow question: what is wrong with this web server? It looks for files that should not be reachable (backup archives, admin scripts, sample applications), server software old enough to have known problems, and headers that suggest a default or careless configuration. It is a checklist with a network client attached. That is genuinely useful on an unfamiliar host, and it takes one command.',
+          'Nuclei is a framework. The binary contains almost no checks; the checks arrive as YAML files, and the community writes thousands of them. Each template describes a request and the conditions that make a response a finding, so a template can be as simple as "GET /server-status and expect 200 with these fields" or as specific as "send this CVE proof-of-concept payload and look for this exact string". That design is what makes it the de facto standard for continuous scanning: the engine stays small and the coverage grows without reinstalling anything.'
+        ]
+      },
+      {
+        heading: 'Version banners lie',
+        paragraphs: [
+          'The largest practical gap between the two is how each decides something is a finding.',
+          'Nikto leans on the server banner. If Apache reports 2.4.49, Nikto can report the vulnerabilities associated with that version. Distributions backport security fixes without changing the version string, so the same banner can describe a fully patched server and a vulnerable one. This is the root of Nikto\'s reputation for noise: on a well-maintained system it can produce a long report that any experienced engineer will discard within a minute.',
+          'Nuclei templates can be written to require evidence. A version check can be combined with a request that only succeeds on the vulnerable build, and the matcher can insist on a token in the response body. This does not make Nuclei immune to false positives - a badly written template will still lie - but it makes accuracy a property of the template rather than of the tool.',
+          'Neither approach replaces manual verification. A finding that has not been reproduced by a human is a lead.'
+        ]
+      },
+      {
+        heading: 'Where Nikto still earns a place',
+        paragraphs: [
+          'It is fashionable to call Nikto obsolete. That is too strong. Its check database covers a long tail of legacy paths - old CGI directories, sample scripts, backup naming conventions - that community template authors have little reason to write, because nobody scans a 2011 install any more. When the target genuinely is an old box, that coverage is the point.',
+          'It also requires no setup. There is no template directory, no version pinning, no update step to forget. On a fresh assessment of an unknown host, running it costs a minute and occasionally finds something nobody expected.',
+          'What it should not be is the scanner you build a programme around. It has no severity model, no maintained template ecosystem and no concurrency to speak of, and an organisation that wants to scan two hundred hosts on a schedule needs all three.'
+        ]
+      }
+    ],
+    workflowA: '# Quick misconfiguration sweep of one host, tuning out noisy classes of check\ntarget=$(mktemp)\nprintf "%s\\n" "https://target.example.com" > "$target"\nnikto -h "$target" -Tuning 123bde -maxtime 10m -o nikto-report.html -Format html\n\n# Re-run against the same host with a specific cookie, skipping DoS checks\nnikto -h https://target.example.com -C "session=abc123" -Tuning x',
+    workflowB: '# Update templates, then scan by severity across a list of targets\nnuclei -update-templates\nnuclei -l targets.txt -severity critical,high -rate-limit 150 -stats -jsonl -o nuclei-findings.jsonl\n\n# Run one tag only, for a focused retest\nnuclei -u https://target.example.com -tags exposure,config -severity medium,high',
+    faqs: [
+      { q: 'Should I still run Nikto in 2026?', a: 'Yes, on one condition: treat its output as a list of things to check, not a list of vulnerabilities. It costs a minute and occasionally finds a leftover backup archive or an exposed status page. On a maintained host, expect most of the report to be version-banner noise you dismiss after a glance.' },
+      { q: 'Can Nuclei fully replace Nikto?', a: 'Mostly, for modern targets. The gap is the legacy long tail: obscure CGI paths, old sample scripts and backup naming conventions that the community has little reason to template. If you scan old infrastructure regularly, keeping Nikto in the toolbox costs nothing.' },
+      { q: 'How do I keep Nuclei templates current?', a: 'Run nuclei -update-templates before a scan, or pin a template version in CI so results are reproducible. Pinning matters more than updating: an unpinned template set can turn a previously clean target red because somebody else added a check overnight, and that makes the scan impossible to compare against last week.' },
+      { q: 'Do either of these tools exploit a vulnerability?', a: 'Neither performs post-exploitation. Nuclei templates can send a proof-of-concept request that demonstrates a flaw - which can still change server state or crash a fragile service - and Nikto mostly reads. Run both only against systems you are authorised to test, and never enable aggressive template categories against production without a maintenance window.' },
+      { q: 'Which one should I run first on an unknown target?', a: 'Nikto first, because it answers a cheap question - is this box neglected - in about a minute. Then Nuclei by severity, because that is where the findings that matter will be. Running a full Nuclei scan before the cheap sanity check usually means triaging noise first.' }
+    ],
+    relatedLinks: [
+      { label: 'Nikto Pentest Guide', url: '/pentest/nikto' },
+      { label: 'Nuclei Pentest Guide', url: '/pentest/nuclei' },
+      { label: 'Burp Suite vs OWASP ZAP', url: '/compare/burp-suite-vs-owasp-zap' }
+    ]
   }
 ];
 
@@ -1632,8 +1842,8 @@ function buildComparisonsCluster() {
       '@type': 'Article',
       headline: c.title,
       description: clampDesc(c.summary),
-      datePublished: '2026-09-15',
-      dateModified: '2026-10-29',
+      datePublished: c.published || '2026-09-15',
+      dateModified: c.updated || '2026-10-29',
       mainEntityOfPage: canonical,
       author: { '@type': 'Organization', name: 'OopsMyPassword', url: `${SITE}/` },
       publisher: { '@type': 'Organization', name: 'OopsMyPassword', url: SITE },
@@ -1665,6 +1875,21 @@ function buildComparisonsCluster() {
         <td style="padding:12px;border-bottom:1px solid var(--border)">${esc(valB)}</td>
       </tr>`).join('');
 
+    /* Optional long-form fields. A comparison that sets neither produces
+       exactly the markup it did before, so the twelve original pages do not
+       change by a single whitespace character. */
+    const quickAnswerHtml = c.quickAnswer
+      ? `<div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> ${esc(c.quickAnswer)}</p></div>\n      `
+      : '';
+    const sectionsHtml = (Array.isArray(c.sections) ? c.sections : []).map((sec) => {
+      const paras = (sec.paragraphs || []).map((para) => `<p>${esc(para)}</p>`).join('\n      ');
+      const bullets = sec.bullets && sec.bullets.length ? `<ul>${sec.bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : '';
+      const table = sec.table
+        ? `<div style="overflow-x:auto;margin-top:16px"><table style="width:100%;border-collapse:collapse;text-align:left"><thead><tr>${sec.table.head.map((h) => `<th style="padding:12px;border-bottom:2px solid var(--border)">${esc(h)}</th>`).join('')}</tr></thead><tbody>${sec.table.rows.map((r) => `<tr>${r.map((cell) => `<td style="padding:12px;border-bottom:1px solid var(--border)">${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+        : '';
+      return `<h2 class="mt-32">${esc(sec.heading)}</h2>\n      ${paras}${bullets}${table}\n      `;
+    }).join('');
+
     const bodyHtml = `
 <section class="article-hero">
   <div class="container container-narrow">
@@ -1676,7 +1901,7 @@ function buildComparisonsCluster() {
 <section class="section-tight">
   <div class="container container-narrow">
     <article class="prose">
-      <h2>Executive Verdict: When to Choose Each</h2>
+      ${quickAnswerHtml}<h2>Executive Verdict: When to Choose Each</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <div class="card card-pad">
           <h3 class="h-3" style="margin-top:0">Choose ${esc(c.toolA)} if…</h3>
@@ -1702,7 +1927,7 @@ function buildComparisonsCluster() {
         </table>
       </div>
 
-      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      ${sectionsHtml}<h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <div>
           <h3>${esc(c.toolA)} Example</h3>
@@ -2572,9 +2797,9 @@ ${feedItems.map((it) => `    <item>
 - [OMP Academy Home](${SITE}/learning): 118+ interactive lessons with 4-question self-checks and Full/Step reader modes.
 - [OSINT Hub](${SITE}/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
 - [Pentest Hub](${SITE}/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
-- [Tool Comparisons Hub](${SITE}/compare): 12 head-to-head technical comparisons.
-- [CLI Cheat Sheets Hub](${SITE}/cheatsheets): 10 interactive, printable command references.
-- [Security Glossary](${SITE}/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
+- [Tool Comparisons Hub](${SITE}/compare): ${COMPARISONS.length} head-to-head technical comparisons.
+- [CLI Cheat Sheets Hub](${SITE}/cheatsheets): ${CHEATSHEETS.length} interactive, printable command references.
+- [Security Glossary](${SITE}/glossary): ${GLOSSARY_TERMS.length} foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](${SITE}/articles): Long-form cybersecurity guides and threat analysis.
 `;
   fs.writeFileSync(path.join(ROOT, 'llms.txt'), llmsTxt);

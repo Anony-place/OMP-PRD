@@ -162,6 +162,9 @@ https://oopsmypassword.web.app/compare/sherlock-vs-maigret
 https://oopsmypassword.web.app/compare/amass-vs-subfinder
 https://oopsmypassword.web.app/compare/shodan-vs-censys
 https://oopsmypassword.web.app/compare/wireshark-vs-tcpdump
+https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks
+https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster
+https://oopsmypassword.web.app/compare/nikto-vs-nuclei
 https://oopsmypassword.web.app/cheatsheets
 https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nikto vs Nuclei: Web Server Scanning Compared | OopsMyPassword</title>
+  <meta name="description" content="Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/nikto-vs-nuclei">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="Nikto vs Nuclei: Web Server Scanning Compared | OopsMyPassword">
+  <meta property="og:description" content="Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/nikto-vs-nuclei">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nikto vs Nuclei: Web Server Scanning Compared | OopsMyPassword">
+  <meta name="twitter:description" content="Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Nikto vs Nuclei: Web Server Scanning Compared","description":"Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/nikto-vs-nuclei","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Should I still run Nikto in 2026?","acceptedAnswer":{"@type":"Answer","text":"Yes, on one condition: treat its output as a list of things to check, not a list of vulnerabilities. It costs a minute and occasionally finds a leftover backup archive or an exposed status page. On a maintained host, expect most of the report to be version-banner noise you dismiss after a glance."}},{"@type":"Question","name":"Can Nuclei fully replace Nikto?","acceptedAnswer":{"@type":"Answer","text":"Mostly, for modern targets. The gap is the legacy long tail: obscure CGI paths, old sample scripts and backup naming conventions that the community has little reason to template. If you scan old infrastructure regularly, keeping Nikto in the toolbox costs nothing."}},{"@type":"Question","name":"How do I keep Nuclei templates current?","acceptedAnswer":{"@type":"Answer","text":"Run nuclei -update-templates before a scan, or pin a template version in CI so results are reproducible. Pinning matters more than updating: an unpinned template set can turn a previously clean target red because somebody else added a check overnight, and that makes the scan impossible to compare against last week."}},{"@type":"Question","name":"Do either of these tools exploit a vulnerability?","acceptedAnswer":{"@type":"Answer","text":"Neither performs post-exploitation. Nuclei templates can send a proof-of-concept request that demonstrates a flaw - which can still change server state or crash a fragile service - and Nikto mostly reads. Run both only against systems you are authorised to test, and never enable aggressive template categories against production without a maintenance window."}},{"@type":"Question","name":"Which one should I run first on an unknown target?","acceptedAnswer":{"@type":"Answer","text":"Nikto first, because it answers a cheap question - is this box neglected - in about a minute. Then Nuclei by severity, because that is where the findings that matter will be. Running a full Nuclei scan before the cheap sanity check usually means triaging noise first."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Nikto vs Nuclei","item":"https://oopsmypassword.web.app/compare/nikto-vs-nuclei"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/learning">Academy</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/learning">Academy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>Nikto vs Nuclei</span></nav>
+    <h1 class="h-1 mt-16">Nikto vs Nuclei: Web Server Scanning Compared</h1>
+    <p class="lead mt-8">Compare Nikto and Nuclei for web server and vulnerability scanning: check coverage, false positives, custom templates, concurrency, severity filtering and which scanner to run first.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> Nuclei is the scanner you build a workflow around: a YAML template engine with thousands of community checks, severity filtering and enough concurrency to scan a large estate. Nikto is the quick, legacy sanity check for server misconfiguration - still cheap to run, still noisy, still useful on an old box you have never seen before.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Nikto if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for a first look at an unfamiliar web server: a single command that reports outdated components, dangerous files left in place, missing security headers and default pages, with no template setup at all.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Nuclei if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for everything after that: templates you can read and write in an afternoon, protocol coverage beyond HTTP, severity-based triage, and the concurrency to run the same checks across hundreds of hosts.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Nikto</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Nuclei</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Written in</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Perl - needs a Perl runtime</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Go - single static binary</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Detection model</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A fixed set of checks shipped with the tool</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A YAML template engine; the checks are files you can read, edit and add</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Check coverage</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Several thousand potentially dangerous files, CGI paths and server-version checks</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Thousands of community templates covering CVEs, misconfigurations, exposures and default logins</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Protocols</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">HTTP and HTTPS</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">HTTP, DNS, TCP, SSL, WebSocket, headless browser and local code</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Custom checks</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Requires editing Perl plugins inside the tool</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Drop a .yaml file in a templates directory - no code</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Severity filtering</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">None - every finding has the same weight</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Yes: -severity critical,high,medium</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Concurrency</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Largely sequential; slow against a large estate</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Highly concurrent, with tunable rate limits</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">False positives</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Common: version-banner matching reports issues an updated build has already fixed</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Depends entirely on template quality; matchers can require a specific response body</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Session and auth handling</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Basic auth and a static cookie</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Full request templating, so authenticated flows are expressible</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Staying current</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Slow release cadence; the bundled database ages with the install</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Templates update daily and independently of the binary</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Reporting</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Text, HTML, XML, CSV, JSON</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">JSON, JSONL, SARIF and JUnit, with integrations for ticketing and dashboards</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Best first use</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A five-minute misconfiguration sweep of a single host</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A recurring scan across everything you own, triaged by severity</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">What each one is actually for</h2>
+      <p>These tools are often listed together as &quot;web vulnerability scanners&quot;, which hides the fact that they were built for different decades and different problems.</p>
+      <p>Nikto was written to answer a narrow question: what is wrong with this web server? It looks for files that should not be reachable (backup archives, admin scripts, sample applications), server software old enough to have known problems, and headers that suggest a default or careless configuration. It is a checklist with a network client attached. That is genuinely useful on an unfamiliar host, and it takes one command.</p>
+      <p>Nuclei is a framework. The binary contains almost no checks; the checks arrive as YAML files, and the community writes thousands of them. Each template describes a request and the conditions that make a response a finding, so a template can be as simple as &quot;GET /server-status and expect 200 with these fields&quot; or as specific as &quot;send this CVE proof-of-concept payload and look for this exact string&quot;. That design is what makes it the de facto standard for continuous scanning: the engine stays small and the coverage grows without reinstalling anything.</p>
+      <h2 class="mt-32">Version banners lie</h2>
+      <p>The largest practical gap between the two is how each decides something is a finding.</p>
+      <p>Nikto leans on the server banner. If Apache reports 2.4.49, Nikto can report the vulnerabilities associated with that version. Distributions backport security fixes without changing the version string, so the same banner can describe a fully patched server and a vulnerable one. This is the root of Nikto&#39;s reputation for noise: on a well-maintained system it can produce a long report that any experienced engineer will discard within a minute.</p>
+      <p>Nuclei templates can be written to require evidence. A version check can be combined with a request that only succeeds on the vulnerable build, and the matcher can insist on a token in the response body. This does not make Nuclei immune to false positives - a badly written template will still lie - but it makes accuracy a property of the template rather than of the tool.</p>
+      <p>Neither approach replaces manual verification. A finding that has not been reproduced by a human is a lead.</p>
+      <h2 class="mt-32">Where Nikto still earns a place</h2>
+      <p>It is fashionable to call Nikto obsolete. That is too strong. Its check database covers a long tail of legacy paths - old CGI directories, sample scripts, backup naming conventions - that community template authors have little reason to write, because nobody scans a 2011 install any more. When the target genuinely is an old box, that coverage is the point.</p>
+      <p>It also requires no setup. There is no template directory, no version pinning, no update step to forget. On a fresh assessment of an unknown host, running it costs a minute and occasionally finds something nobody expected.</p>
+      <p>What it should not be is the scanner you build a programme around. It has no severity model, no maintained template ecosystem and no concurrency to speak of, and an organisation that wants to scan two hundred hosts on a schedule needs all three.</p>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>Nikto Example</h3>
+          <pre><code># Quick misconfiguration sweep of one host, tuning out noisy classes of check
+target=$(mktemp)
+printf &quot;%s\n&quot; &quot;https://target.example.com&quot; &gt; &quot;$target&quot;
+nikto -h &quot;$target&quot; -Tuning 123bde -maxtime 10m -o nikto-report.html -Format html
+
+# Re-run against the same host with a specific cookie, skipping DoS checks
+nikto -h https://target.example.com -C &quot;session=abc123&quot; -Tuning x</code></pre>
+        </div>
+        <div>
+          <h3>Nuclei Example</h3>
+          <pre><code># Update templates, then scan by severity across a list of targets
+nuclei -update-templates
+nuclei -l targets.txt -severity critical,high -rate-limit 150 -stats -jsonl -o nuclei-findings.jsonl
+
+# Run one tag only, for a focused retest
+nuclei -u https://target.example.com -tags exposure,config -severity medium,high</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Should I still run Nikto in 2026?</h3><p>Yes, on one condition: treat its output as a list of things to check, not a list of vulnerabilities. It costs a minute and occasionally finds a leftover backup archive or an exposed status page. On a maintained host, expect most of the report to be version-banner noise you dismiss after a glance.</p>
+<h3>Can Nuclei fully replace Nikto?</h3><p>Mostly, for modern targets. The gap is the legacy long tail: obscure CGI paths, old sample scripts and backup naming conventions that the community has little reason to template. If you scan old infrastructure regularly, keeping Nikto in the toolbox costs nothing.</p>
+<h3>How do I keep Nuclei templates current?</h3><p>Run nuclei -update-templates before a scan, or pin a template version in CI so results are reproducible. Pinning matters more than updating: an unpinned template set can turn a previously clean target red because somebody else added a check overnight, and that makes the scan impossible to compare against last week.</p>
+<h3>Do either of these tools exploit a vulnerability?</h3><p>Neither performs post-exploitation. Nuclei templates can send a proof-of-concept request that demonstrates a flaw - which can still change server state or crash a fragile service - and Nikto mostly reads. Run both only against systems you are authorised to test, and never enable aggressive template categories against production without a maintenance window.</p>
+<h3>Which one should I run first on an unknown target?</h3><p>Nikto first, because it answers a cheap question - is this box neglected - in about a minute. Then Nuclei by severity, because that is where the findings that matter will be. Running a full Nuclei scan before the cheap sanity check usually means triaging noise first.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Academy Lessons &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/pentest/nikto"><strong>Nikto Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/pentest/nuclei"><strong>Nuclei Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/compare/burp-suite-vs-owasp-zap"><strong>Burp Suite vs OWASP ZAP</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/bitwarden-vs-1password"><strong>Bitwarden vs 1Password</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-proton-pass"><strong>Bitwarden vs Proton Pass</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/keepassxc-vs-bitwarden"><strong>KeePassXC vs Bitwarden</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>
