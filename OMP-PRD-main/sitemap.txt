@@ -170,6 +170,9 @@ https://oopsmypassword.web.app/compare/linpeas-vs-winpeas
 https://oopsmypassword.web.app/cheatsheets
 https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet
+https://oopsmypassword.web.app/cheatsheets/hydra-brute-force-cheatsheet
+https://oopsmypassword.web.app/cheatsheets/metasploit-command-cheatsheet
+https://oopsmypassword.web.app/cheatsheets/john-the-ripper-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/ffuf-web-fuzzing-cheatsheet
 https://oopsmypassword.web.app/cheatsheets/wireshark-display-filters-cheatsheet

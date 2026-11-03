@@ -861,6 +861,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/cheatsheets/hydra-brute-force-cheatsheet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/cheatsheets/metasploit-command-cheatsheet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/cheatsheets/john-the-ripper-cheatsheet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/cheatsheets/google-dorks-osint-cheatsheet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

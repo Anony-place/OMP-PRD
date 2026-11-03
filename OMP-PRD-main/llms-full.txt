@@ -19,7 +19,7 @@
 - [OSINT Hub](https://oopsmypassword.web.app/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
 - [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 17 head-to-head technical comparisons.
-- [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 11 interactive, printable command references.
+- [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 14 interactive, printable command references.
 - [Security Glossary](https://oopsmypassword.web.app/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](https://oopsmypassword.web.app/articles): Long-form cybersecurity guides and threat analysis.
 
@@ -54,6 +54,9 @@
 - [HTTP Security Headers Cheat Sheet: CSP, HSTS & CORS Hardening](https://oopsmypassword.web.app/cheatsheets/http-security-headers-cheatsheet): Copy-ready HTTP response headers (Strict-Transport-Security, Content-Security-Policy, X-Frame-Options, Permissions-Policy) and curl audit commands.
 - [Incident Response First-Hour Cheat Sheet: Triage & Containment](https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet): First-hour Linux & account compromise triage checklist: preserving volatile network/process state, isolating hosts, and revoking active sessions.
 - [curl Command Cheat Sheet: Headers, Auth, Files & Debugging](https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet): Copy-ready curl commands for REST testing, custom headers and auth, file uploads, redirects and TLS inspection, timing breakdowns and the verbose flags that explain a failed request.
+- [Hydra Cheat Sheet: SSH, HTTP Form & Service Brute-Force Commands](https://oopsmypassword.web.app/cheatsheets/hydra-brute-force-cheatsheet): Copy-ready Hydra commands for SSH, FTP, RDP, SMB and HTTP form logins: single-user and user-list modes, HTTP POST form syntax, thread control, resume files and the lockout risks that end an engagement early.
+- [Metasploit Cheat Sheet: msfconsole, Modules & Meterpreter Commands](https://oopsmypassword.web.app/cheatsheets/metasploit-command-cheatsheet): Copy-ready msfconsole commands for searching and running modules, configuring options, managing sessions, and using msfvenom - plus the database setup that makes search fast and the realism check on what a payload actually gets past.
+- [John the Ripper Cheat Sheet: Cracking Modes, Rules & Converters](https://oopsmypassword.web.app/cheatsheets/john-the-ripper-cheatsheet): Copy-ready John the Ripper commands: wordlist, rule-based mangling and incremental modes; the *2john converters for SSH keys, ZIP, PDF and Office files; format detection, session restore and --show.
 
 ## Security Glossary Terms
 - [k-Anonymity](https://oopsmypassword.web.app/glossary/k-anonymity): k-Anonymity is a privacy property where a lookup or record cannot be distinguished from at least k-1 other items in the same set, allowing breach checks without revealing the secret queried.
