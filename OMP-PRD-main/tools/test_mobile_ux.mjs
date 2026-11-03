@@ -37,7 +37,14 @@ function assert(condition, message) {
 }
 const section = (name) => console.log(`\n${name}`);
 
-const css = fs.readFileSync(path.join(root, 'assets/css/styles.css'), 'utf8');
+/* Academy pages load styles.css and then learning.css, and the later sheet
+   wins on any selector it repeats with equal-or-higher specificity. Reading
+   only styles.css therefore missed fields that a learner actually types into:
+   the lesson search sat at 12.8px on a phone and made iOS zoom the page. */
+const STYLE_SHEETS = ['assets/css/styles.css', 'assets/css/learning.css'];
+const css = STYLE_SHEETS
+  .map((file) => fs.readFileSync(path.join(root, file), 'utf8'))
+  .join('\n');
 
 const TOOLS = [
   'checker', 'generator', 'passphrase', 'entropy', 'random-string',
@@ -144,8 +151,19 @@ const FIELD_SELECTORS = [
   ['.pw-input', (s) => /\.pw-input(?![-\w])/.test(s)],
   ['.input', (s) => /(?:^|[,\s])\.input(?![-\w])/.test(s)],
   ['.form-field input', (s) => /\.form-field\s+input/.test(s)],
-  ['.cli-field input', (s) => /\.cli-field\s+input/.test(s)]
+  ['.cli-field input', (s) => /\.cli-field\s+input/.test(s)],
+  ['.academy-search input', (s) => /\.academy-search\s+input/.test(s)],
+  ['.academy-filter select', (s) => /\.academy-filter\s+select/.test(s)],
+  ['.academy-dialog .input', (s) => /\.academy-dialog\s+\.input(?![-\w])/.test(s)]
 ];
+
+/* The model above is only faithful if the sheets really load in this order. */
+const academyPage = fs.readFileSync(path.join(root, 'learning/cyber-security/cyber-security-track.html'), 'utf8');
+const sheetOrder = [...academyPage.matchAll(/href="\/assets\/css\/([a-z]+\.css)"/g)].map((m) => m[1]);
+assert(
+  sheetOrder.indexOf('styles.css') !== -1 && sheetOrder.indexOf('styles.css') < sheetOrder.indexOf('learning.css'),
+  `Academy pages load styles.css before learning.css (saw ${sheetOrder.join(', ')})`
+);
 
 for (const [label, test] of FIELD_SELECTORS) {
   const size = toPx(effective(test, 'font-size', MOBILE));

@@ -5342,3 +5342,27 @@
 }
 
 
+
+/* iOS Safari zooms the viewport when a focused field computes below 16px, and
+   never zooms back out — the page is then left magnified and half off-screen.
+   This sheet loads after styles.css, so the compact toolbar sizing above beat
+   the touch block in that file. The lesson search and the progress filter are
+   the two fields a learner actually uses on a phone. */
+@media (max-width: 640px), (pointer: coarse) {
+  .academy-search input,
+  .academy-filter select,
+  .academy-dialog .input {
+    font-size: 16px;
+  }
+
+  /* The Academy bar shrinks its icon buttons to 40px below 600px and to 34px
+     below 380px. That button is the mobile menu toggle — the control a phone
+     user needs most — so it keeps its full 44px target here. */
+  .academy-page .academy-topnav .icon-btn,
+  .academy-page .nav-actions .icon-btn {
+    width: 44px;
+    min-width: 44px;
+    height: auto;
+    min-height: 44px;
+  }
+}
