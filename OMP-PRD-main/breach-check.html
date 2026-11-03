@@ -65,7 +65,7 @@
   <div class="container">
     <span class="chip chip-accent"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="m12 12 6-6"/></svg> Live tool · k-anonymity prefix query</span>
     <h1 class="h-1 mt-16">Breach Check</h1>
-    <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API, with automatic fallback to a built-in ~330-password local corpus when offline.</p>
+    <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API. If the database cannot be reached, the tool says so instead of guessing &mdash; it will never call a password safe on the strength of a lookup that failed.</p>
   </div>
 </section>
 
@@ -73,7 +73,7 @@
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad" data-breach>
       <h2 class="h-3">Run a k-anonymity breach lookup</h2>
-      <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API. The password and full hash never leave your device. If the database cannot be reached, the tool tells you the check did not happen &mdash; it will never call a password safe on the strength of a lookup that failed.</p>
+      <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API. The password and full hash never leave your device. If the database cannot be reached, you get an unavailable message with the reason and a retry &mdash; not a verdict.</p>
       <div class="pw-input-wrap mt-16">
         <input class="pw-input" type="password" data-breach-input placeholder="Password to check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to check">
       </div>
@@ -82,7 +82,7 @@
       <div class="breach-result" data-breach-result aria-live="polite" aria-atomic="true">
         <div data-breach-status></div>
       </div>
-      <p class="disclaimer mt-16"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span><strong>Zero-knowledge guarantee &amp; fallback.</strong> Only a 5-character SHA-1 prefix (~1 million matching hashes per prefix) is requested over HTTPS with padding enabled. If that request fails, you get an unavailable message with the reason and a retry button, not a verdict. A password that appears in a short built-in list of well-known breached passwords is still flagged while offline, because a hit is a hit &mdash; it is the &ldquo;not found&rdquo; that would prove nothing.</span></p>
+      <p class="disclaimer mt-16"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span><strong>Zero-knowledge guarantee.</strong> Only a 5-character SHA-1 prefix (~1 million matching hashes per prefix) is requested over HTTPS with padding enabled. If that request fails, you get an unavailable message, not a verdict. A password that appears in a short built-in list of well-known breached passwords is still flagged while offline, because a hit is a hit &mdash; it is the &ldquo;not found&rdquo; that would prove nothing.</span></p>
     </div>
 
     <div class="grid" style="align-content:start">
