@@ -1732,7 +1732,7 @@ function buildDorkBuilderPage() {
             <button type="button" id="dork-reset-btn" class="btn btn-ghost btn-sm">Reset</button>
           </div>
         </div>
-        <pre class="mono mt-12" style="padding:14px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;margin:12px 0 0"><code id="dork-output">site:example.com intitle:"index of"</code></pre>
+        <pre class="mono mt-12" style="padding:14px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;margin:12px 0 0"><code id="dork-output" aria-live="polite" aria-atomic="true">site:example.com intitle:"index of"</code></pre>
         <p id="dork-query-explain" class="small muted mt-8" style="margin-bottom:0">Default preview shown. Enter a domain or choose a preset below to customize operators.</p>
         <div class="flex gap-12 wrap mt-16">
           <a id="dork-open-google" class="btn btn-secondary btn-sm" href="https://www.google.com" target="_blank" rel="noopener noreferrer">Open in Google ↗</a>
@@ -1895,7 +1895,7 @@ function buildHashInspectorPage() {
       </div>
       <label class="small" for="hash-detect-input" style="font-weight:600;display:block;margin-bottom:6px">Hash String to Identify</label>
       <input id="hash-detect-input" class="input mono" type="text" value="$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG" spellcheck="false">
-      <div id="hash-detect-output" class="mt-16"></div>
+      <div id="hash-detect-output" class="mt-16" aria-live="polite" aria-atomic="true"></div>
     </div>
 
     <div class="card card-pad mt-16" data-inspector-panel="encoder" hidden>
@@ -2010,7 +2010,7 @@ function buildUrlScannerPage() {
       </div>
       <label class="small" for="url-scan-input" style="font-weight:600;display:block;margin-bottom:6px">Suspicious URL to Analyze Locally</label>
       <input id="url-scan-input" class="input mono" type="text" spellcheck="false" autocomplete="off" placeholder="https://...">
-      <div id="url-scan-results"></div>
+      <div id="url-scan-results" aria-live="polite" aria-atomic="true"></div>
     </div>
 
     <div class="card card-pad mt-32">

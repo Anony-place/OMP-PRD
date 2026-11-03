@@ -360,7 +360,7 @@ def breach_body():
   <div class="container">
     <span class="chip chip-accent">{icon("radar","icon-16")} Live tool · k-anonymity prefix query</span>
     <h1 class="h-1 mt-16">Breach Check</h1>
-    <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API, with automatic fallback to a built-in ~330-password local corpus when offline.</p>
+    <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API. If the database cannot be reached, the tool says so instead of guessing &mdash; it will never call a password safe on the strength of a lookup that failed.</p>
   </div>
 </section>
 
@@ -368,16 +368,16 @@ def breach_body():
   <div class="container two-col" style="align-items:start">
     <div class="card card-pad" data-breach>
       <h2 class="h-3">Run a k-anonymity breach lookup</h2>
-      <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API (or compares against the built-in offline demo list if unreachable). The password and full hash never leave your device.</p>
+      <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API. The password and full hash never leave your device. If the database cannot be reached, you get an unavailable message with the reason and a retry &mdash; not a verdict.</p>
       <div class="pw-input-wrap mt-16">
         <input class="pw-input" type="password" data-breach-input placeholder="Password to check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to check">
       </div>
       <button class="btn btn-primary mt-16" type="button" data-breach-btn>Check for breaches</button>
       <div class="hash-view" data-breach-hash hidden></div>
-      <div class="breach-result" data-breach-result>
+      <div class="breach-result" data-breach-result aria-live="polite" aria-atomic="true">
         <div data-breach-status></div>
       </div>
-      <p class="disclaimer mt-16">{icon("info","icon-18")}<span><strong>Zero-knowledge guarantee &amp; fallback.</strong> Only a 5-character SHA-1 prefix (~1 million matching hashes per prefix) is requested over HTTPS with padding enabled. When offline, the tool falls back to a built-in ~330-password educational corpus and labels the result accordingly.</span></p>
+      <p class="disclaimer mt-16">{icon("info","icon-18")}<span><strong>Zero-knowledge guarantee.</strong> Only a 5-character SHA-1 prefix (~1 million matching hashes per prefix) is requested over HTTPS with padding enabled. If that request fails, you get an unavailable message, not a verdict. A password that appears in a short built-in list of well-known breached passwords is still flagged while offline, because a hit is a hit &mdash; it is the &ldquo;not found&rdquo; that would prove nothing.</span></p>
     </div>
 
     <div class="grid" style="align-content:start">
@@ -457,7 +457,7 @@ def health_body():
           </svg>
           <div class="ring-label"><span class="g" data-health-score>—</span><span class="t" data-health-grade></span></div>
         </div>
-        <p class="muted small" style="flex:1;min-width:220px" data-health-summary></p>
+        <p class="muted small" style="flex:1;min-width:220px" data-health-summary aria-live="polite" aria-atomic="true"></p>
       </div>
     </div>
     <div class="card card-pad">
@@ -502,7 +502,7 @@ def entropy_body():
       <div class="slider-head mt-16"><label for="ec-length"><strong>Length</strong> (characters or words)</label><output id="ec-length-out" data-ec-length-out>20</output></div>
       <input type="range" id="ec-length" min="1" max="128" value="20" step="1" data-ec-length aria-describedby="ec-length-out">
       <div class="stat-grid mt-16">
-        <div class="stat"><div class="k">Entropy</div><div class="v mono" data-ec-entropy>—</div></div>
+        <div class="stat"><div class="k">Entropy</div><div class="v mono" data-ec-entropy aria-live="polite" aria-atomic="true">—</div></div>
         <div class="stat"><div class="k">Possible combinations</div><div class="v mono" data-ec-combos>—</div></div>
       </div>
     </div>
@@ -651,7 +651,7 @@ def random_string_body():
       </div>
       <div class="slider-head mt-16"><label for="rs-length"><strong>Length</strong></label><output id="rs-length-out" data-rand-length-out>32</output></div>
       <input type="range" id="rs-length" min="4" max="128" value="32" step="1" data-rand-length aria-describedby="rs-length-out">
-      <div class="mt-24 grid" data-rand-list style="gap:10px"></div>
+      <div class="mt-24 grid" data-rand-list style="gap:10px" aria-live="polite" aria-atomic="true"></div>
       <button class="btn btn-primary mt-16" type="button" data-rand-btn>{icon("refresh","icon-18")} Regenerate batch</button>
       <p class="privacy-note">{icon("lock","icon-16")} Generated locally — nothing leaves your browser.</p>
     </div>
@@ -730,7 +730,7 @@ def checklist_body():
   <div class="container container-narrow" data-checklist>
     <div class="card card-pad" style="position:sticky;top:calc(var(--nav-h) + 12px);z-index:10">
       <div class="flex justify-between items-center wrap gap-12">
-        <strong data-checklist-count>0 of 16 complete (0%)</strong>
+        <strong data-checklist-count aria-live="polite" aria-atomic="true">0 of 16 complete (0%)</strong>
         <button class="btn btn-ghost btn-sm" type="button" data-checklist-reset>Reset</button>
       </div>
       <div class="progress-line mt-16" role="progressbar" aria-label="Checklist progress"><span data-checklist-bar></span></div>
