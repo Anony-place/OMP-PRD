@@ -785,6 +785,148 @@ export const COMPARISONS = [
       { label: 'Nuclei Pentest Guide', url: '/pentest/nuclei' },
       { label: 'Burp Suite vs OWASP ZAP', url: '/compare/burp-suite-vs-owasp-zap' }
     ]
+  },
+  {
+    slug: 'nmap-vs-rustscan',
+    title: 'Nmap vs RustScan: Port Scanning Speed Compared',
+    shortTitle: 'Nmap vs RustScan',
+    category: 'Network & Pentest',
+    toolA: 'Nmap',
+    toolB: 'RustScan',
+    published: '2026-11-03',
+    updated: '2026-11-03',
+    summary: 'Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when the speed advantage is real.',
+    quickAnswer: 'RustScan is not an Nmap replacement - it is a faster way to find open ports, and its own documentation tells you to pipe the result into Nmap for everything else. Use RustScan when a full 65,535-port sweep is the bottleneck; use Nmap directly when you need service detection, OS fingerprinting, NSE scripts, or when the network is fragile.',
+    verdictA: 'Best for the part of the job RustScan cannot do: service and version detection, OS fingerprinting, NSE script libraries, UDP scanning, output in five formats, and scan tuning that survives packet loss and rate limiting.',
+    verdictB: 'Best for the one thing it does: finding open ports across all 65,535 of them in seconds, then handing those ports to Nmap automatically so the slow part of the scan is skipped entirely.',
+    rows: [
+      ['Written in', 'C++ with a Lua scripting engine', 'Rust'],
+      ['Primary purpose', 'The whole scan: discovery, ports, services, scripts, OS, output', 'Port discovery only, designed to feed another tool'],
+      ['All-ports scan time', 'Minutes - roughly 1,000-3,000 packets per second by default, tunable with --min-rate', 'Seconds - thousands of ports per second by default, adaptive to the host'],
+      ['Service / version detection', 'Built in (-sV), with intensity levels and version probes', 'Not supported - it detects whether a port answers, not what is behind it'],
+      ['OS fingerprinting', '-O, with a maintained fingerprint database', 'Not supported'],
+      ['Scripting', 'NSE - a large library of Lua scripts for TLS, SMB, HTTP, vuln checks', 'Not supported'],
+      ['UDP scanning', '-sU, with service detection for common UDP services', 'TCP focused; UDP is not the use case'],
+      ['Hand-off to Nmap', 'Not applicable', 'Built in: -sV runs Nmap against the discovered ports automatically'],
+      ['Adaptive behaviour', 'Manual tuning: -T4, --min-rate, --max-retries', 'Automatic - it backs off when the host starts dropping packets'],
+      ['Output formats', 'Normal, XML, grepable and the "all" flag (-oA)', 'Plain list by default; Nmap formats once handed off'],
+      ['Firewall and IDS behaviour', 'Configurable stealth, fragmenting, decoys, source-port tricks', 'Loud by design - thousands of packets per second look like a scan'],
+      ['Licence', 'NPSL (Nmap Public Source Licence) - open source with redistribution conditions', 'GPL-3.0'],
+      ['Best first use', 'A careful, complete assessment of a host you are authorised to test', 'A quick answer to "which of the 65,535 ports are even open" on a lab or CTF target']
+    ],
+    sections: [
+      {
+        heading: 'The comparison is really about one flag',
+        paragraphs: [
+          'Most "Nmap vs RustScan" arguments are not comparing two scanners. They are comparing two workflows for the same job, and the difference is where the time goes.',
+          'A default Nmap scan checks the 1,000 most common ports. A full scan checks 65,535, and that is where the minutes disappear - not in detecting services, but in sending 65,535 probe packets and waiting for silence on each. RustScan attacks exactly that step. It opens many connections concurrently, closes them immediately, and records which ones succeeded, so the exhaustive part of the job finishes in seconds rather than minutes.',
+          'Then it does the sensible thing: it takes the handful of ports that answered and runs Nmap against only those, with service detection. The result is an ordinary Nmap result, produced without spending time on 65,000 closed ports. That is why the two tools are usually described as complementary rather than competing.'
+        ],
+        bullets: [
+          'If your scan target is a single host with a handful of open ports, RustScan saves minutes.',
+          'If you are scanning a /24, the time saved multiplies per host - and so does the noise you make.',
+          'If you need UDP, OS detection or NSE output, Nmap was always going to run anyway.'
+        ]
+      },
+      {
+        heading: 'Speed has a cost, and the cost is detection',
+        paragraphs: [
+          'Sending thousands of connection attempts per second is not subtle. On a lab network nobody minds. Against a production system with an IDS, a WAF or a rate limiter, a RustScan run is one of the easiest things to detect and block, and it may also degrade the service you were asked to test.',
+          'Nmap gives you a dial for this. -T4 is the common compromise, --min-rate bounds the floor, --max-retries controls how patiently it waits after a dropped packet, and options like --scan-delay spread requests out. A scan that takes an hour but completes is more useful than a scan that takes ten seconds and gets you blocked two thirds of the way through.',
+          'RustScan adapts automatically - it reduces concurrency when the host stops responding - which is better than nothing and still not a substitute for deliberately choosing a rate before you start. The honest rule: on a lab, let it run fast; on anything that matters, set the batch size and timeout yourself.'
+        ]
+      },
+      {
+        heading: 'When RustScan is genuinely the wrong tool',
+        paragraphs: [
+          'Three situations come up often enough to name.',
+          'First, anything UDP. Most interesting UDP services - DNS, SNMP, NTP, IKE, TFTP - do not answer a connection the way TCP does, and a tool built around fast TCP connects has nothing to say about them. Nmap -sU is still the answer.',
+          'Second, fragmented or lossy networks. A VPN, a satellite link or a heavily filtered path drops packets, and a scanner that assumes silence means "closed" will report open ports as closed. Nmap retries and distinguishes filtered from closed; a fast connect-scan often cannot.',
+          'Third, when the report matters. Nmap produces XML with service banners, script output and evidence that an assessor can attach to a finding. A list of open ports is a starting point, not a deliverable.'
+        ]
+      }
+    ],
+    workflowA: '# Full TCP sweep with service detection, saved in every format\nsudo nmap -sS -p- --min-rate 1000 -T4 -sV -oA full-scan {TARGET}\n\n# Targeted service and script scan on the ports that answered\nsudo nmap -sV -sC -p 22,80,443,3306 {TARGET} -oA services',
+    workflowB: '# Discover open ports fast, then hand them to Nmap for detection\nrustscan -a {TARGET} --ulimit 5000 -- -sV -sC\n\n# Bound the rate explicitly on a host that should not be hammered\nrustscan -a {TARGET} --batch-size 200 --timeout 2000 -- -sV',
+    faqs: [
+      { q: 'Does RustScan replace Nmap?', a: 'No, and its own documentation says so. RustScan finds open ports quickly and can pass them to Nmap for service detection. Everything Nmap is known for - version probes, OS fingerprints, NSE scripts, UDP, output formats - is still Nmap.' },
+      { q: 'How much faster is RustScan really?', a: 'For a full 65,535-port TCP scan on a host with a few open ports, the difference is typically seconds versus minutes. For a default top-1,000-port scan the gap is much smaller, because there is far less work to skip. If you usually scan the default port set, the speed advantage is close to irrelevant.' },
+      { q: 'Why did RustScan report a port as closed that Nmap shows as open?', a: 'Usually packet loss or rate limiting. RustScan retries a limited number of times and moves on, so on a lossy path a slow reply can be treated as no reply. Lower the batch size, raise the timeout, or confirm the finding with Nmap before writing it down.' },
+      { q: 'Will a fast scan get me blocked?', a: 'Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorisation for that, and never run it against a system you do not own.' },
+      { q: 'Can I use the --ulimit advice I see everywhere?', a: 'Raising the open-file limit lets RustScan run more concurrent connections, which is where the speed comes from. On modern systems the Docker image or the packaged build often handles it. If RustScan warns about file descriptors, that warning is the instruction.' }
+    ],
+    relatedLinks: [
+      { label: 'Nmap Pentest Guide', url: '/pentest/nmap' },
+      { label: 'Nmap Command Cheat Sheet', url: '/cheatsheets/nmap-command-cheatsheet' },
+      { label: 'Nmap vs Masscan Comparison', url: '/compare/nmap-vs-masscan' }
+    ]
+  },
+  {
+    slug: 'linpeas-vs-winpeas',
+    title: 'LinPEAS vs WinPEAS: Privilege Escalation Enumeration',
+    shortTitle: 'LinPEAS vs WinPEAS',
+    category: 'Network & Pentest',
+    toolA: 'LinPEAS (Linux)',
+    toolB: 'WinPEAS (Windows)',
+    published: '2026-11-03',
+    updated: '2026-11-03',
+    summary: 'Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.',
+    quickAnswer: 'They are the same tool for two operating systems, so the comparison is not "which is better" but "what each one can and cannot see". LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, colour-coded list of things a human still has to read.',
+    verdictA: 'Best for Linux post-exploitation enumeration: SUID and capabilities, sudo rules, cron and systemd timers, writable paths, container escapes, credential files and keys, plus a fast mode that skips the slow filesystem sweeps.',
+    verdictB: 'Best for Windows enumeration: service binary permissions, unquoted service paths, token privileges such as SeImpersonatePrivilege, AlwaysInstallElevated, stored credentials, autologon registry values and scheduled tasks.',
+    rows: [
+      ['Runs on', 'Linux - a bash script assembled from many small checks', 'Windows - a .NET executable, with a PowerShell script alternative'],
+      ['What it needs', 'A shell, and preferably an execution method that leaves no file behind', 'A shell; the executable is often dropped to disk, which is a detection event'],
+      ['Typical output', 'Thousands of lines, colour-coded by how exploitable each finding is usually considered', 'The same idea, with sections for services, tokens, registry and credentials'],
+      ['Coverage: users', 'Local users, groups, sudo rules, home directory permissions', 'Local accounts, group membership, logon sessions, token privileges'],
+      ['Coverage: files', 'SUID/SGID binaries, capabilities, world-writable files and directories', 'Service binaries and their ACLs, unquoted paths, writable Program Files paths'],
+      ['Coverage: scheduled work', 'cron jobs, systemd units and timers, at jobs', 'Scheduled tasks, services with weak start permissions'],
+      ['Coverage: credentials', 'SSH keys, .git-credentials, history files, config with passwords, cloud metadata', 'Credential Manager entries, autologon values, unattend.xml, group policy preferences'],
+      ['Container awareness', 'Flags broken container boundaries, mounted sockets, privileged containers', 'Not the primary use case'],
+      ['Hard mode', 'Optional, exhaustive, much slower and much louder', 'The default output is already verbose'],
+      ['What it cannot do', 'Exploit anything. It reports; you still have to reason, and verify', 'Same - a red line means "worth testing", not "vulnerable"'],
+      ['Main risk', 'A production host notices: file reads, process spawns and network callbacks are all visible', 'The same, plus the dropped binary is a strong signature for endpoint tools']
+    ],
+    sections: [
+      {
+        heading: 'The colours are a starting point, not a finding list',
+        paragraphs: [
+          'Both tools colour their output, and the convention is widely misread. Red means "this often leads somewhere", not "this is exploitable". A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.',
+          'The practical consequence is that a PEAS run is not a scan result you can paste into a report. It is a search index. The work is opening the red lines one at a time and asking the only question that matters: can I control anything this binary or service reads, executes or loads?',
+          'Experienced testers run PEAS with a narrowed focus - one section at a time, or in the fast mode that skips the expensive filesystem walk - precisely because reading everything at once produces a list too long to reason about.'
+        ]
+      },
+      {
+        heading: 'Where the two diverge',
+        paragraphs: [
+          'On Linux, privilege escalation is largely about files: which ones are set-uid, which directories are writable by your user, which cron job runs as root and reads from a path you can write to. That is why LinPEAS spends most of its output on filesystem facts, and why capabilities - a detail older checklists ignore entirely - get their own section.',
+          'On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organises its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.',
+          'Neither tool can see what it was not designed to see. LinPEAS will not tell you a Windows domain trusts an unconstrained delegation; WinPEAS will not read a Linux sudoers file. On a mixed network the answer is not to pick a winner - it is to know which host you are on.'
+        ]
+      },
+      {
+        heading: 'Running either one safely and lawfully',
+        paragraphs: [
+          'Both tools are noisy by nature. On the Linux side, the script spawns a large number of short-lived processes, walks the filesystem and may attempt outbound lookups; on the Windows side, the executable is dropped to disk and scanned. Any competent endpoint protection or SIEM will produce alerts, which is fine in a lab and a problem in production.',
+          'That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorised access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.',
+          'If you are learning, use your own virtual machines. Metasploitable, the published Hack The Box and TryHackMe labs, and a local Windows VM with weak configuration are enough to see what real output looks like.'
+        ]
+      }
+    ],
+    workflowA: '# Standard run to a file, then read it back locally\n./linpeas.sh -a > linpeas-full.txt 2>/dev/null\n\n# Fast pass: skip the slow filesystem sweeps first\ntimeout 180 ./linpeas.sh -o system_information,software_information,container -q',
+    workflowB: '# Run WinPEAS and write a readable report\n.\\winPEASx64.exe > winpeas.txt 2>&1\n\n# Narrow the scope to the sections that usually pay\n.\\winPEASx64.exe servicesinfo userinfo > winpeas-targeted.txt',
+    faqs: [
+      { q: 'Are LinPEAS and WinPEAS the same project?', a: 'Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters.' },
+      { q: 'Does a red line mean I have root or SYSTEM?', a: 'No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report.' },
+      { q: 'Why is the output so long?', a: 'Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable.' },
+      { q: 'Will PEAS get me caught during an authorised test?', a: 'Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because "it was only enumeration" is not a defence if it was not in scope.' },
+      { q: 'Can I run these against production?', a: 'Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.' }
+    ],
+    relatedLinks: [
+      { label: 'Linux Privilege Escalation Cheat Sheet', url: '/cheatsheets/linux-privilege-escalation-cheatsheet' },
+      { label: 'Active Directory Enumeration Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
+      { label: 'Privilege Escalation Glossary', url: '/glossary/privilege-escalation' }
+    ]
   }
 ];
 
@@ -1048,6 +1190,38 @@ export const CHEATSHEETS = [
       { label: 'Incident Response Roles Lesson', url: '/learning/cyber-security/cyber-security-track/incident-response-roles-and-communication' },
       { label: 'What to Do After a Data Breach', url: '/articles/after-a-data-breach' },
       { label: 'Hash & JWT Inspector', url: '/hash-inspector' }
+    ]
+  },
+  {
+    slug: 'curl-command-cheatsheet',
+    title: 'curl Command Cheat Sheet: Headers, Auth, Files & Debugging',
+    shortTitle: 'curl Command Cheat Sheet',
+    category: 'Web App Security',
+    summary: 'Copy-ready curl commands for REST testing, custom headers and auth, file uploads, redirects and TLS inspection, timing breakdowns and the verbose flags that explain a failed request.',
+    commands: [
+      { title: 'Inspect Response Headers Only', desc: 'Send a HEAD-style request with -I to see status, server, cache and security headers without downloading the body.', cmd: 'curl -sI https://{TARGET}' },
+      { title: 'Show Headers and Body Together', desc: 'Verbose for humans: -i prints the response headers, a blank line, then the body.', cmd: 'curl -si https://{TARGET}/api/health' },
+      { title: 'Follow Redirects and Show the Chain', desc: 'Track the full 301/302 chain, which is how you confirm a canonical redirect actually lands where it should.', cmd: 'curl -sIL https://{TARGET} | grep -iE "^HTTP/|^location:"' },
+      { title: 'Send JSON with a Custom Header', desc: 'The standard shape of an authenticated API request: content type, token and a JSON body.', cmd: 'curl -s -X POST https://{TARGET}/api/login -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d \'{"user":"admin"}\'' },
+      { title: 'Upload a File as Multipart', desc: 'Force a multipart body with -F; useful for testing upload validation and content-type checks.', cmd: 'curl -s -F "file=@./shell.php;type=image/png" -F "name=test" https://{TARGET}/upload' },
+      { title: 'Basic Auth Without Leaking in Shell History', desc: 'Pass credentials with -u so curl handles the Base64 encoding; use the prompt so the password is not in history.', cmd: 'curl -s -u admin https://{TARGET}/private' },
+      { title: 'Test a Specific Host Header', desc: 'Point the request at one IP but claim a different Host, which is the quickest way to find a misrouted vhost.', cmd: 'curl -s -H "Host: internal.{DOMAIN}" https://{TARGET}/' },
+      { title: 'Find Where a Request Spends Its Time', desc: 'The timing breakdown that separates DNS, TCP, TLS, waiting and transfer - the first step in any slow-endpoint investigation.', cmd: 'curl -s -o /dev/null -w "dns:%{time_namelookup} connect:%{time_connect} tls:%{time_appconnect} ttfb:%{time_starttransfer} total:%{time_total}\\n" https://{TARGET}' },
+      { title: 'Check What Status a Redirect Chain Ends On', desc: 'One number, after following every hop - the check to run after any routing or domain change.', cmd: 'curl -s -o /dev/null -w "%{http_code} %{url_effective}\\n" -L https://{TARGET}/some/old/path' },
+      { title: 'Inspect the TLS Certificate the Server Sends', desc: 'Print the certificate and handshake details without opening a browser.', cmd: 'curl -sv https://{TARGET} -o /dev/null 2>&1 | grep -A2 "Server certificate"' },
+      { title: 'Send Cookies From a Saved Session', desc: 'Save cookies during a login and replay them on later requests, which is how authenticated flows are scripted.', cmd: 'curl -s -c cookies.txt -d "user=admin&pass=test" https://{TARGET}/login && curl -s -b cookies.txt https://{TARGET}/dashboard' },
+      { title: 'Retry and Bound the Request', desc: 'Timeouts and retries belong on every automated curl call; without them a hung endpoint hangs the job.', cmd: 'curl -s --max-time 15 --retry 2 --retry-delay 1 https://{TARGET}/status' }
+    ],
+    faqs: [
+      { q: 'What is the difference between -i, -I and -v?', a: '-i includes the response headers in the output alongside the body. -I sends a HEAD request instead of GET, so you get headers and no body at all. -v writes the whole conversation - request line, request headers, TLS details and response headers - to stderr, which is what you want when a request fails for a reason the body does not explain.' },
+      { q: 'Why does curl return nothing when the URL works in a browser?', a: 'Usually one of four things: the site needs a header the browser sent automatically, the request is being redirected and you did not pass -L, the response is compressed and you are piping it somewhere that mangled it, or the browser had a cookie. Start with -v and read the request headers curl actually sent.' },
+      { q: 'How do I stop curl from leaking a token in shell history?', a: 'Prefix the command with a space if your shell has HISTCONTROL=ignorespace, or pass the value from an environment variable that you read from a file. Do not paste production tokens into a shared terminal; a leaked credential in history is a real incident, not a nuisance.' },
+      { q: 'Is curl safe to point at a target I am testing?', a: 'Only for the same reason any request is safe: because you are authorised. curl itself does not exploit anything, but sending crafted requests to a system you do not own is unauthorised access regardless of the tool.' }
+    ],
+    relatedLinks: [
+      { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
+      { label: 'Phishing URL Scanner', url: '/url-scanner' },
+      { label: 'HTTP Requests & Responses Lesson', url: '/learning/cyber-security/cyber-security-track/http-https-request-response' }
     ]
   }
 ];

@@ -836,12 +836,27 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/compare/nmap-vs-rustscan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/cheatsheets</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/cheatsheets/curl-command-cheatsheet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
