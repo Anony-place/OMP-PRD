@@ -15,7 +15,7 @@
 - [Security Checklist](https://oopsmypassword.web.app/security-checklist): 16-step account hardening tracker.
 
 ## Hubs & Reference
-- [OSINT Hub](https://oopsmypassword.web.app/osint): 10 OSINT investigation tools for usernames, email, domains and phones, each with install steps and a side-by-side comparison drawer.
+- [OSINT Hub](https://oopsmypassword.web.app/osint): 16 OSINT investigation tools for usernames, email, domains and phones, each with install steps and a side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): 37 authorized penetration-testing tools grouped by assessment phase, each with install steps and its vendor documentation.
 - [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 17 head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 14 interactive, printable command references.

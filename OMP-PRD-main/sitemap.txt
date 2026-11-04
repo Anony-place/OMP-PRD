@@ -119,11 +119,17 @@ https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it
 https://oopsmypassword.web.app/products/master-in-ai-prompt
 https://oopsmypassword.web.app/products/why-we-suddenly-forget-why-we-entered-the-room
+https://oopsmypassword.web.app/osint/censys
+https://oopsmypassword.web.app/osint/dnstwist
 https://oopsmypassword.web.app/osint/epieos
 https://oopsmypassword.web.app/osint/exiftool
+https://oopsmypassword.web.app/osint/ghunt
+https://oopsmypassword.web.app/osint/have-i-been-pwned
 https://oopsmypassword.web.app/osint/holehe
 https://oopsmypassword.web.app/osint/maigret
+https://oopsmypassword.web.app/osint/maltego
 https://oopsmypassword.web.app/osint/phoneinfoga
+https://oopsmypassword.web.app/osint/recon-ng
 https://oopsmypassword.web.app/osint/sherlock
 https://oopsmypassword.web.app/osint/shodan
 https://oopsmypassword.web.app/osint/spiderfoot
