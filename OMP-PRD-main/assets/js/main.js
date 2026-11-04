@@ -242,7 +242,6 @@
   (function enhanceStaticToolDetail() {
     var m = (window.location.pathname || '').match(/^\/(osint|pentest)\/([a-z0-9-]+)\/?$/);
     if (!m || document.querySelector('[data-cli-builder]')) return;
-    var hub = m[1];
     var slug = m[2];
     var prose = document.querySelector('article.prose');
     if (!prose) return;
@@ -258,16 +257,15 @@
       'sqlmap': { label: 'Target URL with parameter', placeholder: 'http://lab.local/item.php?id=1', presets: [{ label: 'Safe boolean/time test', cmd: 'sqlmap -u "{target}" --batch --level=1 --risk=1' }, { label: 'List databases', cmd: 'sqlmap -u "{target}" --batch --dbs' }], flags: [{ flag: '--random-agent', label: 'Random User-Agent' }, { flag: '--tor', label: 'Use Tor proxy' }] },
       'hashcat': { label: 'Hash file path', placeholder: 'hashes.txt', presets: [{ label: 'WPA2/WPA3 (mode 22000)', cmd: 'hashcat -m 22000 {target} rockyou.txt' }, { label: 'NTLM (mode 1000)', cmd: 'hashcat -m 1000 {target} rockyou.txt -r best64.rule' }, { label: 'bcrypt (mode 3200)', cmd: 'hashcat -m 3200 {target} rockyou.txt' }], flags: [{ flag: '-O', label: 'Optimized kernels (-O)' }, { flag: '--status', label: 'Periodic status (--status)' }] }
     };
-    var spec = specs[slug] || {
-      label: hub === 'pentest' ? 'Authorized Lab Target' : 'Investigation Target',
-      placeholder: 'example.com',
-      presets: [
-        { label: 'Standard invocation', cmd: slug + ' {target}' },
-        { label: 'Help & options reference', cmd: slug + ' --help' },
-        { label: 'Export report', cmd: slug + ' {target} -o ' + slug + '-report.txt' }
-      ],
-      flags: [{ flag: '--verbose', label: 'Verbose output (--verbose)' }]
-    };
+    /* No spec means no builder. This used to fall back to `<slug> --help` and
+       `<slug> {target} -o <slug>-report.txt`, which is only a real command for
+       a tool whose binary is named exactly like its page slug and that accepts
+       those flags. Most of the catalogue does not (Metasploit is
+       `msfconsole`, impacket is a Python library, BloodHound/Wireshark/
+       Autopsy are GUI apps), so the fallback was printing commands that
+       cannot run. Better to show nothing than a convincing fake. */
+    var spec = specs[slug];
+    if (!spec) return;
     var wrap = document.createElement('section');
     wrap.id = 'sec-cli-builder';
     var presetsHtml = spec.presets.map(function (p, i) {

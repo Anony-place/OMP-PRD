@@ -1,7 +1,7 @@
 /* OopsMyPassword — Offline-Capable Service Worker (sw.js).
    Caches core static assets, local JSON snapshots, and visited pages
-   so all password tools, Academy lessons, and OSINT/Pentest hubs work offline. */
-const CACHE_NAME = 'omp-static-v3';
+   so all password tools and the OSINT/Pentest hubs work offline. */
+const CACHE_NAME = 'omp-static-v4';
 const PRECACHE_URLS = [
   '/',
   '/tools',
@@ -19,12 +19,10 @@ const PRECACHE_URLS = [
   '/compare',
   '/cheatsheets',
   '/glossary',
-  '/learning',
   '/osint',
   '/pentest',
   '/articles',
   '/assets/css/styles.css',
-  '/assets/css/learning.css',
   '/assets/js/theme-init.js',
   '/assets/js/main.js',
   '/assets/js/search.js',

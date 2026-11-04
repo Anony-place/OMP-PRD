@@ -401,8 +401,6 @@
   /* ---------- interactive CLI command builder ---------- */
   function osintCliSpec(t) {
     var slug = safeSlug(t.slug);
-    var access = safeAccessList(t.access_types);
-    var isCli = access.indexOf('cli') !== -1;
     var specs = {
       'sherlock': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Single username', cmd: 'sherlock {target}' }, { label: 'Print found only + timeout', cmd: 'sherlock --timeout 10 --print-found {target}' }, { label: 'CSV export', cmd: 'sherlock --csv -o {target}_results.txt {target}' }], flags: [{ flag: '--tor', label: 'Route via Tor (--tor)' }, { flag: '--nsfw', label: 'Include NSFW (--nsfw)' }] },
       'maigret': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Top 500 sites + HTML report', cmd: 'maigret {target} --top-sites 500 -H' }, { label: 'PDF dossier', cmd: 'maigret {target} -P' }], flags: [{ flag: '--no-color', label: 'Plain output (--no-color)' }] },
@@ -410,32 +408,17 @@
       'theharvester': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Passive recon (crtsh,ert)', cmd: 'theHarvester -d {target} -b crtsh,certspotter,duckduckgo -l 200' }, { label: 'Save JSON/HTML report', cmd: 'theHarvester -d {target} -b all -f {target}_harvest' }], flags: [{ flag: '-n', label: 'DNS lookup (-n)' }] },
       'subfinder': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Silent subdomain list', cmd: 'subfinder -d {target} -silent' }, { label: 'All passive sources to file', cmd: 'subfinder -d {target} -all -o {target}_subs.txt' }], flags: [{ flag: '-rL resolvers.txt', label: 'Custom resolvers' }] }
     };
-    if (specs[slug]) return specs[slug];
-    if (isCli) {
-      return {
-        inputLabel: 'Investigation Target',
-        placeholder: 'example.com',
-        presets: [
-          { label: 'Standard run', cmd: slug + ' {target}' },
-          { label: 'Help & options reference', cmd: slug + ' --help' },
-          { label: 'Save output to report', cmd: slug + ' {target} -o ' + slug + '-report.txt' }
-        ],
-        flags: [{ flag: '--verbose', label: 'Verbose output' }]
-      };
-    }
-    return {
-      isWorkflow: true,
-      inputLabel: 'Target Identifier for Notes',
-      placeholder: 'example.com',
-      presets: [
-        { label: 'OSINT investigation note', cmd: '# OSINT Note (' + (t.name || slug) + ')\nTarget: {target}\nTimestamp: ' + new Date().toISOString().slice(0, 10) }
-      ],
-      flags: []
-    };
+    /* Only a hand-written, checked spec earns a command builder. The old
+       fallback printed `<slug> --help` and `<slug> {target} -o report.txt` for
+       every command-line tool without a spec, including ones whose real
+       invocation is completely different — and for web-only tools it printed a
+       "workflow helper" with a paste-a-date note. No spec, no section. */
+    return specs[slug] || null;
   }
 
   function renderCliBuilder(t) {
     var spec = osintCliSpec(t);
+    if (!spec) return '';
     var presetsHtml = spec.presets.map(function (p, i) {
       return '<button type="button" class="cli-preset-btn' + (i === 0 ? ' is-active' : '') + '" data-cli-preset="' + i + '">' + esc(p.label) + '</button>';
     }).join('');
@@ -443,7 +426,7 @@
       return '<label class="cli-flag-pill"><input type="checkbox" data-cli-flag="' + attr(f.flag) + '"> <span>' + esc(f.label) + '</span></label>';
     }).join('');
     return '<div class="cli-builder-card" data-cli-builder>' +
-      '<div class="cli-builder-head"><div><span class="eyebrow">' + (spec.isWorkflow ? 'Investigation Workflow Helper' : 'Interactive CLI Command Builder') + '</span>' +
+      '<div class="cli-builder-head"><div><span class="eyebrow">Interactive CLI Command Builder</span>' +
       '<h3 class="h-4" style="margin:2px 0 0">Build & copy ' + esc(t.name) + ' commands safely</h3></div><span class="badge badge-demo">Client-side only</span></div>' +
       '<div class="cli-builder-controls">' +
         '<div class="cli-field"><label for="cli-target-input">' + esc(spec.inputLabel) + '</label>' +
@@ -459,6 +442,7 @@
     var box = (scope || root).querySelector('[data-cli-builder]');
     if (!box) return;
     var spec = osintCliSpec(t);
+    if (!spec) return;
     var input = box.querySelector('#cli-target-input');
     var codeEl = box.querySelector('[data-cli-code]');
     var copyBtn = box.querySelector('[data-cli-copy]');
@@ -728,7 +712,7 @@
     if (t.install_guide && String(t.install_guide).trim()) {
       sections.push({ id: 'sec-install', label: 'Install & first run', install: true, html: renderContent(t.install_guide) });
     }
-    sections.push({ id: 'sec-cli-builder', label: 'Interactive command builder', cliBuilder: true });
+    if (osintCliSpec(t)) sections.push({ id: 'sec-cli-builder', label: 'Interactive command builder', cliBuilder: true });
     if (t.use_case && String(t.use_case).trim()) {
       sections.push({ id: 'sec-example', label: 'Real-world example', html: renderContent(t.use_case) });
     }
