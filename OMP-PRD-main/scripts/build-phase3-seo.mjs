@@ -3017,17 +3017,30 @@ ${feedItems.map((it) => `    <item>
   fs.writeFileSync(path.join(ROOT, 'rss.xml'), rssXml);
 
   // 3. Build /llms.txt and /llms-full.txt for AI Search Engines
-  /* Real catalogue sizes, taken from the snapshot the site already ships as its
-     offline fallback. The old copy said "20+ OSINT investigation tools" and
-     "interactive CLI builders" on both hubs: the catalogue has 10 OSINT tools,
-     and only tools with a hand-written spec get a builder. A number nobody
-     recomputes is a number that eventually lies. */
+  /* Real catalogue sizes, counted from the pages the static build just wrote.
+     The old copy said "20+ OSINT investigation tools" and "interactive CLI
+     builders" on both hubs: the catalogue had 10 OSINT tools, and only tools
+     with a hand-written spec get a builder. A number nobody recomputes is a
+     number that eventually lies.
+
+     Counting the built pages rather than reading hubs-snapshot.json matters:
+     the snapshot is hand-synced, so it lagged three migrations behind the
+     database and llms.txt kept advertising the old catalogue size. The build
+     always writes one page per published tool, which is the number a reader
+     can verify by clicking. */
   const hubCounts = { osint: 0, pentest: 0 };
   try {
-    const snap = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/data/hubs-snapshot.json'), 'utf8'));
-    hubCounts.osint = (snap.osint || []).filter((r) => r && r.slug).length;
-    hubCounts.pentest = (snap.pentest || []).filter((r) => r && r.slug).length;
-  } catch { /* no snapshot: omit the numbers rather than print a wrong one */ }
+    const countPages = (dir) => fs.readdirSync(path.join(ROOT, dir)).filter((f) => f.endsWith('.html')).length;
+    hubCounts.osint = countPages('osint');
+    hubCounts.pentest = countPages('pentest');
+  } catch { /* no built pages yet */ }
+  if (!hubCounts.osint || !hubCounts.pentest) {
+    try {
+      const snap = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/data/hubs-snapshot.json'), 'utf8'));
+      hubCounts.osint = hubCounts.osint || (snap.osint || []).filter((r) => r && r.slug).length;
+      hubCounts.pentest = hubCounts.pentest || (snap.pentest || []).filter((r) => r && r.slug).length;
+    } catch { /* no snapshot either: omit the numbers rather than print a wrong one */ }
+  }
   const llmsTxt = `# OopsMyPassword (https://oopsmypassword.web.app)
 
 > Privacy-first cybersecurity tools, OSINT & Pentest tool directories, CLI cheat sheets, head-to-head tool comparisons, a security glossary, and technical guides that explain the fundamentals. All interactive tools run 100% client-side in the browser with zero telemetry.
