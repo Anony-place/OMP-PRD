@@ -19,21 +19,6 @@
     "trailingSlash": false,
     "redirects": [
       {
-        "regex": "^/learning$",
-        "destination": "https://oopsmypassword.vercel.app/articles",
-        "type": 301
-      },
-      {
-        "regex": "^/learning/.*$",
-        "destination": "https://oopsmypassword.vercel.app/articles",
-        "type": 301
-      },
-      {
-        "regex": "^/certificate(\\.html)?$",
-        "destination": "https://oopsmypassword.vercel.app/",
-        "type": 301
-      },
-      {
         "regex": "/(.*)\\.html",
         "destination": "https://oopsmypassword.vercel.app/:1",
         "type": 301

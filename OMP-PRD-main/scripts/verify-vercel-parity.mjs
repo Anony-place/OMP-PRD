@@ -155,7 +155,7 @@ function buildCorpus() {
     '/', '/index.html', '/sitemap.xml', '/sitemap.txt', '/google-sitemap.xml',
     '/sitemap-index.xml', '/rss.xml', '/robots.txt', '/ads.txt', '/llms.txt',
     '/manifest.webmanifest', '/404.html', '/checker', '/checker.html',
-    '/checker/', '/tools/', '/articles/', '/learning/', '/blog', '/blog.html',
+    '/checker/', '/tools/', '/articles/', '/blog', '/blog.html',
     '/guides', '/guides.html', '/guides/', '/Anony.su/', '/osint', '/pentest',
   ]) urls.add(p);
 
