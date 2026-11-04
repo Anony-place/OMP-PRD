@@ -397,7 +397,7 @@ function osintHtml(tool, catName, related) {
 function pentestHtml(tool, catName, related) {
   return hubToolHtml('pentest', tool, catName, related);
 }
-function pentestCategoryHtml(shell, category, tools) {
+function pentestCategoryHtml(shell, category, tools, siblingCategories = []) {
   const slug = String(category.slug || '').trim();
   const name = String(category.name || 'Pentest tools').trim();
   const canonical = `${SITE}/pentest/category/${encodeURIComponent(slug)}`;
@@ -433,7 +433,17 @@ function pentestCategoryHtml(shell, category, tools) {
   html = html.replace(/<meta name="twitter:title" content="[^"]*">/i, `<meta name="twitter:title" content="${esc(`${name} Tools — OopsMyPassword`)}">`);
   html = html.replace(/<meta name="twitter:description" content="[^"]*">/i, `<meta name="twitter:description" content="${esc(description)}">`);
   html = html.replace(/<script type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/gi, '');
-  const main = `<main id="main"><section class="page-hero"><div class="container container-wide"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/pentest" style="color:var(--purple)">Pentest Hub</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><span class="chip chip-accent mt-16">Authorized security testing only</span><h1 class="h-1 mt-16">${esc(name)} Tools</h1><p class="lead">${esc(String(category.description || '').trim())}</p><p class="muted">${tools.length} tools with official project links, documentation and individual installation guides. Only test systems you own or are explicitly authorized to assess.</p></div></section><section class="section-tight"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse tools</span><h2 class="h-2">${esc(name)} tools and official resources</h2><p class="muted">Compare each tool's purpose and access type, then use its official documentation to confirm current installation requirements.</p></div><div class="grid grid-2">${cards}</div><p style="margin-top:28px"><a class="btn btn-secondary" href="/pentest">← Browse all penetration testing tools</a></p></div></section><section class="section-tight"><div class="container container-narrow"><h2 class="h-2">How to use these tools responsibly</h2><ul><li>Confirm written authorization and the exact scope before testing a target.</li><li>Read the official documentation and understand whether a tool sends active probes or changes application state.</li><li>Prefer an isolated lab or staging environment while learning.</li><li>Manually verify scanner results before treating them as confirmed findings.</li><li>Protect reports because they may contain sensitive environment details.</li></ul></div></section></main>`;
+  /* A one-tool category page is a cul-de-sac: one card, one link back to the
+     hub, and nowhere else to go. Wireless testing and exploitation frameworks
+     are both single-tool phases, so every category page now names its sibling
+     phases and how many tools each holds - which is also the shortest path
+     between two related tools for a crawler. */
+  const siblingHtml = siblingCategories.length
+    ? `<nav class="callout callout-info" aria-label="Other assessment phases"><p><strong>Other assessment phases:</strong> ${siblingCategories
+        .map((c) => `<a href="/pentest/category/${encodeURIComponent(String(c.slug))}">${esc(String(c.name || c.slug))}</a> (${c.count})`)
+        .join(' · ')}</p></nav>`
+    : '';
+  const main = `<main id="main"><section class="page-hero"><div class="container container-wide"><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/pentest" style="color:var(--purple)">Pentest Hub</a> <span class="divider-dot">/</span> <span>${esc(name)}</span></nav><span class="chip chip-accent mt-16">Authorized security testing only</span><h1 class="h-1 mt-16">${esc(name)} Tools</h1><p class="lead">${esc(String(category.description || '').trim())}</p><p class="muted">${tools.length} tools with official project links, documentation and individual installation guides. Only test systems you own or are explicitly authorized to assess.</p></div></section><section class="section-tight"><div class="container container-wide"><div class="section-head left"><span class="eyebrow">Browse tools</span><h2 class="h-2">${esc(name)} tools and official resources</h2><p class="muted">Compare each tool's purpose and access type, then use its official documentation to confirm current installation requirements.</p></div><div class="grid grid-2">${cards}</div><p style="margin-top:28px"><a class="btn btn-secondary" href="/pentest">← Browse all penetration testing tools</a></p>${siblingHtml}</div></section><section class="section-tight"><div class="container container-narrow"><h2 class="h-2">How to use these tools responsibly</h2><ul><li>Confirm written authorization and the exact scope before testing a target.</li><li>Read the official documentation and understand whether a tool sends active probes or changes application state.</li><li>Prefer an isolated lab or staging environment while learning.</li><li>Manually verify scanner results before treating them as confirmed findings.</li><li>Protect reports because they may contain sensitive environment details.</li></ul></div></section></main>`;
   html = html.replace(/<main id="main">[\s\S]*?<\/main>/i, main);
   html = html.replace(/<script src="\/assets\/js\/pentest\.js" defer><\/script>/i, '');
   html = html.replace('</head>', `<script type="application/ld+json">${escJson(breadcrumb)}</script><script type="application/ld+json">${escJson(itemList)}</script></head>`);
@@ -558,7 +568,10 @@ async function main() {
   let pentestCategoryPages = 0;
   for (const category of livePentestCategories) {
     const categoryTools = pentestTools.filter((tool) => tool.category_id === category.id && isValidSlug(tool.slug));
-    await writeFile(join(pentestCategoryDir, `${category.slug}.html`), pentestCategoryHtml(phub, category, categoryTools), 'utf8');
+    const siblings = livePentestCategories
+      .filter((c) => c.id !== category.id)
+      .map((c) => ({ slug: c.slug, name: c.name, count: pentestTools.filter((t) => t.category_id === c.id && isValidSlug(t.slug)).length }));
+    await writeFile(join(pentestCategoryDir, `${category.slug}.html`), pentestCategoryHtml(phub, category, categoryTools, siblings), 'utf8');
     pentestCategoryPages++;
   }
   console.log(`Built ${pentestCategoryPages} static Pentest Hub category pages.`);

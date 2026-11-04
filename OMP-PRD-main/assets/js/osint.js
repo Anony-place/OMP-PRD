@@ -615,6 +615,21 @@
     } else {
       html += '<div class="feed-list">' + visible.map(cardHtml).join('') + '</div>';
     }
+    /* Three investigation types hold a single tool (image, phone, all-in-one).
+       Filtering to one of them left a one-card page with no way forward except
+       the back button, so a thin result names the neighbouring categories and
+       how to see everything. */
+    if (activeCat && visible.length <= 2 && tools.length > visible.length) {
+      var neighbours = lastCategories.filter(function (c) {
+        return c.slug !== activeCat.slug && tools.some(function (t) { return t.category_slug === c.slug; });
+      });
+      html += '<div class="callout callout-info" style="margin-top:20px"><p><strong>' + visible.length +
+        (visible.length === 1 ? ' tool' : ' tools') + ' in ' + esc(activeCat.name) + '.</strong> ' +
+        (neighbours.length ? 'Other investigation types: ' + neighbours.map(function (c) {
+          return '<a href="#/c/' + encodeURIComponent(c.slug) + '">' + esc(c.name) + '</a>';
+        }).join(' · ') + '. ' : '') +
+        '<a href="' + HUB_PATH + '">See all ' + tools.length + ' OSINT tools</a>.</p></div>';
+    }
     html += '</div></div>';
 
     root.innerHTML = html;
