@@ -49,7 +49,26 @@ jobs:
           xml_urls=$(curl -sS "$MIRROR/sitemap.xml" | grep -c '<loc>' || true)
           echo "sitemap.txt=$txt_urls sitemap.xml=$xml_urls"
           [ "$txt_urls" = "$xml_urls" ] || { echo "::error::sitemap.txt has $txt_urls URLs but sitemap.xml has $xml_urls"; exit 1; }
-          [ "$txt_urls" -gt 250 ] || { echo "::error::only $txt_urls URLs in the sitemap, expected the full set"; exit 1; }
+          # The floor used to be 250. Retiring the Academy removed 127 URLs from
+          # the sitemap on purpose, so a fixed count no longer means "the full
+          # set" - a truncated build and a deliberate deletion look identical.
+          # Assert the shape instead: every hub is listed, and the count is high
+          # enough that no whole section can be missing.
+          [ "$txt_urls" -gt 170 ] || { echo "::error::only $txt_urls URLs in the sitemap, expected the full set"; exit 1; }
+          # Compare paths, not origins: the committed sitemap names web.app and
+          # the Vercel build rewrites it, so pinning the origin here would make
+          # this check disagree with the step above.
+          missing=""
+          sitemap_paths=$(curl -sS "$MIRROR/sitemap.txt" | sed -E 's#^https?://[^/]+##')
+          for hub in '' articles glossary compare cheatsheets osint pentest tools checker; do
+            grep -qx "/$hub" <<< "$sitemap_paths" || missing="$missing /$hub"
+          done
+          [ -z "$missing" ] || { echo "::error::sitemap is missing these hubs:$missing"; exit 1; }
+
+          # The Academy is retired. A URL for it must never come back through a
+          # stale build, because the sitemap is what asks Google to index it.
+          academy=$(curl -sS "$MIRROR/sitemap.txt" | grep -c '/learning' || true)
+          [ "$academy" = "0" ] || { echo "::error::$academy retired Academy URL(s) are still in the sitemap"; exit 1; }
 
           # A stale *.web.app URL here would ask Google to index the old host
           # from the new host's sitemap - the exact opposite of a migration.
