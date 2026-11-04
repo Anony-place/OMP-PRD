@@ -3,6 +3,7 @@ import { mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { STATIC_ROUTES, isValidSlug, priorityForRoute } from '../functions/sitemap-core.mjs';
 import { pickRelated } from './lib/related.mjs';
+import { CROSS_CANONICAL } from './lib/cross-canonical.mjs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://aeehfulikupskyrvcpzb.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR';
@@ -328,7 +329,9 @@ function hubToolHtml(hub, tool, catName, related) {
   const rawSummary = String(tool.summary || '').trim()
     || extractPlainText(tool.overview);
   const summary = metaDescription(rawSummary);
-  const canonical = `${SITE}${cfg.base}/${encodeURIComponent(slug)}`;
+  const pagePath = `${cfg.base}/${encodeURIComponent(slug)}`;
+  const canonicalPath = CROSS_CANONICAL[pagePath] || pagePath;
+  const canonical = `${SITE}${canonicalPath}`;
   const published = tool.published_at || tool.created_at || '';
   const modified = tool.updated_at || published;
   const overview = normalizeInjected(sanitizeHtml(tool.overview || '')).html;
@@ -386,7 +389,7 @@ function hubToolHtml(hub, tool, catName, related) {
   }).join('');
   const metaChips = [`<span class="chip">${esc(catName || cfg.fallbackCat)}</span>`, `<span class="chip">${esc(pricing)}</span>`, ...access.map((a) => `<span class="chip">${esc(a)}</span>`), ...(tool.featured ? ['<span class="chip">★ Featured</span>'] : []), ...(updated ? [`<span class="chip">Updated ${esc(updated)}</span>`] : [])].join('');
   const head = commonHead({ title: documentTitle(name, cfg.brand), description: summary, canonical, ogType: 'article', ogImage: image, jsonld: [toolSchema, breadcrumb], published, modified });
-  return `${head}<body>${siteHeader(cfg.base)}${siteMobileMenu(cfg.base)}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="${cfg.base}">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="${cfg.base}" style="color:var(--purple)">${cfg.hubName}</a>${catName ? ` <span class="divider-dot">/</span> <a href="${catItemUrl}" style="color:var(--purple)">${esc(catName)}</a>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every ${cfg.keepExploring} in the <a href="${cfg.base}">${cfg.hubName}</a>.</p></div><p class="muted small" style="margin-top:20px">${cfg.footerNote}</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
+  return `${head}<body>${siteHeader(cfg.base)}${siteMobileMenu(cfg.base)}<main id="main"><section class="article-hero"><div class="container container-wide"><p style="margin:0 0 6px"><a class="btn btn-ghost btn-sm" href="${cfg.base}">← Back to hub</a></p><nav aria-label="Breadcrumb" class="small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="${cfg.base}" style="color:var(--purple)">${cfg.hubName}</a>${catName ? ` <span class="divider-dot">/</span> <a href="${catItemUrl}" style="color:var(--purple)">${esc(catName)}</a>` : ''}</nav><div class="osint-detail-head" style="margin-top:16px">${tile}<div><h1 class="h-1" style="margin:0">${esc(name)}</h1></div></div><p class="lead" style="margin-top:16px">${esc(summary)}</p><div class="article-meta">${metaChips}</div><div class="flex gap-12 wrap" style="margin-top:20px">${links}</div></div></section><section class="section-tight"><div class="container container-wide"><div class="article-layout" style="margin-top:8px">${toc}<article class="prose">${body}<hr class="hr-fade" style="margin-top:48px">${canonicalPath !== pagePath ? `<div class="callout callout-info"><p><strong>Also in the OSINT Hub:</strong> this tool is documented in more depth at <a href="${canonicalPath}">${canonicalPath}</a> — that page is the canonical one.</p></div>` : ''}<div class="callout callout-info"><p><strong>Keep exploring:</strong> browse every ${cfg.keepExploring} in the <a href="${cfg.base}">${cfg.hubName}</a>.</p></div><p class="muted small" style="margin-top:20px">${cfg.footerNote}</p></article></div></div></section></main>${siteFooter()}<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>`;
 }
 function osintHtml(tool, catName, related) {
   return hubToolHtml('osint', tool, catName, related);
@@ -445,7 +448,7 @@ function sitemapXml({ articles, products, osint = [], pentest = [], pentestCateg
   for (const article of articles) if (isValidSlug(article.slug) && !article.robots_noindex) add(urlFor(`/articles/${encodeURIComponent(article.slug)}`), dateOnly(article.updated_at || article.published_at || article.created_at), `/articles/${article.slug}`);
   for (const product of products) if (isValidSlug(product.slug)) add(urlFor(`/products/${encodeURIComponent(product.slug)}`), dateOnly(product.updated_at || product.published_at || product.created_at), `/products/${product.slug}`);
   for (const tool of osint) if (isValidSlug(tool.slug)) add(urlFor(`/osint/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/osint/${tool.slug}`);
-  for (const tool of pentest) if (isValidSlug(tool.slug)) add(urlFor(`/pentest/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/pentest/${tool.slug}`);
+  for (const tool of pentest) if (isValidSlug(tool.slug) && !CROSS_CANONICAL[`/pentest/${tool.slug}`]) add(urlFor(`/pentest/${encodeURIComponent(tool.slug)}`), dateOnly(tool.updated_at || tool.published_at || tool.created_at), `/pentest/${tool.slug}`);
   for (const category of pentestCategories) if (isValidSlug(category.slug) && pentest.some((tool) => tool.category_id === category.id && isValidSlug(tool.slug))) add(urlFor(`/pentest/category/${encodeURIComponent(category.slug)}`), dateOnly(category.updated_at || category.published_at || category.created_at), `/pentest/category/${category.slug}`);
   const body = [...urls.entries()].map(([loc, meta]) => `<url><loc>${esc(loc)}</loc>${meta.lastmod ? `<lastmod>${meta.lastmod}</lastmod>` : ''}<priority>${meta.priority}</priority></url>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>\n`;

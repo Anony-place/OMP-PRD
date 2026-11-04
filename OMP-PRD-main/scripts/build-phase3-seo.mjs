@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CROSS_CANONICAL } from './lib/cross-canonical.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -3115,6 +3116,10 @@ ${feedItems.map((it) => `    <item>
     addEntry(o.url, extractLastmodFromFile(o.file, snapshotMap, o.url), 'monthly', '0.7');
   }
   for (const t of dbPentest) {
+    // A pentest listing that canonicalises to its OSINT twin must not appear in
+    // the sitemap: the sitemap would then submit two URLs for one tool and put
+    // the canonical signal against the submit signal.
+    if (CROSS_CANONICAL[t.url]) continue;
     addEntry(t.url, extractLastmodFromFile(t.file, snapshotMap, t.url), 'monthly', '0.7');
   }
   for (const c of dbPentestCats) {

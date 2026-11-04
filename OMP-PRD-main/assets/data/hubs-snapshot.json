@@ -1535,8 +1535,8 @@
       "category_name": "Reconnaissance & OSINT",
       "pricing": "free",
       "access_types": [
-        "desktop-app",
-        "web"
+        "web",
+        "cli"
       ],
       "official_url": "https://www.spiderfoot.net/",
       "github_url": "https://github.com/smicallef/spiderfoot",
