@@ -17,6 +17,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://oopsmypassword.web.app';
+/* Filled by the sitemap step so the build log reports the real URL count
+   instead of a number that goes stale the next time a section is retired. */
+let SITEMAP_COUNT = 0;
 const OG_IMG = `${SITE}/assets/images/og-image.jpg`;
 
 function esc(v) {
@@ -2686,7 +2689,7 @@ function enhanceExistingPagesWithMeshAndSchema() {
       html = html.replace('</head>', `  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="${SITE}/rss.xml">\n</head>`);
     }
 
-    // 3. For /articles/*.html and /guides/*.html: inject FAQPage JSON-LD if not present + Related Tools & Academy mesh
+    // 3. For /articles/*.html and /guides/*.html: inject FAQPage JSON-LD if not present + Related Tools mesh
     if ((rel.startsWith('articles/') || rel.startsWith('guides/')) && !html.includes('"@type":"FAQPage"') && !html.includes('"@type": "FAQPage"')) {
       const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
       const descMatch = html.match(/<meta name="description" content="([^"]+)"/i);
@@ -2993,7 +2996,7 @@ async function buildSitemapAndFeeds() {
   <channel>
     <title>OopsMyPassword — Cybersecurity, OSINT &amp; Privacy Feed</title>
     <link>${SITE}/</link>
-    <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and Academy lessons.</description>
+    <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
     <lastBuildDate>${rfc822(process.env.STATIC_LASTMOD)}</lastBuildDate>
     <ttl>60</ttl>
@@ -3014,7 +3017,7 @@ ${feedItems.map((it) => `    <item>
   // 3. Build /llms.txt and /llms-full.txt for AI Search Engines
   const llmsTxt = `# OopsMyPassword (https://oopsmypassword.web.app)
 
-> Privacy-first cybersecurity tools, structured Academy courses (Cyber Security, OSINT, Pentesting, Web Application Security), OSINT & Pentest tool directories, CLI cheat sheets, and technical security guides. All interactive tools run 100% client-side in the browser with zero telemetry.
+> Privacy-first cybersecurity tools, OSINT & Pentest tool directories, CLI cheat sheets, head-to-head tool comparisons, a security glossary, and technical guides that explain the fundamentals. All interactive tools run 100% client-side in the browser with zero telemetry.
 
 ## Interactive Client-Side Security Tools
 - [Password Strength Checker](${SITE}/checker): Real-time local entropy, pattern detection, and crack-time estimation.
@@ -3028,8 +3031,7 @@ ${feedItems.map((it) => `    <item>
 - [Password Health Audit](${SITE}/password-health): 10-point local credential hygiene check.
 - [Security Checklist](${SITE}/security-checklist): 16-step account hardening tracker.
 
-## Structured Academy Tracks & Hubs
-- [OMP Academy Home](${SITE}/learning): 118+ interactive lessons with 4-question self-checks and Full/Step reader modes.
+## Hubs & Reference
 - [OSINT Hub](${SITE}/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
 - [Pentest Hub](${SITE}/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
 - [Tool Comparisons Hub](${SITE}/compare): ${COMPARISONS.length} head-to-head technical comparisons.
@@ -3125,6 +3127,7 @@ ${feedItems.map((it) => `    <item>
   xmlLines.push('</urlset>');
   const finalXml = xmlLines.join('\n') + '\n';
 
+  SITEMAP_COUNT = entriesMap.size;
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), finalXml);
   fs.writeFileSync(path.join(ROOT, 'google-sitemap.xml'), finalXml);
 
@@ -3170,5 +3173,5 @@ updateToolsHubPage();
 enhanceExistingPagesWithMeshAndSchema();
 await buildSitemapAndFeeds();
 
-console.log('Phase 3 SEO pages, interactive tools, schema, and 297-URL sitemaps built successfully.');
+console.log(`Phase 3 SEO pages, interactive tools, schema, and ${SITEMAP_COUNT}-URL sitemaps built successfully.`);
 
