@@ -30,9 +30,6 @@
     { type: 'Tool', title: 'Hash, JWT & Encoding Inspector', desc: 'Offline SHA-256/512 calculator, password hash identifier, JWT security auditor, and Base64 encoder.', url: '/hash-inspector', kw: 'hash sha256 sha512 argon2id bcrypt jwt decoder token base64 hex inspector' },
     { type: 'Tool', title: 'Phishing URL & Link Risk Scanner', desc: 'Detect IDN homograph punycode (xn--), @-authority tricks, and brand typosquatting locally.', url: '/url-scanner', kw: 'phishing url scanner link checker punycode homograph typosquatting safe' },
 
-    /* Academy: public curriculum, not signed-in learner records. */
-    { type: 'Page', title: 'OMP Academy', desc: 'Explore subjects, choose a course, and learn through focused modules and lessons.', url: '/learning', kw: 'academy learn training education courses subjects curriculum programming security' },
-    { type: 'Page', title: 'Security learning roadmap', desc: 'Find your starting point and follow the web security foundation in order.', url: '/learning/roadmap', kw: 'academy beginner start roadmap path prerequisites' },
     /* Site pages */
     { type: 'Page', title: 'OopsMyPassword — Home', desc: 'Test, generate and learn password security — no account needed.', url: '/', kw: 'home start main free landing' },
     { type: 'Page', title: 'All Tools', desc: 'Every free, client-side tool on one page.', url: '/tools', kw: 'tools overview all list utilities' },
@@ -173,38 +170,10 @@
     return extraPromise;
   }
 
-  function buildItemsFromData(academy, articlesList, toolsList, productsList, osintList, pentestList) {
+  function buildItemsFromData(articlesList, toolsList, productsList, osintList, pentestList) {
     var items = [];
     var seen = {};
     STATIC_INDEX.forEach(function (it) { seen[normalizeUrl(it.url)] = 1; });
-
-    if (academy && Array.isArray(academy.categories) && Array.isArray(academy.paths) && Array.isArray(academy.topics)) {
-      var catById = {};
-      var pathById = {};
-      academy.categories.forEach(function (c) { if (c && c.id && c.slug) catById[c.id] = c; });
-      academy.paths.forEach(function (p) {
-        if (!p || !p.id || !p.slug) return;
-        pathById[p.id] = p;
-        var c = catById[p.category_id];
-        if (!c) return;
-        var pUrl = '/learning/' + c.slug + '/' + p.slug;
-        if (!seen[normalizeUrl(pUrl)]) {
-          seen[normalizeUrl(pUrl)] = 1;
-          items.push({ type: 'Course', title: p.name || p.slug, desc: p.description || '', url: pUrl, kw: 'academy course ' + (c.name || '') });
-        }
-      });
-      academy.topics.forEach(function (t) {
-        if (!t || !t.slug) return;
-        var p = pathById[t.path_id];
-        var c = p ? catById[p.category_id] : catById[t.category_id];
-        if (!c || !p) return;
-        var tUrl = '/learning/' + c.slug + '/' + p.slug + '/' + t.slug;
-        if (seen[normalizeUrl(tUrl)]) return;
-        seen[normalizeUrl(tUrl)] = 1;
-        var kwList = (t.content && Array.isArray(t.content.keywords)) ? t.content.keywords.join(' ') : '';
-        items.push({ type: 'Lesson', title: t.name || t.slug, desc: t.description || '', url: tUrl, kw: 'academy lesson ' + (c.name || '') + ' ' + kwList });
-      });
-    }
 
     (articlesList || []).forEach(function (a) {
       if (!a || !a.slug) return;
@@ -267,16 +236,13 @@
         }
       } catch (e) { /* storage unavailable */ }
 
-      var qAcademy = fetch('/assets/data/academy-catalogue.json').then(function (r) { return r && r.ok ? r.json() : null; }).catch(function () { return null; });
       var qSnapshot = fetch('/assets/data/hubs-snapshot.json').then(function (r) { return r && r.ok ? r.json() : null; }).catch(function () { return null; });
 
-      /* Resolve immediately with local Academy + Hubs snapshot so search is instant (<20ms),
+      /* Resolve immediately with the local Hubs snapshot so search is instant (<20ms),
          then upgrade in background if Supabase responds within 2.5s. */
-      Promise.all([qAcademy, qSnapshot]).then(function (localRes) {
-        var academy = localRes[0];
-        var snap = localRes[1] || {};
+      Promise.all([qSnapshot]).then(function (localRes) {
+        var snap = localRes[0] || {};
         var localItems = buildItemsFromData(
-          academy,
           snap.articles || [],
           [],
           snap.products || [],
@@ -307,7 +273,6 @@
           fetchWithDeadline(qPT, headers, 2500).then(safeJson).catch(function () { return []; })
         ]).then(function (res) {
           var merged = buildItemsFromData(
-            academy,
             (res[0] && res[0].length) ? res[0] : (snap.articles || []),
             res[1] || [],
             (res[2] && res[2].length) ? res[2] : (snap.products || []),
@@ -587,11 +552,7 @@
 
   function injectTrigger() {
     if (document.getElementById('omp-search-trigger')) return true;
-    /* The Academy header is its own compact bar (.academy-topnav-inner)
-       with an actions row instead of .nav-inner/.nav-actions — search
-       belongs there too, or the whole Academy loses site search. */
-    var nav = document.querySelector('header .nav-inner') || document.querySelector('.nav-inner')
-      || document.querySelector('.academy-topnav-inner');
+    var nav = document.querySelector('header .nav-inner') || document.querySelector('.nav-inner');
     if (!nav) return false; /* page without site chrome (e.g. admin) — stay dormant */
     var btn = document.createElement('button');
     btn.type = 'button';
@@ -608,7 +569,7 @@
        hamburger on mobile, while inheriting the container's gap. Appending to
        .nav-inner instead would drop the button past the CTA — .btn-get-started
        is a child of .nav-actions, not of .nav-inner. */
-    var actions = nav.querySelector('.nav-actions') || nav.querySelector('.academy-topnav-actions');
+    var actions = nav.querySelector('.nav-actions');
     if (actions) actions.insertBefore(btn, actions.firstChild);
     else {
       var anchor = nav.querySelector('.btn-get-started');

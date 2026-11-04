@@ -94,18 +94,6 @@ def load_sitemap_core():
     routes = re.findall(r"'([^']+)'", block.group(1))
     if not routes:
         raise SystemExit("sitemap-core.mjs: STATIC_ROUTES is empty")
-    if "...ACADEMY_ROUTES" in block.group(1):
-        manifest_path = os.path.join(os.path.dirname(SITEMAP_CORE), "academy-routes.mjs")
-        with open(manifest_path, encoding="utf-8") as fh:
-            manifest = re.search(r"export const ACADEMY_ROUTES = (\[.*?\]);", fh.read(), re.S)
-        if not manifest:
-            raise SystemExit("academy-routes.mjs: ACADEMY_ROUTES not found")
-        academy_routes = json.loads(manifest.group(1))
-        if not isinstance(academy_routes, list) or any(not isinstance(route, str) or not route.startswith("/learning") for route in academy_routes):
-            raise SystemExit("academy-routes.mjs: invalid published routes")
-        routes = list(dict.fromkeys(academy_routes + routes))
-
-
     # The value is deliberately allowed to be empty: no lastmod is asserted for
     # generated pages. [^']* (not [^']+) so an empty stamp still parses.
     lastmod = re.search(r"export const STATIC_LASTMOD = '([^']*)'", src)
@@ -228,7 +216,7 @@ def main():
     write("functions/site-footer.fragment", footer())
     write("index.html", page(
         path="/", active="/",
-        title="OopsMyPassword | Private Password Tools & Academy",
+        title="OopsMyPassword | Private Password Checker & Security Tools",
         desc="Free, privacy-first password tools that run entirely in your browser: strength checker, CSPRNG generator, passphrase builder and plain-language security guides.",
         body=home_body(GUIDES),
         jsonld=[jsonld_website(), jsonld_organization(), jsonld_webapp(), jsonld_faq(FAQ_ITEMS[:5])],
@@ -357,7 +345,7 @@ def main():
     write("privacy.html", page(
         path="/privacy", active="/about",
         title="Privacy Policy — OopsMyPassword",
-        desc="How OMP handles local password tools, device-only Academy progress and contact messages. Read our plain-language privacy policy.",
+        desc="How OMP handles local password tools, browser-only preferences and contact messages. Read our plain-language privacy policy.",
         body=privacy_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Privacy Policy", "/privacy")]),
     ))

@@ -9,7 +9,7 @@ FAQ_ITEMS = [
     ("Does OMP store my password?",
      "No. Passwords you type are analyzed in memory, in your browser tab only. They are never transmitted, written to storage, placed in URLs, or included in any logs or analytics. Closing the tab erases everything."),
     ("Does OMP require an account?",
-     "No learner login is needed. Academy progress and an optional name stay in your browser. Email is requested only if you choose article updates, not to unlock lessons."),
+     "No account is needed. Everything runs in your browser and nothing is stored on a server. Email is requested only if you choose article updates, not to unlock anything."),
     ("How is password strength calculated?",
      "A heuristic score combines length, character variety and bonuses, then subtracts penalties for common passwords, dictionary words, repeated and sequential characters, keyboard walks and dates. An adjusted entropy estimate and an indicative offline crack time are derived from the result."),
     ("Is the strength score guaranteed?",
@@ -173,7 +173,7 @@ def home_body(guides):
       <h3 class="h-3">The OMP privacy contract</h3>
       <ul class="list-plain mt-16">
         <li>{icon("lock","icon-18")}<span><strong>Passwords never leave your device</strong> — analysis is 100% client-side JavaScript</span></li>
-        <li>{icon("lock","icon-18")}<span><strong>No learner login</strong> — Academy progress stays on your device</span></li>
+        <li>{icon("lock","icon-18")}<span><strong>No account needed</strong> — nothing you type leaves your device</span></li>
         <li>{icon("lock","icon-18")}<span><strong>No password history</strong> — password inputs are never written to URLs, storage or logs</span></li>
         <li>{icon("lock","icon-18")}<span><strong>CSPRNG only</strong> — generation uses <span class="mono">crypto.getRandomValues()</span></span></li>
         <li>{icon("lock","icon-18")}<span><strong>No fake claims</strong> — demos are labeled demos; estimates are labeled estimates</span></li>

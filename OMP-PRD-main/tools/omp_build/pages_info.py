@@ -25,7 +25,7 @@ def about_body():
         <li><strong>Security advice is often theater.</strong> Fake precision ("this password would take 34 quadrillion years"), fake counters, unlabeled demos, dark patterns pushing accounts. We wanted tools that are honest about what they compute.</li>
       </ul>
       <h2 id="philosophy">The privacy-first philosophy</h2>
-      <p>OMP is architected so password analysis runs in JavaScript on your device. No password inputs cross the network. Optional contact details are separate from the tools and local learning records. The best data-protection policy is data you never collect.</p>
+      <p>OMP is architected so password analysis runs in JavaScript on your device. No password inputs cross the network. Optional contact details are separate from the tools. The best data-protection policy is data you never collect.</p>
       <h2 id="principles">Security principles we hold to</h2>
       <ul>
         <li><strong>Client-side by default.</strong> If a feature can run locally, it runs locally.</li>
@@ -39,7 +39,7 @@ def about_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("users-off","icon-22")}</span>
         <h3>No account required</h3>
-        <p>No learner login is required. Your theme, checklist, optional Academy name and learning progress stay on this browser/device. You can back up or clear Academy data in Device settings.</p>
+        <p>Your theme and Security Checklist progress stay in this browser. You can reset them at any time; nothing is sent to a server.</p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("server-off","icon-22")}</span>
@@ -49,7 +49,7 @@ def about_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("grad","icon-22")}</span>
         <h3>Who it's for</h3>
-        <p>Anyone with accounts. Students learning security basics, developers who want clean reference tools, and everyone who has ever reused a password and meant to fix it.</p>
+        <p>Anyone with accounts. Students learning the basics, developers who want clean reference tools, and everyone who has ever reused a password and meant to fix it.</p>
       </div>
     </div>
   </div>
@@ -79,8 +79,8 @@ def privacy_body():
       <li>If this site ever includes error reporting or analytics, it is configured such that input values — passwords included — can never be part of a payload.</li>
     </ul>
 
-    <h2 id="accounts">2. Device-only learning, no learner login</h2>
-    <p>Public learning and tools require no login. Academy stores an optional display name, course-scoped lesson progress, self-check scores and reading bookmarks in localStorage. Theme preferences and Security Checklist progress are also local. This data does not sync to any server. Clearing browser data removes it; use Academy Device settings to download/restore a backup or reset Academy data. Backups include your name and progress, so keep them private. Shared browsers share these local records. Site administrators use a separate protected publishing login; it is not required for visitors. Historical server-issued certificates and learner records, if any, are not automatically deleted or imported by this change.</p>
+    <h2 id="accounts">2. No account, no login</h2>
+    <p>Every tool and every article works without an account. Your theme preference and Security Checklist progress are stored in this browser using localStorage, and never leave the device. Clearing browser data removes them. Site administrators use a separate protected publishing login; it is not required for visitors and creates no visitor record.</p>
 
     <h2 id="breach-demo">3. The breach-check demo</h2>
     <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and compares a 5-character hash prefix against a small corpus bundled with the page. No network request is made with any part of your input or its hash. The demo is labeled accordingly and does not represent a live breach database query.</p>
@@ -89,10 +89,10 @@ def privacy_body():
     <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and may retain it under its own security, reliability and retention policies. We do not sell, rent, or share that data.</p>
 
     <h2 id="third-parties">5. Third-party services</h2>
-    <p>Firebase Hosting serves the site. Supabase supplies published articles/products and contact-message storage; some publishing interfaces load the Supabase library from esm.sh. These requests expose normal network metadata to those providers but do not include password inputs or local Academy progress. No advertising analytics are included in this build. Contact messages include the name, email and message you submit.</p>
+    <p>Firebase Hosting serves the site. Supabase supplies published articles/products and contact-message storage; some publishing interfaces load the Supabase library from esm.sh. These requests expose normal network metadata to those providers but never include password inputs. No advertising analytics are included in this build. Contact messages include the name, email and message you submit.</p>
 
     <h2 id="children">6. Children</h2>
-    <p>OMP is intended for a general audience. Password tools and Academy learning need no email. Do not submit unnecessary personal or sensitive information in an optional subscription or contact message.</p>
+    <p>OMP is intended for a general audience. Password tools and articles need no email. Do not submit unnecessary personal or sensitive information in an optional subscription or contact message.</p>
 
     <h2 id="changes">7. Changes to this policy</h2>
     <p>Material changes will be posted on this page with an updated date. We will never claim compliance certifications we have not obtained; where a formal legal regime applies to how you use this site, consult qualified counsel.</p>
@@ -277,7 +277,7 @@ def security_body():
     <div class="prose">
       <h2 id="architecture">Architecture choices that shrink risk</h2>
       <ul>
-        <li><strong>Static, client-side site.</strong> Public pages are prebuilt. Password tools and Academy progress run locally; Supabase handles publishing data, contact messages and private admin authentication.</li>
+        <li><strong>Static, client-side site.</strong> Public pages are prebuilt. Password tools run locally; Supabase handles publishing data, contact messages and private admin authentication.</li>
         <li><strong>Local password analysis.</strong> The public tools do not send password inputs to a server. Private administrator sign-in is a separate authenticated service.</li>
         <li><strong>Limited, documented dependencies.</strong> Fonts use the system stack. Publishing features load pinned libraries from esm.sh. These dependencies need maintenance and do not receive password inputs.</li>
         <li><strong>Safe DOM handling.</strong> Plain text uses <code>textContent</code> or escaping; article and product markup passes through an allowlist sanitizer before rendering. The site does not evaluate user-provided JavaScript.</li>
@@ -314,16 +314,13 @@ def security_body():
 def sitemap_body(guides):
     groups = [
         ("Tools", [(t["name"], t["href"]) for t in TOOLS]),
-        ("Academy & Hubs", [
-            ("Academy Home", "/learning"),
-            ("Learning Paths & Roadmap", "/learning/roadmap"),
-            ("Cyber Security Path", "/learning/cyber-security"),
-            ("Fundamentals to Defence Course", "/learning/cyber-security/cyber-security-track"),
-            ("Web Application Security Path", "/learning/web-application-security"),
-            ("Web Security Foundations Course", "/learning/web-application-security/foundations"),
+        ("Hubs & Resources", [
             ("OSINT Hub", "/osint"),
             ("Pentest Hub", "/pentest"),
             ("Articles Hub", "/articles"),
+            ("Tool Comparisons", "/compare"),
+            ("CLI Cheat Sheets", "/cheatsheets"),
+            ("Security Glossary", "/glossary"),
             ("Products", "/products"),
         ]),
         ("Guides", [(g["title"], f"/articles/{g['slug']}") for g in guides]),

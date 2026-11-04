@@ -639,13 +639,14 @@ const $ = (d, s) => d.querySelector(s);
       ok(!guidePages[i].includes('href="/guides.html"'), `guides page ${i + 1}/15: no link to the removed /guides.html page`);
     }
 
-    /* Navbar contract: Home, Checker, Generator, Tools, Articles, Products, OSINT Hub, Pentest Hub, Academy, Breach Check
-       (+ the JS-injected Search trigger in nav-actions). */
+    /* Navbar contract: Home, Checker, Tools, OSINT Hub, Pentest Hub, Articles, Products
+       (+ the JS-injected Search trigger in nav-actions). The Academy was removed,
+       so the desktop nav is 7 items and every page renders the same list. */
     const blog = rootHtml.find(x => x.f === 'articles.html').s;
     const nav = blog.match(/<nav class="nav-links"[^>]*>([\s\S]*?)<\/nav>/)[1];
     const navLabels = [...nav.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(m => m[2]);
-    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Generator', 'Tools', 'Articles', 'Products', 'OSINT Hub', 'Pentest Hub', 'Academy', 'Breach Check']),
-       `desktop navbar is exactly the 10 target items — got [${navLabels.join(', ')}]`);
+    ok(JSON.stringify(navLabels) === JSON.stringify(['Home', 'Checker', 'Tools', 'OSINT Hub', 'Pentest Hub', 'Articles', 'Products']),
+       `desktop navbar is exactly the 7 target items — got [${navLabels.join(', ')}]`);
     const mobile = blog.match(/<nav class="mobile-menu"[^>]*>([\s\S]*?)<a class="btn/)[1];
     ok(!mobile.includes('/guides.html') && !/>Guides</.test(mobile), 'mobile menu has no Guides item');
     ok(mobile.includes('/articles">Articles<'), 'mobile menu links Articles to the hub');
@@ -1000,8 +1001,8 @@ const $ = (d, s) => d.querySelector(s);
     ok(pjs.includes('SLUG_RE') && pjs.includes('safeSlug'), 'pentest slugs are charset-guarded before URLs are built');
     ok(pjs.includes("HUB_PATH = '/pentest'") && pjs.includes('/^\\/pentest\\/'), 'pentest app routes its own hub, not /osint');
     ok(pjs.includes('Authorized testing only'), 'detail pages carry the authorized-testing notice');
-    ok(pjs.includes('authorisation-scope-and-the-law') && pjs.includes('home-lab-and-safe-practice'),
-       'hub links the Academy scope/law and safe-lab lessons');
+    ok(pjs.includes('Keep exploring:') && pjs.includes('browse every assessment phase'),
+       'detail pages point back to the hub instead of a removed lesson');
     ok(pjs.includes('article-layout') && pjs.includes('On this page') && pjs.includes('sec-example'),
        'pentest detail follows the article flow like osint');
     ok(!/from\('osint_tools'\)/.test(pjs) && !/from\('articles'\)/.test(pjs),

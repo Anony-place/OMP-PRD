@@ -128,12 +128,12 @@ async function boot() {
   for (const src of LIBS) w.eval(src);
   w.__mockCreateClient = makeClient;
   ADMIN = fs.readFileSync(`${ROOT}/assets/js/admin.js`, 'utf8');
-  /* admin.js now also imports ACADEMY_CONFIG; jsdom eval is a classic script,
+  /* admin.js also imports SITE_CONFIG; jsdom eval is a classic script,
      so inline the config module (minus export keywords) in the same eval. */
-  const CFG = fs.readFileSync(`${ROOT}/assets/js/academy-config.mjs`, 'utf8').replace(/^export /gm, '');
+  const CFG = fs.readFileSync(`${ROOT}/assets/js/site-config.mjs`, 'utf8').replace(/^export /gm, '');
   w.eval(CFG + '\n' + ADMIN
     .replace(/^import \{ createClient \} from .*$/m, 'const createClient = window.__mockCreateClient;')
-    .replace(/^import \{ ACADEMY_CONFIG \} from .*$/m, ''));
+    .replace(/^import \{ SITE_CONFIG \} from .*$/m, ''));
   try {
     await waitFor(() => w.document.querySelector('[data-tab="products"]'), 'the products tab');
   } catch {

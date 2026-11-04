@@ -13,13 +13,10 @@ export async function releaseArtifacts(root) {
   const { resolve: routeFile } = createRouter(root);
   const sitemap = await readFile(join(root, 'sitemap.xml'), 'utf8');
   const paths = new Set([
-    '/', '/articles', '/learning', '/privacy', '/certificate',
+    '/', '/articles', '/compare', '/cheatsheets', '/glossary', '/privacy',
     '/sitemap.xml', '/google-sitemap.xml', '/sitemap-index.xml', '/sitemap.txt', '/rss.xml', '/robots.txt',
-    '/assets/css/styles.css', '/assets/css/learning.css',
-    '/assets/js/main.js', '/assets/js/learning.js', '/assets/js/academy-local.mjs',
-    '/assets/js/academy-views.mjs', '/assets/js/academy-model.mjs', '/assets/js/academy-ui.mjs',
-    '/assets/js/academy-content.mjs', '/assets/js/academy-quiz.mjs',
-    '/assets/data/academy-catalogue.json', '/assets/data/academy-self-checks.json',
+    '/assets/css/styles.css',
+    '/assets/js/main.js', '/assets/js/search.js',
       ]);
   for (const [, loc] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) paths.add(new URL(loc).pathname);
   const artifacts = [];

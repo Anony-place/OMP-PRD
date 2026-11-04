@@ -95,7 +95,6 @@ NAV_LINKS = [
     ("Home", "/"),
     ("Checker", "/checker"),
     ("Tools", "/tools"),
-    ("Academy", "/learning"),
     ("OSINT Hub", "/osint"),
     ("Pentest Hub", "/pentest"),
     ("Articles", "/articles"),
@@ -226,11 +225,11 @@ def footer():
             ("FAQ", "/faq"),
             ("Glossary", "/glossary"),
         ]),
-        ("Academy", [
-            ("Academy home", "/learning"),
-            ("Learning paths", "/learning/roadmap"),
-            ("Course order", "/learning/roadmap#all-courses-h"),
-            ("How learning works", "/learning/roadmap#how-it-works"),
+        ("Learn", [
+            ("Articles", "/articles"),
+            ("Tool Comparisons", "/compare"),
+            ("CLI Cheat Sheets", "/cheatsheets"),
+            ("Security Glossary", "/glossary"),
         ]),
         ("Company", [
             ("About", "/about"),
@@ -248,7 +247,7 @@ def footer():
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="/" aria-label="{BRAND} — home">{logo_svg("f")}<span>Oops<span class="grad-text">MyPassword</span></span></a>
-        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
         <div class="tag-list mt-16">
           <span class="chip">{icon("lock","icon-16")} Client-side</span>
           <span class="chip">{icon("users-off","icon-16")} No account</span>
@@ -426,7 +425,7 @@ def jsonld_website():
         "alternateName": ["Oops My Password", "OMP", urlparse(SITE).hostname],
         "publisher": {"@id": SITE + "/#organization"},
         "url": SITE + "/",
-        "description": "Privacy-first password tools, practical articles and a no-login learning Academy.",
+        "description": "Privacy-first password tools, practical articles, tool comparisons and CLI cheat sheets.",
     }
 
 

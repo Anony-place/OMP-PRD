@@ -162,8 +162,8 @@ function buildCorpus() {
   /* 5. Paths that must keep 404ing (no soft-404 regressions). */
   for (const p of [
     '/this-page-does-not-exist', '/articles/unknown-slug', '/products/unknown-slug',
-    '/osint/unknown-slug', '/pentest/unknown-slug', '/learning/unknown',
-    '/learning/cyber-security/unknown-topic', '/random/deep/path/here',
+    '/osint/unknown-slug', '/pentest/unknown-slug',
+    '/random/deep/path/here',
     '/checker/extra', '/tools/extra', '/api', '/wp-login.php',
   ]) urls.add(p);
 
