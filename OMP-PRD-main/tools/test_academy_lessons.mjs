@@ -142,6 +142,55 @@ if (fs.existsSync(page)) {
     'the generated placeholder diagram is gone from converted lessons');
 }
 
+section('A self-check tests the lesson, not the lesson title');
+
+/* The file used to carry 106 generated quizzes whose "correct" answer was the
+   catalogue description pasted in, against distractors like "Eliminating all
+   encryption and authentication logs to improve network throughput". A reader
+   spots that in one question and stops believing the rest of the page. */
+const checks = JSON.parse(fs.readFileSync(path.join(root, 'assets/data/academy-self-checks.json'), 'utf8'));
+const allChecks = [
+  ...Object.entries(checks).filter(([k]) => k !== 'by_slug').map(([k, v]) => [k, v]),
+  ...Object.entries(checks.by_slug || {}).map(([k, v]) => [k, v]),
+];
+
+const TEMPLATE_TELLS = [
+  /primary security objective of studying/i,
+  /one-time compliance checkbox/i,
+  /operationalise .* in practice/i,
+  /which key takeaway best summarises the lesson on/i,
+  /documented pitfall or misconception regarding/i,
+];
+const generated = allChecks.filter(([, v]) =>
+  (v.questions || []).some((q) => TEMPLATE_TELLS.some((re) => re.test(q.question || ''))));
+assert(generated.length === 0,
+  `no generated quiz survives${generated.length ? ` — ${generated.length} still there, e.g. ${generated[0][0]}` : ''}`);
+
+const ABSURD = /eliminating all encryption|unverified third-party scripts unrestricted|overwritten every hour|plaintext recovery secrets/i;
+const silly = allChecks.filter(([, v]) =>
+  (v.questions || []).some((q) => (q.options || []).some((o) => ABSURD.test(o))));
+assert(silly.length === 0, `no filler distractors remain${silly.length ? ` — ${silly[0][0]}` : ''}`);
+
+/* Every lesson written this round has to be checkable, or the "Check" stage of
+   the reader is a dead end. */
+const { normalizeSelfCheck } = await import(new URL('../assets/js/academy-local.mjs', import.meta.url).href);
+const unchecked = [];
+for (const t of authored) {
+  const raw = checks[t.id] || checks.by_slug?.[t.slug];
+  if (!raw) { unchecked.push(t.slug); continue; }
+  try { normalizeSelfCheck(raw); } catch (e) { unchecked.push(`${t.slug} (invalid: ${e.message})`); }
+}
+assert(unchecked.length === 0,
+  `every converted lesson has a self-check the reader accepts${unchecked.length ? ` — ${unchecked.slice(0, 3).join(', ')}` : ''}`);
+
+/* A quiz where every answer is at the same index is not a quiz. */
+const flat = [];
+for (const [key, v] of allChecks) {
+  const answers = (v.questions || []).map((q) => q.answer);
+  if (answers.length > 1 && new Set(answers).size === 1) flat.push(key);
+}
+assert(flat.length === 0, `answers are not all in the same slot${flat.length ? ` — ${flat[0]}` : ''}`);
+
 section('Progress is visible, not claimed');
 
 /* A floor, so the conversion cannot quietly go backwards. Raise this as more
