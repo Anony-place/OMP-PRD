@@ -542,6 +542,7 @@ export const COMPARISONS = [
     ],
     relatedLinks: [
       { label: 'Shodan OSINT Guide', url: '/osint/shodan' },
+      { label: 'Censys OSINT Guide', url: '/osint/censys' },
       { label: 'SpiderFoot OSINT Guide', url: '/osint/spiderfoot' },
       { label: 'Shodan Search Filters Cheat Sheet', url: '/cheatsheets/shodan-search-filters-cheatsheet' }
     ]
