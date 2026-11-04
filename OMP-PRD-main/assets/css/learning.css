@@ -5404,3 +5404,11 @@
 @media (max-width: 640px), (pointer: coarse) {
   .lesson-prev { min-height: 44px; padding: 14px 16px; }
 }
+
+/* The outcome list needs a lead-in, or it reads as a list of fragments under a
+   heading that says the same thing twice. */
+.lesson-objectives-lead {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}

@@ -1,5 +1,5 @@
 import { ROOT, minutes, breadcrumbs, recommended } from "./academy-model.mjs";
-import { sectionsFor } from "./academy-content.mjs";
+import { objectivesFor, readingMinutes, sectionsFor } from "./academy-content.mjs";
 import { esc, icon, safeHttpUrl } from "./academy-ui.mjs";
 export { esc, icon };
 const list = (values) =>
@@ -455,7 +455,7 @@ export function topicRow(t, index, progress) {
     : progress?.lesson_started
       ? "In progress"
       : "Start lesson";
-  return `<a class="academy-topic ${progress?.passed ? "is-complete" : ""}" href="${t.url}"><span class="topic-number">${progress?.passed ? icon("check") : String(index + 1).padStart(2, "0")}</span><div class="topic-body"><h3>${esc(t.name)}</h3><p>${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></div><span class="topic-action">${label} ${icon("arrow")}</span></a>`;
+  return `<a class="academy-topic ${progress?.passed ? "is-complete" : ""}" href="${t.url}"><span class="topic-number">${progress?.passed ? icon("check") : String(index + 1).padStart(2, "0")}</span><div class="topic-body"><h3>${esc(t.name)}</h3><p>${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${readingMinutes(t)} min</span></div></div><span class="topic-action">${label} ${icon("arrow")}</span></a>`;
 }
 export function modulesView(path, pmap = new Map(), filter = () => true) {
   let index = 0;
@@ -500,7 +500,7 @@ export function pathView(data, page, context = {}) {
 export function roadmapView(data, page, context = {}) {
   const pmap = context.pmap || new Map();
   const courses = data.paths.filter((p) => p.modules.some((m) => m.topics.length));
-  const totalMinutes = data.topics.reduce((n, t) => n + Number(t.estimated_minutes || 0), 0);
+  const totalMinutes = data.topics.reduce((n, t) => n + readingMinutes(t), 0);
   return `${breadcrumbView(page)}
 <header class="path-hero roadmap-hero">
   <p class="path-eyebrow">Curriculum Roadmap</p>
@@ -608,7 +608,7 @@ export function categoryRoadmapView(data, page) {
   const c = page.category,
     start = recommended(data, c.id);
   const skills = categorySkills(c);
-  const totalMinutes = c.topics.reduce((n, t) => n + Number(t.estimated_minutes || 0), 0);
+  const totalMinutes = c.topics.reduce((n, t) => n + readingMinutes(t), 0);
 
   return `${breadcrumbView(page)}
 <header class="academy-page-heading roadmap-hero">
@@ -694,7 +694,7 @@ export function categoryRoadmapView(data, page) {
             ${m.topics
               .map(
                 (t, idx) =>
-                  `<a class="roadmap-lesson-pill" href="${t.url}"><span class="pill-number">${idx + 1}</span><span class="pill-title">${esc(t.name)}</span><span class="pill-time">${Number(t.estimated_minutes)}m</span><span class="pill-arrow" aria-hidden="true">→</span></a>`,
+                  `<a class="roadmap-lesson-pill" href="${t.url}"><span class="pill-number">${idx + 1}</span><span class="pill-title">${esc(t.name)}</span><span class="pill-time">${readingMinutes(t)}m</span><span class="pill-arrow" aria-hidden="true">→</span></a>`,
               )
               .join("")}
           </div>
@@ -915,6 +915,13 @@ function buildDiagramSpec(t) {
 }
 
 export function lessonDiagramView(t) {
+  /* The fallback diagram is generated from the lesson title, and for a
+     definition lesson it reads as "Client / Caller → Application Boundary →
+     Protected State", which explains nothing and sits above the first
+     sentence the reader needs. Lessons that carry their own worked examples
+     do not need it; only an explicit diagram is shown for them. */
+  const authored = Array.isArray(t.content?.sections) && t.content.sections.length;
+  if (authored && !t.content?.diagram) return "";
   const spec = buildDiagramSpec(t);
   const tabs = spec.modes
     .map(
@@ -995,7 +1002,7 @@ export function staticLessonView(data, page) {
   );
   const takeaways = all.find((s) => s.id === "defensive");
   const resources = (t.content.references || []).map(safeHttpUrl).filter(Boolean);
-  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${Number(t.estimated_minutes)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div>${lessonDiagramView(t)}<section class="lesson-section lesson-concept"><h2>What you'll learn</h2><ul class="lesson-objectives">${sections.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}${prevLessonView(p, t)}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
+  return `${breadcrumbView(page)}<header class="lesson-heading"><div class="lesson-meta"><span class="academy-kicker">LESSON ${p.topics.indexOf(t) + 1} OF ${p.topics.length}</span><span class="lesson-meta-divider">·</span><span>${esc(module.name)}</span></div><h1>${esc(t.name)}</h1><p class="lesson-lede">${esc(t.description)}</p><div class="topic-meta"><span>${esc(t.difficulty)}</span><span>${readingMinutes(t)} min</span></div></header><div class="lesson-why"><strong>Why this matters</strong><p>${esc(t.content.overview || t.description)}</p></div>${lessonDiagramView(t)}<section class="lesson-section lesson-concept"><h2>What you'll learn</h2><p class="lesson-objectives-lead">By the end of this lesson you can:</p><ul class="lesson-objectives">${objectivesFor(t, sections).map((o) => `<li>${esc(o)}</li>`).join("")}</ul>${sections.map((s) => `<div class="concept-block"><h3>${esc(s.title)}</h3>${blocksView(s.blocks)}</div>`).join("")}</section><section class="lesson-section lesson-practice"><h2>Practice / apply</h2><p>${esc(t.content.practice_guidance || "Use a suitable learning environment and follow the resource's instructions. Test other people's systems only with permission.")}</p>${data.labs.filter((l) => l.topic_id === t.id && safeHttpUrl(l.url)).map((l) => `<div class="academy-lab"><h3>${esc(l.title)}</h3><p>${esc(l.description)}</p><a class="btn btn-secondary" href="${esc(safeHttpUrl(l.url))}" target="_blank" rel="noopener noreferrer">Open ${esc(l.provider)} resource ↗</a></div>`).join("")}</section>${takeaways ? `<section class="lesson-section lesson-takeaways"><h2>Key takeaways</h2><div class="prose learning-prose">${blocksView(takeaways.blocks)}</div></section>` : ""}${resources.length ? `<section class="lesson-section lesson-resources"><h2>Sources &amp; further reading</h2><ul class="static-resources">${resources.map((url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname + new URL(url).pathname)} ↗</a></li>`).join("")}</ul></section>` : ""}${prevLessonView(p, t)}<div class="lesson-next"><div class="lesson-next-label">${next ? "NEXT" : "COURSE COMPLETE ✓"}</div><h2>${next ? esc(next.name) : `You've completed ${esc(p.name)}`}</h2><p>${next ? esc(next.description) : `This was the last lesson in this course. ${esc(p.next_steps)}`}</p><a class="btn btn-primary" href="${next?.url || p.url}">${next ? "Next lesson" : "Review this course"} ${icon("arrow")}</a></div>`;
 }
 export function publicView(data, page, context = {}) {
   if (page.type === "overview") return hubView(data, { ...context, categories: data.categories });
