@@ -1,6 +1,6 @@
 # OopsMyPassword (https://oopsmypassword.web.app)
 
-> Privacy-first cybersecurity tools, structured Academy courses (Cyber Security, OSINT, Pentesting, Web Application Security), OSINT & Pentest tool directories, CLI cheat sheets, and technical security guides. All interactive tools run 100% client-side in the browser with zero telemetry.
+> Privacy-first cybersecurity tools, OSINT & Pentest tool directories, CLI cheat sheets, head-to-head tool comparisons, a security glossary, and technical guides that explain the fundamentals. All interactive tools run 100% client-side in the browser with zero telemetry.
 
 ## Interactive Client-Side Security Tools
 - [Password Strength Checker](https://oopsmypassword.web.app/checker): Real-time local entropy, pattern detection, and crack-time estimation.
@@ -14,8 +14,7 @@
 - [Password Health Audit](https://oopsmypassword.web.app/password-health): 10-point local credential hygiene check.
 - [Security Checklist](https://oopsmypassword.web.app/security-checklist): 16-step account hardening tracker.
 
-## Structured Academy Tracks & Hubs
-- [OMP Academy Home](https://oopsmypassword.web.app/learning): 118+ interactive lessons with 4-question self-checks and Full/Step reader modes.
+## Hubs & Reference
 - [OSINT Hub](https://oopsmypassword.web.app/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
 - [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 17 head-to-head technical comparisons.
