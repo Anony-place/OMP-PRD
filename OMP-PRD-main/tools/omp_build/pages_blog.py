@@ -189,7 +189,7 @@ def pentest_body():
     <h1 class="h-1 mt-16">Pentest Hub</h1>
     <p class="lead">Explore penetration testing tools by assessment phase. Compare purpose, pricing and access type, then open a dedicated tool guide for official websites, installation instructions and documentation.</p>
     <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
-    <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Start with the <a href="/learning" style="color:var(--purple)">Academy</a> safe-testing track and the <a href="/learning/roadmap" style="color:var(--purple)">learning roadmap</a> first.</p></div>
+    <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Read the <a href="/articles" style="color:var(--purple)">authorised-testing guides</a> first.</p></div>
   </div>
 </section>
 <section class="section-tight" style="padding-top:8px">
@@ -200,7 +200,7 @@ def pentest_body():
       <div class="feed-row is-loading" aria-hidden="true"><div class="feed-row-main"><div class="skel skel-title skel-w70"></div><div class="skel skel-meta"></div><div class="skel skel-line"></div><div class="skel skel-line skel-w70"></div></div></div>
     </div>
     <noscript>
-      <div class="notice-band mt-24">{icon("info","icon-20")}<p>The pentest catalog needs JavaScript to load. Start with the <a href="/learning" style="color:var(--purple)">OMP Academy</a> — it works without JavaScript.</p></div>
+      <div class="notice-band mt-24">{icon("info","icon-20")}<p>The pentest catalog needs JavaScript to load. The <a href="/cheatsheets" style="color:var(--purple)">CLI cheat sheets</a> below work without it.</p></div>
     </noscript>
   </div>
 </section>
@@ -235,7 +235,7 @@ def pentest_body():
       <div class="card card-pad"><h3 class="h-3">Scanner says vulnerable — now what?</h3><p class="muted">Verify by hand. Version-based findings are frequently wrong against backported patches; reproduce the issue safely, then report with exact steps and remediation advice.</p></div>
       <div class="card card-pad"><h3 class="h-3">How do I turn findings into a career?</h3><p class="muted">Document everything you do in labs as write-ups, publish them, and study for hands-on certifications. Employers hire demonstrated methodology, not tool lists.</p></div>
     </div>
-    <p class="muted small" style="margin-top:20px">New to this? Start with the <a href="/learning" style="color:var(--purple)">Academy</a> and follow the <a href="/learning/roadmap" style="color:var(--purple)">learning roadmap</a>.</p>
+    <p class="muted small" style="margin-top:20px">New to this? Start with the <a href="/articles" style="color:var(--purple)">beginner guides</a>.</p>
   </div>
 </section>
 """

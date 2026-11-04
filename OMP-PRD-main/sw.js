@@ -33,8 +33,6 @@ const PRECACHE_URLS = [
   '/assets/js/dork-builder.js',
   '/assets/js/hash-inspector.js',
   '/assets/js/url-scanner.js',
-  '/assets/data/academy-catalogue.json',
-  '/assets/data/academy-self-checks.json',
   '/assets/data/hubs-snapshot.json'
 ];
 

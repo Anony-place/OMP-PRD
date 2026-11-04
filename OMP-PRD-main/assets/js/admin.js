@@ -7,7 +7,7 @@
    deliberately, and keep every module on the same version
    (tools/test_runtime.js asserts they agree). */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0';
-import { ACADEMY_CONFIG } from './academy-config.mjs';
+import { SITE_CONFIG } from './site-config.mjs';
 import { SECTION_TABS, isSection, mountSection } from './admin/sections.js';
 import { installAutosave, draftKey, pruneDrafts } from './admin/autosave.js';
 import { load as loadPanelSettings, current as panelSettings } from './admin/panel-settings.js';
@@ -16,8 +16,8 @@ import { docxToHtml } from './admin/docx.js';
 
 if (typeof window.__adminBootOk === 'function') window.__adminBootOk();
 
-const SUPABASE_URL = ACADEMY_CONFIG.supabaseUrl;
-const SUPABASE_PUBLISHABLE_KEY = ACADEMY_CONFIG.supabasePublishableKey;
+const SUPABASE_URL = SITE_CONFIG.supabaseUrl;
+const SUPABASE_PUBLISHABLE_KEY = SITE_CONFIG.supabasePublishableKey;
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'omp-admin-auth' }
 });

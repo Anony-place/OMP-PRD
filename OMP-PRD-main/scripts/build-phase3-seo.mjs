@@ -92,7 +92,6 @@ function siteHeader(active = '') {
     ['Home', '/'],
     ['Checker', '/checker'],
     ['Tools', '/tools'],
-    ['Academy', '/learning'],
     ['OSINT Hub', '/osint'],
     ['Pentest Hub', '/pentest'],
     ['Articles', '/articles'],
@@ -106,7 +105,6 @@ function siteMobileMenu(active = '') {
     ['Home', '/'],
     ['Checker', '/checker'],
     ['Tools', '/tools'],
-    ['Academy', '/learning'],
     ['OSINT Hub', '/osint'],
     ['Pentest Hub', '/pentest'],
     ['Comparisons', '/compare'],
@@ -131,7 +129,7 @@ const UPDATED_FOOTER = `<footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
-        <p>Privacy-first tools and structured learning. Password inputs stay in memory; Academy progress stays on your device. No learner login. The site collects no email addresses.</p>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
         <div class="tag-list mt-16">
           <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
           <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
@@ -144,7 +142,7 @@ const UPDATED_FOOTER = `<footer class="site-footer">
           </div>
         </div>
       </div>
-      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Academy</div><ul><li><a href="/learning">Academy home</a></li><li><a href="/learning/roadmap">Learning paths</a></li><li><a href="/learning/cyber-security">Cyber Security</a></li><li><a href="/learning/web-application-security">Web App Security</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
@@ -303,7 +301,6 @@ export const COMPARISONS = [
     relatedLinks: [
       { label: 'Hash & JWT Inspector', url: '/hash-inspector' },
       { label: 'Password Entropy Calculator', url: '/entropy' },
-      { label: '3-2-1 Backups Lesson', url: '/learning/cyber-security/cyber-security-track/backups-3-2-1-and-tested-restores' }
     ]
   },
   {
@@ -387,7 +384,7 @@ export const COMPARISONS = [
     workflowA: '# Route CLI tools (curl / sqlmap) through local Burp Suite proxy\ncurl -x http://127.0.0.1:8080 -k https://target.example.com/api/v1/user',
     workflowB: '# Run headless OWASP ZAP baseline scan in Docker\ndocker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://target.example.com',
     faqs: [
-      { q: 'Is Burp Suite Community enough for learning web application pentesting?', a: 'Yes. Burp Suite Community includes the full intercepting proxy, Repeater, Decoder, and Comparer, which are the primary tools used for manual bug bounty hunting and Academy labs. Pair it with ffuf when you need high-speed fuzzing.' },
+      { q: 'Is Burp Suite Community enough for learning web application pentesting?', a: 'Yes. Burp Suite Community includes the full intercepting proxy, Repeater, Decoder, and Comparer, which are the primary tools used for manual bug bounty hunting and lab practice. Pair it with ffuf when you need high-speed fuzzing.' },
       { q: 'When is OWASP ZAP the better choice than Burp Suite?', a: 'OWASP ZAP is completely free and open-source with an unthrottled fuzzer, active vulnerability scanner, and official Docker images for automated CI/CD security testing.' }
     ],
     relatedLinks: [
@@ -453,7 +450,6 @@ export const COMPARISONS = [
     relatedLinks: [
       { label: 'sqlmap Pentest Guide', url: '/pentest/sqlmap' },
       { label: 'sqlmap CLI Cheat Sheet', url: '/cheatsheets/sqlmap-pentest-cheatsheet' },
-      { label: 'SQL Injection Academy Lesson', url: '/learning/web-application-security/foundations/sql-injection-and-parameterized-queries' }
     ]
   },
   {
@@ -573,7 +569,6 @@ export const COMPARISONS = [
     relatedLinks: [
       { label: 'Wireshark Pentest Guide', url: '/pentest/wireshark' },
       { label: 'Wireshark Display Filters Cheat Sheet', url: '/cheatsheets/wireshark-display-filters-cheatsheet' },
-      { label: 'Packets & Layered Stack Lesson', url: '/learning/cyber-security/cyber-security-track/packets-and-the-layered-stack' }
     ]
   },
   {
@@ -933,6 +928,17 @@ export const COMPARISONS = [
 /* ============================================================
    DATA: 10 Printable CLI & Defensive Security Cheat Sheets
    ============================================================ */
+/* The lesson card that used to sit here is gone with the Academy. A CLI cheat
+   sheet is the closest thing the site still ships at the same level of detail,
+   so each topic gets one chosen by its own slug - stable across builds, never
+   the same page for every topic. */
+export function relatedSheetFor(slug) {
+  let h = 0;
+  for (const ch of String(slug)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const sheet = CHEATSHEETS[h % CHEATSHEETS.length];
+  return { label: sheet.shortTitle || sheet.title, url: `/cheatsheets/${sheet.slug}` };
+}
+
 export const CHEATSHEETS = [
   {
     slug: 'nmap-command-cheatsheet',
@@ -957,7 +963,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'Nmap Pentest Guide', url: '/pentest/nmap' },
       { label: 'Nmap vs Masscan Comparison', url: '/compare/nmap-vs-masscan' },
-      { label: 'Scanning & Enumeration Lesson', url: '/learning/cyber-security/cyber-security-track/scanning-and-enumeration' }
     ]
   },
   {
@@ -982,7 +987,6 @@ export const CHEATSHEETS = [
     ],
     relatedLinks: [
       { label: 'Interactive Google Dork Builder', url: '/dork-builder' },
-      { label: 'Attack Surface & Vectors Lesson', url: '/learning/cyber-security/cyber-security-track/attack-surface-and-attack-vectors' },
       { label: 'OSINT Hub', url: '/osint' }
     ]
   },
@@ -1009,7 +1013,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'ffuf Pentest Guide', url: '/pentest/ffuf' },
       { label: 'ffuf vs Gobuster Comparison', url: '/compare/ffuf-vs-gobuster' },
-      { label: 'HTTP Requests & Responses Lesson', url: '/learning/web-application-security/foundations/http-requests-responses' }
     ]
   },
   {
@@ -1035,7 +1038,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'Wireshark Pentest Guide', url: '/pentest/wireshark' },
       { label: 'Wireshark vs tcpdump Comparison', url: '/compare/wireshark-vs-tcpdump' },
-      { label: 'Eavesdropping & Cleartext Lesson', url: '/learning/cyber-security/cyber-security-track/eavesdropping-in-the-clear' }
     ]
   },
   {
@@ -1061,7 +1063,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'sqlmap Pentest Guide', url: '/pentest/sqlmap' },
       { label: 'sqlmap vs Manual SQLi Comparison', url: '/compare/sqlmap-vs-manual-sqli' },
-      { label: 'SQL Injection Academy Lesson', url: '/learning/web-application-security/foundations/sql-injection-and-parameterized-queries' }
     ]
   },
   {
@@ -1085,8 +1086,6 @@ export const CHEATSHEETS = [
       { q: 'How do defenders harden servers against sudo and SUID escalation?', a: 'Avoid NOPASSWD wildcard rules in /etc/sudoers, mount /tmp and /home with nosuid,noexec, and remove unnecessary SUID bits from standard utilities.' }
     ],
     relatedLinks: [
-      { label: 'Linux Permissions Lesson', url: '/learning/cyber-security/cyber-security-track/linux-permissions-users-groups' },
-      { label: 'Privilege & Admin Hygiene Lesson', url: '/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene' },
       { label: 'Pentest Hub', url: '/pentest' }
     ]
   },
@@ -1111,7 +1110,6 @@ export const CHEATSHEETS = [
       { q: 'Why must pentesters always check --pass-pol first?', a: 'Querying the domain password policy reveals the Account Lockout Threshold and Observation Window so testers never lock out production user accounts.' }
     ],
     relatedLinks: [
-      { label: 'Windows Security Model Lesson', url: '/learning/cyber-security/cyber-security-track/windows-security-model' },
       { label: 'BloodHound Community Guide', url: '/pentest/bloodhound-community-edition' },
       { label: 'Hashcat Pentest Guide', url: '/pentest/hashcat' }
     ]
@@ -1163,8 +1161,6 @@ export const CHEATSHEETS = [
       { q: 'Do I need both X-Frame-Options and CSP frame-ancestors?', a: 'CSP frame-ancestors is the modern standard and supports multiple allowed origins, while X-Frame-Options: DENY is kept alongside it for defense-in-depth compatibility.' }
     ],
     relatedLinks: [
-      { label: 'Browser as Attack Surface Lesson', url: '/learning/cyber-security/cyber-security-track/browser-as-attack-surface' },
-      { label: 'Cross-Site Scripting & CSP Lesson', url: '/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding' },
       { label: 'Security Checklist Tool', url: '/security-checklist' }
     ]
   },
@@ -1187,7 +1183,6 @@ export const CHEATSHEETS = [
       { q: 'What is the correct order of operations after discovering a credential breach?', a: 'First revoke active session tokens and OAuth grants, then rotate the password to a unique CSPRNG value, verify MFA devices and forwarding rules, and audit login logs.' }
     ],
     relatedLinks: [
-      { label: 'Incident Response Roles Lesson', url: '/learning/cyber-security/cyber-security-track/incident-response-roles-and-communication' },
       { label: 'What to Do After a Data Breach', url: '/articles/after-a-data-breach' },
       { label: 'Hash & JWT Inspector', url: '/hash-inspector' }
     ]
@@ -1221,7 +1216,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
       { label: 'Phishing URL Scanner', url: '/url-scanner' },
-      { label: 'HTTP Requests & Responses Lesson', url: '/learning/cyber-security/cyber-security-track/http-https-request-response' }
     ]
   },
   {
@@ -1253,7 +1247,6 @@ export const CHEATSHEETS = [
     ],
     relatedLinks: [
       { label: 'Hydra Pentest Guide', url: '/pentest/hydra' },
-      { label: 'Password Attacks Over the Network', url: '/learning/cyber-security/cyber-security-track/password-attacks-over-the-network' },
       { label: 'John the Ripper Cheat Sheet', url: '/cheatsheets/john-the-ripper-cheatsheet' }
     ]
   },
@@ -1286,7 +1279,6 @@ export const CHEATSHEETS = [
     ],
     relatedLinks: [
       { label: 'Metasploit Pentest Guide', url: '/pentest/metasploit' },
-      { label: 'Exploitation Concepts Lesson', url: '/learning/cyber-security/cyber-security-track/exploitation-concepts-without-exploiting-anyone' },
       { label: 'nmap vs RustScan Comparison', url: '/compare/nmap-vs-rustscan' }
     ]
   },
@@ -1320,7 +1312,6 @@ export const CHEATSHEETS = [
     relatedLinks: [
       { label: 'John the Ripper Pentest Guide', url: '/pentest/john-the-ripper' },
       { label: 'Hashcat Pentest Guide', url: '/pentest/hashcat' },
-      { label: 'Hashing, Salting & Password Storage', url: '/learning/cyber-security/cyber-security-track/hashing-salting-password-storage' }
     ]
   }
 ];
@@ -1337,7 +1328,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'In password breach checking (such as the Have I Been Pwned range API and the OopsMyPassword Breach Check), your browser hashes your password locally with SHA-1 and sends only the first 5 hexadecimal characters (20 bits) to the server. Because 16^5 = 1,048,576 possible prefixes share billions of password hashes, the server returns roughly 500–1,000 matching hash suffixes. Your browser checks locally whether your full 40-character hash is in that list, so the server never learns which password you tested.',
     mitigation: 'Always prefer k-anonymity range APIs over services that ask you to submit your full email/password in cleartext. Combine client-side hashing with HTTPS so network observers cannot inspect the response list.',
     relatedTool: { label: 'Breach Check (k-Anonymity Demo)', url: '/breach-check' },
-    relatedLesson: { label: 'Hashing, Salting & Password Storage', url: '/learning/cyber-security/cyber-security-track/hashing-salting-password-storage' }
   },
   {
     slug: 'argon2id',
@@ -1347,7 +1337,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Unlike fast cryptographic digests such as SHA-256 or MD5 that execute in nanoseconds on tiny GPU registers, Argon2id forces the verifier to allocate and fill a configurable block of RAM (for example, 64 MiB) across multiple passes. Because GPUs and ASICs have limited high-speed memory bandwidth per core, memory-hardness bottlenecks parallel brute-force hardware.',
     mitigation: 'Configure authentication backends and password vaults to use Argon2id with a unique 128-bit random salt per password, at least 19–64 MiB of memory, 2–3 iterations, and parallelism matched to server cores.',
     relatedTool: { label: 'Hash & JWT Inspector', url: '/hash-inspector' },
-    relatedLesson: { label: 'Hashing, Salting & Password Storage', url: '/learning/cyber-security/cyber-security-track/hashing-salting-password-storage' }
   },
   {
     slug: 'credential-stuffing',
@@ -1357,7 +1346,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Attackers do not need to crack your password if you used the same password on a forum or store that suffered a breach. Using residential proxy networks and headless browsers, stuffing frameworks test leaked email:password combinations against banking, e-commerce, and SaaS login endpoints at scale, typically succeeding on 0.1% to 2% of attempts due to password reuse.',
     mitigation: 'Generate a unique password or passphrase for every single account using a password manager, enable phishing-resistant MFA (passkeys or TOTP), and deploy rate limiting and breached-password screening on login endpoints.',
     relatedTool: { label: 'Password Generator', url: '/generator' },
-    relatedLesson: { label: 'Password Attacks Over the Network', url: '/learning/cyber-security/cyber-security-track/password-attacks-over-the-network' }
   },
   {
     slug: 'password-spraying',
@@ -1367,7 +1355,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Traditional brute-force attacks try thousands of passwords against a single username, which immediately locks that account after 5–10 failures. Password spraying inverts the loop: the attacker tries a single seasonal or corporate password once against every employee username in Active Directory or Microsoft 365, waits for the lockout observation window to reset, and then tries a second password.',
     mitigation: 'Ban common and seasonal passwords using custom deny-lists, enforce MFA across all external SSO/VPN endpoints, and monitor authentication logs for distributed failed logins across many accounts from the same ASN.',
     relatedTool: { label: 'Password Strength Checker', url: '/checker' },
-    relatedLesson: { label: 'Passwords Creation & Rotation Lesson', url: '/learning/cyber-security/cyber-security-track/passwords-creation-storage-rotation' }
   },
   {
     slug: 'passkey-webauthn',
@@ -1377,7 +1364,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'When you register a passkey, your device or hardware security key generates a unique public/private key pair for that specific domain (Relying Party ID). The website stores only the public key. During sign-in, the site sends a random cryptographic challenge, and your device signs it locally after biometric or PIN verification. No shared secret ever crosses the network.',
     mitigation: 'Enable passkeys on primary email, cloud, GitHub, and password manager accounts, and register a physical FIDO2 backup security key in case your primary phone or laptop is lost.',
     relatedTool: { label: 'YubiKey vs Passkeys Comparison', url: '/compare/yubikey-vs-passkeys' },
-    relatedLesson: { label: 'MFA & Passkeys Lesson', url: '/learning/cyber-security/cyber-security-track/multi-factor-authentication-and-passkeys' }
   },
   {
     slug: 'totp-rfc-6238',
@@ -1387,7 +1373,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'When you scan a 2FA QR code into an authenticator app (such as Aegis, Ente Auth, 2FAS, or Bitwarden), your device stores a Base32-encoded secret seed. Every 30 seconds, both your phone and the server divide the current Unix time by 30 and compute an HMAC-SHA1 digest over that counter, truncating the result into a 6-digit numeric code without requiring internet connectivity.',
     mitigation: 'Use TOTP authenticator apps instead of SMS 2FA to eliminate SIM-swapping risk, and remember that TOTP codes can still be relayed by real-time Adversary-in-the-Middle (AitM) phishing sites—verify the domain URL or upgrade to passkeys where supported.',
     relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
-    relatedLesson: { label: 'MFA & Passkeys Lesson', url: '/learning/cyber-security/cyber-security-track/multi-factor-authentication-and-passkeys' }
   },
   {
     slug: 'browser-in-the-browser-bitb',
@@ -1397,7 +1382,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Users are trained to check the address bar of "Sign in with Google/Microsoft" popup windows. In a BitB attack, clicking the login button does not open a real OS browser window; instead, JavaScript draws a pixel-perfect fake window frame and fake URL bar inside the current tab DOM. Because it is just an HTML div, the attacker can display any trusted URL text they want.',
     mitigation: 'Drag the suspected login popup toward the edge of your main browser window—a fake BitB modal cannot leave the boundaries of the parent tab. Better yet, use a password manager or passkey, which checks the real parent tab origin and refuses to autofill on the phishing domain.',
     relatedTool: { label: 'Phishing URL Risk Scanner', url: '/url-scanner' },
-    relatedLesson: { label: 'Phishing: Anatomy of a Message', url: '/learning/cyber-security/cyber-security-track/phishing-anatomy-of-a-message' }
   },
   {
     slug: 'idor-insecure-direct-object-reference',
@@ -1407,7 +1391,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'A user logs in legitimately and sees a request to GET /api/v1/orders/5001. If the backend database query simply runs SELECT * FROM orders WHERE id = 5001 without checking AND user_id = current_session.user_id, an attacker can increment or decrement the ID to 5002 and read or modify another customer private data.',
     mitigation: 'Enforce server-side object ownership checks on every read, update, and delete controller action, and use unpredictable UUIDv4 or scoped indirect references alongside strict authorization middleware.',
     relatedTool: { label: 'Burp Suite vs OWASP ZAP', url: '/compare/burp-suite-vs-owasp-zap' },
-    relatedLesson: { label: 'Broken Access Control & IDOR Lesson', url: '/learning/cyber-security/cyber-security-track/broken-access-control-and-idor' }
   },
   {
     slug: 'ssrf-server-side-request-forgery',
@@ -1417,7 +1400,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Features such as webhook testers, PDF generators, avatar URL fetchers, and link previewers take a URL from the user and fetch it from the server. If the server does not validate the destination IP, an attacker can supply http://169.254.169.254/latest/meta-data/ (cloud instance metadata) or http://127.0.0.1:6379/ to steal temporary IAM credentials or query internal databases behind the firewall.',
     mitigation: 'Enforce strict allowlists of permitted outbound domains, resolve DNS once and block RFC 1918 private IPs, loopback (127.0.0.0/8), and link-local metadata ranges (169.254.169.254), and enforce IMDSv2 hop-limit=1 on cloud instances.',
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
-    relatedLesson: { label: 'File Uploads, SSRF & Validation', url: '/learning/cyber-security/cyber-security-track/file-uploads-ssrf-and-input-validation' }
   },
   {
     slug: 'xss-cross-site-scripting',
@@ -1427,7 +1409,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Whether Stored (saved in a database comment/profile), Reflected (bounced off a URL parameter), or DOM-based (written via unsafe innerHTML sinks in client JS), XSS executes inside the victim origin. That gives the attacker script full access to the DOM, CSRF tokens, non-HttpOnly cookies, and authenticated API endpoints.',
     mitigation: 'Use modern auto-escaping UI templates, never pass untrusted strings to innerHTML or document.write without sanitization, mark session cookies HttpOnly, and deploy a strict Content-Security-Policy (CSP).',
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
-    relatedLesson: { label: 'Cross-Site Scripting & Output Encoding', url: '/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding' }
   },
   {
     slug: 'sql-injection-sqli',
@@ -1437,7 +1418,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'When code builds a query via string concatenation like "SELECT * FROM users WHERE email = \'" + input + "\'", supplying \' OR 1=1-- breaks out of the data literal and changes the boolean logic of the WHERE clause. Attackers use UNION queries, error messages, or blind time delays to extract entire tables.',
     mitigation: 'Always use parameterized queries (prepared statements) where the SQL structure is compiled ahead of time and user inputs are bound strictly as non-executable parameters.',
     relatedTool: { label: 'sqlmap Cheat Sheet', url: '/cheatsheets/sqlmap-pentest-cheatsheet' },
-    relatedLesson: { label: 'SQL Injection & Parameterized Queries', url: '/learning/web-application-security/foundations/sql-injection-and-parameterized-queries' }
   },
   {
     slug: 'csrf-cross-site-request-forgery',
@@ -1447,7 +1427,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Browsers automatically attach session cookies to cross-site requests unless restricted by SameSite attributes. If a site relies solely on cookies to authenticate a POST /account/email change without checking a secret anti-CSRF token or custom header, a hidden form on an attacker website can submit that request silently when visited.',
     mitigation: 'Include cryptographically random synchronizer CSRF tokens on state-changing requests, set SameSite=Lax or SameSite=Strict on session cookies, and require re-authentication for sensitive account changes.',
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
-    relatedLesson: { label: 'Web Defences: CSP, HSTS, SameSite & CSRF', url: '/learning/cyber-security/cyber-security-track/web-defences-csp-hsts-samesite-and-csrf-tokens' }
   },
   {
     slug: 'jwt-json-web-token',
@@ -1457,7 +1436,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Stateless APIs issue a signed JWT after login containing claims like sub (user ID), role, iat (issued at), and exp (expiration). When the client sends the JWT in an Authorization: Bearer header, the server verifies the cryptographic signature before trusting the claims. Importantly, standard JWTs (JWS) are signed, NOT encrypted—anyone can Base64URL-decode and read the payload.',
     mitigation: 'Explicitly whitelist allowed signing algorithms server-side (reject alg: none and prevent RS256-to-HS256 confusion), enforce short expiration times (exp), and never place sensitive secrets in the JWT payload.',
     relatedTool: { label: 'Client-Side Hash & JWT Inspector', url: '/hash-inspector' },
-    relatedLesson: { label: 'Session Management & Account Takeover', url: '/learning/cyber-security/cyber-security-track/session-management-and-account-takeover' }
   },
   {
     slug: 'subdomain-takeover',
@@ -1467,7 +1445,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'After a marketing campaign ends, a team deletes their GitHub Pages repo or AWS S3 bucket but forgets to delete the DNS CNAME record promo.example.com -> example-promo.github.io. An attacker enumerates subdomains, spots the "There isn\'t a GitHub Pages site here" fingerprint, claims the external project name, and now controls promo.example.com—inheriting cookie scope, CORS trust, and brand credibility.',
     mitigation: 'Remove DNS records BEFORE deprovisioning external cloud resources, audit DNS zones continuously for dangling CNAMEs, and use __Host- prefixes on session cookies so subdomains cannot read or set parent cookies.',
     relatedTool: { label: 'Amass vs Subfinder Comparison', url: '/compare/amass-vs-subfinder' },
-    relatedLesson: { label: 'DNS & Name Resolution Lesson', url: '/learning/cyber-security/cyber-security-track/dns-name-resolution' }
   },
   {
     slug: 'google-dorking',
@@ -1477,7 +1454,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Web crawlers continuously index public links unless blocked by authentication or robots.txt / noindex headers. By combining operators like site:example.com filetype:env intext:DB_PASSWORD, security analysts and auditors can instantly query Google index for misconfigured files without sending a single packet to the target server.',
     mitigation: 'Never store .env, .git, or SQL backups inside the public web root, disable web server directory listing (Options -Indexes), and audit your domain periodically using defensive dork queries.',
     relatedTool: { label: 'Interactive Google Dork Builder', url: '/dork-builder' },
-    relatedLesson: { label: 'Attack Surface & Attack Vectors', url: '/learning/cyber-security/cyber-security-track/attack-surface-and-attack-vectors' }
   },
   {
     slug: 'idn-homograph-attack',
@@ -1487,7 +1463,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'The Domain Name System translates Internationalized Domain Names (IDNs) into ASCII Punycode strings starting with xn-- (for example, xn--pple-43d.com). If a user clicks a link containing mixed or foreign-script lookalike characters, they may believe they are on apple.com or microsoft.com while actually communicating with an attacker-controlled domain.',
     mitigation: 'Inspect suspicious links with a Punycode/URL risk analyzer, rely on password managers or FIDO2 passkeys (which match the underlying xn-- Punycode domain and refuse to autofill on lookalikes), and enable browser IDN punycode display.',
     relatedTool: { label: 'Phishing URL Risk Scanner', url: '/url-scanner' },
-    relatedLesson: { label: 'Phishing: Anatomy of a Message', url: '/learning/cyber-security/cyber-security-track/phishing-anatomy-of-a-message' }
   },
   {
     slug: 'typosquatting',
@@ -1497,7 +1472,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Attackers register domains with 1-character Levenshtein distance (g00gle.com, paypa1.com, micosoft.com) or hyphenated combo-domains. These domains are used in spear-phishing emails, fake OAuth prompts, and even malicious software package registries (npm/PyPI package typosquatting).',
     mitigation: 'Monitor Certificate Transparency logs and DNS permutations with tools like dnstwist, verify the exact Registered Domain (eTLD+1) before signing in, and use passkeys or a password manager bound to the real origin.',
     relatedTool: { label: 'Phishing URL Risk Scanner', url: '/url-scanner' },
-    relatedLesson: { label: 'DNS & Name Resolution Lesson', url: '/learning/cyber-security/cyber-security-track/dns-name-resolution' }
   },
   {
     slug: 'zero-trust-architecture',
@@ -1507,7 +1481,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Traditional perimeter networks assumed that once a device connected to the office Wi-Fi or VPN, it could reach any internal server. When a single laptop was phished, attackers moved laterally across the flat network. Zero Trust replaces flat network access with identity-aware proxies, mutual TLS (mTLS), device posture checks, and micro-segmentation per application.',
     mitigation: 'Enforce phishing-resistant MFA + device health verification at an identity-aware proxy, segment internal workloads so servers only accept traffic from authorized peers, and log all east-west access.',
     relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
-    relatedLesson: { label: 'Network Defence, Segmentation & Zero Trust', url: '/learning/cyber-security/cyber-security-track/network-defence-segmentation-zero-trust' }
   },
   {
     slug: 'privilege-escalation',
@@ -1517,7 +1490,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'After an initial foothold on a server or workstation, attackers enumerate local misconfigurations: permissive sudo rules, SUID binaries, unquoted Windows service paths, weak service binary permissions, kernel vulnerabilities, or cleartext credentials left in configuration files and shell histories.',
     mitigation: 'Apply the principle of least privilege, run web applications under dedicated low-privilege service accounts, audit sudoers/SUID/service ACLs regularly, and patch OS kernels promptly.',
     relatedTool: { label: 'Linux Privilege Escalation Cheat Sheet', url: '/cheatsheets/linux-privilege-escalation-cheatsheet' },
-    relatedLesson: { label: 'Privilege Escalation & Admin Hygiene', url: '/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene' }
   },
   {
     slug: 'lateral-movement',
@@ -1527,7 +1499,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Attackers harvest credentials, SSH keys, Kerberos tickets, or NTLM hashes from the initially compromised host and use protocols such as SMB, WinRM, RDP, WMI, or SSH to authenticate to adjacent machines—eventually reaching domain administrator or production database access.',
     mitigation: 'Enforce network micro-segmentation and host firewallsblocking workstation-to-workstation SMB/RDP, require SMB signing, disable NTLMv1, and use LAPS (Local Administrator Password Solution) so every workstation has a unique local admin password.',
     relatedTool: { label: 'Active Directory Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
-    relatedLesson: { label: 'Network Defence, Segmentation & Zero Trust', url: '/learning/cyber-security/cyber-security-track/network-defence-segmentation-zero-trust' }
   },
   {
     slug: 'kerberoasting',
@@ -1537,7 +1508,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'By design, Active Directory allows any domain user to request a Ticket Granting Service (TGS) ticket for any registered SPN. A portion of that TGS ticket is encrypted with the target service account NTLM/AES password hash. The attacker exports the ticket from memory and runs Hashcat offline at millions of guesses per second without sending any failed logins to the Domain Controller.',
     mitigation: 'Use Group Managed Service Accounts (gMSAs) with 120-character random passwords, ensure human/admin accounts never have SPNs attached, and enforce AES-256 Kerberos encryption instead of legacy RC4-HMAC.',
     relatedTool: { label: 'Active Directory Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
-    relatedLesson: { label: 'Password Attacks Over the Network', url: '/learning/cyber-security/cyber-security-track/password-attacks-over-the-network' }
   },
   {
     slug: 'canary-token',
@@ -1547,7 +1517,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Most alerts suffer from high false-positive rates, but a decoy AWS access key placed in a developer ~/.aws/credentials file or a fake "passwords_backup.xlsx" file on a file share should never be touched by normal workflows. The moment an attacker uses the decoy key or opens the document, a unique DNS/webhook callback fires a high-confidence breach alert.',
     mitigation: 'Deploy canary AWS keys, decoy database rows, and tracked PDF/Word files across high-value endpoints and source repositories to reduce Mean Time to Detect (MTTD) from months to minutes.',
     relatedTool: { label: 'Incident Response First-Hour Cheat Sheet', url: '/cheatsheets/incident-response-first-hour-cheatsheet' },
-    relatedLesson: { label: 'SIEM Alerts & Noise Lesson', url: '/learning/cyber-security/cyber-security-track/siem-alerts-and-noise' }
   },
   {
     slug: 'cve-and-cvss',
@@ -1557,7 +1526,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'When a vulnerability is disclosed, a CVE Numbering Authority assigns a unique CVE ID so advisories, scanners, and patches reference the exact same bug. CVSS computes a numerical score based on Attack Vector (Network vs Local), Attack Complexity, Privileges Required, User Interaction, and CIA impact—while CISA KEV tracks whether the CVE is actively exploited in the wild.',
     mitigation: 'Prioritize patching by combining CVSS severity with active exploitation intelligence (CISA KEV / EPSS) and internet exposure rather than relying on CVSS base score alone.',
     relatedTool: { label: 'Nuclei Pentest Guide', url: '/pentest/nuclei' },
-    relatedLesson: { label: 'Patching & Vulnerability Management', url: '/learning/cyber-security/cyber-security-track/patching-and-vulnerability-management' }
   },
   {
     slug: 'siem-and-soar',
@@ -1567,7 +1535,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'A SIEM ingests authentication logs, EDR telemetry, DNS queries, firewall flows, and cloud audit trails into a central searchable index where correlation rules and Sigma detections flag suspicious sequences. SOAR connects to the SIEM to enrich alerts automatically (e.g., reputation lookups) and execute approved containment steps such as disabling a compromised account.',
     mitigation: 'Focus on high-signal log sources (identity provider logs, process creation, DNS, and privileged actions) and tune alert rules continuously to prevent analyst alert fatigue.',
     relatedTool: { label: 'Incident Response Cheat Sheet', url: '/cheatsheets/incident-response-first-hour-cheatsheet' },
-    relatedLesson: { label: 'Logs & Event Management Lesson', url: '/learning/cyber-security/cyber-security-track/logs-and-event-management' }
   },
   {
     slug: 'edr-and-xdr',
@@ -1577,7 +1544,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Unlike legacy antivirus that only checks static file hashes against known signatures, EDR sensors record behavioral telemetry—such as Microsoft Word spawning PowerShell, a process reading LSASS memory, or a web server spawning a reverse shell—and allow SOC analysts to isolate the host from the network with one click.',
     mitigation: 'Deploy EDR across all workstations and servers with tamper protection enabled, and forward endpoint telemetry into your central SIEM for cross-host correlation.',
     relatedTool: { label: 'Linux PrivEsc Cheat Sheet', url: '/cheatsheets/linux-privilege-escalation-cheatsheet' },
-    relatedLesson: { label: 'Endpoint Protection (AV & EDR)', url: '/learning/cyber-security/cyber-security-track/endpoint-protection-av-edr' }
   },
   {
     slug: 'cors-misconfiguration',
@@ -1587,7 +1553,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'The browser Same-Origin Policy blocks evil.com from reading responses from api.bank.com. However, if api.bank.com blindly echoes back Access-Control-Allow-Origin: https://evil.com (or trusts weakly validated subdomains/regexes) with credentials enabled, JavaScript on evil.com can fetch the logged-in victim private API data and exfiltrate it.',
     mitigation: 'Validate Origin headers against a strict exact-match allowlist of trusted origins, never combine wildcard/reflected origins with Access-Control-Allow-Credentials: true, and reject the "null" origin.',
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
-    relatedLesson: { label: 'Web Defences: CSP, HSTS, SameSite & CSRF', url: '/learning/cyber-security/cyber-security-track/web-defences-csp-hsts-samesite-and-csrf-tokens' }
   },
   {
     slug: 'shodan-banner-grabbing',
@@ -1597,7 +1562,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'When a client connects to TCP port 22 or 80, the server often announces its exact version string (for example, SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.6 or Server: nginx/1.24.0). Active banner grabbing connects directly with netcat, curl, or Nmap (-sV), while passive banner grabbing queries search engines like Shodan or Censys.',
     mitigation: 'Disable verbose version tokens in production web servers and proxies (such as server_tokens off; in Nginx), restrict administrative ports (SSH, RDP, databases) behind a VPN or Zero Trust gateway, and keep exposed services patched.',
     relatedTool: { label: 'Shodan Search Filters Cheat Sheet', url: '/cheatsheets/shodan-search-filters-cheatsheet' },
-    relatedLesson: { label: 'Scanning & Enumeration Lesson', url: '/learning/cyber-security/cyber-security-track/scanning-and-enumeration' }
   },
   {
     slug: 'sbom-software-bill-of-materials',
@@ -1607,7 +1571,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Modern software typically pulls in hundreds of transitive npm, PyPI, Maven, or Go packages. When a zero-day vulnerability like Log4Shell is disclosed, organizations with an automated SBOM generated during CI/CD can query their inventory in seconds to see exactly which containers and services include the affected version.',
     mitigation: 'Generate CycloneDX or SPDX SBOMs automatically in your CI/CD build pipeline, pin dependency versions with lockfiles, and scan dependencies continuously against CVE advisories.',
     relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
-    relatedLesson: { label: 'Vulnerable & Outdated Components', url: '/learning/cyber-security/cyber-security-track/vulnerable-and-outdated-components' }
   },
   {
     slug: 'diceware-passphrase',
@@ -1617,7 +1580,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Because human-chosen passwords follow predictable patterns, Diceware separates randomness from human memory. Choosing 5 random words from a 7,776-word list (or 6 words from a 1,296-word list) yields ~62–65 bits of true mathematical entropy—requiring trillions of guesses to brute-force while remaining easy to type and memorize as a master password.',
     mitigation: 'Use a 5- to 6-word CSPRNG passphrase as the master password for your password manager and full-disk encryption (FileVault / BitLocker / LUKS).',
     relatedTool: { label: 'Passphrase Generator', url: '/passphrase' },
-    relatedLesson: { label: 'Randomness, Nonces & Entropy', url: '/learning/cyber-security/cyber-security-track/randomness-nonces-and-entropy' }
   },
   {
     slug: 'csprng',
@@ -1627,7 +1589,6 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'Standard programming functions like Math.random() in JavaScript or rand() in C are designed for speed and statistical distribution, not security—their internal state can be reconstructed after observing a few outputs. A CSPRNG (such as window.crypto.getRandomValues() in browsers or /dev/urandom in Linux) guarantees that seeing past outputs gives an attacker zero advantage in predicting future or past values.',
     mitigation: 'Never use Math.random() for passwords, reset tokens, CSRF tokens, or salts. Always use window.crypto.getRandomValues() in browsers or node:crypto in Node.js.',
     relatedTool: { label: 'Random String Generator', url: '/random-string' },
-    relatedLesson: { label: 'Randomness, Nonces & Entropy', url: '/learning/cyber-security/cyber-security-track/randomness-nonces-and-entropy' }
   }
 ];
 
@@ -1756,7 +1717,7 @@ function buildDorkBuilderPage() {
       <h2 class="h-3">Related OSINT &amp; Recon Resources</h2>
       <div class="grid grid-3 mt-16">
         <a class="card card-pad card-link" href="/cheatsheets/google-dorks-osint-cheatsheet"><h3 class="h-3">Google Dorks Cheat Sheet</h3><p class="muted small mt-8">Printable operator reference for exposed files and portals.</p></a>
-        <a class="card card-pad card-link" href="/learning/cyber-security/cyber-security-track/attack-surface-and-attack-vectors"><h3 class="h-3">Academy: Attack Surface Lesson</h3><p class="muted small mt-8">Learn how search engine indexing works and how to prevent leaks.</p></a>
+        <a class="card card-pad card-link" href="/cheatsheets/google-dorks-osint-cheatsheet"><h3 class="h-3">Google Dorks Cheat Sheet</h3><p class="muted small mt-8">How search engine indexing exposes files, and the operators that find them.</p></a>
         <a class="card card-pad card-link" href="/compare/shodan-vs-censys"><h3 class="h-3">Shodan vs Censys Comparison</h3><p class="muted small mt-8">Compare internet-wide banner and certificate search engines.</p></a>
       </div>
     </div>
@@ -1929,7 +1890,7 @@ function buildHashInspectorPage() {
       <div class="grid grid-3 mt-16">
         <a class="card card-pad card-link" href="/glossary/argon2id"><h3 class="h-3">Glossary: Argon2id Explained</h3><p class="muted small mt-8">Why memory-hard password hashing stops GPU cracking rigs.</p></a>
         <a class="card card-pad card-link" href="/glossary/jwt-json-web-token"><h3 class="h-3">Glossary: JWT Security</h3><p class="muted small mt-8">Understand JWT headers, claims, and algorithm confusion risks.</p></a>
-        <a class="card card-pad card-link" href="/learning/cyber-security/cyber-security-track/hashing-salting-password-storage"><h3 class="h-3">Academy: Hashing &amp; Salting</h3><p class="muted small mt-8">Interactive lesson on how modern servers store credentials.</p></a>
+        <a class="card card-pad card-link" href="/cheatsheets/john-the-ripper-cheatsheet"><h3 class="h-3">John the Ripper Cheat Sheet</h3><p class="muted small mt-8">How weak storage is cracked, and the hash formats you will meet.</p></a>
       </div>
     </div>
   </div>
@@ -2216,7 +2177,7 @@ function buildComparisonsCluster() {
       ${c.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join('\n')}
 
       <hr class="hr-fade" style="margin-top:40px">
-      <h2>Related Tools, Academy Lessons &amp; Comparisons</h2>
+      <h2>Related Tools, Cheat Sheets &amp; Comparisons</h2>
       <div class="grid grid-3 mt-16" style="gap:12px">
         ${c.relatedLinks.map((l) => `<a class="card card-pad card-link" href="${esc(l.url)}"><strong>${esc(l.label)}</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>`).join('')}
       </div>
@@ -2504,6 +2465,7 @@ function buildGlossaryCluster() {
       GLOSSARY_TERMS[(idx + 3) % GLOSSARY_TERMS.length]
     ];
 
+    const relatedSheet = relatedSheetFor(t.slug);
     const termSchema = {
       '@context': 'https://schema.org',
       '@type': 'DefinedTerm',
@@ -2558,15 +2520,15 @@ function buildGlossaryCluster() {
       <h2>Defensive Mitigation &amp; Hardening Checklist</h2>
       <p>${esc(t.mitigation)}</p>
 
-      <h2>Hands-On Tool &amp; Academy Lesson</h2>
+      <h2>Hands-On Tool &amp; Cheat Sheet</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <a class="card card-pad card-link" href="${esc(t.relatedTool.url)}">
           <div class="small muted">Interactive Tool / Guide</div>
           <h3 class="h-3 mt-8" style="margin-bottom:0">${esc(t.relatedTool.label)} →</h3>
         </a>
-        <a class="card card-pad card-link" href="${esc(t.relatedLesson.url)}">
-          <div class="small muted">OMP Academy Lesson</div>
-          <h3 class="h-3 mt-8" style="margin-bottom:0">${esc(t.relatedLesson.label)} →</h3>
+        <a class="card card-pad card-link" href="${esc(relatedSheet.url)}">
+          <div class="small muted">CLI Cheat Sheet</div>
+          <h3 class="h-3 mt-8" style="margin-bottom:0">${esc(relatedSheet.label)} →</h3>
         </a>
       </div>
 
@@ -2883,7 +2845,7 @@ function enhanceExistingPagesWithMeshAndSchema() {
     const ptLinks = [...dbPentest, ...dbPentestCats].map((t) => `<li><a href="${esc(t.url)}" style="color:var(--purple)">${esc(t.title)}</a></li>`).join('');
     ptHtml = ptHtml.replace(
       /<noscript>[\s\S]*?<\/noscript>/,
-      `<noscript>\n      <div class="notice-band mt-24"><p>Browse all authorized penetration testing tool guides and categories directly (or start with the <a href="/learning" style="color:var(--purple)">OMP Academy</a>):</p><ul style="columns:3;column-gap:24px;margin-top:10px;padding-left:18px;text-align:left">${ptLinks}</ul></div>\n    </noscript>`
+      `<noscript>\n      <div class="notice-band mt-24"><p>Browse all authorized penetration testing tool guides and categories directly:</p><ul style="columns:3;column-gap:24px;margin-top:10px;padding-left:18px;text-align:left">${ptLinks}</ul></div>\n    </noscript>`
     );
     fs.writeFileSync(pentestHubPath, ptHtml);
   }
@@ -2947,13 +2909,13 @@ async function buildSitemapAndFeeds() {
   <div class="container">
     <span class="eyebrow">All pages</span>
     <h1 class="h-1">Sitemap</h1>
-    <p class="lead">Every interactive tool, Academy course, OSINT &amp; Pentest reference, comparison, cheat sheet, glossary term, and article on OopsMyPassword. Machine-readable XML at <a href="/sitemap.xml" style="color:var(--purple)">/sitemap.xml</a>.</p>
+    <p class="lead">Every interactive tool, article, OSINT &amp; Pentest reference, comparison, cheat sheet, glossary term, and article on OopsMyPassword. Machine-readable XML at <a href="/sitemap.xml" style="color:var(--purple)">/sitemap.xml</a>.</p>
   </div>
 </section>
 <section class="section-tight">
   <div class="container"><div class="grid grid-3 sitemap-grid">
     <div class="footer-col card card-pad"><div class="footer-col-title">Interactive Security Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check (k-Anonymity)</a></li><li><a href="/password-health">Password Health</a></li><li><a href="/passphrase">Passphrase Generator</a></li><li><a href="/entropy">Password Entropy Calculator</a></li><li><a href="/random-string">Random String Generator</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/dork-builder">Google Dork &amp; OSINT Builder</a></li><li><a href="/hash-inspector">Hash, JWT &amp; Encoding Inspector</a></li><li><a href="/url-scanner">Phishing URL Risk Scanner</a></li><li><a href="/tools">All Tools Hub</a></li></ul></div>
-    <div class="footer-col card card-pad"><div class="footer-col-title">Academy &amp; Hubs</div><ul><li><a href="/learning">Academy Home</a></li><li><a href="/learning/roadmap">Learning Paths &amp; Roadmap</a></li><li><a href="/learning/cyber-security">Cyber Security Path</a></li><li><a href="/learning/cyber-security/cyber-security-track">Fundamentals to Defence Course</a></li><li><a href="/learning/web-application-security">Web Application Security Path</a></li><li><a href="/learning/web-application-security/foundations">Web Security Foundations Course</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/articles">Articles Hub</a></li><li><a href="/products">Products</a></li></ul></div>
+    <div class="footer-col card card-pad"><div class="footer-col-title">Hubs &amp; Resources</div><ul><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/articles">Articles Hub</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/products">Products</a></li></ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">Tool Comparisons (<a href="/compare">/compare</a>)</div><ul>${compareLinks}</ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">CLI Cheat Sheets (<a href="/cheatsheets">/cheatsheets</a>)</div><ul>${cheatsheetLinks}</ul></div>
     <div class="footer-col card card-pad"><div class="footer-col-title">Core Guides &amp; Site</div><ul><li><a href="/articles/create-strong-password">How to Create a Strong Password</a></li><li><a href="/articles/password-best-practices">Password Security Best Practices</a></li><li><a href="/articles/common-password-mistakes">Common Password Mistakes</a></li><li><a href="/articles/password-manager-benefits">Password Manager Benefits</a></li><li><a href="/articles/two-factor-authentication">Two-Factor Authentication (2FA)</a></li><li><a href="/articles/passkeys-explained">Passkeys Explained</a></li><li><a href="/articles/after-a-data-breach">What to Do After a Data Breach</a></li><li><a href="/articles/phishing-attacks">How Phishing Attacks Steal Passwords</a></li><li><a href="/articles/password-vs-passkey">Password vs Passkey</a></li><li><a href="/articles/password-entropy">How Password Entropy Works</a></li><li><a href="/articles/how-long-should-a-password-be">How Long Should a Password Be?</a></li><li><a href="/articles/password-cracking-time-table">Password Cracking Times</a></li><li><a href="/articles/are-password-managers-safe">Are Password Managers Safe?</a></li><li><a href="/articles/check-if-password-was-leaked">Check If Your Password Was Leaked</a></li><li><a href="/articles/password-vs-passphrase">Password vs Passphrase</a></li><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/faq">FAQ</a></li><li><a href="/security">Security</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>

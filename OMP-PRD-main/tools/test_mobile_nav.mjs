@@ -34,12 +34,11 @@ function assert(condition, message) {
 }
 const section = (name) => console.log(`\n${name}`);
 
-/* Two header shapes ship on this site: the marketing header on most pages and
-   the compact Academy bar on lesson pages. The menu must behave the same on
-   both, so the whole suite runs against each. */
+/* The menu is generated once, but a tool page and a hub page carry different
+   nav states (aria-current, in-page anchors), so the suite runs against both. */
 const PAGES = [
   { file: 'index.html', label: 'marketing page' },
-  { file: 'learning/cyber-security/cyber-security-track/access-reviews-joiner-mover-leaver.html', label: 'Academy lesson' },
+  { file: 'checker.html', label: 'tool page' },
 ];
 
 const mainJs = fs.readFileSync(path.join(root, 'assets/js/main.js'), 'utf8');

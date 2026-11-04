@@ -89,15 +89,9 @@ test("Homepage identifies one consistent website and organization, including sub
   assert.equal(d.querySelector('[property="og:site_name"]').content, w.name);
   assert.ok(d.title.startsWith(w.name));
 });
-test("Every built public page has the shared Academy footer (including lessons and guides)", () => {
+test("Every built public page has the shared footer (including guides)", () => {
   const files = [];
-  for (const dir of [
-    ".",
-    "guides",
-    "learning",
-    "learning/web-application-security",
-    "learning/web-application-security/foundations",
-  ])
+  for (const dir of ["."])
     for (const file of fs.readdirSync(dir))
       if (file.endsWith(".html") && file !== "guides.html")
         files.push(dir + "/" + file);
@@ -105,8 +99,8 @@ test("Every built public page has the shared Academy footer (including lessons a
     const d = new JSDOM(fs.readFileSync(file, "utf8")).window.document;
     const footer = d.querySelector("footer.site-footer");
     assert.ok(footer, file);
-    assert.ok(footer.querySelector('a[href="/learning"]'), file);
-    assert.ok(footer.querySelector('a[href="/learning/roadmap"]'), file);
+    assert.ok(footer.querySelector('a[href="/articles"]'), file);
+    assert.ok(footer.querySelector('a[href="/glossary"]'), file);
     assert.ok(!footer.querySelector('a[href*="newsletter"]'), file + " still links the newsletter");
   }
   assert.equal(

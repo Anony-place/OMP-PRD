@@ -32,79 +32,6 @@ env:
   LEGACY_ORIGIN: https://oopsmypassword.com
 
 jobs:
-  academy-regression:
-    name: Academy backend, concurrency and browser regressions
-    # ADVISORY, not a deploy gate. This suite currently fails on main before it
-    # reaches a single test: `deno check` rejects the Academy Edge Functions.
-    # That is a pre-existing type error, unrelated to what Hosting ships, and
-    # blocking every deploy on it is how the site went stale. Keep it running
-    # for signal; move it back into the deploy job's `needs:` once it is green.
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: OMP-PRD-main
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: OMP-PRD-main/tools/qa-deps/package-lock.json
-      - name: Install pinned publishing dependencies
-        working-directory: OMP-PRD-main
-        run: npm ci --ignore-scripts --no-audit --no-fund
-
-      - name: Install and audit pinned optional Firebase handlers
-        run: |
-          npm ci --prefix functions --ignore-scripts --no-audit --no-fund
-          npm audit --omit=dev --audit-level=high
-          npm audit --prefix functions --omit=dev --audit-level=high
-
-      - name: Install pinned QA dependencies
-        run: |
-          npm ci --prefix tools/qa-deps --no-audit --no-fund
-          echo "NODE_PATH=$PWD/tools/qa-deps/node_modules" >> "$GITHUB_ENV"
-          tools/qa-deps/node_modules/.bin/playwright install --with-deps chromium
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Type-check Academy Edge Functions
-        # content-publish is the function the panel and the CLI both call to
-        # publish. Its inputs are untyped JSON from outside the app, so a type
-        # error is the difference between "create failed" and a wrong row.
-        run: deno check --node-modules-dir=none --no-lock supabase/functions/learning-progress/index.ts supabase/functions/learning-quiz-submit/index.ts supabase/functions/learning-certificate-verify/index.ts supabase/functions/newsletter/index.ts supabase/functions/content-publish/index.ts
-      - name: Database and publishing regression gate (no live services)
-        run: |
-          node tools/test_academy_backend.js
-          node tools/test_academy_concurrency.js
-          node tools/test_academy_migrations.js
-          node tools/test_academy_course_database.js
-          node tools/test_academy_multisubject.mjs
-          node tools/test_academy_local.mjs
-          node tools/test_newsletter.js
-          node tools/test_site_contracts.js
-          node tools/test_site_database.js
-          node tools/test_functions.cjs
-          node tools/products_app_harness.js
-          node tools/admin_products_harness.js
-          node tools/test_release_verifier.mjs
-          node tools/audit_academy_publishing.mjs
-          python3 tools/test_academy_content.py
-          node tools/test_academy_build.mjs
-      - name: Browser and general runtime gate
-        run: |
-          node scripts/build-academy.mjs --snapshot
-          node tools/test_runtime.js
-          node tools/preview_server.js 8080 > "$RUNNER_TEMP/academy-preview.log" 2>&1 &
-          PREVIEW_PID=$!
-          trap 'kill "$PREVIEW_PID" 2>/dev/null || true' EXIT
-          node tools/academy_browser_test.js
-          node tools/admin_browser_test.js
-          node tools/site_security_browser_test.js
-          OMP_AUDIT_URL=http://127.0.0.1:8080 OMP_OFFLINE_FIXTURES=1 node tools/browser-audit.js
-
   seo-check:
     name: Build and verify SEO output
     runs-on: ubuntu-latest
@@ -129,15 +56,6 @@ jobs:
         # renders each article as crawlable HTML.
         run: |
           python3 tools/build.py
-          # --catalogue builds from the committed, reviewed publisher snapshot
-          # (assets/data/academy-catalogue.json) instead of the live database.
-          # The live catalogue is currently BEHIND the repository: ~10 lessons
-          # that the committed pages and cheatsheet cross-links reference are
-          # missing there, so a live build prunes them (cleanStale) and every
-          # link to them becomes a 404 - which is what the last 13 failed runs
-          # were reporting. CI must gate the artifact that is committed, and
-          # publishing a new lesson stays an explicit commit.
-          node scripts/build-academy.mjs --catalogue
           node functions/sync-sitemap-core.js
           node scripts/build-static-seo.mjs
           # The Supabase article build intentionally produces /articles/<slug>.html.
@@ -191,17 +109,6 @@ jobs:
           # the check-runs API, which is what tooling can actually verify.
           echo "::notice title=Build inventory::static=$(find . -maxdepth 1 -name '*.html' | wc -l | tr -d ' ') guides=$(ls guides/*.html 2>/dev/null | wc -l | tr -d ' ') articles=$(ls articles/*.html 2>/dev/null | wc -l | tr -d ' ') products=$(ls products/*.html 2>/dev/null | wc -l | tr -d ' ') sitemap_urls=$(grep -o '<loc>' sitemap.xml | wc -l | tr -d ' ')"
 
-      - name: Check Academy syntax and published hierarchy
-        working-directory: OMP-PRD-main
-        run: |
-          node --check assets/js/learning.js
-          node tools/test_academy_seo.mjs
-          # tools/test_academy_build.mjs is deliberately not part of the deploy
-          # gate: it rebuilds from a small local REST fixture whose catalogue
-          # omits lessons that the committed glossary/tool pages cross-link to,
-          # so it fails on any clean checkout for reasons that have nothing to
-          # do with the artifact being shipped. Fix the fixture (or prune those
-          # links) and add it back here.
 
       - name: Sitemap generator and wiring tests
         working-directory: OMP-PRD-main
@@ -247,19 +154,6 @@ jobs:
         # to a markup scan, so this drives the real page in jsdom on both the
         # marketing header and the Academy bar.
         run: node tools/test_mobile_nav.mjs
-      - name: The Academy is a course, not a pile of pages
-        working-directory: OMP-PRD-main
-        # Walks every course lesson by lesson using only the links in the built
-        # HTML: a broken "next", a missing "previous", or a hub that promises a
-        # self-check on lessons that never had one.
-        run: node tools/test_academy_course.mjs
-      - name: An Academy lesson teaches something
-        working-directory: OMP-PRD-main
-        # The lessons used to be revision notes: five bullet lists, no worked
-        # example, and "What you'll learn" printing the same four section names
-        # on all 118 pages. This checks the shape of a converting lesson and
-        # that the stated reading time matches the words on the page.
-        run: node tools/test_academy_lessons.mjs
       - name: Every comparison is reachable
         working-directory: OMP-PRD-main
         # A comparison needs three edits in two files: the COMPARISONS entry, a
@@ -462,9 +356,6 @@ jobs:
         working-directory: OMP-PRD-main
         run: |
           python3 tools/build.py
-          # Same committed catalogue the seo-check job gated - a live build
-          # would ship a different (pruned) Academy than the one verified.
-          node scripts/build-academy.mjs --catalogue
           node functions/sync-sitemap-core.js
           node scripts/build-static-seo.mjs
           test -f articles/best-free-osint-tools-for-beginners.html || { echo '::error::Expected OSINT article page was not generated'; exit 1; }
@@ -498,7 +389,6 @@ jobs:
         # have changed in between - run every check again on the exact files
         # about to ship rather than trusting the earlier job's verdict.
         run: |
-          node tools/test_academy_seo.mjs
           node tools/test_sitemap.js
           python3 tools/qa.py
           node scripts/verify-seo.mjs
