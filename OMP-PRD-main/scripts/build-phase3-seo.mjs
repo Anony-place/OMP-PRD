@@ -3015,6 +3015,17 @@ ${feedItems.map((it) => `    <item>
   fs.writeFileSync(path.join(ROOT, 'rss.xml'), rssXml);
 
   // 3. Build /llms.txt and /llms-full.txt for AI Search Engines
+  /* Real catalogue sizes, taken from the snapshot the site already ships as its
+     offline fallback. The old copy said "20+ OSINT investigation tools" and
+     "interactive CLI builders" on both hubs: the catalogue has 10 OSINT tools,
+     and only tools with a hand-written spec get a builder. A number nobody
+     recomputes is a number that eventually lies. */
+  const hubCounts = { osint: 0, pentest: 0 };
+  try {
+    const snap = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/data/hubs-snapshot.json'), 'utf8'));
+    hubCounts.osint = (snap.osint || []).filter((r) => r && r.slug).length;
+    hubCounts.pentest = (snap.pentest || []).filter((r) => r && r.slug).length;
+  } catch { /* no snapshot: omit the numbers rather than print a wrong one */ }
   const llmsTxt = `# OopsMyPassword (https://oopsmypassword.web.app)
 
 > Privacy-first cybersecurity tools, OSINT & Pentest tool directories, CLI cheat sheets, head-to-head tool comparisons, a security glossary, and technical guides that explain the fundamentals. All interactive tools run 100% client-side in the browser with zero telemetry.
@@ -3032,8 +3043,8 @@ ${feedItems.map((it) => `    <item>
 - [Security Checklist](${SITE}/security-checklist): 16-step account hardening tracker.
 
 ## Hubs & Reference
-- [OSINT Hub](${SITE}/osint): 20+ OSINT investigation tools with interactive CLI builders and side-by-side comparison drawer.
-- [Pentest Hub](${SITE}/pentest): Authorized penetration testing tools by phase with interactive CLI command builders.
+- [OSINT Hub](${SITE}/osint): ${hubCounts.osint ? `${hubCounts.osint} ` : ''}OSINT investigation tools for usernames, email, domains and phones, each with install steps and a side-by-side comparison drawer.
+- [Pentest Hub](${SITE}/pentest): ${hubCounts.pentest ? `${hubCounts.pentest} ` : ''}authorized penetration-testing tools grouped by assessment phase, each with install steps and its vendor documentation.
 - [Tool Comparisons Hub](${SITE}/compare): ${COMPARISONS.length} head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](${SITE}/cheatsheets): ${CHEATSHEETS.length} interactive, printable command references.
 - [Security Glossary](${SITE}/glossary): ${GLOSSARY_TERMS.length} foundational security, cryptography, and OSINT term deep-dives.
