@@ -1,3 +1,4 @@
+import { readingMinutes } from "./academy-content.mjs";
 import { normalizeContent } from "./academy-content.mjs";
 /* Shared by the static publisher and browser. No DOM, auth or network access. */
 export const ROOT = "/learning";
@@ -7,8 +8,10 @@ const ordered = (rows) =>
     (a, b) =>
       (a.sort_order || 0) - (b.sort_order || 0) || a.slug.localeCompare(b.slug),
   );
+/* Time is counted from the words on the page, not from a stored estimate:
+   the stored numbers said 14 minutes for lessons carrying about 370 words. */
 export const minutes = (topics) =>
-  topics.reduce((sum, t) => sum + Number(t.estimated_minutes || 0), 0);
+  topics.reduce((sum, t) => sum + readingMinutes(t), 0);
 export function curriculum(raw) {
   const source = structuredClone(raw);
   for (const key of ["categories", "paths", "modules", "topics", "labs"])

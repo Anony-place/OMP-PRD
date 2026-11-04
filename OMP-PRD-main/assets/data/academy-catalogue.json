@@ -250,43 +250,133 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "what-is-cyber-security",
       "name": "What Is Cyber Security?",
-      "description": "A beginner's guide to cyber security: what it protects, what outcomes it defends, who does the work, and how the major security frameworks organise it.",
+      "description": "Security is decisions about what you cannot afford to lose, not a product you install. Start with a bakery, then apply the same four words to your own accounts.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 4,
       "sort_order": 0,
       "status": "published",
       "content": {
-        "overview": "Cyber security is the practice of protecting systems, networks, data and people from damage and misuse. It is not a single product you install. It is a set of decisions about what matters, what could go wrong, and how much effort each risk deserves.",
-        "how_it_works": [
-          "Every asset you rely on - a laptop, a database, a payment API, an employee account - has an owner, a value and a lifetime.",
-          "Threats are the parties and events that could cause harm: attackers, malware, accidental mistakes, hardware failure, and insiders.",
-          "Vulnerabilities are the weaknesses those threats exploit. A system with no known weakness is not a safe system; it is an unexamined one.",
-          "Controls reduce risk. Some prevent an attack, some detect it, some limit the damage after it happens.",
-          "Security work is a loop: identify what matters, test what could break, apply controls, then verify the controls still work."
+        "practice_guidance": "You do not need a lab for this lesson. Open a notes app and write the five things you would most hate to lose, then work through the Try it section. Everything stays on your device.",
+        "outcomes": [
+          "explain what security is protecting, in your own words",
+          "apply the four questions that every security decision comes back to",
+          "tell the difference between a bug and a security problem"
         ],
-        "history": [
-          "Security existed long before computers: locks, guards, accounting and physical safes protected the same three things we now call confidentiality, integrity and availability.",
-          "As computing moved onto shared networks in the 1980s and 1990s, the problem shifted from protecting one machine to protecting many connected ones.",
-          "The internet made that harder still, because identity became hard to establish and the number of remote users grew without bound.",
-          "Organisations now publish structured guidance so that security is repeatable rather than folklore: the NIST Cybersecurity Framework, the CIS Controls, and the OWASP Top 10 are widely used references."
-        ],
-        "real_world": [
-          "A hospital loses record availability when a backup cannot be restored, and patients feel it as cancelled appointments rather than as a security incident.",
-          "A retailer treats payment card numbers as the assets that matter most, and invests in segmentation and monitoring to protect them.",
-          "A small charity is targeted by the same automated credential-stuffing traffic as a large bank, because attack tooling is cheap and automated."
-        ],
-        "what_to_look_for": [
-          "Write down what you are protecting and who would be harmed if it were unavailable, altered, or disclosed.",
-          "Notice where trust is granted automatically, because unexamined trust is where most incidents begin.",
-          "Ask what would happen if this component failed, and whether anyone would notice within minutes or within months.",
-          "Distinguish a bug from a security issue: it only becomes security-relevant when it crosses a boundary someone was supposed to control."
-        ],
-        "defensive": [
-          "Keep a written inventory of the assets that actually matter to you.",
-          "Prioritise by impact, not by how interesting a control is to implement.",
-          "Prefer boring, well-understood controls over clever ones you cannot maintain.",
-          "Test your defences deliberately, in a way that is authorised and safe.",
-          "Treat recovery as a security control: backups, tested restores and rehearsed downtime plans."
+        "overview": "Security is not a product you install. It is a set of decisions about what you cannot afford to lose, and what you are willing to do about it. Almost everything else in this course is a detail of those decisions.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Imagine a small bakery. It depends on three things: the recipes that make its bread, the list of customers who order every week, and the card machine that takes payment."
+              },
+              {
+                "type": "paragraph",
+                "text": "Any of those three can fail. A rival could copy the recipes. A customer list could end up somewhere public. The card machine could be down on the busiest morning of the week."
+              },
+              {
+                "type": "paragraph",
+                "text": "Security is the work of noticing those three things, deciding what would be worst, and doing something sensible about it before it happens. Nothing about that definition requires a computer. Computers simply make it faster, bigger and harder to see."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Every security situation, from a bakery to a bank, can be described with the same four words. You will meet them again in lesson four, but they are worth hearing now because they organise everything."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "An asset is something you would be upset to lose: data, money, a laptop, the ability to take payment.",
+                  "A threat is whatever could take it from you: an attacker, a mistake, a fire, a failing disk.",
+                  "A vulnerability is the gap that lets the threat succeed: a shared password, an unpatched server, a door that does not lock.",
+                  "A control is the specific thing you do about it: encryption, a backup, a lock, a rule."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Security work is a loop over those four words. Decide what matters. Ask what could go wrong. Put a control in place. Then check that the control still works — because the last step is the one everyone skips, and it is the only one that catches a control that quietly stopped working."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Take the bakery and run the loop over it. Each line is one decision, and each decision is small enough to actually make."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Customer list → a former employee still has access → the shared drive is open to anyone with the link → remove the ex-employee's access and stop using link sharing.",
+                  "Card machine → the provider has an outage → nothing on our side can fix it → keep a manual card terminal and write down what to do during an outage.",
+                  "Recipes → a competitor copies them → they sit in an unlocked drawer → lock the drawer, and keep the digital copies in one folder with restricted access."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Notice that none of those fixes is dramatic, and none of them is a product you buy. That is what most real security looks like."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "People start with the tool instead of the asset. They buy antivirus, or a firewall, or a password manager, and only afterwards wonder what it was supposed to protect."
+              },
+              {
+                "type": "paragraph",
+                "text": "The other common mistake is the sentence \"we have nothing worth stealing\". Almost every organisation has a customer list, an email account, or a payment method — and all three are worth money to somebody, which is exactly how automated attacks find them."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Write down five things you would genuinely hate to lose — think about your own accounts, not a company's. For each one, answer two questions:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "If this disappeared today, what would actually happen this week?",
+                  "If it were copied or seen by someone else, would I know?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "If the answer to the second question is \"no\", you have found the thing to work on first. Not the most valuable asset — the one you would not notice losing."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Security is decisions about assets, not a product you install.",
+                  "Asset, threat, vulnerability, control — every situation fits those four words.",
+                  "The loop ends with verification, and verification is the step most people skip.",
+                  "Start from what you would hate to lose, and from what you would not notice losing."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://www.nist.gov/cyberframework",
@@ -302,40 +392,129 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "cybersecurity-vs-information-security",
       "name": "Cybersecurity vs Information Security",
-      "description": "Cybersecurity and information security overlap but are not the same. Understand the difference, why regulators care, and how to classify what you are protecting.",
+      "description": "Information security protects information; cyber security protects the machines that carry it. One employee file, in three places, shows why the difference changes the plan.",
       "difficulty": "Beginner",
-      "estimated_minutes": 12,
+      "estimated_minutes": 3,
       "sort_order": 1,
       "status": "published",
       "content": {
-        "overview": "Information security protects data wherever it lives. Cyber security is broader: it covers the technology, the networks and the services built on that data. The difference is scope, not intent.",
-        "how_it_works": [
-          "Information security is about confidentiality, integrity and availability of information, regardless of the medium that holds it.",
-          "Cyber security adds the systems and supply chain: operating systems, networks, endpoints, identity providers, cloud platforms and third-party vendors.",
-          "A physical control such as a locked server room is an information-security measure expressed in a cyber environment.",
-          "Operational security covers the process side: who is allowed to change a system, how changes are approved, and how incidents are escalated.",
-          "The fields overlap heavily, and in most job descriptions the words are used interchangeably."
+        "practice_guidance": "No tools needed. Take three pieces of information you handle in a normal week and write down where each one physically lives.",
+        "outcomes": [
+          "define information security and cyber security without using each other's words",
+          "classify a given risk as information, cyber, or both",
+          "explain why a plan that only covers computers is incomplete"
         ],
-        "history": [
-          "The term information security grew out of document handling and records management, long before networked computing.",
-          "As systems became interconnected, the field split into computer security, network security and information security, because each layer needed different controls.",
-          "Cyber security emerged as an umbrella term in the 1990s as attacks shifted from isolated machines to connected enterprise networks.",
-          "Today the two words are largely interchangeable in job titles, and the distinction matters mainly when scoping a policy or a compliance regime."
-        ],
-        "real_world": [
-          "An ISO 27001 audit is an information-security exercise that necessarily covers the cyber systems holding that information.",
-          "A data-protection regulator focuses on personal data specifically, which is a subset of everything an organisation treats as information.",
-          "A lost company laptop is both a physical-security loss and an information-security loss, and the response depends on which data was on it."
-        ],
-        "what_to_look_for": [
-          "Ask which asset class is at stake: data, a running service, a device, or a person safety.",
-          "Check whether a control protects the information or merely the system that serves it.",
-          "Notice when a vendor promises a security product but never states which information it is meant to protect."
-        ],
-        "defensive": [
-          "Write policies against the data and services you care about rather than against the tool you happen to own.",
-          "Map regulatory obligations to the specific information they cover.",
-          "Keep physical, operational and technical controls in one register so gaps between them are visible."
+        "overview": "\"Cyber security\" and \"information security\" are used as if they were the same thing. They are not, and the difference tells you what a plan has to cover.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Information security protects information wherever it is: on paper, in a conversation, on a whiteboard, in someone's head. Cyber security protects the computers and networks that carry information."
+              },
+              {
+                "type": "paragraph",
+                "text": "Every cyber security problem is also an information security problem, because computers hold information. But not every information security problem is a cyber problem. A salary sheet left on a printer is an information security problem with nothing cyber about it."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The two fields ask the same three things — is it available, is it correct, is it private — but they answer with different tools."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Information security answers with cabinets, lockable rooms, clear rules about who may speak to whom, and paper trails.",
+                  "Cyber security answers with encryption, access control, logging, network boundaries and patching.",
+                  "Both answer to the same management question: what are we protecting, and who is allowed to touch it?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "That is why a serious security programme is not run by a single team. The person who controls physical keys and the person who controls cloud permissions are protecting the same asset from two directions."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "One employee file, in three different places. Same information, different discipline:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "A paper file in a locked cabinet, in an office with a door code. Information security only. Nobody needs a firewall to protect it.",
+                  "The same file on a shared drive, readable by everyone in the company. Both. The rule about who may read it is information security; the permissions that enforce it are cyber security.",
+                  "The same file in an email attachment sent to a personal address. Both, and now the cyber failure — it left the boundary — decided the information outcome."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "In practice the third one is how most real incidents start: not a clever attacker, just information leaving a boundary that nobody was watching."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Treating the words as interchangeable, then building a plan that only covers computers. Such a plan has nothing to say about a printed sheet left in a meeting room, a phone call to the wrong person, or a laptop screen on a train."
+              },
+              {
+                "type": "paragraph",
+                "text": "The reverse mistake is just as common in small organisations: \"we don't have cyber security\" — said while holding a phone that has email, a customer list and a payment app on it."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Pick three pieces of information you handled this week. For each, write where it lives and who can reach it:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Where does it physically or digitally sit right now?",
+                  "Who could read it without asking you?",
+                  "Would you find out if they did?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Anything that lives on a computer is now in cyber territory. Anything that does not is still information security, and still your problem."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Information security protects information; cyber security protects the machines that carry it.",
+                  "All cyber problems are information problems; not all information problems are cyber.",
+                  "A plan that only covers computers leaves out paper, speech and screens.",
+                  "Most incidents start with information crossing a boundary nobody was watching."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://www.iso.org/isoiec-27001-information-security.html",
@@ -351,41 +530,141 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "cia-triad",
       "name": "The CIA Triad: Confidentiality, Integrity & Availability",
-      "description": "What the CIA triad is, where the three goals come from, how each one fails in real incidents, and how defenders test for all three instead of one.",
+      "description": "Availability, integrity, confidentiality — three questions you can ask about any system, and the reason improving one usually costs you another.",
       "difficulty": "Beginner",
-      "estimated_minutes": 15,
+      "estimated_minutes": 3,
       "sort_order": 2,
       "status": "published",
       "content": {
-        "overview": "The CIA triad is the standard way to describe what security protects: confidentiality, integrity and availability. Most real security work is a trade-off between these three under time and cost pressure.",
-        "how_it_works": [
-          "Confidentiality limits who can read information. Encryption, access control and correct permissions are the usual controls.",
-          "Integrity means you can trust that information has not been altered without authorisation. Hashing, signatures and validation serve this goal.",
-          "Availability means authorised users can reach the information when they need it. Redundancy, capacity planning and recovery planning protect it.",
-          "Authenticity and non-repudiation are usually treated as extensions, because you cannot verify who sent a message or deny sending it without them.",
-          "A control that protects one property often weakens another, which is why security decisions are always trade-offs rather than pure gains."
+        "practice_guidance": "Choose one account you use daily and answer the three questions about it on paper. No tools, no sign-in needed.",
+        "outcomes": [
+          "name the three goals and the question each one asks",
+          "look at a real account and say which goal is weakest",
+          "explain why improving one goal can make another worse"
         ],
-        "history": [
-          "The triad predates computing, appearing in early military and diplomatic security doctrine as confidentiality, integrity and availability.",
-          "It entered information-systems security in the 1970s and 1980s and has remained the core framing ever since.",
-          "Later work added authenticity, accountability and privacy, and some frameworks propose many more properties, but the triad remains the shared vocabulary.",
-          "Cloud platforms made the availability side more explicit, because on-demand scaling and multi-zone design are now default expectations."
-        ],
-        "real_world": [
-          "A ransomware incident is usually an availability failure first, and only later a confidentiality and integrity failure once data is exfiltrated.",
-          "Enforcing multi-factor authentication on a shared administrator account improves confidentiality and may reduce availability if the second factor is unreliable.",
-          "A file-integrity monitoring tool is deployed mainly to detect integrity failures, but its logs are equally useful for accountability."
-        ],
-        "what_to_look_for": [
-          "For each control you plan to add, name which of the three properties it protects and which it might weaken.",
-          "Test that availability claims are real by attempting a restore, not by confirming that a backup job reported success.",
-          "Check whether integrity protection covers configuration and code, or only user data."
-        ],
-        "defensive": [
-          "Decide explicitly which properties matter most for each system and record the reason.",
-          "Protect integrity first, because undetected corruption is harder to detect than an outage.",
-          "Test restores on a schedule and record how long recovery actually takes.",
-          "Use layered controls so a failure in one layer does not remove an entire property."
+        "overview": "Confidentiality, integrity and availability are the three questions you can ask about any system. They are not a checklist to pass; they are a way to find out which one you have been ignoring.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Ask three questions about any piece of information, and you have the whole of the CIA triad. They are short enough to memorise, and they cover almost every security failure you will ever read about."
+              },
+              {
+                "type": "paragraph",
+                "text": "Here they are, in the order that makes them easiest to remember:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Can the people who need it get it, when they need it? That is availability.",
+                  "Is it still correct, and did it arrive unchanged? That is integrity.",
+                  "Has anyone else seen it, or could they? That is confidentiality."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Most people think of security as the third question only — keeping secrets. The other two cause more visible damage, more often."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The three goals pull against each other, and that tension is the useful part."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "More backups improve availability, but every extra copy is another place the data can leak from — so confidentiality gets harder.",
+                  "More access checks improve confidentiality, but a bad access rule can lock out the person who needs the data at 3am — so availability suffers.",
+                  "Faster sync improves availability, but if it copies a corrupted value everywhere before anyone notices, integrity suffers."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Good security is not maximising all three. It is deciding, for this particular system, which one you would sacrifice first — and writing that decision down so it is a decision and not an accident."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Your bank account, failure by failure:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "The balance shows 0 because a transfer posted twice. Availability is fine, confidentiality is fine, integrity is broken. You can log in and see a wrong number.",
+                  "The app will not load on payday. Availability is broken, the other two are intact.",
+                  "Your statement is visible inside someone else's app after a bug. Confidentiality is broken, and the other two look perfectly normal — which is why this one can go unnoticed for months."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Three different failures, three different responses. A plan that only ever asks \"is it secret?\" has no answer for the first two."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Assuming confidentiality is the only goal, so any problem that does not involve a leak is not a security problem. A hospital whose records cannot be opened during an emergency is having a security incident, whether or not anything leaked."
+              },
+              {
+                "type": "paragraph",
+                "text": "The second mistake is assuming you can improve all three for free. You cannot; every control you add trades one against another, and the job is to know which trade you made."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Take one account you use every day — email is a good choice — and answer three questions honestly:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "If it were unavailable for a day, what would break?",
+                  "If one message were silently changed, would you notice?",
+                  "Who else could read it right now, including the provider?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Whichever answer made you least comfortable is the goal to work on. For most people it is the third, and the fix is usually two-factor authentication rather than anything more complicated."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Availability: can the right people get it? Integrity: is it still correct? Confidentiality: who else can see it?",
+                  "Confidentiality is the goal people think of first and the one whose failures are noticed last.",
+                  "The three goals trade against each other; a control that improves one usually costs another.",
+                  "Decide which goal you would sacrifice first, deliberately, and write it down."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://csrc.nist.gov/glossary/term/confidentiality",
@@ -401,42 +680,141 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "assets-threats-vulnerabilities-and-risk",
       "name": "Assets, Threats, Vulnerabilities & Risk",
-      "description": "The four words that carry all of security: define assets, threats, vulnerabilities and risk, and see how they combine into the risk equation defenders actually use.",
+      "description": "Asset, threat, vulnerability, risk: four words in the right slots turn a vague worry into a specific fix you can make today.",
       "difficulty": "Beginner",
-      "estimated_minutes": 15,
+      "estimated_minutes": 3,
       "sort_order": 3,
       "status": "published",
       "content": {
-        "overview": "Asset, threat, vulnerability and risk are four different ideas that get used interchangeably. Keeping them separate is what makes risk assessment possible rather than an exercise in worry.",
-        "how_it_works": [
-          "An asset is anything of value that an attacker would want: data, hardware, credentials, availability, or your reputation.",
-          "A threat is a potential cause of harm, from an external attacker to an insider mistake to a hardware fault.",
-          "A vulnerability is a weakness that a threat could exploit. Not every vulnerability is exploitable, and not every exploit needs a vulnerability you knew about.",
-          "Risk is the combination of likelihood and impact. It is what you are actually trying to reduce.",
-          "Risk equals threat times vulnerability times exposure. Removing any one of the three is usually cheaper than adding another control."
+        "practice_guidance": "Pick one system you actually use — a phone, a website, a shared folder — and fill in the four words on paper.",
+        "outcomes": [
+          "define each of the four words with an example of your own",
+          "take one system and fill all four slots for it",
+          "explain why a threat is not the same thing as a vulnerability"
         ],
-        "history": [
-          "The vocabulary comes from risk management traditions in insurance and safety engineering, and was borrowed by computing in the 1970s.",
-          "Early systems treated risk informally; formal methods such as fault trees, attack trees and the National Information Assurance Academy glossary formalised the language.",
-          "Modern practice adds likelihood scoring and business impact, so that a technical finding can be ranked against cost and effort.",
-          "The FAIR and NIST approaches differ in detail, but both insist that risk is about the business, not only about the technology."
-        ],
-        "real_world": [
-          "An unpatched web server is a vulnerability; an attacker who scans for it is a threat; the combination is the risk that decides patch timing.",
-          "The same vulnerability in an isolated lab and in an internet-facing production host is a completely different risk, because exposure differs.",
-          "A medium-severity finding can outrank a critical one when it affects the only system the business can serve from."
-        ],
-        "what_to_look_for": [
-          "Build the asset list before scanning, so findings are ranked by what they actually threaten.",
-          "Record exposure: reachable from the internet, reachable by staff, or reachable only by administrators.",
-          "Separate a theoretical weakness from a demonstrated exploit path before prioritising work.",
-          "Note the compensating controls that already reduce likelihood."
-        ],
-        "defensive": [
-          "Maintain an asset inventory with an owner for each entry.",
-          "Rank findings by risk, not by scanner severity, and record the reason for each deferral.",
-          "Track exposure separately from vulnerability so reducing reach is visible as progress.",
-          "Revisit the assessment when the system changes, not only on a fixed calendar."
+        "overview": "Four words carry the whole of security: asset, threat, vulnerability, risk. Get them in the right slots and most arguments about security become much shorter.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Think about a bicycle you park on the street."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "The bicycle is the asset: the thing you would hate to lose.",
+                  "A thief is the threat: whatever could take it.",
+                  "The cable lock that takes nine seconds to cut is the vulnerability.",
+                  "The risk is how likely it is that those three meet — which depends on where you park, what the bike is worth, and how long you leave it."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Risk is not a fourth object in the list. It is the answer to \"so what?\" — the combination of how likely the loss is and how much it would hurt."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The reason the four words matter is that each one leads to a different fix, and people usually reach for the wrong one."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "If the asset is not worth much, stop here. Removing the asset is a legitimate control and the cheapest one available.",
+                  "If the threat can be avoided, avoid it. A service you do not run cannot be attacked.",
+                  "If the vulnerability can be closed, close it — patching, a stronger lock, a fixed permission.",
+                  "If none of those work, reduce the impact: insurance, backups, monitoring, and a plan for the day it happens."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Notice that \"buy a firewall\" is only one of those options, and not usually the first."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "A small online shop, described in the same four words:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Asset: the customer database, including email addresses and order history.",
+                  "Threat: automated credential stuffing — bots replaying leaked email and password pairs from other breaches.",
+                  "Vulnerability: the login page has no rate limit, and there is no second factor, so a leaked password is enough.",
+                  "Risk: high, because the attack is automated, cheap, and does not need to know anything about this particular shop."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The fix follows from the vulnerability, not from the threat. You cannot stop bots existing. You can rate-limit logins and require a second factor, which turns a cheap automated attack into an expensive manual one."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Confusing a threat with a vulnerability. \"Hackers\" is a threat; \"our admin panel has no password\" is a vulnerability. You cannot fix the first, and you can fix the second today."
+              },
+              {
+                "type": "paragraph",
+                "text": "The other mistake is treating risk as a yes-or-no. Every system has some risk. The question is whether the risk is understood, accepted and priced — not whether it exists."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Choose one system you use — a phone, a folder, a website — and write four lines:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Asset: what specifically would I lose?",
+                  "Threat: who or what could cause that?",
+                  "Vulnerability: what specific gap lets them succeed?",
+                  "Risk: how likely is it, and how much would it cost me?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "If you cannot name a specific vulnerability, you have not found it yet — and that is the line to go and look at properly."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Asset, threat, vulnerability — three different things, three different fixes.",
+                  "Risk is likelihood times impact, not a yes-or-no question.",
+                  "You cannot remove a threat, but you can usually close a vulnerability.",
+                  "Removing or not holding the asset is a real control, and often the cheapest."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://csrc.nist.gov/glossary/term/risk",
@@ -452,42 +830,138 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "attack-surface-and-attack-vectors",
       "name": "Attack Surface & Attack Vectors",
-      "description": "Attack surface and attack vector are different things: one is how many doors you have, the other is the path an attacker actually walks. Learn to reduce both.",
+      "description": "The attack surface is every way in; an attack vector is the one that got used. Count the entries you forgot before you harden the one you remember.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 3,
       "sort_order": 4,
       "status": "published",
       "content": {
-        "overview": "Attack surface is everything an attacker can reach. Attack vectors are the specific routes they use. Reducing surface is one of the most reliable ways to reduce risk.",
-        "how_it_works": [
-          "Surface includes network-exposed ports, public web endpoints, mobile application code, third-party scripts, and user-facing input.",
-          "A vector is a concrete path, such as credential reuse, an unpatched dependency, a malicious attachment, or a misconfigured storage bucket.",
-          "Attackers enumerate surface automatically and continuously, so anything reachable is discovered eventually.",
-          "Reducing surface means removing reachability, not merely hiding it, because hidden interfaces are still exploitable.",
-          "Each exposed service is also an operational and patching commitment you must keep."
+        "practice_guidance": "Open a site you run or a service you use and list, on paper, every way in. Do not test anything you do not own.",
+        "outcomes": [
+          "list the ways into a system you already run or use",
+          "distinguish the surface from a single vector",
+          "spot the entry point people forget: the one that is not yours"
         ],
-        "history": [
-          "The term comes from physical security, where an attack surface is the exposed exterior of a defended building.",
-          "Software engineering adopted it in the 1990s as internet-facing services multiplied.",
-          "Cloud computing widened surface again, because storage, queues and serverless functions become reachable through credentials rather than ports.",
-          "Modern frameworks add supply-chain surface, because one compromised dependency reaches every consumer at once."
-        ],
-        "real_world": [
-          "An object-storage bucket left publicly readable is a single misconfiguration that exposes far more data than the application ever did.",
-          "A forgotten admin endpoint still running in production is common surface that nobody is testing any more.",
-          "A third-party analytics script on a payment page inherits the trust of the page it is embedded in."
-        ],
-        "what_to_look_for": [
-          "List every externally reachable host, port, hostname and API endpoint, including test environments.",
-          "Check for default credentials, sample applications and debug modes left enabled.",
-          "Look for internal services that assume the network is trusted.",
-          "Review third-party and supply-chain dependencies, not only your own code."
-        ],
-        "defensive": [
-          "Remove anything you do not need; the cheapest control is the service you never deployed.",
-          "Restrict reachability with network policy, private subnets and identity-based access.",
-          "Run internet-wide discovery continuously and alert on new exposure.",
-          "Patch and maintain every service you choose to keep reachable."
+        "overview": "The attack surface is everything an attacker can touch; the attack vector is the particular route they use. One is a measurement, the other is a story about how it happened.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "A house has a front door, a back door, windows, a loft hatch, a letterbox and a chimney. All of that together is the attack surface: the total set of ways in."
+              },
+              {
+                "type": "paragraph",
+                "text": "If somebody climbs in through the kitchen window, that window was the attack vector: the one route actually used, on that night."
+              },
+              {
+                "type": "paragraph",
+                "text": "The surface is what you count and reduce. The vector is what you read about afterwards. Confusing them is why people harden the front door and leave the loft hatch open."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Every entry point you add — a login form, an API, an upload field, a plugin, a contractor's access — enlarges the surface. That is not an argument against building things. It is an argument for knowing what you added."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Each way in is a promise you have to keep: it must authenticate, validate, log and be patched.",
+                  "Surface that nobody owns is the dangerous kind: an old staging server, a forgotten subdomain, a test key left in code.",
+                  "You cannot reduce the surface to zero. You can make it smaller than last month, and you can know what is on it."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "A useful habit: for every new feature, ask \"what did we just expose?\" before asking \"does it work?\"."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "An imaginary small business with a website, counted honestly:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "The public site and its login form.",
+                  "The admin panel — the same site, a different path, often weaker.",
+                  "The API the mobile app talks to.",
+                  "The mailbox everyone uses for support and password resets.",
+                  "Six employee laptops and the personal phones they check email on.",
+                  "A third-party chat widget loaded from someone else's server.",
+                  "A staging copy from last year, still online, still with the default admin password."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Seven entries, and a typical owner would have listed two. The last one is the important one: it is not something the business built recently, it is something it forgot."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Assuming the attack surface is only what your own team built. Third-party scripts, plugins, contractors and old staging environments are all part of it — and all of them are usually weaker than the thing you are carefully testing."
+              },
+              {
+                "type": "paragraph",
+                "text": "The second mistake is counting entries you can see and ignoring the ones you cannot: subdomains nobody remembers, an API version still serving requests, an old employee's account that still works."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Take one service you use and list every way in, including the boring ones:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "The main login page.",
+                  "Any admin or staff area.",
+                  "Anything that talks to it automatically — an app, a script, an integration.",
+                  "The email address attached to it, which can reset the password."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Count how many of those you could not name from memory. Those are the ones to go and look at."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Attack surface is the total set of ways in; an attack vector is the one used.",
+                  "Every entry point is a promise to authenticate, validate, log and patch.",
+                  "The forgotten entries — staging, old keys, third-party scripts — are usually the weakest.",
+                  "For every new feature, ask what it exposed before asking whether it works."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://owasp.org/www-project-top-ten/",
@@ -503,42 +977,141 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "security-controls",
       "name": "Security Controls",
-      "description": "What a security control is, how controls are classified by function and by type, and why layers — not single products — are what actually stop incidents.",
+      "description": "A control names the risk it reduces. Prevent, detect, correct — you want one of each, not three of the first.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 3,
       "sort_order": 5,
       "status": "published",
       "content": {
-        "overview": "A security control is any measure that reduces risk. Controls are usually described by when they act: preventive, detective, or responsive. Effective programmes use all three.",
-        "how_it_works": [
-          "Preventive controls stop an attack before it succeeds, such as authentication, authorisation, input validation and network segmentation.",
-          "Detective controls reveal that something is happening, such as logging, monitoring and file-integrity checking.",
-          "Responsive controls limit the damage and restore normal service, such as isolation, revocation and tested recovery.",
-          "Controls are also administrative, technical, or physical, and the classification matters when you assess coverage.",
-          "Compensating controls reduce risk without removing the underlying weakness, and are legitimate when the real fix is not yet available."
+        "practice_guidance": "Pick one risk you already know about and write one control for each stage: prevent, detect, correct.",
+        "outcomes": [
+          "classify a control as preventing, detecting or correcting",
+          "recognise the difference between administrative, technical and physical controls",
+          "check whether your controls cover all three stages or repeat one"
         ],
-        "history": [
-          "Controls existed as physical measures long before computing, and the preventive-detective-responder framing grew out of that tradition.",
-          "Compliance frameworks in the 1990s turned controls into a checkable list, which made coverage measurable but often reduced controls to paperwork.",
-          "The concept of defence in depth became central after incidents showed that any single control can fail.",
-          "Modern frameworks such as the CIS Controls emphasise prioritisation and verification rather than exhaustive control lists."
-        ],
-        "real_world": [
-          "Multi-factor authentication is preventive, a login alert is detective, and a session revocation process is responsive.",
-          "A firewall rule that is never tested is documentation, not a control.",
-          "Backups only count as a control once a restore has been demonstrated, because an untested backup is an assumption."
-        ],
-        "what_to_look_for": [
-          "For each control, state which risk it addresses and what happens if it fails.",
-          "Check that detective controls actually alert someone who can act on the alert.",
-          "Look for controls that exist on paper but are not enforced by tooling.",
-          "Verify that a control you rely on has been tested recently, not just deployed."
-        ],
-        "defensive": [
-          "Layer controls so a single failure does not remove a whole protection.",
-          "Test detective controls by triggering them deliberately in a safe environment.",
-          "Document the failure mode of every critical control, not just its function.",
-          "Retire controls that no longer map to a current risk."
+        "overview": "A control is a specific thing you do that reduces a specific risk. If you cannot say which risk it reduces, it is not a control — it is a purchase.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "A control is an action, not a product. \"Turn on full-disk encryption\" is a control. \"Buy a security suite\" is a purchase, and may or may not contain one."
+              },
+              {
+                "type": "paragraph",
+                "text": "Controls are usually sorted two ways: by what they do, and by what kind of thing they are. Both sorts are useful, and neither is complicated."
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "By what they do, there are three stages, and you want at least one control at each:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Prevent: stop it happening. Encryption, access rules, patching, a lock.",
+                  "Detect: find out it happened, or is happening. Logs, alerts, a monthly permission review.",
+                  "Correct: recover and learn. Restore from backup, revoke a session, rotate a key, write down what went wrong."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "By what kind of thing they are, there are three types, and you want all three too:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Administrative: a rule or a habit — \"no shared admin accounts\".",
+                  "Technical: something the system enforces — permissions, MFA, rate limits.",
+                  "Physical: something in the world — a door code, a locked cabinet, a screen in an office."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "The two sorts cross over. A door code is a physical, preventive control. An audit log is a technical, detective control. Neither sorting is better; together they stop you from repeating the same kind of fix."
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "A laptop gets stolen from a café. One risk, three stages, three controls:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Prevent: full-disk encryption, so the disk is useless without the login; an automatic screen lock, so the machine is not simply open.",
+                  "Detect: a sign-in alert for a location you have never visited; the ability to see when the device last reported in.",
+                  "Correct: a remote wipe, and a backup that lets you rebuild the machine without paying anything."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Now the three types for the same risk: a policy that laptops may not be left unattended (administrative), encryption and remote wipe (technical), and keeping the bag on your body (physical). Every one of those is cheap, and together they cover the whole event rather than just the moment of theft."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Stacking the same stage. Two antivirus products, or three password policies, all doing prevention — while nothing anywhere detects a compromise or makes recovery possible. Coverage across the three stages beats depth in one."
+              },
+              {
+                "type": "paragraph",
+                "text": "The second mistake is a control that nobody verifies. A backup that has never been restored is a hope, not a control. The test is the control."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Take one risk you already know about — a stolen phone is a good one — and write three lines:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Prevent: what stops this working?",
+                  "Detect: how would I find out in the first hour?",
+                  "Correct: how do I recover without losing more?"
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "If any line is blank, that is where the next hour of effort goes. It is almost never where people start."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "A control names the risk it reduces; a purchase does not.",
+                  "Prevent, detect, correct — you want one of each, not three of the first.",
+                  "Administrative, technical and physical controls cover different failure modes.",
+                  "An untested control is a hope. The test is the control."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://www.nist.gov/cyberframework",
@@ -554,42 +1127,136 @@
       "path_id": "41000000-0000-4000-8000-000000000001",
       "slug": "security-mindset",
       "name": "The Security Mindset",
-      "description": "The habits that make someone good at security: assume breach, least privilege, verify explicitly, fail safely — and how to practise them without becoming paranoid.",
+      "description": "Four habits do most of the work: assume breach, least privilege, verify rather than trust, and write it down. One afternoon of practice beats a catalogue of attacks.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 3,
       "sort_order": 6,
       "status": "published",
       "content": {
-        "overview": "A security mindset is the habit of asking where trust is granted, what would fail, and who benefits. It matters more than any single tool, because tools are used by people who make assumptions.",
-        "how_it_works": [
-          "Assume any input can be hostile, including input from inside your network and from your own systems.",
-          "Verify decisions at the point where they matter, on the server, rather than trusting a value that crossed a boundary.",
-          "Prefer explicit denials over implicit trust, so that forgetting to add an allow rule fails safely.",
-          "Question authority, but also question your own assumptions in the opposite direction, because over-trust and under-trust both cause incidents.",
-          "Treat security as a habit of small checks rather than a project that ends at launch."
+        "practice_guidance": "Pick one shared account or one reused password you know about, and fix just that one today. One change that sticks beats a list that does not.",
+        "outcomes": [
+          "name the four habits that do most of the work",
+          "apply them to one situation you control today",
+          "spot the sentence that means a real risk is being ignored"
         ],
-        "history": [
-          "The idea that most incidents come from ordinary mistakes rather than genius attackers has been argued since early security research.",
-          "Formalised as a discipline in the 1990s through lessons from cryptography failures and simple configuration errors.",
-          "The term became common after high-profile breaches in which every component behaved as designed yet the system still failed.",
-          "It is now taught as a core habit, because technical controls cannot substitute for judgement at design time."
-        ],
-        "real_world": [
-          "A team that reviews who can reach production before shipping ships safer code than a team that adds a scanner later.",
-          "An administrator who asks why a service needs internet access usually finds that it does not.",
-          "A developer who writes the permission check on the server, rather than relying on a hidden button, prevents a whole class of incident."
-        ],
-        "what_to_look_for": [
-          "Ask where a value crossed a boundary and who vouched for it.",
-          "Notice controls that live only in the interface, since the user controls the client.",
-          "Look for defaults that fail open, such as a permission that is granted unless explicitly removed.",
-          "Check whether the failure case was designed, or whether it was never considered."
-        ],
-        "defensive": [
-          "Make the secure path the easy path, so good defaults are the default.",
-          "Review trust boundaries during design rather than after a finding.",
-          "Write down what you are assuming when a system is built, and revisit those assumptions.",
-          "Reward the person who reports a weak assumption, not only the person who ships a feature."
+        "overview": "Skill in security is mostly a set of habits, not a body of facts. The habits are small, boring and repeatable, and they matter more than knowing the name of the latest attack.",
+        "sections": [
+          {
+            "id": "plain",
+            "title": "In plain English",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "People imagine security experts hold a huge catalogue of attacks in their heads. Mostly they hold four habits, and apply them over and over to whatever they are looking at."
+              },
+              {
+                "type": "paragraph",
+                "text": "That is good news, because habits can be learned in an afternoon and a catalogue cannot. The four below are the ones that keep coming up, in incident write-ups and in post-mortems, over and over."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Assume something will get through, and plan for the day it does.",
+                  "Give each person and each program the least access it needs to do its job.",
+                  "Verify rather than trust — check the permission, do not assume the rule is followed.",
+                  "Write it down, because a plan that exists only in someone's memory leaves when they do."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "how",
+            "title": "How it works",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Each habit is a reaction to a specific, predictable human failure."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Assume breach exists because \"we would notice\" is almost always false — most breaches are found by an outsider, months later.",
+                  "Least privilege exists because access accumulates. Nobody ever asks for less access; they only ask for more.",
+                  "Verify exists because rules drift. The policy says one thing, the actual permissions say another, and only a check finds out which is true.",
+                  "Writing it down exists because knowledge walks out of the door at the same time as the person who had it."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "example",
+            "title": "A worked example",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "A small company keeps one \"admin\" account for the website, shared by four people, with the password on a note in a drawer. Watch each habit change one thing:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Assume breach: if that password leaks, you cannot tell who used it and you cannot tell when — so the fix starts with separate accounts, not with a longer password.",
+                  "Least privilege: the designer does not need admin rights to change a page. Removing that one permission shrinks what a stolen password is worth.",
+                  "Verify: check the account list quarterly. The fifth person on it will be someone who left two years ago.",
+                  "Write it down: one page — who has admin, how to rotate the password, who to call — so recovery does not depend on finding the one person who remembers."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Four habits, one paragraph of work, and the whole situation changed. None of it needed a new product."
+              }
+            ]
+          },
+          {
+            "id": "mistake",
+            "title": "The mistake most beginners make",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "\"We are too small to be a target.\" Automated attacks do not choose targets; they scan everything and take whatever is open. Being small means you are not attacked deliberately, which is a different sentence and a much weaker comfort."
+              },
+              {
+                "type": "paragraph",
+                "text": "The other mistake is treating security as a project with an end date. It is closer to tidying: the work is small, it is never finished, and the cost of skipping it compounds quietly."
+              }
+            ]
+          },
+          {
+            "id": "try",
+            "title": "Try it in two minutes",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Find one of these and fix only that one, today:"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "An account that more than one person can log into.",
+                  "A password you have used on more than one site.",
+                  "An old account — a job you left, a service you stopped using — that still exists."
+                ]
+              },
+              {
+                "type": "paragraph",
+                "text": "Then write one line in your notes about what you changed. That line is the habit starting, and it is worth more than reading another lesson."
+              }
+            ]
+          },
+          {
+            "id": "defensive",
+            "title": "Key takeaways",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Assume breach, least privilege, verify rather than trust, write it down.",
+                  "Access accumulates quietly; only a check finds out what is actually granted.",
+                  "Automated attacks do not pick targets, so \"too small\" is not a defence.",
+                  "One change that sticks beats a list that does not."
+                ]
+              }
+            ]
+          }
         ],
         "references": [
           "https://www.nist.gov/cyberframework",
@@ -607,7 +1274,7 @@
       "name": "How Data Moves: Packets and the Layered Stack",
       "description": "Why data is chopped into packets, how each layer of the stack wraps it in its own header, and how defenders use layer language to reason about traffic.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -656,7 +1323,7 @@
       "name": "IP Addressing, Subnetting and NAT",
       "description": "How an IPv4 address splits into network and host, what a prefix and subnet mask really do, and how NAT lets one public address serve a private network.",
       "difficulty": "Beginner",
-      "estimated_minutes": 16,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -707,7 +1374,7 @@
       "name": "DNS: Turning Names into Addresses",
       "description": "What DNS actually does, how an uncached lookup travels through the hierarchy, why caching changes everything, and how the same mechanism becomes an attack surface.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -758,7 +1425,7 @@
       "name": "TCP, UDP and the Three-Way Handshake",
       "description": "What TCP and UDP each promise, how the three-way handshake sets a connection up, and what ordering, retransmission and connection state mean for a defender.",
       "difficulty": "Beginner",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -808,7 +1475,7 @@
       "name": "Ports, Sockets and Common Services",
       "description": "What a port number is, how a socket pins one connection to one process, and why an unexpected listener on your machine is a security question rather than trivia.",
       "difficulty": "Beginner",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -859,7 +1526,7 @@
       "name": "HTTP/HTTPS and the Request–Response Cycle",
       "description": "How an HTTP request and response are built, what TLS changes about them, and why status codes, headers and cookies carry real security meaning.",
       "difficulty": "Beginner",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -910,7 +1577,7 @@
       "name": "LANs, Wi-Fi and Wireless Frame Security",
       "description": "How a LAN delivers a frame to one device, what Wi-Fi encryption protects inside a wireless frame, and what anyone in radio range can still observe.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -961,7 +1628,7 @@
       "name": "Routers, Firewalls and Where Traffic Gets Inspected",
       "description": "What a router decides, what a firewall enforces, and where along a packet's path a defender can actually inspect — plus the places traffic passes by unnoticed.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -1012,7 +1679,7 @@
       "name": "VPNs, Proxies and Tunnels",
       "description": "How encapsulation carries your traffic through someone else's network, and what each tunnel design does and does not protect.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -1063,7 +1730,7 @@
       "name": "Eavesdropping: Why Traffic Is Readable in the Clear",
       "description": "Why unencrypted traffic can be read by anyone on the path, what an eavesdropper actually learns, and how encryption in transit removes the whole class of attack.",
       "difficulty": "Beginner",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -1114,7 +1781,7 @@
       "name": "Man-in-the-Middle, ARP and DNS Spoofing",
       "description": "How an attacker inserts themselves between two parties who think they are talking directly: poisoned address resolution, forged name answers, and the certificate checks that stop it.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -1166,7 +1833,7 @@
       "name": "Denial of Service and Amplification",
       "description": "How services are overwhelmed without being broken: volumetric, protocol and application-layer denial of service, and the reflection trick that multiplies small requests into large floods.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -1217,7 +1884,7 @@
       "name": "Password Attacks over the Network: Sniffing, Spraying, Brute Force",
       "description": "Where passwords are actually lost: taken from the wire, guessed one account at a time, sprayed across hundreds, or reused from an old breach — and how defenders see each one.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -1269,7 +1936,7 @@
       "name": "Scanning and Enumeration: How a Network Gets Mapped",
       "description": "How an address space becomes a target list: probing hosts, reading port and service responses, enumerating what is offered, and the evidence each stage leaves behind.",
       "difficulty": "Beginner",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -1321,7 +1988,7 @@
       "name": "Malware Delivery over the Network: C2, Beacons and Backdoors",
       "description": "How malicious code gets onto a system and stays useful: delivery vectors, beaconing command channels, persistence, and the network evidence defenders look for.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -1373,7 +2040,7 @@
       "name": "Wireless Attacks: Evil Twin, Deauth and Rogue Access Points",
       "description": "Why radio is a different perimeter: forged management frames, twin access points that impersonate your network, and the wireless controls that defeat them.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -1425,7 +2092,7 @@
       "name": "Network Defence: Segmentation, Zero Trust, IDS/IPS",
       "description": "The three ideas that shrink a network attack: zones with rules instead of a flat trusted LAN, detection that watches the traffic between them, and access verified per session.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -1477,7 +2144,7 @@
       "name": "Secure Remote Access in Practice",
       "description": "What remote access exposes and how to build it properly: strong authentication, device checks, narrow privileges and session evidence — from VPN to per-application access.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -1529,7 +2196,7 @@
       "name": "What Cryptography Actually Promises (and What It Doesn't)",
       "description": "Cryptography is a tool with a threat model, not magic: confidentiality, integrity and authenticity are conditional guarantees, and the rest of the system decides whether they hold.",
       "difficulty": "Foundation",
-      "estimated_minutes": 11,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -1580,7 +2247,7 @@
       "name": "Symmetric Encryption and Key Distribution",
       "description": "How one shared key delivers confidentiality, why modes and nonces matter, and the distribution problem that public-key techniques were invented to solve.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -1632,7 +2299,7 @@
       "name": "Hashing, Salting and Password Storage",
       "description": "Why passwords are stored as slow, salted hashes, exactly how a salt defeats precomputed tables, and how memory-hard functions change the attacker's economics.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -1684,7 +2351,7 @@
       "name": "Public-Key Cryptography and Key Exchange",
       "description": "How a public and private key pair replaces a shared secret, how an ephemeral exchange produces a session key, and which two things it still does not authenticate.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -1736,7 +2403,7 @@
       "name": "Digital Signatures, Certificates and PKI",
       "description": "How a signature proves origin and integrity, how a certificate binds a name to a public key, and how a chain back to a trusted root decides what a browser accepts.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -1788,7 +2455,7 @@
       "name": "TLS: How a Secure Connection Is Negotiated",
       "description": "Follow a TLS 1.3 handshake message by message: where the session keys come from, how the server proves its identity, and which checks a client must never skip.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -1840,7 +2507,7 @@
       "name": "Random Numbers, Nonces and Weak Entropy",
       "description": "Cryptography fails quietly when randomness is predictable: where entropy comes from, the exact job a nonce does, and how a crippled generator destroys key strength.",
       "difficulty": "Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -1892,7 +2559,7 @@
       "name": "Common Crypto Failures and How They Become Real",
       "description": "The recurring classes of cryptographic failure — obsolete primitives, missing authentication, downgrades and implementation bugs — and how each one turns into an incident.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -1944,7 +2611,7 @@
       "name": "Key Management: Generate, Store, Rotate, Revoke",
       "description": "Where cryptography meets operations: generating keys from real randomness, storing them away from the data, rotating on a schedule, and revoking before you are forced to.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -1997,7 +2664,7 @@
       "name": "How an OS Is Organised: Kernel, Users, Files, Permissions",
       "description": "Inside every operating system: what the kernel does, why user and kernel mode exist, how a program asks for a file, and where identity and permissions enter the request.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -2048,7 +2715,7 @@
       "name": "Windows Security Model: Tokens, UAC and Active Directory Basics",
       "description": "How Windows decides what you may do: access tokens, what User Account Control changes about them, and why directory accounts multiply the blast radius of a single mistake.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -2100,7 +2767,7 @@
       "name": "Linux Permissions, Users and Groups",
       "description": "Read and reason about Linux permissions: owner, group and other bits, octal and symbolic modes, and why setuid, the sticky bit and shared accounts decide who can change what.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -2152,7 +2819,7 @@
       "name": "The Command Line for Security Work",
       "description": "Work in a shell on purpose: how commands, pipes and redirection compose, which commands answer security questions, and which ones can quietly destroy data.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -2204,7 +2871,7 @@
       "name": "Processes, Services and Persistence Mechanisms",
       "description": "What a running program actually is, how services start and survive a reboot, and the operating-system features that keep code alive — plus where each one leaves evidence.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -2256,7 +2923,7 @@
       "name": "Logs: Where the OS Tells You What Happened",
       "description": "What Windows and Linux record, what a useful event actually contains, why logs must leave the machine they describe, and how raw records become an alert someone can act on.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -2308,7 +2975,7 @@
       "name": "Patching, Updates and Vulnerability Management",
       "description": "Why patching is a programme rather than a click: knowing what you run, prioritising by exposure and evidence of use, deploying safely, and proving the fix actually landed.",
       "difficulty": "Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -2360,7 +3027,7 @@
       "name": "Endpoint Protection: AV, EDR and Application Control",
       "description": "What signature scanning actually checks, what endpoint detection adds over the top of it, and why controlling which software may run beats hoping detection notices.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -2412,7 +3079,7 @@
       "name": "Hardening a Fresh Install (CIS-style Baselines)",
       "description": "Turn a default install into a defensible system: what a security baseline contains, how to apply one safely, how to verify it, and how to keep it true as the system changes.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -2464,7 +3131,7 @@
       "name": "Accounts, Identifiers and Why Identity Is the New Perimeter",
       "description": "What an account really is, how identifiers differ from credentials and sessions, and why attackers now log in instead of breaking in.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -2516,7 +3183,7 @@
       "name": "Passwords: Creation, Storage and Rotation Reality",
       "description": "What identity guidance actually says about password length, composition rules and forced changes — and why the reset flow is the real attack surface.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -2568,7 +3235,7 @@
       "name": "Multi-Factor Authentication and Passkeys",
       "description": "How a second factor really changes the cost of account takeover, why SMS and passkeys are not equivalent, and the attacks that still beat weaker factors.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -2620,7 +3287,7 @@
       "name": "Session Management and Account Takeover",
       "description": "Session tokens, cookies and timeouts explained by mechanism: session fixation, session hijacking, and why a stolen session is not the same risk as a stolen password.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -2672,7 +3339,7 @@
       "name": "Authorisation vs Authentication: Least Privilege in Practice",
       "description": "Why 'who are you' and 'what may you do' have to be answered separately — deny by default, least privilege, and the failures that leave signed-in users over-privileged.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -2724,7 +3391,7 @@
       "name": "Directory Services, SSO and Federation",
       "description": "Where entitlements really come from: directories as the source of truth, what single sign-on concentrates, and how a signed identity assertion crosses an organisation boundary.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -2776,7 +3443,7 @@
       "name": "Privilege Escalation and Admin Account Hygiene",
       "description": "How a routine account gains rights it was never granted, why standing admin access is the real problem, and the hygiene that keeps elevation rare.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -2828,7 +3495,7 @@
       "name": "Service Accounts, API Keys and Secrets Management",
       "description": "Machine identities outnumber people in most systems: how a hard-coded API key becomes a permanent back door, and what replaces long-lived shared secrets.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -2880,7 +3547,7 @@
       "name": "Access Reviews, Joiner–Mover–Leaver and Deprovisioning",
       "description": "Access accumulates unless something removes it: how joiner–mover–leaver processes, recertification and timely deprovisioning keep identities honest.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -2932,7 +3599,7 @@
       "name": "Data Classification: What You Actually Need to Protect",
       "description": "How to sort information into protection tiers, write a handling rule for each one, and avoid the twin failures of classifying nothing and classifying everything.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -2984,7 +3651,7 @@
       "name": "Encryption at Rest, in Transit and in Backup",
       "description": "Three places data sits and three separate protections: what full-disk encryption, TLS and encrypted backups each stop, and which access states leave the data readable anyway.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -3036,7 +3703,7 @@
       "name": "Malware Families: Viruses, Worms, Trojans, Ransomware",
       "description": "Classify malicious code by how it spreads and what it does once it runs — virus, worm, trojan, ransomware — and why modern threats combine several families at once.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -3088,7 +3755,7 @@
       "name": "How Malware Gets In: Delivery and Initial Access",
       "description": "The two doors every intrusion comes through — a person asked to act, or a flaw left open — and why breaking delivery is the cheapest interruption a defender can buy.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -3140,7 +3807,7 @@
       "name": "Ransomware: Encryption, Double Extortion and Recovery",
       "description": "How ransomware actually denies you your data, why modern operators steal before they encrypt, and which decisions made long before the ransom note decide the outcome.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -3192,7 +3859,7 @@
       "name": "Backups: The 3-2-1 Rule and Tested Restores",
       "description": "Why three copies on two media with one offsite survives ransomware that a synchronised drive does not — and why an untested backup is only a hypothesis about recovery.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -3244,7 +3911,7 @@
       "name": "Privacy, Personal Data and Minimisation",
       "description": "What counts as personal data, why linkability rather than obvious identifiers decides sensitivity, and why collecting less is the control that removes a whole risk.",
       "difficulty": "Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -3296,7 +3963,7 @@
       "name": "Device Security: Locking, Wiping and Mobile/Remote Devices",
       "description": "What a lock screen, a locate command and a remote wipe each actually do — how to set them up, how to respond when a device goes missing, and which step cannot be undone.",
       "difficulty": "Beginner",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -3348,7 +4015,7 @@
       "name": "Secure Disposal and Sanitisation of Media",
       "description": "Why deleting files is not disposal: NIST's clear, purge and destroy categories, how flash media changes the method, and how to verify and record that media is clean.",
       "difficulty": "Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -3400,7 +4067,7 @@
       "name": "How the Web Goes Wrong: The Browser as an Attack Surface",
       "description": "Why the browser is the web's largest attack surface: how a response becomes executed code, what the same-origin policy decides, and where the trust boundaries really sit.",
       "difficulty": "Beginner",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -3452,7 +4119,7 @@
       "name": "Injection: SQL, Command and Template",
       "description": "What injection really is — data reinterpreted as instructions by a SQL, shell or template interpreter — and why parameterised queries remove the confusion instead of filtering around it.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -3504,7 +4171,7 @@
       "name": "Cross-Site Scripting and Output Encoding",
       "description": "Why untrusted data becomes active content in a browser, why encoding belongs at output and to one context at a time, and how sanitisation and safe sinks contain what encoding alone cannot.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -3556,7 +4223,7 @@
       "name": "Broken Access Control and IDOR",
       "description": "Why the identifier in a URL is caller-chosen data, how an insecure direct object reference exposes other people's records, and where the authorisation check has to sit.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -3608,7 +4275,7 @@
       "name": "Security Misconfiguration and Default Credentials",
       "description": "How systems ship convenient rather than safe: default accounts, debug modes, unnecessary services and verbose errors, and how baselines replace configuration-by-habit.",
       "difficulty": "Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -3660,7 +4327,7 @@
       "name": "Vulnerable and Outdated Components: Knowing What You Depend On",
       "description": "Why a modern application inherits risk it never wrote: what a CVE describes, and how an SBOM turns dependency risk into a list you can act on.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -3712,7 +4379,7 @@
       "name": "File Uploads, Server-Side Requests and Input Validation",
       "description": "Three ways untrusted input reaches further than intended: a uploaded file that becomes something else, a URL the server fetches on a caller's behalf, and validation that checks the wrong property.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -3764,7 +4431,7 @@
       "name": "Browser Defences: CSP, HSTS, SameSite and CSRF Tokens",
       "description": "What each browser-side control actually stops, why a policy limits damage rather than the bug, and how a CSRF token proves intent rather than guarding a secret.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -3816,7 +4483,7 @@
       "name": "OWASP Top 10:2025 — Reading the List Like a Practitioner",
       "description": "What the list groups, what it deliberately leaves out, and how to use it as a shared vocabulary rather than a checklist that ends a review.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -3868,7 +4535,7 @@
       "name": "Why People Are Targeted, Not Just Systems",
       "description": "Why a person is the cheapest attack surface: what an attacker actually needs from you, the levers they pull, and how the request is designed to bypass every technical control.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -3920,7 +4587,7 @@
       "name": "Phishing: Anatomy of a Message",
       "description": "Read a suspicious message from the outside in — channel, identity, request and context — with the indicators, the layers to check, and the design of a targeted message.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -3972,7 +4639,7 @@
       "name": "Vishing, Smishing and Quishing",
       "description": "Why the channel changed but the attack did not: voice, SMS and QR codes, why caller ID can be spoofed, and the one mobile habit that works everywhere.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -4024,7 +4691,7 @@
       "name": "Pretexting, Baiting and Tailgating",
       "description": "The three classic social techniques that need no link and no attachment: the invented scenario, the offered gift and the held door — and the control that answers each.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -4076,7 +4743,7 @@
       "name": "Business Email Compromise and Payment Fraud",
       "description": "How a hijacked email thread becomes a trusted payment instruction, why the message itself may be technically perfect, and the verification rule that breaks the chain.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -4128,7 +4795,7 @@
       "name": "Insider Threat: Motive, Opportunity and Detection",
       "description": "Insider risk as the authorities actually define it: who counts as an insider, why most insider incidents are not malicious, and how to build controls that detect harm without punishing accidents.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -4180,7 +4847,7 @@
       "name": "Building a Reporting Culture and Reporting Channels",
       "description": "Why reporting is the highest-value control you have, what makes a channel get used, and how to design one that people trust — including your own, as an individual.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -4232,7 +4899,7 @@
       "name": "Security Awareness That Actually Changes Behaviour",
       "description": "Why phishing simulations and annual training underperform, what to design instead, and how to measure whether a security programme changed what people actually do.",
       "difficulty": "Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -4284,7 +4951,7 @@
       "name": "Personal Social Media Footprint and OSINT About You",
       "description": "The public information an attacker reads before making contact, how OSINT assembles a targeting picture from open sources, and what you can actually change about your own.",
       "difficulty": "Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -4336,7 +5003,7 @@
       "name": "What Ethical Hacking Is (and the Rules That Govern It)",
       "description": "Why ethical hacking is a licence condition rather than a technique set: the same methods, and an authorisation that changes what they mean.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -4388,7 +5055,7 @@
       "name": "Authorisation, Scope and the Law",
       "description": "The layers a scope document must contain, the parties who must all agree, and why an unwritten permission is not permission at all.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -4440,7 +5107,7 @@
       "name": "Reconnaissance: Passive and Active",
       "description": "Turning a name into a map: what passive research gathers without touching anyone, what active work generates as a side effect, and why the boundary is legal rather than technical.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -4492,7 +5159,7 @@
       "name": "Vulnerability Assessment vs Penetration Testing",
       "description": "The difference between looking for known problems and trying to breach, what each can honestly establish, and why a test is a sample of your process rather than a replacement for it.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -4544,7 +5211,7 @@
       "name": "Scanners, Benchmarks and Interpreting a Report",
       "description": "Why automated output is a list of claims rather than a list of findings, how a benchmark differs from a risk, and the four questions that turn an item into work somebody can schedule.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -4596,7 +5263,7 @@
       "name": "Exploitation Concepts Without Exploiting Anyone",
       "description": "The line between demonstrating a weakness and abusing it: what a proof is allowed to establish, why impact grows one decision at a time, and why the boundary is the actual skill.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -4648,7 +5315,7 @@
       "name": "Bug Bounty and Responsible Disclosure",
       "description": "How a disclosure programme works: the floor that a policy sets, what a bounty adds, the report format as a two-sided contract, and why the last step is the only one that changes anything public.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -4700,7 +5367,7 @@
       "name": "Safe Practice: Lab Environments and Tooling Hygiene",
       "description": "Building somewhere it is safe to be wrong: isolation, identity, data and network boundaries, and the habits that keep a practice machine from becoming anyone's problem.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -4752,7 +5419,7 @@
       "name": "From Finding to Fixing: Writing a Usable Report",
       "description": "Why a report is a work order rather than a trophy: the five layers a finding needs, the decisions that stay with the organisation, and the question that makes the next one cheaper.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -4804,7 +5471,7 @@
       "name": "The Defender's Loop: Prepare, Detect, Contain, Eradicate, Recover",
       "description": "The shape of defensive work: what each stage of the incident loop actually involves, and why the order is a set of judgement calls rather than a checklist.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -4856,7 +5523,7 @@
       "name": "Logs and Telemetry: What to Collect and Why",
       "description": "Turning a question into a log source: what a defender needs to see, which log establishes what, and the collection mistakes that make good telemetry useless.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 17,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -4908,7 +5575,7 @@
       "name": "SIEM, Alerts and Tuning Out Noise",
       "description": "How a detection becomes a decision: what alerting is for, why an untrusted alert is worse than none, and how tuning turns a rule from a hypothesis into a piece of evidence.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 16,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -4960,7 +5627,7 @@
       "name": "The MITRE ATT&CK Framework for Defenders",
       "description": "ATT&CK as shared vocabulary: tactics, techniques, data sources and detections, and the honest limits of a knowledge base that describes what attackers do.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 16,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -5012,7 +5679,7 @@
       "name": "Incident Response: Roles, Severity and Communication",
       "description": "Who decides, who says what and to whom: the roles an incident needs, why severity is a business judgement, and how communication is a control rather than a courtesy.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 16,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -5064,7 +5731,7 @@
       "name": "Forensics Basics and Evidence Handling",
       "description": "Acquiring, preserving and working with evidence: why a verifiable copy matters, what order of volatility is for, and how a defensible record is built from the moment you touch a system.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 17,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -5116,7 +5783,7 @@
       "name": "Containment, Eradication and Lessons Learned",
       "description": "The judgement calls that decide an incident's outcome: how to contain without destroying evidence, how to know an intruder is actually gone, and how to turn the review into a change.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 16,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -5168,7 +5835,7 @@
       "name": "Business Continuity, Disaster Recovery and Resilience",
       "description": "The plans that exist for the day the systems do not: what continuity and recovery each promise, how the objectives are set, and why an untested plan is not a plan.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -5220,7 +5887,7 @@
       "name": "Threat Intelligence: IOCs, TTPs and KEV",
       "description": "What a piece of threat intelligence can and cannot tell you, why indicators expire and techniques do not, and how a known exploited vulnerability changes what you do on Monday morning.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -5272,7 +5939,7 @@
       "name": "The Threat Landscape Today: Ransomware, C2, Supply Chain",
       "description": "Ransomware, command and control, and the software supply chain read as three mechanisms rather than three headlines, with the sources that track them and the controls that answer each.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -5324,7 +5991,7 @@
       "name": "Standards and Frameworks: NIST CSF, CIS, ISO, SOC 2",
       "description": "A law, an attestation, a framework, a benchmark and a standard are different kinds of document answering different questions, and reading one as another is the most common framework mistake there is.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 15,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -5376,7 +6043,7 @@
       "name": "Compliance and Privacy Law at a Practical Level",
       "description": "What a legal duty actually does to an engineering team: what has to be designed in, what has to be recorded, and where a technical person's competence ends. Practical, not legal advice.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -5428,7 +6095,7 @@
       "name": "Risk: Likelihood, Impact and Talking to Management",
       "description": "Turning a technical finding into a decision: risk statements, the two multipliers, and the three sentences that get a resource decision made in the room.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -5480,7 +6147,7 @@
       "name": "Building a Home and Small-Business Security Program",
       "description": "A security programme a two-person organisation can actually run: what to do in the right order, which habits do the most work, and what not to buy first.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 14,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -5532,7 +6199,7 @@
       "name": "Careers and Specialisations (and What to Learn Next)",
       "description": "What security roles actually involve, why job titles are the unreliable part, and how to choose a direction without a salary chart or a promise.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -5584,7 +6251,7 @@
       "name": "Certifications and How to Choose Them Honestly",
       "description": "A credential is a claim about evidence, not about capability. How to tell what one asserts, what it does not, and whether the job you want even asks for it.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -5636,7 +6303,7 @@
       "name": "Building a Home Lab and Practising Safely",
       "description": "Isolated, authorised, disposable: how to build a practice environment that stays safe, and the rules that keep every exercise inside a boundary you are allowed to be in.",
       "difficulty": "Foundation",
-      "estimated_minutes": 13,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -5688,7 +6355,7 @@
       "name": "Where This Ends: Your Next Specialisation",
       "description": "An honest map of what this foundation covers, what it deliberately does not, and where the specialisation categories begin.",
       "difficulty": "Applied Foundation",
-      "estimated_minutes": 12,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -5740,7 +6407,7 @@
       "name": "Web Application Security Fundamentals",
       "description": "A practical introduction to web application security: assets, users, trust boundaries, attack surface, and the difference between a bug and a security vulnerability.",
       "difficulty": "Beginner",
-      "estimated_minutes": 20,
+      "estimated_minutes": 2,
       "sort_order": 0,
       "status": "published",
       "content": {
@@ -5797,7 +6464,7 @@
       "name": "HTTP Requests & Responses",
       "description": "Understand HTTP methods, URLs, headers, cookies, status codes, request bodies, and why HTTP is the foundation of practical web security testing.",
       "difficulty": "Beginner",
-      "estimated_minutes": 22,
+      "estimated_minutes": 2,
       "sort_order": 1,
       "status": "published",
       "content": {
@@ -5855,7 +6522,7 @@
       "name": "Authentication & Session Security",
       "description": "Learn how websites verify identity, maintain sessions, handle passwords and MFA, and where authentication logic can fail.",
       "difficulty": "Beginner",
-      "estimated_minutes": 24,
+      "estimated_minutes": 2,
       "sort_order": 2,
       "status": "published",
       "content": {
@@ -5913,7 +6580,7 @@
       "name": "Access Control & Authorization",
       "description": "Learn how web applications decide which users can access which data and perform which actions, including horizontal and vertical privilege boundaries.",
       "difficulty": "Beginner",
-      "estimated_minutes": 24,
+      "estimated_minutes": 2,
       "sort_order": 3,
       "status": "published",
       "content": {
@@ -5971,7 +6638,7 @@
       "name": "SQL Injection & Parameterized Queries",
       "description": "Understand how string concatenation turns user input into database commands, and why prepared statements keep code and data separate.",
       "difficulty": "Beginner",
-      "estimated_minutes": 24,
+      "estimated_minutes": 2,
       "sort_order": 4,
       "status": "published",
       "content": {
@@ -6022,7 +6689,7 @@
       "name": "Cross-Site Scripting (XSS) Contexts & CSP",
       "description": "Learn how reflected and stored XSS execute scripts in a victim’s browser, why output context matters, and how Content Security Policy reduces impact.",
       "difficulty": "Beginner",
-      "estimated_minutes": 25,
+      "estimated_minutes": 2,
       "sort_order": 5,
       "status": "published",
       "content": {
@@ -6073,7 +6740,7 @@
       "name": "DOM-Based Vulnerabilities & Sanitization",
       "description": "Trace client-side sources and sinks in browser JavaScript, understand why innerHTML is dangerous, and sanitize rich HTML safely.",
       "difficulty": "Beginner",
-      "estimated_minutes": 22,
+      "estimated_minutes": 2,
       "sort_order": 6,
       "status": "published",
       "content": {
@@ -6124,7 +6791,7 @@
       "name": "CSRF, SameSite Cookies & State-Changing Requests",
       "description": "See how Cross-Site Request Forgery abuses ambient browser cookies and how CSRF tokens, SameSite attributes, and method discipline stop it.",
       "difficulty": "Beginner",
-      "estimated_minutes": 22,
+      "estimated_minutes": 2,
       "sort_order": 7,
       "status": "published",
       "content": {
@@ -6175,7 +6842,7 @@
       "name": "SSRF & Outbound Request Controls",
       "description": "Learn how Server-Side Request Forgery tricks a server into fetching internal network resources or cloud metadata, and how to isolate outbound calls.",
       "difficulty": "Beginner",
-      "estimated_minutes": 23,
+      "estimated_minutes": 2,
       "sort_order": 8,
       "status": "published",
       "content": {
@@ -6226,7 +6893,7 @@
       "name": "File Upload Validation & Storage Isolation",
       "description": "Design safe file upload pipelines: why filename extensions and Content-Type headers cannot be trusted, and how to isolate stored files.",
       "difficulty": "Beginner",
-      "estimated_minutes": 21,
+      "estimated_minutes": 2,
       "sort_order": 9,
       "status": "published",
       "content": {
@@ -6277,7 +6944,7 @@
       "name": "Security Headers, CORS & TLS Deployment",
       "description": "Configure browser security headers, understand the Same-Origin Policy and CORS misconfigurations, and enforce HTTPS with HSTS.",
       "difficulty": "Beginner",
-      "estimated_minutes": 23,
+      "estimated_minutes": 2,
       "sort_order": 10,
       "status": "published",
       "content": {
@@ -6328,7 +6995,7 @@
       "name": "API Rate Limiting, Logging & Defensive Verification",
       "description": "Protect web APIs against automated abuse, design privacy-safe security audit logs, and verify security controls continuously in CI.",
       "difficulty": "Beginner",
-      "estimated_minutes": 20,
+      "estimated_minutes": 2,
       "sort_order": 11,
       "status": "published",
       "content": {

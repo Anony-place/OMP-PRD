@@ -253,6 +253,13 @@ jobs:
         # HTML: a broken "next", a missing "previous", or a hub that promises a
         # self-check on lessons that never had one.
         run: node tools/test_academy_course.mjs
+      - name: An Academy lesson teaches something
+        working-directory: OMP-PRD-main
+        # The lessons used to be revision notes: five bullet lists, no worked
+        # example, and "What you'll learn" printing the same four section names
+        # on all 118 pages. This checks the shape of a converting lesson and
+        # that the stated reading time matches the words on the page.
+        run: node tools/test_academy_lessons.mjs
       - name: Every comparison is reachable
         working-directory: OMP-PRD-main
         # A comparison needs three edits in two files: the COMPARISONS entry, a
