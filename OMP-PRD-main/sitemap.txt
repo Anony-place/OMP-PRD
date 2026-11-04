@@ -156,12 +156,10 @@ https://oopsmypassword.web.app/pentest/owasp-zap
 https://oopsmypassword.web.app/pentest/prowler
 https://oopsmypassword.web.app/pentest/schemathesis
 https://oopsmypassword.web.app/pentest/semgrep
-https://oopsmypassword.web.app/pentest/spiderfoot
 https://oopsmypassword.web.app/pentest/sqlmap
 https://oopsmypassword.web.app/pentest/subfinder
 https://oopsmypassword.web.app/pentest/tcpdump
 https://oopsmypassword.web.app/pentest/testssl-sh
-https://oopsmypassword.web.app/pentest/theharvester
 https://oopsmypassword.web.app/pentest/trivy
 https://oopsmypassword.web.app/pentest/trufflehog
 https://oopsmypassword.web.app/pentest/volatility-3

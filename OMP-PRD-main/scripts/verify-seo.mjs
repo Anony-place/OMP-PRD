@@ -22,6 +22,7 @@
    ============================================================ */
 
 import fs from 'node:fs';
+import { CROSS_CANONICAL } from './lib/cross-canonical.mjs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 
@@ -434,8 +435,11 @@ function checkPages(routes) {
       if (p.canonical) fail(`${r}: noindex page carries a canonical (${p.canonical})`);
     } else {
       const expected = SITE + publicUrl(file);
+      /* A declared duplicate is allowed to point somewhere else, but only at
+         the target the shared map names - never anywhere it likes. */
+      const crossTarget = CROSS_CANONICAL[publicUrl(file)];
       if (!p.canonical) fail(`${r}: no canonical and no noindex`);
-      else if (p.canonical !== expected && p.canonical !== `${expected}/`) {
+      else if (p.canonical !== expected && p.canonical !== `${expected}/` && p.canonical !== SITE + crossTarget) {
         fail(`${r}: canonical ${p.canonical} does not match its public URL ${expected}`);
       }
     }
@@ -629,8 +633,14 @@ const noindexRoutes = new Set(
 const routes = [...new Set(
   [...parsed.entries()]
     .filter(([f, p]) => !(p.robots && p.robots.includes('noindex')) && rel(f) !== 'guides.html' && !rel(f).startsWith('Anony.su'))
-    .map(([f]) => publicUrl(f))
-    .filter(Boolean)
+    .map(([f, p]) => ({ url: publicUrl(f), canonical: p.canonical }))
+    .filter((r) => Boolean(r.url))
+    // A page whose canonical points at a different URL is a deliberate
+    // duplicate (one tool documented in two hubs). Submitting it would put a
+    // sitemap entry in direct conflict with its own canonical tag, so it is
+    // exempt from "every indexable page must be in the sitemap".
+    .filter((r) => !r.canonical || r.canonical === SITE + r.url || r.canonical === SITE + r.url + '/')
+    .map((r) => r.url)
 )];
 
 checkDomain();

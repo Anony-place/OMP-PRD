@@ -401,8 +401,6 @@
   /* ---------- interactive CLI command builder ---------- */
   function osintCliSpec(t) {
     var slug = safeSlug(t.slug);
-    var access = safeAccessList(t.access_types);
-    var isCli = access.indexOf('cli') !== -1;
     var specs = {
       'sherlock': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Single username', cmd: 'sherlock {target}' }, { label: 'Print found only + timeout', cmd: 'sherlock --timeout 10 --print-found {target}' }, { label: 'CSV export', cmd: 'sherlock --csv -o {target}_results.txt {target}' }], flags: [{ flag: '--tor', label: 'Route via Tor (--tor)' }, { flag: '--nsfw', label: 'Include NSFW (--nsfw)' }] },
       'maigret': { inputLabel: 'Target username', placeholder: 'johndoe', presets: [{ label: 'Top 500 sites + HTML report', cmd: 'maigret {target} --top-sites 500 -H' }, { label: 'PDF dossier', cmd: 'maigret {target} -P' }], flags: [{ flag: '--no-color', label: 'Plain output (--no-color)' }] },
@@ -410,32 +408,17 @@
       'theharvester': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Passive recon (crtsh,ert)', cmd: 'theHarvester -d {target} -b crtsh,certspotter,duckduckgo -l 200' }, { label: 'Save JSON/HTML report', cmd: 'theHarvester -d {target} -b all -f {target}_harvest' }], flags: [{ flag: '-n', label: 'DNS lookup (-n)' }] },
       'subfinder': { inputLabel: 'Target domain', placeholder: 'example.com', presets: [{ label: 'Silent subdomain list', cmd: 'subfinder -d {target} -silent' }, { label: 'All passive sources to file', cmd: 'subfinder -d {target} -all -o {target}_subs.txt' }], flags: [{ flag: '-rL resolvers.txt', label: 'Custom resolvers' }] }
     };
-    if (specs[slug]) return specs[slug];
-    if (isCli) {
-      return {
-        inputLabel: 'Investigation Target',
-        placeholder: 'example.com',
-        presets: [
-          { label: 'Standard run', cmd: slug + ' {target}' },
-          { label: 'Help & options reference', cmd: slug + ' --help' },
-          { label: 'Save output to report', cmd: slug + ' {target} -o ' + slug + '-report.txt' }
-        ],
-        flags: [{ flag: '--verbose', label: 'Verbose output' }]
-      };
-    }
-    return {
-      isWorkflow: true,
-      inputLabel: 'Target Identifier for Notes',
-      placeholder: 'example.com',
-      presets: [
-        { label: 'OSINT investigation note', cmd: '# OSINT Note (' + (t.name || slug) + ')\nTarget: {target}\nTimestamp: ' + new Date().toISOString().slice(0, 10) }
-      ],
-      flags: []
-    };
+    /* Only a hand-written, checked spec earns a command builder. The old
+       fallback printed `<slug> --help` and `<slug> {target} -o report.txt` for
+       every command-line tool without a spec, including ones whose real
+       invocation is completely different — and for web-only tools it printed a
+       "workflow helper" with a paste-a-date note. No spec, no section. */
+    return specs[slug] || null;
   }
 
   function renderCliBuilder(t) {
     var spec = osintCliSpec(t);
+    if (!spec) return '';
     var presetsHtml = spec.presets.map(function (p, i) {
       return '<button type="button" class="cli-preset-btn' + (i === 0 ? ' is-active' : '') + '" data-cli-preset="' + i + '">' + esc(p.label) + '</button>';
     }).join('');
@@ -443,7 +426,7 @@
       return '<label class="cli-flag-pill"><input type="checkbox" data-cli-flag="' + attr(f.flag) + '"> <span>' + esc(f.label) + '</span></label>';
     }).join('');
     return '<div class="cli-builder-card" data-cli-builder>' +
-      '<div class="cli-builder-head"><div><span class="eyebrow">' + (spec.isWorkflow ? 'Investigation Workflow Helper' : 'Interactive CLI Command Builder') + '</span>' +
+      '<div class="cli-builder-head"><div><span class="eyebrow">Interactive CLI Command Builder</span>' +
       '<h3 class="h-4" style="margin:2px 0 0">Build & copy ' + esc(t.name) + ' commands safely</h3></div><span class="badge badge-demo">Client-side only</span></div>' +
       '<div class="cli-builder-controls">' +
         '<div class="cli-field"><label for="cli-target-input">' + esc(spec.inputLabel) + '</label>' +
@@ -459,6 +442,7 @@
     var box = (scope || root).querySelector('[data-cli-builder]');
     if (!box) return;
     var spec = osintCliSpec(t);
+    if (!spec) return;
     var input = box.querySelector('#cli-target-input');
     var codeEl = box.querySelector('[data-cli-code]');
     var copyBtn = box.querySelector('[data-cli-copy]');
@@ -631,6 +615,21 @@
     } else {
       html += '<div class="feed-list">' + visible.map(cardHtml).join('') + '</div>';
     }
+    /* Three investigation types hold a single tool (image, phone, all-in-one).
+       Filtering to one of them left a one-card page with no way forward except
+       the back button, so a thin result names the neighbouring categories and
+       how to see everything. */
+    if (activeCat && visible.length <= 2 && tools.length > visible.length) {
+      var neighbours = lastCategories.filter(function (c) {
+        return c.slug !== activeCat.slug && tools.some(function (t) { return t.category_slug === c.slug; });
+      });
+      html += '<div class="callout callout-info" style="margin-top:20px"><p><strong>' + visible.length +
+        (visible.length === 1 ? ' tool' : ' tools') + ' in ' + esc(activeCat.name) + '.</strong> ' +
+        (neighbours.length ? 'Other investigation types: ' + neighbours.map(function (c) {
+          return '<a href="#/c/' + encodeURIComponent(c.slug) + '">' + esc(c.name) + '</a>';
+        }).join(' · ') + '. ' : '') +
+        '<a href="' + HUB_PATH + '">See all ' + tools.length + ' OSINT tools</a>.</p></div>';
+    }
     html += '</div></div>';
 
     root.innerHTML = html;
@@ -728,7 +727,7 @@
     if (t.install_guide && String(t.install_guide).trim()) {
       sections.push({ id: 'sec-install', label: 'Install & first run', install: true, html: renderContent(t.install_guide) });
     }
-    sections.push({ id: 'sec-cli-builder', label: 'Interactive command builder', cliBuilder: true });
+    if (osintCliSpec(t)) sections.push({ id: 'sec-cli-builder', label: 'Interactive command builder', cliBuilder: true });
     if (t.use_case && String(t.use_case).trim()) {
       sections.push({ id: 'sec-example', label: 'Real-world example', html: renderContent(t.use_case) });
     }
@@ -877,8 +876,15 @@
   var CAT_FIELDS = 'id,name,slug,description,status,sort_order';
   var TOOL_FIELDS = 'id,slug,name,summary,overview,install_guide,key_features,faqs,use_case,category_id,pricing,access_types,official_url,github_url,docs_url,logo_url,featured,status,sort_order,published_at,created_at';
 
+  /* Fields a related-tool card actually renders: name, one-line summary,
+     badges and a logo. Pulling install_guide/faqs/use_case for three cards
+     would put the whole catalogue back on the wire. */
+  var SIBLING_FIELDS = 'id,slug,name,summary,pricing,access_types,logo_url,category_id,featured,status';
+
   async function fetchHub() {
     var client = await getClient();
+    var detailSlug = route().slug;
+    if (detailSlug) return fetchDetail(client, detailSlug);
     var results = await Promise.all([
       client.from('osint_categories').select(CAT_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).limit(PAGE_LIMIT),
       client.from('osint_tools').select(TOOL_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).order('created_at', { ascending: false }).limit(PAGE_LIMIT)
@@ -900,10 +906,45 @@
     return { categories: cats, tools: tools };
   }
 
+  /* A tool page needs one tool plus the three siblings it links to - not the
+     whole catalogue. This used to download every published row (~28 KB of JSON
+     with every install guide and FAQ) to render one of them, on a page that
+     already contains the same content as HTML. Two small queries replace it:
+     the row itself, and the same-category rows behind "Related tools". */
+  async function fetchDetail(client, slug) {
+    var results = await Promise.all([
+      client.from('osint_categories').select(CAT_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).limit(PAGE_LIMIT),
+      client.from('osint_tools').select(TOOL_FIELDS).eq('status', 'published').eq('slug', slug).limit(1)
+    ]);
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    var cats = (results[0].data || []).filter(function (c) { return c && c.slug && safeSlug(c.slug); });
+    var tool = (results[1].data || [])[0];
+    if (!tool) throw new Error('Tool not found');
+    var cat = null;
+    for (var i = 0; i < cats.length; i++) if (cats[i].id === tool.category_id) cat = cats[i];
+    tool.category_slug = cat ? cat.slug : '';
+    tool.category_name = cat ? cat.name : '';
+    var siblings = [];
+    if (tool.category_id) {
+      var sib = await client.from('osint_tools').select(SIBLING_FIELDS)
+        .eq('status', 'published').eq('category_id', tool.category_id).neq('slug', tool.slug)
+        .order('sort_order', { ascending: true }).limit(3);
+      if (!sib.error) {
+        siblings = (sib.data || []).filter(function (t) { return t && t.slug && safeSlug(t.slug); }).map(function (t) {
+          t.category_slug = tool.category_slug;
+          t.category_name = tool.category_name;
+          return t;
+        });
+      }
+    }
+    return { categories: cats, tools: [tool].concat(siblings) };
+  }
+
   function paintStats() {
     var el = document.querySelector('[data-osint-stats]');
     if (!el || !lastTools.length) return;
-    el.textContent = lastTools.length + ' tools · ' + lastCategories.length + ' categories · every listing carries install steps and official links.';
+    el.textContent = lastTools.length + ' tools · ' + lastCategories.length + ' categories · every tool page lists how to install and run it, plus the vendor\'s official site.';
   }
 
   /* ---------- controller ---------- */

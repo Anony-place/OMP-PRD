@@ -94,7 +94,7 @@ def osint_body():
     <span class="chip chip-accent">{icon("radar","icon-16")} Username · Email · Domain · Phone · Image · All-in-One</span>
     <h1 class="h-1 mt-16">OSINT Hub</h1>
     <p class="lead">Open-source intelligence tools, organized by investigation type. Pick a category, filter by free or paid, web or command-line — then open any tool for its overview, install steps and official links.</p>
-    <p class="hero-meta" data-osint-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
+    <p class="hero-meta" data-osint-stats>Browse the full catalog below — every tool page lists how to install and run it, plus the vendor's official site.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:8px">
@@ -188,7 +188,7 @@ def pentest_body():
     <span class="chip chip-accent">{icon("shield","icon-16")} Scan · Intercept · Audit · Verify — authorized testing only</span>
     <h1 class="h-1 mt-16">Pentest Hub</h1>
     <p class="lead">Explore penetration testing tools by assessment phase. Compare purpose, pricing and access type, then open a dedicated tool guide for official websites, installation instructions and documentation.</p>
-    <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool carries install steps and official links.</p>
+    <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool page lists how to install and run it, plus the vendor's official site.</p>
     <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Read the <a href="/articles" style="color:var(--purple)">authorised-testing guides</a> first.</p></div>
   </div>
 </section>
