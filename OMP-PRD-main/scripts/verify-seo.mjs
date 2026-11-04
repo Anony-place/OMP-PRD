@@ -412,20 +412,30 @@ function checkPages(routes) {
   for (const [file, p] of parsed) {
     const r = rel(file);
     const noindex = !!p.robots && p.robots.includes('noindex');
+    /* A page that canonicalises at another URL is a duplicate surface: search
+       engines index the target, not this copy, so its title and description
+       cannot compete with the page they were copied from. Registering them
+       here invented a duplicate that no reader can ever land on. */
+    const own = SITE + (publicUrl(file) || '');
+    const declaredAlias = !!p.canonical && p.canonical !== own && p.canonical !== `${own}/`;
 
     if (p.title === null || !p.title) fail(`${r}: missing <title>`);
     else {
       if (p.title.length > 65) warn(`${r}: title is ${p.title.length} chars (may be truncated in results)`);
-      if (!titles.has(p.title)) titles.set(p.title, []);
-      titles.get(p.title).push(r);
+      if (!declaredAlias) {
+        if (!titles.has(p.title)) titles.set(p.title, []);
+        titles.get(p.title).push(r);
+      }
     }
 
     if (!p.description) fail(`${r}: missing meta description`);
     else {
       if (p.description.length < 40) warn(`${r}: meta description is only ${p.description.length} chars`);
       if (p.description.length > 170) warn(`${r}: meta description is ${p.description.length} chars (may be truncated)`);
-      if (!descs.has(p.description)) descs.set(p.description, []);
-      descs.get(p.description).push(r);
+      if (!declaredAlias) {
+        if (!descs.has(p.description)) descs.set(p.description, []);
+        descs.get(p.description).push(r);
+      }
     }
 
     if (!p.main) fail(`${r}: no <main> landmark`);
