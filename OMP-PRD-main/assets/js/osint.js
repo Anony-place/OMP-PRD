@@ -861,8 +861,15 @@
   var CAT_FIELDS = 'id,name,slug,description,status,sort_order';
   var TOOL_FIELDS = 'id,slug,name,summary,overview,install_guide,key_features,faqs,use_case,category_id,pricing,access_types,official_url,github_url,docs_url,logo_url,featured,status,sort_order,published_at,created_at';
 
+  /* Fields a related-tool card actually renders: name, one-line summary,
+     badges and a logo. Pulling install_guide/faqs/use_case for three cards
+     would put the whole catalogue back on the wire. */
+  var SIBLING_FIELDS = 'id,slug,name,summary,pricing,access_types,logo_url,category_id,featured,status';
+
   async function fetchHub() {
     var client = await getClient();
+    var detailSlug = route().slug;
+    if (detailSlug) return fetchDetail(client, detailSlug);
     var results = await Promise.all([
       client.from('osint_categories').select(CAT_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).limit(PAGE_LIMIT),
       client.from('osint_tools').select(TOOL_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).order('created_at', { ascending: false }).limit(PAGE_LIMIT)
@@ -884,10 +891,45 @@
     return { categories: cats, tools: tools };
   }
 
+  /* A tool page needs one tool plus the three siblings it links to - not the
+     whole catalogue. This used to download every published row (~28 KB of JSON
+     with every install guide and FAQ) to render one of them, on a page that
+     already contains the same content as HTML. Two small queries replace it:
+     the row itself, and the same-category rows behind "Related tools". */
+  async function fetchDetail(client, slug) {
+    var results = await Promise.all([
+      client.from('osint_categories').select(CAT_FIELDS).eq('status', 'published').order('sort_order', { ascending: true }).limit(PAGE_LIMIT),
+      client.from('osint_tools').select(TOOL_FIELDS).eq('status', 'published').eq('slug', slug).limit(1)
+    ]);
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    var cats = (results[0].data || []).filter(function (c) { return c && c.slug && safeSlug(c.slug); });
+    var tool = (results[1].data || [])[0];
+    if (!tool) throw new Error('Tool not found');
+    var cat = null;
+    for (var i = 0; i < cats.length; i++) if (cats[i].id === tool.category_id) cat = cats[i];
+    tool.category_slug = cat ? cat.slug : '';
+    tool.category_name = cat ? cat.name : '';
+    var siblings = [];
+    if (tool.category_id) {
+      var sib = await client.from('osint_tools').select(SIBLING_FIELDS)
+        .eq('status', 'published').eq('category_id', tool.category_id).neq('slug', tool.slug)
+        .order('sort_order', { ascending: true }).limit(3);
+      if (!sib.error) {
+        siblings = (sib.data || []).filter(function (t) { return t && t.slug && safeSlug(t.slug); }).map(function (t) {
+          t.category_slug = tool.category_slug;
+          t.category_name = tool.category_name;
+          return t;
+        });
+      }
+    }
+    return { categories: cats, tools: [tool].concat(siblings) };
+  }
+
   function paintStats() {
     var el = document.querySelector('[data-osint-stats]');
     if (!el || !lastTools.length) return;
-    el.textContent = lastTools.length + ' tools · ' + lastCategories.length + ' categories · every listing carries install steps and official links.';
+    el.textContent = lastTools.length + ' tools · ' + lastCategories.length + ' categories · every tool page lists how to install and run it, plus the vendor\'s official site.';
   }
 
   /* ---------- controller ---------- */
