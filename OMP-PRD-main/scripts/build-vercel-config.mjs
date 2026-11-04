@@ -191,6 +191,21 @@ function readManagedRedirects() {
     }));
 }
 
+/* Sections this site retired. They are NOT in firebase.json on purpose: the old
+   host has one rule (path for path to Vercel) and the *destination* host decides
+   what replaces the retired URL. Keeping the rule here means it cannot drift
+   from the sitemap, and the offline parity model still sees web.app forwarding
+   the same path it always did.
+
+   Order matters: path-to-regexp takes the first matching rule, so these sit
+   ahead of every legacy rule and the catch-alls. */
+export const RETIRED_PATHS = [
+  { source: '/learning', destination: '/articles', statusCode: 301 },
+  { source: '/learning/:path*', destination: '/articles', statusCode: 301 },
+  { source: '/certificate', destination: '/', statusCode: 301 },
+  { source: '/certificate.html', destination: '/', statusCode: 301 },
+];
+
 export function buildVercelConfig(firebaseConfig) {
   const hosting = firebaseConfig.hosting;
   const report = { redirects: 0, redirectsFrom: 0, rewrites: 0, rewritesFrom: 0, headers: 0, headersFrom: 0 };
@@ -200,7 +215,7 @@ export function buildVercelConfig(firebaseConfig) {
      old article URL wins over any broad legacy rule it might now fall under. */
   const managed = readManagedRedirects();
   const managedSources = new Set(managed.map((rule) => rule.source));
-  const redirects = [...managed];
+  const redirects = [...RETIRED_PATHS, ...managed];
   for (const rule of managed) {
     const clash = (hosting.redirects || []).find((r) => r.source === rule.source && !isSelfRedirect(r));
     if (clash) {

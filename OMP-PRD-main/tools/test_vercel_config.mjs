@@ -77,8 +77,26 @@ const sitemapPaths = (() => {
   const moveRules = firebase.redirects.filter(isMove);
   const legacyRules = firebase.redirects.filter((rule) => !isMove(rule));
   assert(Array.isArray(vercel.redirects), 'vercel.json has a redirects array');
-  assert(vercel.redirects.length === legacyRules.length,
-    `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length}`);
+  /* Retired sections are Vercel-only rules (the old host just forwards the
+     path), so the count is legacy + retired and every legacy rule must still
+     be present by source. */
+  const retired = vercel.redirects.slice(0, vercel.redirects.length - legacyRules.length);
+  assert(vercel.redirects.length === legacyRules.length + 4,
+    `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length} + 4 retired`);
+  /* Regex-based legacy rules convert to a different `source` shape, and their
+     capture groups become named params (:1 -> :p1), so normalise before
+     comparing destinations. */
+  const norm = (dest) => String(dest).replace(/:p\d+(\([^)]*\))?/g, ':1');
+  const vercelDests = new Set(vercel.redirects.map((rule) => norm(rule.destination)));
+  const dropped = legacyRules.filter((rule) => !vercelDests.has(norm(rule.destination)));
+  assert(dropped.length === 0,
+    `every legacy redirect kept its destination (missing: ${dropped.map((r) => r.destination).join(', ') || 'none'})`);
+  const learning = retired.find((rule) => rule.source === '/learning');
+  assert(learning && learning.destination === '/articles' && learning.statusCode === 301,
+    '/learning is retired to /articles with a 301, not left to 404');
+  const certificate = retired.find((rule) => rule.source === '/certificate');
+  assert(certificate && certificate.destination === '/' && certificate.statusCode === 301,
+    '/certificate is retired to the home page with a 301');
   assert(moveRules.length === 2,
     `the move is 2 Firebase-only rules (found ${moveRules.length}): .html stripped, then catch-all`);
   assert(vercel.rewrites.length === firebase.rewrites.length,
