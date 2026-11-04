@@ -190,10 +190,16 @@ jobs:
           # Explicit paths, never `git add -A`: build.py and the academy build
           # touch ~45 template files for unrelated reasons, and a bot commit full
           # of those is a commit nobody can review or revert safely.
-          git add articles products osint pentest sitemap.xml sitemap.txt \
-                  sitemap-index.xml google-sitemap.xml rss.xml \
+          # Every generated surface, not just the two hubs. compare/,
+          # cheatsheets/ and glossary/ come from build-phase3-seo.mjs and were
+          # missing here: they were built, deployed to Firebase, and never
+          # committed - so the host that actually serves pages kept the old
+          # copy. llms*.txt and the search index are generated too.
+          git add articles products osint pentest compare cheatsheets glossary \
+                  sitemap.xml sitemap.txt sitemap-index.xml google-sitemap.xml rss.xml \
+                  llms.txt llms-full.txt \
                   content/redirects.json vercel.json 2>/dev/null || true
-          git add assets/data/academy-catalogue.json 2>/dev/null || true
+          git add assets/data/search-index.json 2>/dev/null || true
 
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
