@@ -199,6 +199,13 @@
     },
     {
       "type": "Comparison",
+      "title": "Hashcat vs John the Ripper: Which Is Faster?",
+      "desc": "Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to.",
+      "url": "/compare/hashcat-vs-john-the-ripper",
+      "kw": "hashcat vs john the ripper comparison compare"
+    },
+    {
+      "type": "Comparison",
       "title": "LinPEAS vs WinPEAS: Privilege Escalation Enumeration",
       "desc": "Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.",
       "url": "/compare/linpeas-vs-winpeas",
