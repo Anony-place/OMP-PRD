@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hashcat vs John the Ripper: Which Is Faster? | OopsMyPassword</title>
+  <meta name="description" content="Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="Hashcat vs John the Ripper: Which Is Faster? | OopsMyPassword">
+  <meta property="og:description" content="Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hashcat vs John the Ripper: Which Is Faster? | OopsMyPassword">
+  <meta name="twitter:description" content="Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Hashcat vs John the Ripper: Which Is Faster?","description":"Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to.","datePublished":"2026-11-05","dateModified":"2026-11-05","mainEntityOfPage":"https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Hashcat always faster than John the Ripper?","acceptedAnswer":{"@type":"Answer","text":"No. It is faster when a GPU is available and the hash is cheap to compute. For slow memory-hard algorithms the gap narrows sharply, and for a format only John supports the speed question does not arise."}},{"@type":"Question","name":"Can John the Ripper use a GPU?","acceptedAnswer":{"@type":"Answer","text":"Partially, through OpenCL in some jumbo builds, but GPU throughput is not the design centre. If GPU speed is the goal, that is Hashcat."}},{"@type":"Question","name":"Can Hashcat read converter output?","acceptedAnswer":{"@type":"Answer","text":"Often yes once the matching mode is known, but the layouts differ and converter output can carry fields a mode rejects. Load it in John first to confirm the format, then move it."}},{"@type":"Question","name":"Which is easier for a beginner?","acceptedAnswer":{"@type":"Answer","text":"John, because it detects the format for you. Hashcat needs a mode number first, and the canonical example list is the fastest way past that step."}},{"@type":"Question","name":"Are these tools legal to use?","acceptedAnswer":{"@type":"Answer","text":"Both are legal to install and to use on hashes you own or are authorised to test. Running them against credentials that are not yours is a criminal offence in most jurisdictions."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Hashcat vs John","item":"https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>Hashcat vs John</span></nav>
+    <h1 class="h-1 mt-16">Hashcat vs John the Ripper: Which Is Faster?</h1>
+    <p class="lead mt-8">Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to use both together.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> With a GPU and a hash mode you already know, Hashcat is much faster. With an unusual file format or a hash you cannot identify, start with John, whose converters and auto-detection get you to something crackable at all. Most audits use John to extract and identify, then hand the fast hashes to Hashcat.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Hashcat if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for raw speed: hundreds of hash modes on the GPU, a mature rule and mask engine, and a canonical example for every mode so a wrong format shows up immediately.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose John the Ripper if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for getting started at all: format auto-detection, the *2john converters for archives, PDFs, keys and vaults, and a CPU engine that still works on a laptop with no discrete GPU.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Hashcat</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">John the Ripper</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Engine</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">GPU-first: OpenCL, CUDA, HIP, Metal</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">CPU-first with OpenMP; GPU support is limited and build dependent</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Choosing the algorithm</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">You pass -m 1000; hashcat 7 can guess with --identify</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Auto-detects by default; --format= forces a format when the guess is wrong</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Hash modes / formats</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">500+ modes, each with a fixed input layout</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Hundreds of formats in the jumbo build</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Getting hashes out of files</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Nothing built in; a converter has to run first</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">The *2john suite: zip2john, rar2john, pdf2john, office2john, ssh2john, keepass2john</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Masks</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">-a 3 ?l?l?l?d?d</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--mask=?l?l?l?d?d</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Rules</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">-r rules/best64.rule, with a large rule ecosystem</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--rules, and jumbo builds also ship --rules=Jumbo</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Show recovered passwords</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">--show</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">john --show hashes.txt</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Strongest at</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Fast unsalted hashes at scale: NTLM, MD5, SHA-1, SHA-256, WPA</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Slow or unusual formats, encrypted containers, anything that needs a converter first</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">Speed is the wrong question to answer from a blog table</h2>
+      <p>Search this comparison and you will find confident numbers: 20x faster, 184,000 hashes per second, a neat table of modes. Each of those describes one GPU, one build and one hash mode on the day it was measured. On your hardware the same test can be wrong by an order of magnitude, and for deliberately slow algorithms the gap collapses, because bcrypt, scrypt and Argon2 are designed so that parallelism buys much less.</p>
+      <p>Measure it instead. Two commands, thirty seconds, on the machine you actually own. Compare the two rates for the mode you need, not for MD5, and let that decide the tool.</p>
+      <h2 class="mt-32">Where John is not optional</h2>
+      <p>Hashcat takes a hash in a documented layout. It does not know how to open an archive, a PDF, a KeePass database or an SSH private key and pull the verifier out of it. The converters do that, and they ship with John.</p>
+      <p>Even when the plan is to crack on the GPU, the normal path is: convert with the matching script, load the result in John to confirm the format, then move the fast hashes to Hashcat. Skipping the converter is how a session ends before it starts.</p>
+      <h2 class="mt-32">Where Hashcat is not optional</h2>
+      <p>Rule-based mutation is the home turf. A base wordlist plus a rule file tests far more realistic password shapes per second than brute force, the rule files are portable, and the community has spent years tuning them.</p>
+      <p>Every mode also has a canonical example, so the exact layout can be copied instead of guessed. That one command removes most of the wrong format pain.</p>
+      <h2 class="mt-32">A workflow that uses both</h2>
+      <p>In a real engagement the two tools are not competitors, they are stages.</p><ul><li>Identify: list the supported formats, or paste the string into a hash identifier, before choosing anything.</li><li>Extract: run the matching converter for a file, and check a raw hash against the canonical example for the mode.</li><li>Benchmark: run the GPU benchmark and the CPU benchmark for that exact mode, then pick the faster engine.</li><li>Attack with a plan: wordlist plus rules first, masks second, brute force last. Switching tools will not fix a bad candidate set.</li><li>Record: show the recovered passwords from both tools, then turn the recovery rate into a policy finding.</li></ul>
+      <h2 class="mt-32">Which to install first</h2>
+      <p>If a discrete GPU is available and the hashes are fast, install Hashcat first. If the input is a file, an unusual format or a hash of unknown type, install John first and add Hashcat once the hashes are extracted and identified. On a laptop with no GPU, John across all cores is the practical starting point, and Hashcat gains little.</p>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>Hashcat Example</h3>
+          <pre><code># Benchmark this GPU for the mode you actually need
+hashcat -b -m 1000
+
+# Wordlist plus rules, then show what was recovered
+hashcat -m 1000 -a 0 hashes.txt rockyou.txt -r rules/best64.rule
+hashcat -m 1000 hashes.txt --show</code></pre>
+        </div>
+        <div>
+          <h3>John the Ripper Example</h3>
+          <pre><code># Benchmark this CPU for the same mode
+john --test=10 --format=nt
+
+# Wordlist plus rules, then show what was recovered
+john --format=nt --wordlist=rockyou.txt --rules hashes.txt
+john --show hashes.txt</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Is Hashcat always faster than John the Ripper?</h3><p>No. It is faster when a GPU is available and the hash is cheap to compute. For slow memory-hard algorithms the gap narrows sharply, and for a format only John supports the speed question does not arise.</p>
+<h3>Can John the Ripper use a GPU?</h3><p>Partially, through OpenCL in some jumbo builds, but GPU throughput is not the design centre. If GPU speed is the goal, that is Hashcat.</p>
+<h3>Can Hashcat read converter output?</h3><p>Often yes once the matching mode is known, but the layouts differ and converter output can carry fields a mode rejects. Load it in John first to confirm the format, then move it.</p>
+<h3>Which is easier for a beginner?</h3><p>John, because it detects the format for you. Hashcat needs a mode number first, and the canonical example list is the fastest way past that step.</p>
+<h3>Are these tools legal to use?</h3><p>Both are legal to install and to use on hashes you own or are authorised to test. Running them against credentials that are not yours is a criminal offence in most jurisdictions.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Cheat Sheets &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/pentest/hashcat"><strong>Hashcat Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/pentest/john-the-ripper"><strong>John the Ripper Pentest Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/cheatsheets/john-the-ripper-cheatsheet"><strong>John the Ripper Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/articles/hashcat-token-length-exception"><strong>Hashcat Token Length Exception</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/hash-inspector"><strong>Hash &amp; JWT Inspector</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/bitwarden-vs-1password"><strong>Bitwarden vs 1Password</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/bitwarden-vs-proton-pass"><strong>Bitwarden vs Proton Pass</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a><a class="card card-pad card-link" href="/compare/keepassxc-vs-bitwarden"><strong>KeePassXC vs Bitwarden</strong><p class="small muted mt-8" style="margin-bottom:0">Password Managers comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>

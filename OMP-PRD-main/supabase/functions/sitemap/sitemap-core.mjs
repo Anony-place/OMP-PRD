@@ -76,6 +76,7 @@ export const STATIC_ROUTES = [
   '/compare/gobuster-vs-feroxbuster',
   '/compare/nikto-vs-nuclei',
   '/compare/nmap-vs-rustscan',
+  '/compare/hashcat-vs-john-the-ripper',
   '/compare/linpeas-vs-winpeas',
   '/cheatsheets',
   '/cheatsheets/nmap-command-cheatsheet',

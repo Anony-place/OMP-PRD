@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Nov 2026 14:44:07 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 05 Nov 2026 13:03:15 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -45,6 +45,13 @@
       <description>Cloudflare Verification Asking You to Press Win+R? It’s a Scam</description>
     </item>
     <item>
+      <title>Common Cryptography Failures and How to Spot Them in Code</title>
+      <link>https://oopsmypassword.web.app/articles/common-cryptography-failures</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/common-cryptography-failures</guid>
+      <category>Security Research</category>
+      <description>Common Cryptography Failures and How to Spot Them in Code</description>
+    </item>
+    <item>
       <title>Cyber Security Salary in the USA in 2026: Full Guide</title>
       <link>https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026</guid>
@@ -52,11 +59,32 @@
       <description>Cyber Security Salary in the USA in 2026: Full Guide</description>
     </item>
     <item>
+      <title>Data Classification: A Practical Guide from Public to Restricted</title>
+      <link>https://oopsmypassword.web.app/articles/data-classification-guide</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/data-classification-guide</guid>
+      <category>Security Research</category>
+      <description>Data Classification: A Practical Guide from Public to Restricted</description>
+    </item>
+    <item>
       <title>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</title>
       <link>https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</guid>
       <category>Security Research</category>
       <description>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</description>
+    </item>
+    <item>
+      <title>Pentest Report Template: Structure, Fields, Example</title>
+      <link>https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report</guid>
+      <category>Security Research</category>
+      <description>Pentest Report Template: Structure, Fields, Example</description>
+    </item>
+    <item>
+      <title>Hashcat Token Length Exception: Every Cause, One Fix</title>
+      <link>https://oopsmypassword.web.app/articles/hashcat-token-length-exception</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/hashcat-token-length-exception</guid>
+      <category>Security Research</category>
+      <description>Hashcat Token Length Exception: Every Cause, One Fix</description>
     </item>
     <item>
       <title>Holehe vs Epieos: Free vs Freemium Email Lookup</title>
@@ -94,6 +122,20 @@
       <description>CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys</description>
     </item>
     <item>
+      <title>Malware Families Explained: Types, Behaviour and Response</title>
+      <link>https://oopsmypassword.web.app/articles/malware-families-explained</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/malware-families-explained</guid>
+      <category>Security Research</category>
+      <description>Malware Families Explained: Types, Behaviour and Response</description>
+    </item>
+    <item>
+      <title>Nmap Requires Root Privileges: Why, and What Works Without</title>
+      <link>https://oopsmypassword.web.app/articles/nmap-requires-root-privileges</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nmap-requires-root-privileges</guid>
+      <category>Security Research</category>
+      <description>Nmap Requires Root Privileges: Why, and What Works Without</description>
+    </item>
+    <item>
       <title>PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site</title>
       <link>https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site</guid>
@@ -106,6 +148,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison</guid>
       <category>Security Research</category>
       <description>Sherlock vs Maigret: Which Username OSINT Tool Should You Use?</description>
+    </item>
+    <item>
+      <title>SIEM Alerts and Noise: How to Tune Rules Without Going Blind</title>
+      <link>https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction</guid>
+      <category>Security Research</category>
+      <description>SIEM Alerts and Noise: How to Tune Rules Without Going Blind</description>
     </item>
     <item>
       <title>Top 5 Books for Learning Ethical Hacking PDF</title>
@@ -344,6 +393,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</guid>
       <category>Network &amp; Pentest</category>
       <description>Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.</description>
+    </item>
+    <item>
+      <title>Hashcat vs John the Ripper: Which Is Faster?</title>
+      <link>https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper</guid>
+      <category>Network &amp; Pentest</category>
+      <description>Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to use both together.</description>
     </item>
     <item>
       <title>Nmap Command Cheat Sheet: Discovery, Stealth &amp; NSE</title>
