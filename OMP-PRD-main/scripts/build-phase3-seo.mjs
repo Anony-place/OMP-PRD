@@ -2663,6 +2663,23 @@ function enhanceExistingPagesWithMeshAndSchema() {
   fs.writeFileSync(path.join(ROOT, 'tools/site-footer.html'), UPDATED_FOOTER);
   fs.writeFileSync(path.join(ROOT, 'functions/site-footer.fragment'), UPDATED_FOOTER);
 
+  /* Comparison and cheat-sheet pages, so a tool page can point at the reading
+     that covers it. Built from the files on disk rather than a hardcoded list:
+     a new comparison becomes linkable the moment it is built. */
+  const relatedReading = [];
+  for (const [dir, type] of [['compare', 'comparison'], ['cheatsheets', 'cheatsheet']]) {
+    const full = path.join(ROOT, dir);
+    if (!fs.existsSync(full)) continue;
+    for (const f of fs.readdirSync(full).filter((n) => n.endsWith('.html')).sort()) {
+      const html = fs.readFileSync(path.join(full, f), 'utf8');
+      const t = (html.match(/<title>([^<]*)<\/title>/i) || [])[1] || '';
+      const decoded = t.replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ');
+      const title = decoded.replace(/\s*[|—]\s*OopsMyPassword\s*$/i, '').trim();
+      if (!title) continue;
+      relatedReading.push({ url: `/${dir}/${f.replace(/\.html$/, '')}`, title, type });
+    }
+  }
+
   // Walk all HTML files to update footer and add RSS alternate link
   function* walkHtml(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -2729,33 +2746,74 @@ function enhanceExistingPagesWithMeshAndSchema() {
       }
     }
 
-    // 4. For /osint/*.html and /pentest/*.html: inject FAQPage JSON-LD if not present
-    if ((rel.startsWith('osint/') || rel.startsWith('pentest/')) && !rel.startsWith('pentest/category/') && !html.includes('"@type":"FAQPage"')) {
-      const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-      const descMatch = html.match(/<meta name="description" content="([^"]+)"/i);
-      const toolName = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : 'this security tool';
-      const descText = descMatch ? descMatch[1].trim() : '';
-      if (toolName && descText) {
+    // 4. Tool pages: structured data must describe the page a visitor sees.
+    //
+    // This used to invent two questions ("What is <tool> used for in
+    // cybersecurity?", "Is <tool> legal to use?") and publish them as FAQPage
+    // schema. Nobody could see those answers on the page, and the tool's own
+    // four questions - the ones actually rendered from the database - were
+    // never marked up at all. Markup that does not match the visible page is
+    // the fastest way to lose rich results, so the schema is now built from
+    // the rendered Q&A pairs, and a page with fewer than two of them gets no
+    // FAQPage block rather than a fabricated one.
+    if ((rel.startsWith('osint/') || rel.startsWith('pentest/')) && !rel.startsWith('pentest/category/')) {
+      const faqSection = html.match(/<h2 id="sec-faq"[^>]*>([\s\S]*?)(?=<h2 |<\/article>)/i);
+      const pairs = faqSection
+        ? [...faqSection[1].matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)]
+            .map((m) => ({
+              q: m[1].replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').trim(),
+              a: m[2].replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim(),
+            }))
+            .filter((p) => p.q && p.a)
+        : [];
+
+      // Drop any FAQPage this script or an older build left behind.
+      html = html.replace(/<script type="application\/ld\+json"[^>]*>(?:(?!<\/script>)[\s\S])*?"@type"\s*:\s*"FAQPage"[\s\S]*?<\/script>/g, '');
+
+      if (pairs.length) {
         const faqObj = {
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: `What is ${toolName} used for in cybersecurity?`,
-              acceptedAnswer: { '@type': 'Answer', text: descText }
-            },
-            {
-              '@type': 'Question',
-              name: `Is ${toolName} legal to use?`,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: `${toolName} is a dual-use security utility. Always obtain explicit written authorization before scanning, enumerating, or testing any domain, network, or account you do not own.`
-              }
-            }
-          ]
+          mainEntity: pairs.map((p) => ({
+            '@type': 'Question',
+            name: p.q,
+            acceptedAnswer: { '@type': 'Answer', text: p.a },
+          })),
         };
-        html = html.replace('</head>', `<script type="application/ld+json">${escJson(faqObj)}</script></head>`);
+        html = html.replace('</head>', `<script type="application/ld+json" id="omp-tool-faq">${escJson(faqObj)}</script></head>`);
+      }
+    }
+
+    // 4b. Tool pages: point readers at the comparison and cheat sheet for the
+    // same tool. Every comparison already links out to the tool guides, but
+    // nothing linked back, so the two halves of the site were only connected in
+    // one direction - bad for readers who land on a tool page and bad for the
+    // crawler working out which pages belong together.
+    if ((rel.startsWith('osint/') || rel.startsWith('pentest/')) && !rel.startsWith('pentest/category/') && !html.includes('data-related-reading')) {
+      const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1];
+      const toolName = h1 ? h1.replace(/<[^>]*>/g, '').trim() : '';
+      const aliases = [];
+      if (toolName) {
+        aliases.push(toolName.toLowerCase());
+        const first = toolName.split(/\s+/)[0];
+        if (first.length >= 4 && first.toLowerCase() !== toolName.toLowerCase()) aliases.push(first.toLowerCase());
+      }
+      const hits = [];
+      const seen = new Set();
+      for (const entry of relatedReading) {
+        if (seen.has(entry.url)) continue;
+        const hay = entry.title.toLowerCase();
+        if (aliases.some((a) => new RegExp(`(^|[^a-z0-9])${a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z0-9]|$)`).test(hay))) {
+          seen.add(entry.url);
+          hits.push(entry);
+        }
+      }
+      if (hits.length) {
+        const links = hits.slice(0, 3).map((e) => `<a href="${esc(e.url)}" style="color:var(--purple)">${esc(e.title)}</a>`).join(' · ');
+        const block = `<div class="callout" data-related-reading style="margin-top:24px"><p><strong>Related reading:</strong> ${links}</p></div>`;
+        const anchor = '<div class="callout callout-info"><p><strong>Keep exploring:</strong>';
+        if (html.includes(anchor)) html = html.replace(anchor, `${block}${anchor}`);
+        else if (html.includes('</article>')) html = html.replace('</article>', `${block}</article>`);
       }
     }
 
