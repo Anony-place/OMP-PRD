@@ -26,6 +26,11 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const requireFromHere = createRequire(path.join(ROOT, 'package.json'));
 const { match } = requireFromHere('path-to-regexp');
 
+/* The generator is the single source of truth for which sections are retired;
+   importing it keeps this gate honest without re-typing the list. It only runs
+   main() when executed directly, so importing has no side effects. */
+const { RETIRED_PATHS } = await import('../scripts/build-vercel-config.mjs');
+
 const FIREBASE_JSON = path.join(ROOT, 'firebase.json');
 const VERCEL_JSON = path.join(ROOT, 'vercel.json');
 const PREVIEW_HOST = 'oopsmypassword.vercel.app';
@@ -80,9 +85,13 @@ const sitemapPaths = (() => {
   /* Retired sections are Vercel-only rules (the old host just forwards the
      path), so the count is legacy + retired and every legacy rule must still
      be present by source. */
-  const retired = vercel.redirects.slice(0, vercel.redirects.length - legacyRules.length);
-  assert(vercel.redirects.length === legacyRules.length + 4,
-    `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length} + 4 retired`);
+  /* The retired list is expected to grow (every section that is shut down adds
+     a rule), so its size comes from RETIRED_PATHS rather than a literal. The
+     literal used to be here, and adding a redirect failed this gate for a
+     reason that had nothing to do with the mirror. */
+  const retired = vercel.redirects.slice(0, RETIRED_PATHS.length);
+  assert(vercel.redirects.length === legacyRules.length + RETIRED_PATHS.length,
+    `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length} + ${RETIRED_PATHS.length} retired`);
   /* Regex-based legacy rules convert to a different `source` shape, and their
      capture groups become named params (:1 -> :p1), so normalise before
      comparing destinations. */
@@ -153,6 +162,7 @@ const sitemapPaths = (() => {
   });
   assert(danglingRedirects.length === 0,
     `every static redirect destination exists (${danglingRedirects.length} dangling)`);
+  for (const d of danglingRedirects) console.log(`      ${d.source} -> ${d.destination} (no such page)`);
 
   section('Rewrites: destinations resolve, sources are real pages');
   const compilers = vercel.rewrites.map((r) => {
