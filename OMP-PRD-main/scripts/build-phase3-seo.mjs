@@ -524,6 +524,7 @@ export const COMPARISONS = [
     toolA: 'Shodan',
     toolB: 'Censys Search',
     summary: 'Compare Shodan and Censys for external attack-surface discovery, TLS certificate hunting, ICS/IoT banner analysis, and origin IP discovery behind CDNs.',
+    quickAnswer: 'Use Shodan when you want to know what a device is and whether it looks vulnerable: banners, screenshots, product and CVE filters. Use Censys when you need certificate history, precise query logic, or an origin server hiding behind a CDN. The free tiers both work for a single lookup; anything continuous costs money on both.',
     verdictA: 'Best for IoT/OT/ICS device banners, screenshot browsing, CVE filters, and rapid CLI lookups.',
     verdictB: 'Best for deep X.509 TLS certificate history, JARM TLS fingerprinting, and uncovering origin servers behind Cloudflare/CDNs.',
     rows: [
@@ -532,19 +533,63 @@ export const COMPARISONS = [
       ['Query Syntax', 'Simple key:value filters (org:, asn:, port:, product:, vuln:)', 'Structured field queries (CenQL) with boolean & regex support'],
       ['Certificate Intelligence', 'Indexes active TLS banners observed on scanned ports', 'Combines active internet scans with complete CT log databases'],
       ['CLI & API Tooling', 'Official Python shodan CLI (shodan host, shodan stats)', 'Official censys CLI and Python/Go SDKs'],
-      ['Defensive Monitoring', 'Shodan Monitor for CIDR/domain alerting', 'Censys Attack Surface Management (ASM)']
+      ['Defensive Monitoring', 'Shodan Monitor for CIDR/domain alerting', 'Censys Attack Surface Management (ASM)'],
+      ['Historical Data', 'Some history on paid plans; free lookups show the current banner', 'Certificate and host history is the product, not an add-on'],
+      ['Screenshots', 'Yes, rendered visually for many protocols', 'No screenshot browsing in the search UI'],
+      ['ICS / OT Coverage', 'Broad protocol support and published ICS filters', 'Present, but exposed through protocol fields rather than device labels'],
+      ['Freshest for a host', 'Rescans available on paid tiers', 'Rescan API, generally the tighter sweep cycle'],
+      ['Query output for reports', 'Concise banner plus tags, easy to paste', 'Structured JSON that survives an audit trail'],
+      ['Free tier', 'Free account with limited queries and filters', 'Free search with a query quota; API access is a paid feature']
     ],
-    workflowA: '# Find exposed services and TLS certificates for a domain in Shodan CLI\nshodan search \'ssl.cert.subject.cn:"example.com" -http.title:"Cloudflare"\'',
-    workflowB: '# Query hosts presenting a certificate for example.com in Censys CLI\ncensys search \'services.tls.certificates.leaf_data.names: "example.com"\'',
+    sections: [
+      {
+        heading: 'What each one is actually indexing',
+        paragraphs: [
+          'Both engines scan the public internet and let you search the result, but they answer different questions. Shodan is built around the service: it connects to a port, speaks enough of the protocol to identify the product, and stores a banner plus metadata. That is why "what is this box" is a Shodan question, and why the screenshot gallery is useful.',
+          'Censys is built around structured facts, with certificates treated as first-class records. A host is a row of typed fields, and a certificate is a separate record linked to every host that presented it. That is why "which IPs have ever presented a certificate for this name" is a Censys question, and why the answer can be older than the current DNS.'
+        ]
+      },
+      {
+        heading: 'Finding the origin server behind a CDN',
+        paragraphs: [
+          'This is the single most useful thing either tool does in an assessment, and it works the same way on both: the CDN terminates TLS at the edge with its own certificate, but the origin often still answers directly on its own IP with the original certificate. Query for hosts presenting that certificate and look for an IP that belongs to the hosting provider rather than the CDN range.',
+          'Censys is stronger here because its certificate records go back through transparency logs, so a certificate that is no longer served in the current scan still has a host list attached. Shodan wins when the origin also leaks through a favicon hash or a distinctive HTML title.'
+        ],
+        bullets: [
+          'Start from the certificate, not from the DNS record: the DNS answer is the CDN by definition.',
+          'Cross-check the candidate IP against the published CDN ranges before reporting it as an exposure.',
+          'A direct-connect origin that still completes a TLS handshake is usually the finding, not the certificate itself.'
+        ]
+      },
+      {
+        heading: 'Cost, and what the free tiers really allow',
+        paragraphs: [
+          'Both products are freemium and both meters are tight enough that you should decide the workflow before paying. A single host lookup or one targeted search is fine on either free account. Continuous monitoring of a CIDR range, exports, and API calls are paid on both.',
+          'If the budget is zero, the honest pattern is: use the free tier for the one or two questions that matter, and use the open alternatives (certificate transparency search, passive DNS, and your own nmap against hosts you are authorised to touch) for everything repetitive.'
+        ]
+      },
+      {
+        heading: 'Which one to learn first',
+        paragraphs: [
+          'Learn Shodan first if your work is defensive or IoT-flavoured: the filters map onto real device exposure, and the results read like a story. Learn Censys first if your work is attack-surface mapping or certificate-driven recon: the query language is stricter, and that strictness is what makes the output usable in a report.'
+        ]
+      }
+    ],
+    workflowA: '# Identify the product and check its tags for known CVEs\nshodan host 203.0.113.10\n\n# Everything in an organisation that looks like a camera\nshodan search \'org:"Example Ltd" product:"Hikvision IP Camera"\'\n\n# Origin hunt: hosts presenting the certificate for the domain\nshodan search \'ssl.cert.subject.cn:"example.com" -http.title:"Cloudflare"\'',
+    workflowB: '# Hosts presenting a certificate that names the domain\ncensys search \'services.tls.certificates.leaf_data.names: "example.com"\'\n\n# Same idea against certificate history, which outlives the current scan\ncensys search \'certificates.parsed.names: "example.com" and not services.service_name: CLOUDFLARE\'',
     faqs: [
       { q: 'How do Shodan and Censys reveal the real origin IP behind a CDN or WAF?', a: 'If an origin server still accepts direct HTTPS connections on IPv4 and presents the organization TLS certificate, both Shodan and Censys index that certificate on the raw IP address, allowing defenders to spot firewall bypasses.' },
-      { q: 'Does querying Shodan or Censys send any packets to the target network?', a: 'No. Searching Shodan or Censys queries their pre-indexed databases and is 100% passive reconnaissance.' }
+      { q: 'Does querying Shodan or Censys send any packets to the target network?', a: 'No. Searching Shodan or Censys queries their pre-indexed databases and is passive reconnaissance. The scan happened earlier, from their infrastructure, not yours.' },
+      { q: 'Is Shodan or Censys better for finding exposed industrial systems?', a: 'Shodan, for the first pass. It labels devices by product and protocol, so a filter for a known PLC or camera model returns something readable. Censys can reach the same hosts through protocol fields, but you need to know the field names before you start.' },
+      { q: 'Do both offer an API on the free plan?', a: 'No. Shodan gives a limited free API key with a small query allowance, and Censys keeps API access behind a paid plan. Both let you search in the browser for free with a quota.' },
+      { q: 'Can I use these results as evidence in a report?', a: 'Yes, with the timestamp and the query attached. A banner seen today is not proof of what was exposed last month, and both indexes lag the live host, so repeat the lookup at report time and screenshot the result.' },
+      { q: 'What is the difference between Shodan Monitor and Censys ASM?', a: 'Both watch a range you own and alert on change. Shodan Monitor is priced per monitored IP and is quick to set up for a small estate; Censys ASM is aimed at larger organisations and ties alerts to a certificate and service inventory rather than to individual banners.' }
     ],
     relatedLinks: [
       { label: 'Shodan OSINT Guide', url: '/osint/shodan' },
       { label: 'Censys OSINT Guide', url: '/osint/censys' },
-      { label: 'SpiderFoot OSINT Guide', url: '/osint/spiderfoot' },
-      { label: 'Shodan Search Filters Cheat Sheet', url: '/cheatsheets/shodan-search-filters-cheatsheet' }
+      { label: 'Shodan Search Filters Cheat Sheet', url: '/cheatsheets/shodan-search-filters-cheatsheet' },
+      { label: 'SpiderFoot OSINT Guide', url: '/osint/spiderfoot' }
     ]
   },
   {

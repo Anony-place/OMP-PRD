@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Shodan vs Censys: Internet Exposure Search Comparison","description":"Compare Shodan and Censys for external attack-surface discovery, TLS certificate hunting, ICS/IoT banner analysis, and origin IP discovery behind CDNs.","datePublished":"2026-09-15","dateModified":"2026-10-29","mainEntityOfPage":"https://oopsmypassword.web.app/compare/shodan-vs-censys","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do Shodan and Censys reveal the real origin IP behind a CDN or WAF?","acceptedAnswer":{"@type":"Answer","text":"If an origin server still accepts direct HTTPS connections on IPv4 and presents the organization TLS certificate, both Shodan and Censys index that certificate on the raw IP address, allowing defenders to spot firewall bypasses."}},{"@type":"Question","name":"Does querying Shodan or Censys send any packets to the target network?","acceptedAnswer":{"@type":"Answer","text":"No. Searching Shodan or Censys queries their pre-indexed databases and is 100% passive reconnaissance."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do Shodan and Censys reveal the real origin IP behind a CDN or WAF?","acceptedAnswer":{"@type":"Answer","text":"If an origin server still accepts direct HTTPS connections on IPv4 and presents the organization TLS certificate, both Shodan and Censys index that certificate on the raw IP address, allowing defenders to spot firewall bypasses."}},{"@type":"Question","name":"Does querying Shodan or Censys send any packets to the target network?","acceptedAnswer":{"@type":"Answer","text":"No. Searching Shodan or Censys queries their pre-indexed databases and is passive reconnaissance. The scan happened earlier, from their infrastructure, not yours."}},{"@type":"Question","name":"Is Shodan or Censys better for finding exposed industrial systems?","acceptedAnswer":{"@type":"Answer","text":"Shodan, for the first pass. It labels devices by product and protocol, so a filter for a known PLC or camera model returns something readable. Censys can reach the same hosts through protocol fields, but you need to know the field names before you start."}},{"@type":"Question","name":"Do both offer an API on the free plan?","acceptedAnswer":{"@type":"Answer","text":"No. Shodan gives a limited free API key with a small query allowance, and Censys keeps API access behind a paid plan. Both let you search in the browser for free with a quota."}},{"@type":"Question","name":"Can I use these results as evidence in a report?","acceptedAnswer":{"@type":"Answer","text":"Yes, with the timestamp and the query attached. A banner seen today is not proof of what was exposed last month, and both indexes lag the live host, so repeat the lookup at report time and screenshot the result."}},{"@type":"Question","name":"What is the difference between Shodan Monitor and Censys ASM?","acceptedAnswer":{"@type":"Answer","text":"Both watch a range you own and alert on change. Shodan Monitor is priced per monitored IP and is quick to set up for a small estate; Censys ASM is aimed at larger organisations and ties alerts to a certificate and service inventory rather than to individual banners."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Shodan vs Censys","item":"https://oopsmypassword.web.app/compare/shodan-vs-censys"}]}</script>
 </head>
 <body>
@@ -50,6 +50,7 @@
 <section class="section-tight">
   <div class="container container-narrow">
     <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> Use Shodan when you want to know what a device is and whether it looks vulnerable: banners, screenshots, product and CVE filters. Use Censys when you need certificate history, precise query logic, or an origin server hiding behind a CDN. The free tiers both work for a single lookup; anything continuous costs money on both.</p></div>
       <h2>Executive Verdict: When to Choose Each</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <div class="card card-pad">
@@ -102,32 +103,86 @@
         <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Defensive Monitoring</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Shodan Monitor for CIDR/domain alerting</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Censys Attack Surface Management (ASM)</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Historical Data</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Some history on paid plans; free lookups show the current banner</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Certificate and host history is the product, not an add-on</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Screenshots</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Yes, rendered visually for many protocols</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">No screenshot browsing in the search UI</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">ICS / OT Coverage</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Broad protocol support and published ICS filters</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Present, but exposed through protocol fields rather than device labels</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Freshest for a host</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Rescans available on paid tiers</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Rescan API, generally the tighter sweep cycle</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Query output for reports</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Concise banner plus tags, easy to paste</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Structured JSON that survives an audit trail</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Free tier</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Free account with limited queries and filters</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Free search with a query quota; API access is a paid feature</td>
       </tr></tbody>
         </table>
       </div>
 
+      <h2 class="mt-32">What each one is actually indexing</h2>
+      <p>Both engines scan the public internet and let you search the result, but they answer different questions. Shodan is built around the service: it connects to a port, speaks enough of the protocol to identify the product, and stores a banner plus metadata. That is why &quot;what is this box&quot; is a Shodan question, and why the screenshot gallery is useful.</p>
+      <p>Censys is built around structured facts, with certificates treated as first-class records. A host is a row of typed fields, and a certificate is a separate record linked to every host that presented it. That is why &quot;which IPs have ever presented a certificate for this name&quot; is a Censys question, and why the answer can be older than the current DNS.</p>
+      <h2 class="mt-32">Finding the origin server behind a CDN</h2>
+      <p>This is the single most useful thing either tool does in an assessment, and it works the same way on both: the CDN terminates TLS at the edge with its own certificate, but the origin often still answers directly on its own IP with the original certificate. Query for hosts presenting that certificate and look for an IP that belongs to the hosting provider rather than the CDN range.</p>
+      <p>Censys is stronger here because its certificate records go back through transparency logs, so a certificate that is no longer served in the current scan still has a host list attached. Shodan wins when the origin also leaks through a favicon hash or a distinctive HTML title.</p><ul><li>Start from the certificate, not from the DNS record: the DNS answer is the CDN by definition.</li><li>Cross-check the candidate IP against the published CDN ranges before reporting it as an exposure.</li><li>A direct-connect origin that still completes a TLS handshake is usually the finding, not the certificate itself.</li></ul>
+      <h2 class="mt-32">Cost, and what the free tiers really allow</h2>
+      <p>Both products are freemium and both meters are tight enough that you should decide the workflow before paying. A single host lookup or one targeted search is fine on either free account. Continuous monitoring of a CIDR range, exports, and API calls are paid on both.</p>
+      <p>If the budget is zero, the honest pattern is: use the free tier for the one or two questions that matter, and use the open alternatives (certificate transparency search, passive DNS, and your own nmap against hosts you are authorised to touch) for everything repetitive.</p>
+      <h2 class="mt-32">Which one to learn first</h2>
+      <p>Learn Shodan first if your work is defensive or IoT-flavoured: the filters map onto real device exposure, and the results read like a story. Learn Censys first if your work is attack-surface mapping or certificate-driven recon: the query language is stricter, and that strictness is what makes the output usable in a report.</p>
       <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <div>
           <h3>Shodan Example</h3>
-          <pre><code># Find exposed services and TLS certificates for a domain in Shodan CLI
+          <pre><code># Identify the product and check its tags for known CVEs
+shodan host 203.0.113.10
+
+# Everything in an organisation that looks like a camera
+shodan search &#39;org:&quot;Example Ltd&quot; product:&quot;Hikvision IP Camera&quot;&#39;
+
+# Origin hunt: hosts presenting the certificate for the domain
 shodan search &#39;ssl.cert.subject.cn:&quot;example.com&quot; -http.title:&quot;Cloudflare&quot;&#39;</code></pre>
         </div>
         <div>
           <h3>Censys Search Example</h3>
-          <pre><code># Query hosts presenting a certificate for example.com in Censys CLI
-censys search &#39;services.tls.certificates.leaf_data.names: &quot;example.com&quot;&#39;</code></pre>
+          <pre><code># Hosts presenting a certificate that names the domain
+censys search &#39;services.tls.certificates.leaf_data.names: &quot;example.com&quot;&#39;
+
+# Same idea against certificate history, which outlives the current scan
+censys search &#39;certificates.parsed.names: &quot;example.com&quot; and not services.service_name: CLOUDFLARE&#39;</code></pre>
         </div>
       </div>
 
       <h2 class="mt-32">Frequently Asked Questions</h2>
       <h3>How do Shodan and Censys reveal the real origin IP behind a CDN or WAF?</h3><p>If an origin server still accepts direct HTTPS connections on IPv4 and presents the organization TLS certificate, both Shodan and Censys index that certificate on the raw IP address, allowing defenders to spot firewall bypasses.</p>
-<h3>Does querying Shodan or Censys send any packets to the target network?</h3><p>No. Searching Shodan or Censys queries their pre-indexed databases and is 100% passive reconnaissance.</p>
+<h3>Does querying Shodan or Censys send any packets to the target network?</h3><p>No. Searching Shodan or Censys queries their pre-indexed databases and is passive reconnaissance. The scan happened earlier, from their infrastructure, not yours.</p>
+<h3>Is Shodan or Censys better for finding exposed industrial systems?</h3><p>Shodan, for the first pass. It labels devices by product and protocol, so a filter for a known PLC or camera model returns something readable. Censys can reach the same hosts through protocol fields, but you need to know the field names before you start.</p>
+<h3>Do both offer an API on the free plan?</h3><p>No. Shodan gives a limited free API key with a small query allowance, and Censys keeps API access behind a paid plan. Both let you search in the browser for free with a quota.</p>
+<h3>Can I use these results as evidence in a report?</h3><p>Yes, with the timestamp and the query attached. A banner seen today is not proof of what was exposed last month, and both indexes lag the live host, so repeat the lookup at report time and screenshot the result.</p>
+<h3>What is the difference between Shodan Monitor and Censys ASM?</h3><p>Both watch a range you own and alert on change. Shodan Monitor is priced per monitored IP and is quick to set up for a small estate; Censys ASM is aimed at larger organisations and ties alerts to a certificate and service inventory rather than to individual banners.</p>
 
       <hr class="hr-fade" style="margin-top:40px">
       <h2>Related Tools, Cheat Sheets &amp; Comparisons</h2>
       <div class="grid grid-3 mt-16" style="gap:12px">
-        <a class="card card-pad card-link" href="/osint/shodan"><strong>Shodan OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/osint/censys"><strong>Censys OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/osint/spiderfoot"><strong>SpiderFoot OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/cheatsheets/shodan-search-filters-cheatsheet"><strong>Shodan Search Filters Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+        <a class="card card-pad card-link" href="/osint/shodan"><strong>Shodan OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/osint/censys"><strong>Censys OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/cheatsheets/shodan-search-filters-cheatsheet"><strong>Shodan Search Filters Cheat Sheet</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/osint/spiderfoot"><strong>SpiderFoot OSINT Guide</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
       </div>
       <div class="grid grid-3 mt-16" style="gap:12px">
         <a class="card card-pad card-link" href="/compare/wireshark-vs-tcpdump"><strong>Wireshark vs tcpdump</strong><p class="small muted mt-8" style="margin-bottom:0">Network &amp; Pentest comparison →</p></a><a class="card card-pad card-link" href="/compare/trufflehog-vs-gitleaks"><strong>TruffleHog vs Gitleaks</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a><a class="card card-pad card-link" href="/compare/gobuster-vs-feroxbuster"><strong>Gobuster vs Feroxbuster</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a>
