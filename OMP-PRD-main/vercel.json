@@ -4,41 +4,6 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/learning/cyber-security/cyber-security-track/malware-families",
-      "destination": "/articles/malware-families-explained",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/from-finding-to-fixing-writing-a-usable-report",
-      "destination": "/articles/from-finding-to-fixing-writing-a-usable-pentest-report",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/siem-alerts-and-noise",
-      "destination": "/articles/siem-alerts-and-noise-reduction",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/data-classification",
-      "destination": "/articles/data-classification-guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/common-crypto-failures",
-      "destination": "/articles/common-cryptography-failures",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene",
-      "destination": "/glossary/privilege-escalation",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding",
-      "destination": "/glossary/xss-cross-site-scripting",
-      "statusCode": 301
-    },
-    {
       "source": "/learning",
       "destination": "/articles",
       "statusCode": 301

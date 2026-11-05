@@ -200,20 +200,6 @@ function readManagedRedirects() {
    Order matters: path-to-regexp takes the first matching rule, so these sit
    ahead of every legacy rule and the catch-alls. */
 export const RETIRED_PATHS = [
-  /* The academy's lesson URLs, pointed at the page that now answers the same
-     question rather than at the Articles hub. Search Console showed these
-     retired paths still holding 46% of the site's impressions - one of them at
-     position 1 - and a redirect to a generic index tells Google the specific
-     answer is gone, so that ranking was being spent for nothing. Each rule
-     names the replacement that covers the topic; the two catch-alls below stay
-     for every lesson with no equivalent. */
-  { source: '/learning/cyber-security/cyber-security-track/malware-families', destination: '/articles/malware-families-explained', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/from-finding-to-fixing-writing-a-usable-report', destination: '/articles/from-finding-to-fixing-writing-a-usable-pentest-report', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/siem-alerts-and-noise', destination: '/articles/siem-alerts-and-noise-reduction', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/data-classification', destination: '/articles/data-classification-guide', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/common-crypto-failures', destination: '/articles/common-cryptography-failures', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene', destination: '/glossary/privilege-escalation', statusCode: 301 },
-  { source: '/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding', destination: '/glossary/xss-cross-site-scripting', statusCode: 301 },
   { source: '/learning', destination: '/articles', statusCode: 301 },
   { source: '/learning/:path*', destination: '/articles', statusCode: 301 },
   { source: '/certificate', destination: '/', statusCode: 301 },
