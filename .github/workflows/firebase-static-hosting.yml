@@ -21,6 +21,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   SUPABASE_URL: https://aeehfulikupskyrvcpzb.supabase.co
   SUPABASE_PUBLISHABLE_KEY: sb_publishable_s3n2U32MNB4PvHx0GolyqA_wlkzD6eR
@@ -339,6 +342,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history: the last step rebases the rebuilt pages over anything
+          # pushed while the build ran, and a shallow clone cannot do that.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -565,3 +572,56 @@ jobs:
             200|202) echo "IndexNow submission accepted." ;;
             *) echo "::warning::IndexNow returned HTTP $status; Bing will still find URLs via the sitemap." ;;
           esac
+
+      # ------------------------------------------------------------------
+      # The serving host is Vercel, and Vercel builds from the committed tree -
+      # it never runs build-static-seo.mjs. Firebase 301s every path to it.
+      # So a page that only exists after a build (a new tool row, a re-rendered
+      # FAQ section, a changed summary) goes live on Firebase and stays stale on
+      # the host readers actually reach. That is not theoretical: six OSINT
+      # pages sat in the database and in the sitemap with no way to open them
+      # until #89 committed them by hand.
+      #
+      # This step closes the loop: whatever the build just rendered from the
+      # database is committed back, so git, Firebase and Vercel converge.
+      # It runs last, so every gate above has already approved the artifact,
+      # and it stages only generated content - build.py also rewrites ~40
+      # template files for unrelated reasons and those must not be swept in.
+      # ------------------------------------------------------------------
+      - name: Commit the rebuilt pages the serving host reads
+        working-directory: OMP-PRD-main
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          git config user.name "omp-bot"
+          git config user.email "bot@oopsmypassword.invalid"
+
+          git add articles products osint pentest compare cheatsheets glossary \
+                  sitemap.xml sitemap.txt sitemap-index.xml google-sitemap.xml \
+                  llms.txt llms-full.txt 2>/dev/null || true
+          git add assets/data/search-index.json 2>/dev/null || true
+          # rss.xml carries a build timestamp, so it would differ on every run
+          # and turn "no drift" into a commit per deploy.
+          git restore --staged rss.xml 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No drift: the committed pages already match the database."
+            exit 0
+          fi
+
+          echo "Drift found. Files that differ:"
+          git diff --cached --name-only | head -40
+          echo "total: $(git diff --cached --name-only | wc -l) file(s)"
+
+          git commit -q -m "content: sync the served pages with the database" \
+            -m "Rebuilt by .github/workflows/firebase-static-hosting.yml because the Vercel mirror serves committed HTML, not a build."
+
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash --quiet origin main && git push --quiet origin HEAD:main; then
+              echo "Committed and pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "attempt $attempt did not land; retrying"
+            sleep 5
+          done
+          echo "::warning::could not push the rebuilt pages; the next deploy will retry"
