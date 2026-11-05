@@ -32,6 +32,9 @@ function assert(condition, message) {
   if (condition) { passed += 1; console.log(`  ✓ ${message}`); return; }
   failures.push(message);
   console.log(`  ✗ ${message}`);
+  /* Surface the reason as a check-run annotation: the step log itself is not
+     readable from automation, and "exit code 1" alone says nothing. */
+  console.log(`::error title=Navigation gate::${message}`);
 }
 const section = (name) => console.log(`\n${name}`);
 
