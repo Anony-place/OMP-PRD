@@ -38,6 +38,13 @@
     },
     {
       "type": "Guide",
+      "title": "Common Cryptography Failures and How to Spot Them in Code",
+      "desc": "Encryption that looks fine and protects nothing: ECB mode, reused IVs, hardcoded keys, MD5 for passwords and hand-rolled crypto.",
+      "url": "/articles/common-cryptography-failures",
+      "kw": "common cryptography failures guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Cyber Security Salary in the USA in 2026: Full Guide",
       "desc": "If you're considering a career in cybersecurity, one of the biggest questions is: how much can you earn in cybersecurity in the USA? The answer depends on your…",
       "url": "/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
@@ -45,10 +52,24 @@
     },
     {
       "type": "Guide",
+      "title": "Data Classification: A Practical Guide from Public to Restricted",
+      "desc": "Classify data into four levels, decide with the right criteria, and attach handling rules that make the labels mean something.",
+      "url": "/articles/data-classification-guide",
+      "kw": "data classification guide guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Fake Login Popup Showing a Real URL?",
       "desc": "You click a link and a Google or Microsoft login window appears. The window looks legitimate. It has a familiar logo, a lock icon, browser controls, and even…",
       "url": "/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
       "kw": "fake login popup showing a real url how browser in the browser phishing works guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "From Finding to Fixing: Writing a Pentest Report People Use",
+      "desc": "A test that ends in a report nobody can act on was wasted. Structure, a finding template, and remediation advice engineers can use.",
+      "url": "/articles/from-finding-to-fixing-writing-a-usable-pentest-report",
+      "kw": "from finding to fixing writing a usable pentest report guide articles"
     },
     {
       "type": "Guide",
@@ -87,6 +108,13 @@
     },
     {
       "type": "Guide",
+      "title": "Malware Families Explained: Types, Behaviour and Response",
+      "desc": "A malware family is a group of samples built from the same code. How the main types differ, how analysts identify a family, and what to do.",
+      "url": "/articles/malware-families-explained",
+      "kw": "malware families explained guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "PHP2Shell Explained: Risks, Fixes & How to Protect Your Site",
       "desc": "PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site Published 1 November 2026 · Reading time about 8 minutes · Category: Web Security In late…",
       "url": "/articles/php2shell-explained-risks-fixes-how-to-protect-your-site",
@@ -98,6 +126,13 @@
       "desc": "Sherlock checks 400+ sites fast; Maigret covers 3000+ sites with full reports. Honest comparison on speed, depth, reports and ease of use — plus when to use…",
       "url": "/articles/sherlock-vs-maigret-username-osint-comparison",
       "kw": "sherlock vs maigret username osint comparison guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "SIEM Alerts and Noise: How to Tune Rules Without Going Blind",
+      "desc": "Most SIEM alerts are noise. How to measure the queue, tune rules in the right order, and keep the detections that catch a real intrusion.",
+      "url": "/articles/siem-alerts-and-noise-reduction",
+      "kw": "siem alerts and noise reduction guide articles"
     },
     {
       "type": "Guide",
