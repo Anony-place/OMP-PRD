@@ -66,10 +66,17 @@
     },
     {
       "type": "Guide",
-      "title": "From Finding to Fixing: Writing a Pentest Report People Use",
-      "desc": "A test that ends in a report nobody can act on was wasted. Structure, a finding template, and remediation advice engineers can use.",
+      "title": "Pentest Report Template: Structure, Fields, Example",
+      "desc": "A copy-paste pentest report template: the eight fields every finding needs, the section order a client reads, and a worked example.",
       "url": "/articles/from-finding-to-fixing-writing-a-usable-pentest-report",
       "kw": "from finding to fixing writing a usable pentest report guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Hashcat Token Length Exception: Every Cause, One Fix",
+      "desc": "\"Token length exception\" means hashcat rejected a line before cracking it. The six real causes, in the order they actually happen, and the command for each.",
+      "url": "/articles/hashcat-token-length-exception",
+      "kw": "hashcat token length exception guide articles"
     },
     {
       "type": "Guide",
@@ -112,6 +119,13 @@
       "desc": "A malware family is a group of samples built from the same code. How the main types differ, how analysts identify a family, and what to do.",
       "url": "/articles/malware-families-explained",
       "kw": "malware families explained guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Nmap Requires Root Privileges: Why, and What Works Without",
+      "desc": "Which scan types need raw sockets and which do not, why -sT works unprivileged, and the setcap route with its real security trade-off.",
+      "url": "/articles/nmap-requires-root-privileges",
+      "kw": "nmap requires root privileges guide articles"
     },
     {
       "type": "Guide",

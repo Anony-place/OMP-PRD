@@ -576,6 +576,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/articles/hashcat-token-length-exception</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -607,6 +613,12 @@
   </url>
   <url>
     <loc>https://oopsmypassword.web.app/articles/malware-families-explained</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/articles/nmap-requires-root-privileges</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
