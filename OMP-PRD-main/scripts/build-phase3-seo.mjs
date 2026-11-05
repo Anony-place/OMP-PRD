@@ -927,7 +927,89 @@ export const COMPARISONS = [
       { label: 'Active Directory Enumeration Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
       { label: 'Privilege Escalation Glossary', url: '/glossary/privilege-escalation' }
     ]
-  }
+  },
+  {
+    slug: 'hashcat-vs-john-the-ripper',
+    title: 'Hashcat vs John the Ripper: Which Is Faster?',
+    shortTitle: 'Hashcat vs John',
+    category: 'Network & Pentest',
+    toolA: 'Hashcat',
+    toolB: 'John the Ripper',
+    published: '2026-11-05',
+    updated: '2026-11-05',
+    summary: 'Hashcat is GPU-first and needs the right hash mode; John self-detects and ships the converters that pull hashes out of files. Where each wins, and how to use both together.',
+    quickAnswer: 'With a GPU and a hash mode you already know, Hashcat is much faster. With an unusual file format or a hash you cannot identify, start with John, whose converters and auto-detection get you to something crackable at all. Most audits use John to extract and identify, then hand the fast hashes to Hashcat.',
+    verdictA: 'Best for raw speed: hundreds of hash modes on the GPU, a mature rule and mask engine, and a canonical example for every mode so a wrong format shows up immediately.',
+    verdictB: 'Best for getting started at all: format auto-detection, the *2john converters for archives, PDFs, keys and vaults, and a CPU engine that still works on a laptop with no discrete GPU.',
+    rows: [
+      ['Engine', 'GPU-first: OpenCL, CUDA, HIP, Metal', 'CPU-first with OpenMP; GPU support is limited and build dependent'],
+      ['Choosing the algorithm', 'You pass -m 1000; hashcat 7 can guess with --identify', 'Auto-detects by default; --format= forces a format when the guess is wrong'],
+      ['Hash modes / formats', '500+ modes, each with a fixed input layout', 'Hundreds of formats in the jumbo build'],
+      ['Getting hashes out of files', 'Nothing built in; a converter has to run first', 'The *2john suite: zip2john, rar2john, pdf2john, office2john, ssh2john, keepass2john'],
+      ['Masks', '-a 3 ?l?l?l?d?d', '--mask=?l?l?l?d?d'],
+      ['Rules', '-r rules/best64.rule, with a large rule ecosystem', '--rules, and jumbo builds also ship --rules=Jumbo'],
+      ['Show recovered passwords', '--show', 'john --show hashes.txt'],
+      ['Strongest at', 'Fast unsalted hashes at scale: NTLM, MD5, SHA-1, SHA-256, WPA', 'Slow or unusual formats, encrypted containers, anything that needs a converter first']
+    ],
+    sections: [
+      {
+        heading: 'Speed is the wrong question to answer from a blog table',
+        paragraphs: [
+          'Search this comparison and you will find confident numbers: 20x faster, 184,000 hashes per second, a neat table of modes. Each of those describes one GPU, one build and one hash mode on the day it was measured. On your hardware the same test can be wrong by an order of magnitude, and for deliberately slow algorithms the gap collapses, because bcrypt, scrypt and Argon2 are designed so that parallelism buys much less.',
+          'Measure it instead. Two commands, thirty seconds, on the machine you actually own. Compare the two rates for the mode you need, not for MD5, and let that decide the tool.'
+        ]
+      },
+      {
+        heading: 'Where John is not optional',
+        paragraphs: [
+          'Hashcat takes a hash in a documented layout. It does not know how to open an archive, a PDF, a KeePass database or an SSH private key and pull the verifier out of it. The converters do that, and they ship with John.',
+          'Even when the plan is to crack on the GPU, the normal path is: convert with the matching script, load the result in John to confirm the format, then move the fast hashes to Hashcat. Skipping the converter is how a session ends before it starts.'
+        ]
+      },
+      {
+        heading: 'Where Hashcat is not optional',
+        paragraphs: [
+          'Rule-based mutation is the home turf. A base wordlist plus a rule file tests far more realistic password shapes per second than brute force, the rule files are portable, and the community has spent years tuning them.',
+          'Every mode also has a canonical example, so the exact layout can be copied instead of guessed. That one command removes most of the wrong format pain.'
+        ]
+      },
+      {
+        heading: 'A workflow that uses both',
+        paragraphs: [
+          'In a real engagement the two tools are not competitors, they are stages.'
+        ],
+        bullets: [
+          'Identify: list the supported formats, or paste the string into a hash identifier, before choosing anything.',
+          'Extract: run the matching converter for a file, and check a raw hash against the canonical example for the mode.',
+          'Benchmark: run the GPU benchmark and the CPU benchmark for that exact mode, then pick the faster engine.',
+          'Attack with a plan: wordlist plus rules first, masks second, brute force last. Switching tools will not fix a bad candidate set.',
+          'Record: show the recovered passwords from both tools, then turn the recovery rate into a policy finding.'
+        ]
+      },
+      {
+        heading: 'Which to install first',
+        paragraphs: [
+          'If a discrete GPU is available and the hashes are fast, install Hashcat first. If the input is a file, an unusual format or a hash of unknown type, install John first and add Hashcat once the hashes are extracted and identified. On a laptop with no GPU, John across all cores is the practical starting point, and Hashcat gains little.'
+        ]
+      }
+    ],
+    workflowA: '# Benchmark this GPU for the mode you actually need\nhashcat -b -m 1000\n\n# Wordlist plus rules, then show what was recovered\nhashcat -m 1000 -a 0 hashes.txt rockyou.txt -r rules/best64.rule\nhashcat -m 1000 hashes.txt --show',
+    workflowB: '# Benchmark this CPU for the same mode\njohn --test=10 --format=nt\n\n# Wordlist plus rules, then show what was recovered\njohn --format=nt --wordlist=rockyou.txt --rules hashes.txt\njohn --show hashes.txt',
+    faqs: [
+      { q: 'Is Hashcat always faster than John the Ripper?', a: 'No. It is faster when a GPU is available and the hash is cheap to compute. For slow memory-hard algorithms the gap narrows sharply, and for a format only John supports the speed question does not arise.' },
+      { q: 'Can John the Ripper use a GPU?', a: 'Partially, through OpenCL in some jumbo builds, but GPU throughput is not the design centre. If GPU speed is the goal, that is Hashcat.' },
+      { q: 'Can Hashcat read converter output?', a: 'Often yes once the matching mode is known, but the layouts differ and converter output can carry fields a mode rejects. Load it in John first to confirm the format, then move it.' },
+      { q: 'Which is easier for a beginner?', a: 'John, because it detects the format for you. Hashcat needs a mode number first, and the canonical example list is the fastest way past that step.' },
+      { q: 'Are these tools legal to use?', a: 'Both are legal to install and to use on hashes you own or are authorised to test. Running them against credentials that are not yours is a criminal offence in most jurisdictions.' }
+    ],
+    relatedLinks: [
+      { label: 'Hashcat Pentest Guide', url: '/pentest/hashcat' },
+      { label: 'John the Ripper Pentest Guide', url: '/pentest/john-the-ripper' },
+      { label: 'John the Ripper Cheat Sheet', url: '/cheatsheets/john-the-ripper-cheatsheet' },
+      { label: 'Hashcat Token Length Exception', url: '/articles/hashcat-token-length-exception' },
+      { label: 'Hash & JWT Inspector', url: '/hash-inspector' }
+    ]
+  },
 ];
 
 /* ============================================================

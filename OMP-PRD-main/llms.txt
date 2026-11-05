@@ -17,7 +17,7 @@
 ## Hubs & Reference
 - [OSINT Hub](https://oopsmypassword.web.app/osint): 16 OSINT investigation tools for usernames, email, domains and phones, each with install steps and a side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): 37 authorized penetration-testing tools grouped by assessment phase, each with install steps and its vendor documentation.
-- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 17 head-to-head technical comparisons.
+- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 18 head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 14 interactive, printable command references.
 - [Security Glossary](https://oopsmypassword.web.app/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](https://oopsmypassword.web.app/articles): Long-form cybersecurity guides and threat analysis.
