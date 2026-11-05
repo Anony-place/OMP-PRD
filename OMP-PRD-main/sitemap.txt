@@ -40,7 +40,6 @@ https://oopsmypassword.web.app/compare/trufflehog-vs-gitleaks
 https://oopsmypassword.web.app/compare/gobuster-vs-feroxbuster
 https://oopsmypassword.web.app/compare/nikto-vs-nuclei
 https://oopsmypassword.web.app/compare/nmap-vs-rustscan
-https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper
 https://oopsmypassword.web.app/compare/linpeas-vs-winpeas
 https://oopsmypassword.web.app/cheatsheets
 https://oopsmypassword.web.app/cheatsheets/nmap-command-cheatsheet

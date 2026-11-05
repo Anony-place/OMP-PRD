@@ -211,11 +211,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://oopsmypassword.web.app/compare/hashcat-vs-john-the-ripper</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
