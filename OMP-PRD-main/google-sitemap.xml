@@ -569,6 +569,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -618,6 +624,12 @@
   </url>
   <url>
     <loc>https://oopsmypassword.web.app/articles/malware-families-explained</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/articles/nist-password-guidelines-2026</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

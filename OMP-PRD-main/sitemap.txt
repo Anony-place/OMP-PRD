@@ -110,6 +110,7 @@ https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-pr
 https://oopsmypassword.web.app/articles/common-cryptography-failures
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
 https://oopsmypassword.web.app/articles/data-classification-guide
+https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata
 https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works
 https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report
 https://oopsmypassword.web.app/articles/hashcat-token-length-exception
@@ -119,6 +120,7 @@ https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-bef
 https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
 https://oopsmypassword.web.app/articles/malware-families-explained
+https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison

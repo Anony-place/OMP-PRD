@@ -59,6 +59,13 @@
     },
     {
       "type": "Guide",
+      "title": "ExifTool Remove All Metadata: The Command, and What Survives It",
+      "desc": "One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…",
+      "url": "/articles/exiftool-remove-all-metadata",
+      "kw": "exiftool remove all metadata guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Fake Login Popup Showing a Real URL?",
       "desc": "You click a link and a Google or Microsoft login window appears. The window looks legitimate. It has a familiar logo, a lock icon, browser controls, and even…",
       "url": "/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
@@ -119,6 +126,13 @@
       "desc": "A malware family is a group of samples built from the same code. How the main types differ, how analysts identify a family, and what to do.",
       "url": "/articles/malware-families-explained",
       "kw": "malware families explained guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "NIST Password Guidelines 2026",
+      "desc": "SP 800-63B Revision 4 is still the 2026 standard: 15 characters alone, 8 inside MFA, no composition rules, no rotation, mandatory breach screening. Both…",
+      "url": "/articles/nist-password-guidelines-2026",
+      "kw": "nist password guidelines 2026 guide articles"
     },
     {
       "type": "Guide",

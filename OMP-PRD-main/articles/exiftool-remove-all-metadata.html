@@ -1,0 +1,164 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ExifTool Remove All Metadata: The Command, and What Survives It</title><meta name="description" content="One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…"><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="ExifTool Remove All Metadata: The Command, and What Survives It"><meta property="og:description" content="One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…"><meta property="og:url" content="https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ExifTool Remove All Metadata: The Command, and What Survives It"><meta name="twitter:description" content="One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"ExifTool Remove All Metadata: The Command, and What Survives It","description":"One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…","mainEntityOfPage":"https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-11-05T13:28:57.227981+00:00","dateModified":"2026-11-05T13:28:57.227981+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"ExifTool Remove All Metadata: The Command, and What Survives It","item":"https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata"}]}</script><meta property="article:published_time" content="2026-11-05T13:28:57.227981+00:00"><meta property="article:modified_time" content="2026-11-05T13:28:57.227981+00:00">  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the key takeaway of ExifTool Remove All Metadata: The Command, and What Survives It?","acceptedAnswer":{"@type":"Answer","text":"One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…"}},{"@type":"Question","name":"How can I test or apply these security practices safely?","acceptedAnswer":{"@type":"Answer","text":"Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity demo, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser."}}]}</script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-narrow"><p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">ExifTool Remove All Metadata: The Command, and What Survives It</h1><p class="lead mt-8">One command strips EXIF, GPS, IPTC and XMP from a photo. What -all= actually deletes, the flags people forget, what survives by design, and how to verify the…</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-11-05</span></div></div></section><section class="section-tight"><div class="container"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#the-command-that-does-the-job">The command that does the job</a></li><li><a href="#what-all-deletes-and-what-it-does-not">What -all= deletes, and what it does not</a></li><li><a href="#keep-the-colour-profile-and-the-rotation">Keep the colour profile and the rotation</a></li><li><a href="#a-whole-folder-without-surprises">A whole folder, without surprises</a></li><li><a href="#pdfs-office-documents-and-video-need-a-second-tool">PDFs, Office documents and video need a second tool</a></li><li><a href="#verify-like-you-mean-it">Verify like you mean it</a></li><li><a href="#windows-and-linux">Windows and Linux</a></li><li><a href="#if-you-already-overwrote-something">If you already overwrote something</a></li><li><a href="#do-not-use-an-online-metadata-remover">Do not use an &quot;online metadata remover&quot;</a></li><li><a href="#frequently-asked">Frequently asked</a></li><li><a href="#does-all-reduce-image-quality">Does -all= reduce image quality?</a></li><li><a href="#will-it-remove-the-watermark-or-the-crop">Will it remove the watermark or the crop?</a></li><li><a href="#why-do-i-still-see-make-and-model-after-running-it">Why do I still see Make and Model after running it?</a></li><li><a href="#does-it-strip-metadata-from-a-screenshot">Does it strip metadata from a screenshot?</a></li><li><a href="#is-exiftool-all-legal">Is exiftool -all= legal?</a></li><li><a href="#where-this-fits-in-a-workflow">Where this fits in a workflow</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>Every photo you publish carries a second file inside it: camera model, serial number, the exact time it was taken and — if location services were on — GPS coordinates accurate to a few metres. <code>exiftool -all=</code> removes all of that in one line. Three things about that line are easy to get wrong: it leaves a backup copy behind, it does nothing at all if you forget the <code>=</code>, and it takes the colour profile with it.</p>
+
+<p>This page is the command, what survives it, and how to prove the file is clean afterwards.</p>
+
+<h2 id="the-command-that-does-the-job">The command that does the job</h2>
+<pre><code># One file, no backup copy left behind
+exiftool -all= -overwrite_original photo.jpg
+
+# What is actually left in the file now
+exiftool -a -G1 -s photo.jpg
+</code></pre>
+
+<p><code>-all=</code> is a tag assignment with nothing on the right-hand side: set every tag to empty. The <code>=</code> is the whole operation. Run <code>exiftool -all photo.jpg</code> without it and ExifTool prints every tag in the file instead of deleting anything — exit code 0, no warning, and you walk away believing the photo is clean.</p>
+
+<p>The second flag matters just as much. Without <code>-overwrite_original</code>, ExifTool renames the original to <code>photo.jpg_original</code> and writes the cleaned version under the real name. If you then upload the file your image browser happens to show first, you may have published the exact copy you were trying to clean.</p>
+
+<h2 id="what-all-deletes-and-what-it-does-not">What <code>-all=</code> deletes, and what it does not</h2>
+
+<table tabindex="0">
+<thead><tr><th>Metadata</th><th>Removed by <code>-all=</code>?</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>EXIF (camera, lens, serial, timestamp)</td><td>Yes</td><td>Includes the embedded thumbnail, which often still shows the original framing</td></tr>
+<tr><td>GPS latitude, longitude, altitude</td><td>Yes</td><td>The tag most people run this command for</td></tr>
+<tr><td>IPTC and XMP</td><td>Yes</td><td>XMP includes the editing history in some editors</td></tr>
+<tr><td>ICC colour profile</td><td>Yes — and usually should not be</td><td>Covered below; wide-gamut photos shift colour without it</td></tr>
+<tr><td>Orientation</td><td>Yes — and usually should not be</td><td>Portrait phone photos display sideways once it is gone</td></tr>
+<tr><td>Adobe APP14 segment (JPEG)</td><td>No, by design</td><td>Removing it can change how the image renders, so ExifTool keeps it</td></tr>
+<tr><td>Extended attributes (macOS "Where from", quarantine)</td><td>No</td><td>They live beside the file, not in it; use <code>xattr -c</code></td></tr>
+<tr><td>Container dates in MP4/MOV</td><td>Partly</td><td>The video atom survives; remux with ffmpeg (below)</td></tr>
+<tr><td>PDF Info dictionary</td><td>Partly</td><td>A PDF has metadata in two places; see the table further down</td></tr>
+</tbody>
+</table>
+
+<h2 id="keep-the-colour-profile-and-the-rotation">Keep the colour profile and the rotation</h2>
+
+<p>Two tags are worth rescuing from the wipe, because losing them breaks the image rather than protecting you.</p>
+
+<pre><code># Copy those two tags back from the file itself, in the same pass
+exiftool -all= -tagsfromfile @ -icc_profile -Orientation -overwrite_original photo.jpg
+
+# Equivalent exclusion form
+exiftool -all= --icc_profile:all -overwrite_original photo.jpg
+</code></pre>
+
+<p><code>@</code> means the file being processed, so ExifTool reads the values before it clears them and writes them back. Keep the ICC profile if the photo started in Display P3, Adobe RGB or ProPhoto RGB: browsers assume sRGB for an untagged image, so a wide-gamut photo comes out flat or muddy. Keep <code>Orientation</code> if the picture was shot in portrait on a phone — the pixels are stored unrotated and the flag is what turns them, so stripping it makes every portrait shot display sideways.</p>
+
+<h2 id="a-whole-folder-without-surprises">A whole folder, without surprises</h2>
+
+<p>There is no true dry-run flag. The closest thing is <code>-o</code>, which writes the cleaned copies somewhere else and leaves the originals untouched, so you can look at the output before replacing anything.</p>
+
+<pre><code># 1. Write cleaned copies to a new folder and inspect them
+exiftool -all= -o cleaned/ -r ~/Pictures/blog
+
+# 2. In place, recursive, keep the file modification date
+exiftool -all= -overwrite_original -P -r ~/Pictures/blog
+
+# 3. Restrict it to web image formats only
+exiftool -all= -overwrite_original -P -r -ext jpg -ext jpeg -ext png -ext webp ~/Pictures/blog
+</code></pre>
+
+<p><code>-P</code> preserves the filesystem modification time. Without it every file gets today's date, which reorders photo libraries and churns cloud backups for no reason.</p>
+
+<p>To find which files are actually leaking a location, filter instead of dumping thousands of tag listings:</p>
+
+<pre><code>exiftool -r -if '$GPSLatitude' -p '$Directory/$FileName' ~/Pictures
+</code></pre>
+
+<h2 id="pdfs-office-documents-and-video-need-a-second-tool">PDFs, Office documents and video need a second tool</h2>
+
+<table tabindex="0">
+<thead><tr><th>File type</th><th>What to run</th><th>Why exiftool alone is not enough</th></tr></thead>
+<tbody>
+<tr><td>PDF</td><td><code>exiftool -all= doc.pdf</code> then <code>qpdf --linearize doc.pdf clean.pdf</code></td><td>A PDF carries an Info dictionary plus an XMP stream, and unreferenced objects survive a tag wipe; a linearising rewrite drops what nothing points at</td></tr>
+<tr><td>DOCX, XLSX, PPTX</td><td><code>mat2 document.docx</code></td><td>These are ZIP containers; author and revision data sit in <code>docProps</code> as well as in the XML body</td></tr>
+<tr><td>MP4, MOV</td><td><code>ffmpeg -i in.mp4 -map_metadata -1 -c copy out.mp4</code></td><td>Container atoms such as creation time are regenerated by the remux rather than edited</td></tr>
+<tr><td>HEIC</td><td><code>exiftool -all=</code>, same as JPEG</td><td>Works, but prints an ICC warning in some builds; check the result</td></tr>
+<tr><td>macOS extended attributes</td><td><code>xattr -c file.jpg</code></td><td>"Where from" and quarantine flags are filesystem metadata, invisible to ExifTool</td></tr>
+</tbody>
+</table>
+
+<p>Treat this as risk reduction, not sanitisation. If you are publishing a document someone else produced, a clean tag listing is evidence, not proof — the only safe claim is that the fields you checked are gone.</p>
+
+<h2 id="verify-like-you-mean-it">Verify like you mean it</h2>
+
+<pre><code># All tags, grouped, in short form; -a shows duplicated tags too
+exiftool -a -G1 -s photo.jpg
+
+# Count what is left, before and after
+exiftool -a -G1 -s -json photo.jpg | jq '.[0] | keys | length'
+</code></pre>
+
+<p>On a typical phone photo the before count is 60 to 120 tags; after <code>-all=</code> it should be a handful of structural tags such as <code>ExifToolVersion</code>, <code>FileName</code>, <code>FileSize</code> and <code>ImageWidth</code>. If you still see <code>GPSLatitude</code>, the command never applied — check for the missing <code>=</code>, or for a backup file sitting next to the original.</p>
+
+<h2 id="windows-and-linux">Windows and Linux</h2>
+
+<pre><code># Install
+winget install OliverBetz.ExifTool      # Windows
+choco install exiftool                  # Windows, Chocolatey
+sudo apt install libimage-exiftool-perl # Debian/Ubuntu (package name differs from the command)
+brew install exiftool                   # macOS
+</code></pre>
+
+<p>In PowerShell, quote anything containing a colon or an equals sign that the shell might eat: <code>exiftool "-all=" photo.jpg</code> and <code>exiftool "--icc_profile:all" photo.jpg</code>. Windows also keeps its own metadata in the file properties sheet, and NTFS alternate data streams are not ExifTool's business.</p>
+
+<h2 id="if-you-already-overwrote-something">If you already overwrote something</h2>
+
+<p>If an <code>_original</code> copy exists, <code>exiftool -restore_original photo.jpg</code> puts it back. If the run used <code>-overwrite_original</code>, there is nothing to restore — re-export from the camera roll, the RAW file or the cloud copy. That is the reason to test on <code>-o cleaned/</code> first when the batch is large.</p>
+
+<h2 id="do-not-use-an-online-metadata-remover">Do not use an "online metadata remover"</h2>
+
+<p>Uploading a photo to a website to remove its GPS tag means sending that photo, GPS tag included, to a machine you do not control. Most such services promise deletion after some hours; none of them can give you back the moment the file was written to their disk, and the upload itself is logged. ExifTool is a 12 MB install that runs offline.</p>
+
+<h2 id="frequently-asked">Frequently asked</h2>
+
+<h3 id="does-all-reduce-image-quality">Does <code>-all=</code> reduce image quality?</h3>
+<p>No. It rewrites the metadata segments and keeps the compressed image data byte for byte, so the pixels are identical. The file size drops because the tag blocks are gone — often 5 to 20 KB on a phone photo.</p>
+
+<h3 id="will-it-remove-the-watermark-or-the-crop">Will it remove the watermark or the crop?</h3>
+<p>No. A watermark is drawn into the pixels and a crop changes the pixels. Metadata removal only affects text fields.</p>
+
+<h3 id="why-do-i-still-see-make-and-model-after-running-it">Why do I still see <code>Make</code> and <code>Model</code> after running it?</h3>
+<p>Either the <code>=</code> was missing, the command ran on a different copy than the one you inspected, or a backup file is being served instead of the cleaned file. Print the resolved path with <code>exiftool -FileName -Directory photo.jpg</code>.</p>
+
+<h3 id="does-it-strip-metadata-from-a-screenshot">Does it strip metadata from a screenshot?</h3>
+<p>Screenshots often have almost none to begin with — no camera and no GPS — but they do carry software and timestamp tags. Running the command is harmless and makes the result predictable.</p>
+
+<h3 id="is-exiftool-all-legal">Is <code>exiftool -all=</code> legal?</h3>
+<p>Yes. It edits files you own. The line is at authorship and evidence: removing metadata from a document to disguise where it came from, or from an image you did not create, is a different act with different consequences.</p>
+
+<h2 id="where-this-fits-in-a-workflow">Where this fits in a workflow</h2>
+
+<p>Run it on the export folder, not on the camera roll — you want the originals intact for re-export. In an assessment, photos of a client site carry GPS coordinates and capture timestamps that are evidence for you and a disclosure risk for them; strip on the copy that goes into the <a href="/articles/from-finding-to-fixing-writing-a-usable-pentest-report" rel="noopener noreferrer">report</a>, never on the copy you keep. If you are building a picture of a target from public images, the same tags are a source: <a href="/osint" rel="noopener noreferrer">OSINT</a> work starts with what a photo already tells you, which is why the photo you post is a decision, not a detail.</p>
+<hr class="hr-fade" style="margin-top:48px"></article></div></div></section><section class="section-tight" style="padding-top:0"><div class="container container-narrow"><p class="back-link-row" style="margin:0"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p></div></section><section class="section-tight"><div class="container"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px"><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/nmap-requires-root-privileges">Nmap Requires Root Privileges: Why, and What Works Without</a></h3><p class="feed-excerpt">Which scan types need raw sockets and which do not, why -sT works unprivileged, and the setcap route with its real security trade-off.</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/hashcat-token-length-exception">Hashcat Token Length Exception: Every Cause, One Fix</a></h3><p class="feed-excerpt">&quot;Token length exception&quot; means hashcat rejected a line before cracking it. The six real causes, in the order they actually happen, and the command for each.</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/nist-password-guidelines-2026">NIST Password Guidelines 2026: What SP 800-63B-4 Actually Requires</a></h3><p class="feed-excerpt">SP 800-63B Revision 4 is still the 2026 standard: 15 characters alone, 8 inside MFA, no composition rules, no rotation, mandatory breach screening. Both…</p></div></article></div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>
