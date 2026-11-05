@@ -1746,3 +1746,85 @@ img.osint-tile { padding: 6px; }
 
   .checklist-item { min-height: 44px; padding-block: 10px; }
 }
+
+/* ============================================================
+   Reading aids: back link, back-to-top, code copy, permalinks
+   ------------------------------------------------------------
+   The back link sits above the breadcrumb on every content page so a
+   reader who arrived from a search result always has one obvious way
+   out, and a second copy sits under the article for readers who reach
+   the end. The other three are injected by main.js and degrade to
+   nothing without JavaScript.
+   ============================================================ */
+.back-link-row { margin: 0 0 10px; }
+.back-link-row .btn { white-space: nowrap; }
+
+.to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, .12);
+  cursor: pointer;
+  transition: color .15s var(--ease), border-color .15s var(--ease), opacity .2s var(--ease);
+}
+.to-top:hover { color: var(--purple); border-color: var(--border-strong); }
+.to-top svg { width: 18px; height: 18px; }
+.to-top[hidden] { display: none; }
+@media (max-width: 640px) { .to-top { right: 14px; bottom: 14px; } }
+
+.code-wrap { position: relative; }
+.code-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  color: var(--muted);
+  font: 600 11.5px/1 var(--font-mono);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s var(--ease), color .15s var(--ease);
+}
+.code-wrap:hover .code-copy,
+.code-copy:focus-visible,
+.code-copy.is-done { opacity: 1; }
+.code-copy:hover { color: var(--text); }
+.code-copy.is-done { color: var(--purple); }
+/* A touch screen has no hover, so the control has to be visible and big
+   enough to hit on its own. */
+@media (hover: none) {
+  .code-copy { opacity: 1; min-height: 44px; padding: 10px 12px; }
+}
+
+.heading-anchor {
+  margin-left: 8px;
+  color: var(--muted-2);
+  text-decoration: none;
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity .15s var(--ease), color .15s var(--ease);
+}
+h2:hover > .heading-anchor,
+h3:hover > .heading-anchor,
+.heading-anchor:focus-visible { opacity: 1; }
+.heading-anchor:hover { color: var(--purple); }
+
+@media (prefers-reduced-motion: reduce) {
+  .to-top, .code-copy, .heading-anchor { transition: none; }
+}

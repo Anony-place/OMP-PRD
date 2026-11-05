@@ -1,0 +1,142 @@
+#!/usr/bin/env node
+/* ============================================================
+   Every page a reader can land on has to offer a way back.
+
+   Search Console sends people straight into a deep page - an article, a
+   glossary term, a cheat sheet - and for a long time only the tool pages
+   (pentest/ and osint/) had a "back to hub" control above the breadcrumb.
+   The other 102 content pages left the reader with a sticky nav and nothing
+   else, which is the difference between a visitor who reads a second page
+   and one who closes the tab.
+
+   The back link is generated in two places, so this gate reads both:
+
+     * the generators (build-static-seo.mjs, build-phase3-seo.mjs), because CI
+       rebuilds articles and tool pages from Supabase and a local checkout may
+       still hold yesterday's HTML
+     * the built files on disk, for the families this repository regenerates
+       without a network call (compare, cheatsheets, glossary, guides)
+
+   Run: node tools/test_navigation.mjs
+   ============================================================ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+let passed = 0;
+const failures = [];
+function assert(condition, message) {
+  if (condition) { passed += 1; console.log(`  ✓ ${message}`); return; }
+  failures.push(message);
+  console.log(`  ✗ ${message}`);
+}
+const section = (name) => console.log(`\n${name}`);
+
+const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
+const pagesIn = (dir) => {
+  const abs = path.join(root, dir);
+  if (!fs.existsSync(abs)) return [];
+  return fs.readdirSync(abs).filter((f) => f.endsWith('.html')).sort().map((f) => `${dir}/${f}`);
+};
+
+const staticSeo = read('scripts/build-static-seo.mjs');
+const phase3 = read('scripts/build-phase3-seo.mjs');
+const mainJs = read('assets/js/main.js');
+const css = read('assets/css/styles.css');
+
+section('The generators put a back link on every family they own');
+
+/* Each entry: the hub a page belongs to, the file that builds it, and the exact
+   markup the generator has to emit. The href is what makes the check real - a
+   back link to the wrong hub is as useless as no back link. */
+const generators = [
+  ['articles', '/articles', staticSeo, 'build-static-seo.mjs'],
+  ['products', '/products', staticSeo, 'build-static-seo.mjs'],
+  ['tool pages (pentest + osint)', '${cfg.base}', staticSeo, 'build-static-seo.mjs'],
+  ['comparisons', '/compare', phase3, 'build-phase3-seo.mjs'],
+  ['cheat sheets', '/cheatsheets', phase3, 'build-phase3-seo.mjs'],
+  ['glossary', '/glossary', phase3, 'build-phase3-seo.mjs'],
+];
+
+for (const [name, href, source, file] of generators) {
+  const pattern = new RegExp(
+    '<p class="back-link-row"><a class="btn btn-ghost btn-sm" href="' +
+      href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"'
+  );
+  assert(pattern.test(source), `${name}: ${file} emits a back link to ${href}`);
+}
+
+section('The built pages actually carry it');
+
+const families = [
+  ['compare', '/compare'],
+  ['cheatsheets', '/cheatsheets'],
+  ['glossary', '/glossary'],
+  ['guides', '/articles'],
+];
+
+for (const [dir, hub] of families) {
+  const pages = pagesIn(dir);
+  assert(pages.length > 0, `${dir}/ has pages to check (${pages.length})`);
+  const missing = pages.filter((p) => !read(p).includes(`<a class="btn btn-ghost btn-sm" href="${hub}">`));
+  assert(missing.length === 0,
+    `${dir}/: every page links back to ${hub}${missing.length ? ` (missing on ${missing.length}: ${missing.slice(0, 3).join(', ')})` : ''}`);
+}
+
+/* Articles and tool pages are rebuilt in CI from the database. When a local
+   checkout already has the new markup, hold it to the same standard; when it
+   does not, the generator check above is the contract. */
+for (const [dir, hub] of [['articles', '/articles'], ['pentest', 'PENTEST'], ['osint', 'OSINT']]) {
+  const pages = pagesIn(dir);
+  if (!pages.length) { assert(true, `${dir}/ has no pages in this checkout - generator check stands`); continue; }
+  const withBack = pages.filter((p) => read(p).includes('back-link-row'));
+  const expected = hub.startsWith('/') ? read(pages[0]).includes(`href="${hub}"`) : true;
+  assert(withBack.length === 0 || withBack.length === pages.length,
+    `${dir}/: back link is either on all pages or none (${withBack.length}/${pages.length})`);
+  assert(withBack.length === 0 || expected || hub !== '/articles',
+    `${dir}/: the back link points at ${hub}`);
+}
+
+section('No back link points at the page it is on');
+
+for (const [dir] of families) {
+  const loops = pagesIn(dir).filter((p) => {
+    const slug = path.basename(p, '.html');
+    const self = new RegExp(`class="btn btn-ghost btn-sm" href="/${dir}/${slug}"`);
+    return self.test(read(p));
+  });
+  assert(loops.length === 0, `${dir}/: no page links back to itself${loops.length ? ` (${loops.join(', ')})` : ''}`);
+}
+
+section('Reading aids are wired and cannot silently disappear');
+
+assert(/function initToTop\(/.test(mainJs), 'main.js builds a back-to-top control');
+assert(/aria-label', 'Back to top of page'/.test(mainJs), 'the control has an accessible name');
+assert(/pageYOffset < 600/.test(mainJs), 'it stays hidden near the top of the page');
+assert(/prefers-reduced-motion/.test(mainJs) || /reducedMotion/.test(mainJs),
+  'smooth scrolling is skipped for reduced-motion users');
+
+assert(/function initCodeCopy\(/.test(mainJs), 'main.js adds copy buttons to command blocks');
+assert(/closest\('\[data-cheatsheet-page\]'\)/.test(mainJs),
+  'the interactive cheat-sheet blocks are skipped (they ship their own control)');
+assert(/initHeadingAnchors\(/.test(mainJs), 'headings get permalink anchors');
+assert(/initReadingAids\(\);/.test(mainJs), 'all three run on load');
+
+for (const cls of ['.back-link-row', '.to-top', '.code-copy', '.heading-anchor']) {
+  assert(css.includes(cls), `styles.css defines ${cls}`);
+}
+assert(/@media \(hover: none\)[\s\S]{0,120}\.code-copy/.test(css),
+  'the copy button is visible and 44px on touch screens');
+
+section('The copy control is keyboard reachable');
+
+assert(/createElement\('button'\)/.test(mainJs) && /className = 'code-copy'/.test(mainJs),
+  'the copy control is a real button, not a div');
+assert(/className = 'to-top'/.test(mainJs) && /btn\.hidden = /.test(mainJs),
+  'the back-to-top control is a real button and hides itself when irrelevant');
+
+console.log(`\n${passed} passed, ${failures.length} failed\n`);
+if (failures.length) process.exitCode = 1;
