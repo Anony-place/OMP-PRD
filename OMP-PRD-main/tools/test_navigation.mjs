@@ -122,6 +122,15 @@ for (const [dir] of families) {
   assert(loops.length === 0, `${dir}/: no page links back to itself${loops.length ? ` (${loops.join(', ')})` : ''}`);
 }
 
+section('The back link is a block of its own, not nested in the breadcrumb');
+
+for (const [dir] of families) {
+  const buried = pagesIn(dir).filter((p) =>
+    read(p).split('\n').some((line) => line.includes('aria-label="Breadcrumb"') && line.includes('back-link-row')));
+  assert(buried.length === 0,
+    `${dir}/: the back link sits above the breadcrumb nav${buried.length ? ` (nested on ${buried.length})` : ''}`);
+}
+
 section('Reading aids are wired and cannot silently disappear');
 
 assert(/function initToTop\(/.test(mainJs), 'main.js builds a back-to-top control');
