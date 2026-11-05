@@ -436,6 +436,127 @@
     }
   })();
 
+
+  /* ---------- Reading aids: back to top, code copy, heading permalinks ----------
+     All three are progressive enhancement: with JavaScript off, every page
+     still reads and navigates exactly as before. They are kept together and
+     idempotent because the article hub swaps its list in place. */
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('copy rejected'));
+      } catch (e) { reject(e); }
+    });
+  }
+
+  /* Back to top: appears once the reader is a screen or so down, so it never
+     covers the hero or competes with the sticky header on the way in. */
+  function initToTop() {
+    if (document.getElementById('omp-to-top')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'omp-to-top';
+    btn.className = 'to-top';
+    btn.setAttribute('aria-label', 'Back to top of page');
+    btn.setAttribute('title', 'Back to top');
+    btn.hidden = true;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+      var main = document.getElementById('main');
+      if (main) {
+        if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+        main.focus({ preventScroll: true });
+      }
+    });
+    document.body.appendChild(btn);
+
+    var ticking = false;
+    function update() {
+      btn.hidden = window.pageYOffset < 600;
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
+  /* Copy button on every command block, except the interactive cheat-sheet
+     blocks which already ship their own copy control. */
+  function initCodeCopy() {
+    var blocks = document.querySelectorAll('main pre');
+    Array.prototype.forEach.call(blocks, function (pre) {
+      if (pre.closest('[data-cheatsheet-page]')) return;
+      if (pre.querySelector('[data-cs-template]')) return;
+      if (pre.parentElement && pre.parentElement.classList.contains('code-wrap')) return;
+      var code = pre.querySelector('code') || pre;
+      var text = (code.textContent || '').replace(/\s+$/, '');
+      if (!text) return;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-copy';
+      btn.textContent = 'Copy';
+      btn.setAttribute('aria-label', 'Copy this command block');
+      btn.addEventListener('click', function () {
+        copyText(text).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('is-done');
+          window.setTimeout(function () {
+            btn.textContent = 'Copy';
+            btn.classList.remove('is-done');
+          }, 1600);
+        }).catch(function () {
+          btn.textContent = 'Select manually';
+          window.setTimeout(function () { btn.textContent = 'Copy'; }, 2000);
+        });
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  /* Permalinks on headings. The id already exists for the table of contents;
+     this only adds the visible way to copy it. */
+  function initHeadingAnchors() {
+    var headings = document.querySelectorAll('main .prose h2[id], main .prose h3[id]');
+    Array.prototype.forEach.call(headings, function (h) {
+      if (h.querySelector('.heading-anchor')) return;
+      var a = document.createElement('a');
+      a.className = 'heading-anchor';
+      a.href = '#' + h.id;
+      a.textContent = '#';
+      a.setAttribute('aria-label', 'Link to this section: ' + h.textContent.trim());
+      h.appendChild(a);
+    });
+  }
+
+  function initReadingAids() {
+    initToTop();
+    initCodeCopy();
+    initHeadingAnchors();
+  }
+
+  initReadingAids();
+
   /* ---------- Service Worker Registration ---------- */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {

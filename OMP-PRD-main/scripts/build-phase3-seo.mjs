@@ -2214,7 +2214,7 @@ function buildComparisonsCluster() {
     const bodyHtml = `
 <section class="article-hero">
   <div class="container container-narrow">
-    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>${esc(c.shortTitle)}</span></nav>
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/compare">← Back to comparisons</a></p><a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>${esc(c.shortTitle)}</span></nav>
     <h1 class="h-1 mt-16">${esc(c.title)}</h1>
     <p class="lead mt-8">${esc(c.summary)}</p>
   </div>
@@ -2413,7 +2413,7 @@ function buildCheatsheetsCluster() {
     const bodyHtml = `
 <section class="article-hero">
   <div class="container container-narrow">
-    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/cheatsheets" style="color:var(--purple)">CLI Cheat Sheets</a> <span class="divider-dot">/</span> <span>${esc(cs.shortTitle)}</span></nav>
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/cheatsheets">← Back to cheat sheets</a></p><a href="/cheatsheets" style="color:var(--purple)">CLI Cheat Sheets</a> <span class="divider-dot">/</span> <span>${esc(cs.shortTitle)}</span></nav>
     <h1 class="h-1 mt-16">${esc(cs.title)}</h1>
     <p class="lead mt-8">${esc(cs.summary)}</p>
   </div>
@@ -2590,7 +2590,7 @@ function buildGlossaryCluster() {
     const bodyHtml = `
 <section class="article-hero">
   <div class="container container-narrow">
-    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/glossary" style="color:var(--purple)">Security Glossary</a> <span class="divider-dot">/</span> <span>${esc(t.term)}</span></nav>
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/glossary">← Back to the glossary</a></p><a href="/glossary" style="color:var(--purple)">Security Glossary</a> <span class="divider-dot">/</span> <span>${esc(t.term)}</span></nav>
     <div class="small muted mt-12" style="font-weight:600">${esc(t.category)}</div>
     <h1 class="h-1 mt-8">What Is ${esc(t.term)}? Definition, Architecture &amp; Defense</h1>
     <div class="card card-pad mt-16">

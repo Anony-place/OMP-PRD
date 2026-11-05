@@ -177,6 +177,14 @@ jobs:
         working-directory: OMP-PRD-main
         run: python3 tools/qa.py
 
+      - name: Every content page has a way back
+        working-directory: OMP-PRD-main
+        # The reader arrives from a search result into a deep page. Only the
+        # tool pages had a back control for a long time; this gate fails if any
+        # generated family loses it again, or if the back-to-top and copy
+        # controls fall out of main.js.
+        run: node tools/test_navigation.mjs
+
       - name: Verify static SEO output
         working-directory: OMP-PRD-main
         # Fails the build if any page canonicalises off-origin, if the 404 is
