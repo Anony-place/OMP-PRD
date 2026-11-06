@@ -273,7 +273,7 @@ function group(name) {
     assert(/function sanitize(Html|ArticleHtml)\(/.test(build), 'static publisher lost its sanitizer wrapper');
     assert(/function sanitize(Html|ArticleHtml)\(/.test(render), 'function renderer lost its sanitizer wrapper');
     /* The structural markers a reader sees, so a partial copy is caught too. */
-    for (const marker of ['article-hero', 'article-layout', 'class="toc"', 'class="prose"',
+    for (const marker of ['article-hero', 'article-layout', 'container-article', 'class="toc"', 'class="prose"',
                           'theme-init.js', 'breadcrumbSchema', 'documentTitle', 'metaDescription']) {
       assert(build.includes(marker) && render.includes(marker),
         'article render marker missing from one copy: ' + marker);
