@@ -115,6 +115,13 @@
     },
     {
       "type": "Guide",
+      "title": "John the Ripper: No Password Hashes Loaded (All 8 Causes)",
+      "desc": "John refuses to load your hash file. The eight real causes in frequency order, the build trap that hits most Kali users, and a five-command diagnostic that…",
+      "url": "/articles/john-the-ripper-no-password-hashes-loaded",
+      "kw": "john the ripper no password hashes loaded guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys",
       "desc": "Critical Langflow Vulnerability CVE-2026-0768 Exploited to Steal OpenAI and AWS Keys Critical Langflow vulnerability CVE-2026-0768 is being exploited in the…",
       "url": "/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys",
@@ -168,6 +175,13 @@
       "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
       "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
       "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Wireshark Not Capturing Packets: 8 Causes, In Order",
+      "desc": "No interfaces found, or an interface that captures nothing. The eight real causes on Windows and Linux, the group-membership trap, and why offload makes…",
+      "url": "/articles/wireshark-not-capturing-packets",
+      "kw": "wireshark not capturing packets guide articles"
     },
     {
       "type": "Guide",
