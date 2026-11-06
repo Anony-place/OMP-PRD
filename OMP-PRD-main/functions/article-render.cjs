@@ -221,8 +221,8 @@ function articleBody(html, toc) {
   const inner = html
     + '<hr class="hr-fade" style="margin-top:48px"><div class="callout callout-info"><p><strong>Keep reading:</strong> Explore more security research and practical guidance in the <a href="/articles">Articles hub</a>.</p></div>';
   return toc.length
-    ? '<div class="container"><div class="article-layout">' + tocHtml + '<article class="prose" itemscope itemtype="https://schema.org/Article">' + inner + '</article></div></div>'
-    : '<div class="container container-narrow"><article class="prose" itemscope itemtype="https://schema.org/Article">' + inner + '</article></div>';
+    ? '<div class="container container-article"><div class="article-layout">' + tocHtml + '<article class="prose" itemscope itemtype="https://schema.org/Article">' + inner + '</article></div></div>'
+    : '<div class="container container-article"><article class="prose" itemscope itemtype="https://schema.org/Article">' + inner + '</article></div>';
 }
 
 /**
@@ -277,7 +277,7 @@ function renderArticlePage(article) {
   const body = articleBody(normalized.html, normalized.toc);
   return head
     + '<body>' + siteHeader('/articles') + siteMobileMenu('/articles')
-    + '<main id="main"><section class="article-hero"><div class="container container-narrow">'
+    + '<main id="main"><section class="article-hero"><div class="container container-article">'
     + '<nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav>'
     + '<h1 class="h-1 mt-16">' + esc(title) + '</h1>'
     + '<p class="lead mt-8">' + esc(summary) + '</p>'

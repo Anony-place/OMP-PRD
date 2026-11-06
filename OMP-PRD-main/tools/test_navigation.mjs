@@ -131,6 +131,35 @@ for (const [dir] of families) {
     `${dir}/: the back link sits above the breadcrumb nav${buried.length ? ` (nested on ${buried.length})` : ''}`);
 }
 
+section('The reading column is centred, not leaning into dead space');
+
+const layoutCss = read('assets/css/styles.css');
+assert(/grid-template-columns: minmax\(0, 720px\) 240px/.test(layoutCss),
+  'the contents rail sits beside the text, not in a 1fr column that leaves a hole');
+assert(/justify-content: center/.test(layoutCss.slice(layoutCss.indexOf('.article-layout'), layoutCss.indexOf('.article-layout') + 700)),
+  'the text and rail are centred as one block');
+{
+  const m = /\.container-article\s*\{[^}]*max-width:\s*(\d+)px/.exec(layoutCss);
+  /* the container is border-box with 24px inline padding, so its max-width has
+     to cover 720 + 56 + 240 of grid plus 48 of padding or the columns overflow. */
+  assert(m && Number(m[1]) >= 720 + 56 + 240 + 48,
+    'the article container is wide enough for the grid plus its own padding');
+}
+assert(/grid-column:\s*1/.test(layoutCss) && /grid-column:\s*2/.test(layoutCss),
+  'the rail is placed after the text rather than relying on DOM order');
+assert(/\.article-toc-slot/.test(layoutCss),
+  'the JS article view wraps the rail in a slot, so the slot needs the same placement');
+
+/* Every long-form family must use the matching hero width, or the h1 sits to
+   the left of the first line of body copy. */
+for (const [dir, cls] of [['articles', 'container-article'], ['guides', 'container-article'], ['pentest', 'container-article'], ['osint', 'container-article']]) {
+  const pages = pagesIn(dir);
+  if (!pages.length) continue;
+  const aligned = pages.filter((p) => read(p).includes(`container ${cls}`));
+  assert(aligned.length === pages.length,
+    `${dir}/: every hero uses the same width as the article grid (${aligned.length}/${pages.length})`);
+}
+
 section('Reading aids are wired and cannot silently disappear');
 
 assert(/function initToTop\(/.test(mainJs), 'main.js builds a back-to-top control');

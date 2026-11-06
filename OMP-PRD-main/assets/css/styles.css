@@ -621,7 +621,26 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .guide-card p { font-size: .9rem; }
 .guide-card .read-more { margin-top: 16px; font-size: .88rem; font-weight: 600; color: var(--purple); display: inline-flex; align-items: center; gap: 6px; }
 
-.article-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 56px; }
+.article-layout {
+  /* Reading column first, contents rail second: the text then starts flush with
+     the hero heading above it, and the rail fills what used to be dead space on
+     the right. The pair is centred as one block so the page does not lean left. */
+  display: grid;
+  grid-template-columns: minmax(0, 720px) 240px;
+  gap: 56px;
+  justify-content: center;
+  align-items: start;
+}
+/* Explicit placement rather than source order: the JS article view wraps the
+   rail in an empty .article-toc-slot, and auto-placement would have handed that
+   slot the wide column and crushed the prose into the 240px one. */
+.article-layout > .prose { grid-column: 1; grid-row: 1; max-width: none; }
+.article-layout > .toc,
+.article-layout > .article-toc-slot { grid-column: 2; grid-row: 1; }
+/* 720 + 56 + 240 = 1016 of grid, plus the 24px inline padding on each side
+   (border-box), so the hero h1 above it lines up with the first line of body
+   copy instead of sitting 136px to its left. */
+.container-article { max-width: 1064px; }
 .toc { position: sticky; top: calc(var(--nav-h) + 28px); align-self: start; }
 .toc .subhead-sm { margin-bottom: 12px; }
 .toc ul { list-style: none; padding: 0; display: grid; gap: 2px; }
@@ -970,10 +989,23 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
   .nav-toggle { display: inline-flex; }
   .hero-grid { grid-template-columns: 1fr; gap: 40px; }
   .hero { padding-top: 56px; }
-  .article-layout { grid-template-columns: 1fr; gap: 24px; }
-  .toc { position: static; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; background: var(--surface); }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* The rail only becomes a stacked, scrollable box once the two columns stop
+   fitting (960px leaves the prose ~616px), so a 1024px laptop keeps the sidebar
+   instead of scrolling past a 42vh table of contents before the first sentence. */
+@media (max-width: 960px) {
+  .article-layout { grid-template-columns: 1fr; gap: 24px; }
+  .article-layout > .prose { grid-column: 1; grid-row: 2; }
+  .article-layout > .toc,
+  .article-layout > .article-toc-slot { grid-column: 1; grid-row: 1; }
+  .toc {
+    position: static; max-height: 42vh; overflow-y: auto;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; background: var(--surface);
+  }
 }
 @media (max-width: 860px) {
   .grid-3, .feature-split, .steps { grid-template-columns: 1fr; }

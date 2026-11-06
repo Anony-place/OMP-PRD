@@ -120,7 +120,7 @@ def guide_page(g):
     related_cards = "\n".join(guide_card(x) for x in related)
     body = f"""
 <section class="article-hero">
-  <div class="container container-narrow">
+  <div class="container container-article">
     <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p>
     <nav aria-label="Breadcrumb" class="small muted"><a href="/articles" style="color:var(--purple)">Articles</a> <span class="divider-dot">/</span> <a href="/articles#/c/guides" style="color:var(--purple)">Guides</a></nav>
     <h1 class="h-1 mt-16">{g["title"]}</h1>
@@ -133,7 +133,7 @@ def guide_page(g):
   </div>
 </section>
 <section class="section-tight">
-  <div class="container">
+  <div class="container container-article">
     <div class="article-layout">
       <aside class="toc" aria-label="Table of contents">
         <div class="subhead-sm">On this page</div>
@@ -148,7 +148,7 @@ def guide_page(g):
   </div>
 </section>
 <section class="section" style="background: var(--bg-soft); border-block: 1px solid var(--border)">
-  <div class="container">
+  <div class="container container-article">
     <div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related guides</h2></div>
     <div class="grid grid-3">{related_cards}</div>
   </div>
