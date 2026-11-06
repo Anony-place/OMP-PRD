@@ -106,6 +106,7 @@ https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents
 https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do
 https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt
 https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners
+https://oopsmypassword.web.app/articles/bitwarden-not-syncing
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
@@ -126,6 +127,7 @@ https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
+https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it

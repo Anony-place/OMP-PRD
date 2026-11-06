@@ -31,6 +31,13 @@
     },
     {
       "type": "Guide",
+      "title": "Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them",
+      "desc": "New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…",
+      "url": "/articles/bitwarden-not-syncing",
+      "kw": "bitwarden not syncing guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Cloudflare Verification Asking You to Press Win+R? It’s a Scam",
       "desc": "If a website shows a Cloudflare-style “Verify you are human” page and then tells you to press Windows + R , press Ctrl + V , and hit Enter , stop. That is not…",
       "url": "/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam",
@@ -168,6 +175,13 @@
       "desc": "Most SIEM alerts are noise. How to measure the queue, tune rules in the right order, and keep the detections that catch a real intrusion.",
       "url": "/articles/siem-alerts-and-noise-reduction",
       "kw": "siem alerts and noise reduction guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "sqlmap “does not appear to be dynamic”: What to Change",
+      "desc": "The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…",
+      "url": "/articles/sqlmap-does-not-appear-to-be-dynamic",
+      "kw": "sqlmap does not appear to be dynamic guide articles"
     },
     {
       "type": "Guide",

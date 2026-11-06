@@ -1,0 +1,175 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</title><meta name="description" content="New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…"><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them"><meta property="og:description" content="New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…"><meta property="og:url" content="https://oopsmypassword.web.app/articles/bitwarden-not-syncing"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them"><meta name="twitter:description" content="New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/bitwarden-not-syncing"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them","description":"New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…","mainEntityOfPage":"https://oopsmypassword.web.app/articles/bitwarden-not-syncing","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-11-06T06:29:49.048995+00:00","dateModified":"2026-11-06T06:31:41.160286+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them","item":"https://oopsmypassword.web.app/articles/bitwarden-not-syncing"}]}</script><meta property="article:published_time" content="2026-11-06T06:29:49.048995+00:00"><meta property="article:modified_time" content="2026-11-06T06:31:41.160286+00:00">  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the key takeaway of Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them?","acceptedAnswer":{"@type":"Answer","text":"New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…"}},{"@type":"Question","name":"How can I test or apply these security practices safely?","acceptedAnswer":{"@type":"Answer","text":"Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity demo, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser."}}]}</script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-article"><p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</h1><p class="lead mt-8">New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-11-06</span></div></div></section><section class="section-tight"><div class="container container-article"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#the-one-check-that-halves-the-search">The one check that halves the search</a></li><li><a href="#1-the-device-is-pointed-at-the-wrong-server-not-the-wrong-password">1. The device is pointed at the wrong server, not the wrong password</a></li><li><a href="#2-a-second-account-with-a-different-email">2. A second account with a different email</a></li><li><a href="#3-nothing-has-pulled-yet-do-a-manual-sync">3. Nothing has pulled yet — do a manual sync</a></li><li><a href="#4-the-device-clock-is-off-so-tls-fails">4. The device clock is off, so TLS fails</a></li><li><a href="#5-a-vpn-ad-blocker-or-dns-filter-is-eating-the-connection">5. A VPN, ad blocker or DNS filter is eating the connection</a></li><li><a href="#6-the-item-exists-but-a-filter-is-hiding-it">6. The item exists, but a filter is hiding it</a></li><li><a href="#7-the-local-cache-is-stale-or-corrupt">7. The local cache is stale or corrupt</a></li><li><a href="#8-the-client-or-self-hosted-server-is-out-of-date">8. The client or self-hosted server is out of date</a></li><li><a href="#9-it-is-actually-an-outage">9. It is actually an outage</a></li><li><a href="#when-the-vault-is-empty-on-android-it-is-usually-autofill">When the vault is empty on Android, it is usually autofill</a></li><li><a href="#what-not-to-do">What not to do</a></li><li><a href="#frequently-asked-questions">Frequently asked questions</a></li><li><a href="#how-long-should-a-sync-take">How long should a sync take?</a></li><li><a href="#can-i-force-a-sync-from-the-web-vault">Can I force a sync from the web vault?</a></li><li><a href="#does-logging-out-delete-my-vault">Does logging out delete my vault?</a></li><li><a href="#why-does-one-device-sync-and-another-never-does">Why does one device sync and another never does?</a></li><li><a href="#i-changed-my-master-password-and-now-a-device-will-not-sync-why">I changed my master password and now a device will not sync. Why?</a></li><li><a href="#is-my-vault-safe-while-it-will-not-sync">Is my vault safe while it will not sync?</a></li><li><a href="#where-this-fits">Where this fits</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>Bitwarden saves the change instantly and the other device never sees it. Or the vault opens on a new phone and looks empty. Both get called "not syncing", and they are different faults: one is a client that will not <em>pull</em>, the other is a client pointed at the wrong account or the wrong server.</p>
+
+<p>Bitwarden keeps an encrypted copy of your vault on every device you use. Saving an item pushes it to the server straight away; the other apps pull it down when they log in, when they unlock, and periodically while they stay unlocked. That asymmetry is the whole bug: pushing almost never fails, pulling does.</p>
+
+<h2 id="the-one-check-that-halves-the-search">The one check that halves the search</h2>
+
+<p>Open your web vault at <code>vault.bitwarden.com</code> (or <code>vault.bitwarden.eu</code>, or your self-hosted address) in a browser and look for the missing item.</p>
+
+<ul>
+<li><strong>The item is in the web vault</strong> — the data is on the server, so exactly one client is failing to pull. Go to the client in question and work through causes 3 to 9.</li>
+<li><strong>The item is missing everywhere</strong> — the save never left the device. That is not a sync problem: the extension was locked, the account was offline, or the item was saved to a collection you cannot read back. Check "All items" with every filter cleared before anything else.</li>
+</ul>
+
+<p>Personal items in the web vault are always in sync with the server by definition — the web vault <em>is</em> the server-side view. Organisation items only sync to other clients every 30 minutes, which is why a shared login can lag while your own logins arrive instantly.</p>
+
+<h2 id="1-the-device-is-pointed-at-the-wrong-server-not-the-wrong-password">1. The device is pointed at the wrong server, not the wrong password</h2>
+
+<p>Bitwarden runs two independent clouds: <strong>bitwarden.com</strong> (US) and <strong>bitwarden.eu</strong> (EU), plus whatever you self-host. They hold separate data. Logging in at the wrong region does not error — it creates a brand new, perfectly valid, empty account, or logs you into an old one you forgot about.</p>
+
+<p>The tell is an empty or stale vault that still accepts your master password. On the login screen, the <strong>Region</strong> selector (or the server URL field, in the self-hosted build) sits under the email box. On mobile it is behind the region dropdown on the account screen. Set it to the region you registered in.</p>
+
+<pre><code># Self-hosted: is the base URL actually your server?
+# Browser extension -&gt; Settings -&gt; About / CLI:
+bw config server https://vault.example.com
+bw status
+
+# A wrong or expired certificate looks like a sync failure in the client
+# and like a TLS error here.
+curl -sS -o /dev/null -w '%{http_code}\n' https://vault.example.com/api/config
+</code></pre>
+
+<h2 id="2-a-second-account-with-a-different-email">2. A second account with a different email</h2>
+
+<p>Aliases and plus-addressing hide this well: <code>you+bitwarden@gmail.com</code> is not <code>you@gmail.com</code>, and it is a separate account with a separate vault. Bitwarden's client only syncs the <em>currently active</em> account when you use account switching, so a device left on the other profile keeps looking stale.</p>
+
+<p>Check the email printed in each app's settings and compare it character by character. If you deliberately run two accounts, switch to the one you expect before concluding anything.</p>
+
+<h2 id="3-nothing-has-pulled-yet-do-a-manual-sync">3. Nothing has pulled yet — do a manual sync</h2>
+
+<p>"Regularly while unlocked" is not "instantly", and the interval is not something you can tune on a per-device basis in the current apps. Sync by hand first; it costs ten seconds and rules out half of this list.</p>
+
+<table tabindex="0">
+<thead><tr><th>Client</th><th>Where the button is</th></tr></thead>
+<tbody>
+<tr><td>Browser extension</td><td>Settings tab → <strong>Vault options</strong> → <strong>Sync vault now</strong></td></tr>
+<tr><td>Android / iOS</td><td>Settings tab → <strong>Other</strong> → <strong>Sync now</strong></td></tr>
+<tr><td>Desktop app</td><td>File menu → <strong>Sync vault</strong></td></tr>
+<tr><td>CLI</td><td><code>bw sync</code></td></tr>
+<tr><td>Web vault</td><td>No button exists — log out and log back in</td></tr>
+</tbody>
+</table>
+
+<p>On mobile you can also turn on <strong>Allow sync on refresh</strong> (Settings → Other), which makes the pulldown gesture on the Vaults tab trigger a sync. That is the fastest habit to build: pull down, and if the item is still absent, the cause is below.</p>
+
+<p>A useful side effect: the sync button reports failure. If it errors instead of finishing silently, the cause is usually 4, 5 or 9, and the error text narrows it immediately.</p>
+
+<h2 id="4-the-device-clock-is-off-so-tls-fails">4. The device clock is off, so TLS fails</h2>
+
+<p>Bitwarden's own troubleshooting note lists this first, and it surprises people: a wrong system time does not produce "wrong time", it produces a certificate validation failure, which the client reports as a sync error. Phones that have been offline for weeks, laptops dual-booting Windows and Linux, and VMs restored from snapshots all hit it.</p>
+
+<p>Set the clock to automatic, then sync again. If the device is more than a few minutes off, the error message usually mentions certificates, SSL or handshake — treat that as a clock bug before you suspect the server.</p>
+
+<h2 id="5-a-vpn-ad-blocker-or-dns-filter-is-eating-the-connection">5. A VPN, ad blocker or DNS filter is eating the connection</h2>
+
+<p>Bitwarden's troubleshooting page names VPNs and ad-blocker extensions as a known interference source, and it is seen almost entirely in browsers. A blocker that rewrites requests to <code>api.bitwarden.com</code>, a corporate proxy that inspects TLS, or a DNS filter that blackholes the API host all look like "the extension is broken".</p>
+
+<p>Test in a clean profile with extensions disabled, or disable the VPN for one sync. If it works there, whitelist the API host in the blocker and move on. This is also the single most common cause on managed work laptops where a proxy is mandatory.</p>
+
+<h2 id="6-the-item-exists-but-a-filter-is-hiding-it">6. The item exists, but a filter is hiding it</h2>
+
+<p>A "missing" item that is actually present in a folder, a collection or a different item type is the cheapest cause to rule out and the most common false alarm. An item saved into an organisation lands in a <strong>collection</strong>; if you are not assigned to that collection, the client cannot show it — and no amount of syncing changes that.</p>
+
+<ul>
+<li>Clear the search box, then select <strong>All items</strong> and <strong>All vaults</strong>.</li>
+<li>Check the item type filter (login / card / identity / note); a new entry saved as a note is invisible under "Logins".</li>
+<li>For organisations: an admin must assign the collection to your account, and organisation data syncs on a 30-minute cadence.</li>
+</ul>
+
+<h2 id="7-the-local-cache-is-stale-or-corrupt">7. The local cache is stale or corrupt</h2>
+
+<p>A server update that changes the API, an interrupted sync, or a crashed app can leave a client with a local database it will not refresh. The fix is to throw the local copy away and pull a clean one — <strong>log out</strong>, not lock.</p>
+
+<p>Logging out deletes the device's encrypted cache; logging in rebuilds it from the server. If that device holds the only copy of something that never synced, export the vault first (Tools → Export vault), because logging out will not get it back.</p>
+
+<pre><code># Order matters
+# 1. Export the vault to a .json or .csv on the failing device
+# 2. Log out (do not just lock)
+# 3. Log back in, choose the right region, complete 2FA
+# 4. Sync once manually, then check "Last sync" in settings
+
+# Still empty after that? Reinstall the app / remove and re-add the
+# browser extension, then log in again. On Android, also clear the
+# app cache (not the app data) before reinstalling.
+</code></pre>
+
+<h2 id="8-the-client-or-self-hosted-server-is-out-of-date">8. The client or self-hosted server is out of date</h2>
+
+<p>Current clients talk to a current API. On the official cloud everything ships together, so this is rare there. On a self-hosted install it is routine to update the clients and forget the server, or the reverse — and an outdated client fails silently on newer endpoints: login works, sync does not.</p>
+
+<p>Check the version in each client's About screen, and check the server version in the admin panel. Update the server first, then the clients.</p>
+
+<h2 id="9-it-is-actually-an-outage">9. It is actually an outage</h2>
+
+<p>Bitwarden publishes <code>status.bitwarden.com</code> and the clients only surface a red banner during outages that the team has already acknowledged. If every device is stale at the same moment, check the status page before touching any device — and do not log out of a device during an outage if it is your only unlocked copy.</p>
+
+<h2 id="when-the-vault-is-empty-on-android-it-is-usually-autofill">When the vault is empty on Android, it is usually autofill</h2>
+
+<p>"Bitwarden not showing up on Android" is a different failure with a different fix: the vault is synced, but Android's autofill framework does not offer it. Enable <strong>Settings → Autofill services → Bitwarden</strong>, then set Bitwarden as the preferred service in the same screen. On Samsung and Xiaomi builds, also exempt Bitwarden from battery optimisation, or the background service is killed between unlocks and the fill popup never appears.</p>
+
+<h2 id="what-not-to-do">What not to do</h2>
+
+<ul>
+<li><strong>Do not clear app data or uninstall before exporting.</strong> The local cache is the only copy of anything that has not synced; deleting it fixes the app and loses the item.</li>
+<li><strong>Do not re-create the item on the second device.</strong> You will get two entries that then diverge, and one of them will be the wrong password at the worst moment.</li>
+<li><strong>Do not disable 2FA</strong> to "make syncing simpler". It has nothing to do with sync and it is the thing protecting the vault you are trying to repair.</li>
+<li><strong>Do not assume a deleted item comes back.</strong> Sync propagates deletion like any other change; it is the one operation you cannot undo from a device that was offline.</li>
+</ul>
+
+<h2 id="frequently-asked-questions">Frequently asked questions</h2>
+
+<h3 id="how-long-should-a-sync-take">How long should a sync take?</h3>
+<p>Personal items are pushed instantly and pulled on unlock or within minutes. Organisation items are documented at every 30 minutes. If an item is older than an hour behind on an unlocked client, it is a fault, not a delay.</p>
+
+<h3 id="can-i-force-a-sync-from-the-web-vault">Can I force a sync from the web vault?</h3>
+<p>No. The web vault has no sync control because it reads its state from the server on every load. If the web vault shows old data, the problem is server-side or you are looking at a different account or region.</p>
+
+<h3 id="does-logging-out-delete-my-vault">Does logging out delete my vault?</h3>
+<p>It deletes the local copy only. The vault on the server is untouched, which is why logging back in restores everything — and why anything that never reached the server is gone.</p>
+
+<h3 id="why-does-one-device-sync-and-another-never-does">Why does one device sync and another never does?</h3>
+<p>Because the fault is per-client. Take the failing device alone through causes 3 to 7 in order; the healthy device is the proof that the server and the account are fine.</p>
+
+<h3 id="i-changed-my-master-password-and-now-a-device-will-not-sync-why">I changed my master password and now a device will not sync. Why?</h3>
+<p>Older sessions are invalidated by a master password change. That device needs to log in again with the new password; a locked session cannot re-key itself.</p>
+
+<h3 id="is-my-vault-safe-while-it-will-not-sync">Is my vault safe while it will not sync?</h3>
+<p>Yes. The local copy stays encrypted, and the server never sees your master password. The risk is the opposite direction: an unsynced device is a device whose only copy of a change is on that device.</p>
+
+<h2 id="where-this-fits">Where this fits</h2>
+
+<p>Sync is the one part of a password manager you cannot test until it fails, so build the habit before it does: export monthly, keep a second device you actually log into, and store the recovery codes somewhere that is not the vault. If you are choosing a manager rather than repairing one, the <a href="/articles/are-password-managers-safe" rel="noopener noreferrer">password manager guide</a> covers what the encryption actually protects, and the <a href="/compare/bitwarden-vs-1password" rel="noopener noreferrer">Bitwarden vs 1Password</a> and <a href="/compare/keepassxc-vs-bitwarden" rel="noopener noreferrer">KeePassXC vs Bitwarden</a> comparisons cover the trade-offs that matter when offline access and self-hosting are in scope.</p>
+
+<p>And if a login has already leaked, fixing sync is not the fix: change it, check it against a breach list with the <a href="/articles/check-if-password-was-leaked" rel="noopener noreferrer">breach check walkthrough</a>, and make sure it is not reused.</p>
+<hr class="hr-fade" style="margin-top:48px"></article></div></div></section><section class="section-tight" style="padding-top:0"><div class="container container-article"><p class="back-link-row" style="margin:0"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p></div></section><section class="section-tight"><div class="container container-article"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px"><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/sqlmap-does-not-appear-to-be-dynamic">sqlmap “does not appear to be dynamic”: What to Change</a></h3><p class="feed-excerpt">The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/wireshark-not-capturing-packets">Wireshark Not Capturing Packets: 8 Causes, In Order</a></h3><p class="feed-excerpt">No interfaces found, or an interface that captures nothing. The eight real causes on Windows and Linux, the group-membership trap, and why offload makes…</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/john-the-ripper-no-password-hashes-loaded">John the Ripper: No Password Hashes Loaded (All 8 Causes)</a></h3><p class="feed-excerpt">John refuses to load your hash file. The eight real causes in frequency order, the build trap that hits most Kali users, and a five-command diagnostic that…</p></div></article></div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>

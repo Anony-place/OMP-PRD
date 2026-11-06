@@ -1,0 +1,220 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>sqlmap “does not appear to be dynamic”: What to Change</title><meta name="description" content="The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…"><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="sqlmap “does not appear to be dynamic”: What to Change"><meta property="og:description" content="The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…"><meta property="og:url" content="https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="sqlmap “does not appear to be dynamic”: What to Change"><meta name="twitter:description" content="The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"sqlmap “does not appear to be dynamic”: What to Change","description":"The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…","mainEntityOfPage":"https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-11-06T06:29:49.048995+00:00","dateModified":"2026-11-06T06:32:50.463064+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"sqlmap “does not appear to be dynamic”: What to Change","item":"https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic"}]}</script><meta property="article:published_time" content="2026-11-06T06:29:49.048995+00:00"><meta property="article:modified_time" content="2026-11-06T06:32:50.463064+00:00">  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the key takeaway of sqlmap “does not appear to be dynamic”: What to Change?","acceptedAnswer":{"@type":"Answer","text":"The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…"}},{"@type":"Question","name":"How can I test or apply these security practices safely?","acceptedAnswer":{"@type":"Answer","text":"Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity demo, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser."}}]}</script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-article"><p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">sqlmap “does not appear to be dynamic”: What to Change</h1><p class="lead mt-8">The warning is a page-comparison failure, not a verdict. What sqlmap actually tests, the seven causes that produce it, and the flags — --string, --technique=T…</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-11-06</span></div></div></section><section class="section-tight"><div class="container container-article"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#read-the-next-three-lines-before-changing-anything">Read the next three lines before changing anything</a></li><li><a href="#1-the-page-really-is-the-same-for-every-value">1. The page really is the same for every value</a></li><li><a href="#2-the-response-is-not-stable-so-every-comparison-is-noise">2. The response is not stable, so every comparison is noise</a></li><li><a href="#3-a-cache-or-cdn-is-serving-one-page-for-every-request">3. A cache or CDN is serving one page for every request</a></li><li><a href="#4-the-parameter-is-a-token-and-replacing-it-gets-you-the-login-page">4. The parameter is a token, and replacing it gets you the login page</a></li><li><a href="#5-there-is-a-redirect-in-the-way">5. There is a redirect in the way</a></li><li><a href="#6-the-waf-is-answering-not-the-application">6. The WAF is answering, not the application</a></li><li><a href="#7-you-are-testing-parameter-1-of-14">7. You are testing parameter 1 of 14</a></li><li><a href="#the-one-flag-that-sidesteps-the-whole-problem">The one flag that sidesteps the whole problem</a></li><li><a href="#flag-reference">Flag reference</a></li><li><a href="#frequently-asked-questions">Frequently asked questions</a></li><li><a href="#does-the-warning-mean-the-site-is-not-vulnerable">Does the warning mean the site is not vulnerable?</a></li><li><a href="#should-i-cancel-and-restart-with-flags">Should I cancel and restart with flags?</a></li><li><a href="#why-does-it-say-the-parameter-is-not-dynamic-but-then-says-it-might-be">Why does it say the parameter is not dynamic but then says it might be injectable?</a></li><li><a href="#does-level-5-risk-3-fix-it">Does --level=5 --risk=3 fix it?</a></li><li><a href="#my-target-is-a-json-api-and-the-body-is-identical-what-now">My target is a JSON API and the body is identical. What now?</a></li><li><a href="#is-any-of-this-legal">Is any of this legal?</a></li><li><a href="#where-this-fits">Where this fits</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>sqlmap prints <code>[WARNING] GET parameter 'id' does not appear to be dynamic</code> and keeps going. The line is not an error, it is not a verdict, and in most sessions it is not even the reason a result was missed — but it does mean one specific test failed, and knowing which test saves an hour of guessing.</p>
+
+<p>Before the request is sent, sqlmap picks a parameter and sends it twice: once with the value you gave it, once with a random value of the same shape. Then it compares the two responses. If they are identical, nothing on the page depends on that parameter, so it warns that the parameter <em>does not appear to be dynamic</em>. The comparison, not your payload, is what failed.</p>
+
+<h2 id="read-the-next-three-lines-before-changing-anything">Read the next three lines before changing anything</h2>
+
+<p>The warning is routinely followed by lines that decide whether you have a problem at all:</p>
+
+<pre><code>[INFO] testing if GET parameter 'id' is dynamic
+[WARNING] GET parameter 'id' does not appear to be dynamic
+[INFO] heuristic (basic) test shows that GET parameter 'id' might be injectable (possible DBMS: 'MySQL')
+[INFO] heuristic (XSS) test shows that GET parameter 'id' might be vulnerable to cross-site scripting (XSS) attacks
+[INFO] testing for SQL injection on GET parameter 'id'
+...
+[INFO] GET parameter 'id' appears to be 'MySQL &gt;= 5.0.12 AND time-based blind' injectable
+</code></pre>
+
+<p>In that real case the warning came first and the parameter was still injectable. sqlmap carries on with error-based, boolean-based and time-based payloads regardless. If the run ends with <code>"identified the following injection point(s)"</code>, the warning cost you nothing — change nothing and move on.</p>
+
+<p>The situation that needs work is the other ending: every technique reported as not injectable, or the run stops before it even reaches the payloads. Then it is one of the seven causes below.</p>
+
+<h2 id="1-the-page-really-is-the-same-for-every-value">1. The page really is the same for every value</h2>
+
+<p>The most common cause, and the least written about: the parameter is not used where you think. Three shapes of it:</p>
+
+<ul>
+<li><strong>Single-page apps.</strong> The HTML shell is byte-identical for every value; the data arrives in a separate XHR/fetch call. The URL carries no usable parameter, and the response you are comparing is a template.</li>
+<li><strong>Client-side parameters.</strong> A filter, a sort order or a tab index read by JavaScript and never sent to the server. sqlmap changes the value; the server never sees it.</li>
+<li><strong>Dead parameters.</strong> Leftovers in a form that the backend ignores.</li>
+</ul>
+
+<p>Open DevTools → Network, repeat the action that changes the page, and look at what the browser actually sent. That request is your target, not the address bar. If it is a POST with a JSON body:</p>
+
+<pre><code>sqlmap -u 'https://target.example/api/search' \
+  --data '{"query":"widget","page":1}' \
+  --headers 'Content-Type: application/json' \
+  --method POST --batch
+
+# Mark exactly one field to test, and let sqlmap ignore the rest
+sqlmap -u 'https://target.example/api/search' \
+  --data '{"query":"widget*","page":1}' \
+  --headers 'Content-Type: application/json' --method POST
+</code></pre>
+
+<h2 id="2-the-response-is-not-stable-so-every-comparison-is-noise">2. The response is not stable, so every comparison is noise</h2>
+
+<p>If the page contains a CSRF token, a timestamp, a random ad slot or a rotating banner, two identical requests still differ. sqlmap detects this and says so: <code>[WARNING] target URL content is not stable (i.e. content differs)</code>. It then switches to a sequence matcher, and the "is it dynamic" test can no longer tell a real change from the noise.</p>
+
+<p>The fix is to tell sqlmap which part of the response is the signal:</p>
+
+<pre><code># Compare only on a string that must appear when the query is TRUE
+sqlmap -u 'https://target.example/item?id=1' --string='Item found' --batch
+
+# ...or on one that must appear when it is FALSE
+sqlmap -u 'https://target.example/item?id=1' --not-string='No results' --batch
+
+# ...or on the HTTP status code, when the body is useless
+sqlmap -u 'https://target.example/item?id=1' --code=200 --batch
+
+# ...or on a regexp for the numeric result you can see change
+sqlmap -u 'https://target.example/item?id=1' --regexp='Item found: [0-9]+' --batch
+
+# Strip markup and compare text only
+sqlmap -u 'https://target.example/item?id=1' --text-only --batch
+</code></pre>
+
+<p>Grab the string from a real TRUE response and a real FALSE response — <code>?id=1</code> versus <code>?id=999999</code> — not from memory. A string that appears in both is worse than no string at all.</p>
+
+<h2 id="3-a-cache-or-cdn-is-serving-one-page-for-every-request">3. A cache or CDN is serving one page for every request</h2>
+
+<p>If the edge caches <code>/product?id=1</code> and returns that HTML for <code>?id=8471</code> as well, the page is genuinely identical and sqlmap is right. The application may be perfectly injectable; the copy you measured never reached it.</p>
+
+<pre><code>sqlmap -u 'https://target.example/product?id=1' \
+  --random-agent --delay=1 --batch \
+  --headers='Cache-Control: no-cache'
+
+# Confirm outside sqlmap: do the two requests differ at all?
+curl -s 'https://target.example/product?id=1'    | sha256sum
+curl -s 'https://target.example/product?id=999'  | sha256sum
+</code></pre>
+
+<p>If those two hashes match in curl as well, stop testing that parameter and find one the page actually reflects. <code>--flush-session</code> is worth adding after you change anything, because sqlmap caches what it learned about the target under <code>~/.sqlmap/output/</code> and will happily reuse a stale conclusion.</p>
+
+<h2 id="4-the-parameter-is-a-token-and-replacing-it-gets-you-the-login-page">4. The parameter is a token, and replacing it gets you the login page</h2>
+
+<p>Anti-CSRF tokens, session ids and "authenticity_token" fields are designed to be rejected when altered. sqlmap replaces the value, the server answers with the login page or an error page — often with status 200 — and the body is identical to the one it compares against. The warning is correct and the parameter is not the vulnerable one.</p>
+
+<pre><code>sqlmap -u 'https://target.example/account/edit' \
+  --data 'email=a@example.com&amp;csrf_token=TOKEN&amp;save=1' \
+  --cookie 'PHPSESSID=...' --batch \
+  --csrf-token='csrf_token' --csrf-url='https://target.example/account/edit'
+
+# Keep the session alive and skip the fields that cannot be injectable
+sqlmap ... -p email --skip='csrf_token,save'
+</code></pre>
+
+<p>Same story for a session: if the cookie expired, every response is the login page and the page looks static. Re-grab the cookie, then use <code>--drop-set-cookie</code> if the server keeps overwriting it mid-scan.</p>
+
+<h2 id="5-there-is-a-redirect-in-the-way">5. There is a redirect in the way</h2>
+
+<p>sqlmap compares the body of the response it receives. For an endpoint that answers <code>302</code> with an empty body, every parameter value produces the same nothing, and the dynamic test can never pass.</p>
+
+<pre><code>sqlmap -u 'https://target.example/go?id=1' --follow-redirects --batch</code></pre>
+
+<p>Check the redirect target too: a redirect to <code>/login</code> means cause 4, not cause 5.</p>
+
+<h2 id="6-the-waf-is-answering-not-the-application">6. The WAF is answering, not the application</h2>
+
+<p>An inline WAF returns its own block page for payloads it dislikes, and that page is identical every time. sqlmap's own log tells you when it suspects this: <code>[INFO] checking if the target is protected by some kind of WAF/IPS</code>, and later <code>[WARNING] the back-end DBMS is not ... </code> style noise instead of results.</p>
+
+<pre><code># Slow down and vary the client fingerprint before reaching for tamper scripts
+sqlmap -u 'https://target.example/item?id=1' \
+  --random-agent --delay=2 --retries=3 --batch
+
+# Then, if the block is on keywords rather than rate
+sqlmap -u 'https://target.example/item?id=1' --tamper=space2comment --batch</code></pre>
+
+<p>Distinguish the two: a rate limit usually clears after a pause, a signature block does not. Which one you have decides whether <code>--delay</code> or <code>--tamper</code> is the fix.</p>
+
+<h2 id="7-you-are-testing-parameter-1-of-14">7. You are testing parameter 1 of 14</h2>
+
+<p>On a form with a dozen fields, sqlmap works through every parameter by default, and the noise from the others drowns the signal. It also wastes requests against the WAF. Name the parameter you care about, or mark it in the request with <code>*</code>:</p>
+
+<pre><code># Only test 'id'
+sqlmap -u 'https://target.example/item?id=1&amp;lang=en&amp;ref=home' -p id --batch
+
+# Custom injection point, when the value must stay in a fixed position
+sqlmap -u 'https://target.example/item?id=1*&amp;lang=en' --batch
+
+# Skip the ones you know are noise
+sqlmap -u 'https://target.example/item?id=1&amp;lang=en' --param-exclude='lang|ref' --batch</code></pre>
+
+<h2 id="the-one-flag-that-sidesteps-the-whole-problem">The one flag that sidesteps the whole problem</h2>
+
+<p>Boolean-based and union-based detection depend on the response changing. Time-based blind does not: it asks whether the <em>response time</em> changed. If the page is genuinely identical for every value but the parameter reaches the database, forcing the time technique finds it when the comparison-based techniques cannot.</p>
+
+<pre><code>sqlmap -u 'https://target.example/item?id=1' --technique=T --time-sec=5 --batch
+
+# Narrow the DBMS too, so it sends fewer, more targeted payloads
+sqlmap -u 'https://target.example/item?id=1' --technique=T --dbms=mysql --batch</code></pre>
+
+<p>Expect it to be slow — that is the technique working, not hanging. If <code>--technique=T</code> also comes back clean on a parameter you can see changing the page in a browser, the warning was a red herring and the problem is elsewhere.</p>
+
+<h2 id="flag-reference">Flag reference</h2>
+
+<table tabindex="0">
+<thead><tr><th>Flag</th><th>What it changes</th><th>Use it when</th></tr></thead>
+<tbody>
+<tr><td><code>--string</code></td><td>Compare on text present when the query is TRUE</td><td>Page has noise but one stable marker</td></tr>
+<tr><td><code>--not-string</code></td><td>Compare on text present when it is FALSE</td><td>The FALSE page is easier to recognise</td></tr>
+<tr><td><code>--regexp</code></td><td>Compare on a regexp when TRUE</td><td>The signal is a number, not a phrase</td></tr>
+<tr><td><code>--code</code></td><td>Compare on HTTP status</td><td>Body is identical, status is not</td></tr>
+<tr><td><code>--text-only</code></td><td>Ignore markup in the comparison</td><td>Random attributes or nonces in the HTML</td></tr>
+<tr><td><code>--technique=T</code></td><td>Time-based blind only</td><td>Content never changes but the query runs</td></tr>
+<tr><td><code>--flush-session</code></td><td>Discard cached per-target results</td><td>After changing any other flag</td></tr>
+<tr><td><code>-p</code> / <code>*</code></td><td>Test one parameter, or a marked position</td><td>Multi-parameter forms, WAF noise</td></tr>
+<tr><td><code>--data</code> / <code>--method</code></td><td>Send a POST body, choose the verb</td><td>Parameter is not in the URL</td></tr>
+<tr><td><code>--cookie</code> / <code>--csrf-token</code></td><td>Authenticate, refresh anti-CSRF fields</td><td>Every response looks like a login page</td></tr>
+<tr><td><code>--follow-redirects</code></td><td>Compare the page after the redirect</td><td>Endpoint answers 302 with an empty body</td></tr>
+<tr><td><code>--delay</code> / <code>--random-agent</code></td><td>Slow down, vary the client</td><td>Rate limiting or fingerprint blocking</td></tr>
+</tbody>
+</table>
+
+<h2 id="frequently-asked-questions">Frequently asked questions</h2>
+
+<h3 id="does-the-warning-mean-the-site-is-not-vulnerable">Does the warning mean the site is not vulnerable?</h3>
+<p>No. It means the page did not change when sqlmap swapped the value. Time-based blind injection, second-order injection and injections in headers or JSON fields all survive a page that never changes.</p>
+
+<h3 id="should-i-cancel-and-restart-with-flags">Should I cancel and restart with flags?</h3>
+<p>Not until the log reaches the payload phase and every technique fails. Restarting early throws away a scan that may have been about to identify a time-based injection. Let it finish the first pass, then re-run with <code>--flush-session</code> and the flag the ending points to.</p>
+
+<h3 id="why-does-it-say-the-parameter-is-not-dynamic-but-then-says-it-might-be">Why does it say the parameter is not dynamic but then says it might be injectable?</h3>
+<p>Two different heuristics. The first compares two responses. The second sends a payload and looks for a DBMS error in the response body. The second one is the better signal when the page is static.</p>
+
+<h3 id="does-level-5-risk-3-fix-it">Does <code>--level=5 --risk=3</code> fix it?</h3>
+<p>It sends more payloads, including heavier time-based ones, so it can find an injection the default run missed. It does not fix a comparison problem — if the page is identical for every value, more payloads are compared against the same blank baseline. Set the comparison first, then raise the level.</p>
+
+<h3 id="my-target-is-a-json-api-and-the-body-is-identical-what-now">My target is a JSON API and the body is identical. What now?</h3>
+<p>Send the JSON with <code>--data</code> and set <code>Content-Type: application/json</code> with <code>--headers</code>. sqlmap parses it and can inject inside nested fields; mark the exact field with <code>*</code> when the structure matters.</p>
+
+<h3 id="is-any-of-this-legal">Is any of this legal?</h3>
+<p>Only against systems you own or have written authorisation to test. Running these flags against someone else's site is unauthorised access in most jurisdictions, and "it was only a scan" is not a defence.</p>
+
+<h2 id="where-this-fits">Where this fits</h2>
+
+<p>The warning is a comparison problem, so the fix is nearly always in how you describe the target — method, session, and what "changed" looks like — rather than in the payloads. Work through the <a href="/cheatsheets/sqlmap-pentest-cheatsheet" rel="noopener noreferrer">sqlmap cheat sheet</a> for the exact syntax of each flag, read the <a href="/pentest/sqlmap" rel="noopener noreferrer">sqlmap tool guide</a> for install and first-run settings, and use the <a href="/compare/sqlmap-vs-manual-sqli" rel="noopener noreferrer">sqlmap vs manual SQLi</a> comparison to decide when hand-written payloads will get you further. If you are still deciding what injection even looks like, start with the <a href="/glossary/sql-injection-sqli" rel="noopener noreferrer">SQL injection glossary entry</a>.</p>
+
+<p>Testing your own application? Fix the finding rather than the report: parameterised queries remove the class of bug entirely, and the <a href="/glossary/csrf-cross-site-request-forgery" rel="noopener noreferrer">CSRF entry</a> explains why the token that confused sqlmap exists in the first place.</p>
+<hr class="hr-fade" style="margin-top:48px"></article></div></div></section><section class="section-tight" style="padding-top:0"><div class="container container-article"><p class="back-link-row" style="margin:0"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p></div></section><section class="section-tight"><div class="container container-article"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px"><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/bitwarden-not-syncing">Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</a></h3><p class="feed-excerpt">New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/wireshark-not-capturing-packets">Wireshark Not Capturing Packets: 8 Causes, In Order</a></h3><p class="feed-excerpt">No interfaces found, or an interface that captures nothing. The eight real causes on Windows and Linux, the group-membership trap, and why offload makes…</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/john-the-ripper-no-password-hashes-loaded">John the Ripper: No Password Hashes Loaded (All 8 Causes)</a></h3><p class="feed-excerpt">John refuses to load your hash file. The eight real causes in frequency order, the build trap that hits most Kali users, and a five-command diagnostic that…</p></div></article></div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>
