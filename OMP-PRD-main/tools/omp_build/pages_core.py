@@ -104,7 +104,7 @@ def home_body(guides):
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Toolbox</span>
-      <h2 class="h-1">Eight tools. Zero accounts.</h2>
+      <h2 class="h-1">Eleven tools. Zero accounts.</h2>
       <p class="lead">Every tool below actually works, in your browser, right now. Anything we haven't finished is labeled instead of faked.</p>
     </div>
     <div class="grid grid-4">{tool_cards}</div>
@@ -341,7 +341,7 @@ def tools_body():
   <div class="container">
     <span class="chip chip-accent">{icon("shield","icon-16")} All tools live unless labeled</span>
     <h1 class="h-1 mt-16">The OMP Toolbox</h1>
-    <p class="lead">Eight focused utilities for testing, generating and understanding passwords. Each one runs entirely in your browser — and any tool that isn't finished will say "Coming Soon" instead of pretending.</p>
+    <p class="lead">Eleven focused utilities for testing, generating and understanding passwords. Each one runs entirely in your browser — and any tool that isn't finished will say "Coming Soon" instead of pretending.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:16px">

@@ -235,5 +235,33 @@ for (const tool of ['generator', 'passphrase', 'hash-inspector']) {
   assert(feedback, `${tool}: pressing copy gives visible confirmation`);
 }
 
+/* ---------------------------------------------------------------- discovery
+   A tool nobody can find does not exist. Three practitioner tools
+   (dork-builder, hash-inspector, url-scanner) shipped without ever being added
+   to the homepage grid, so the homepage claimed "Eight tools" while eleven
+   worked - and Search Console showed them ranking on single-digit impressions
+   because the only link to them was buried further down the page. */
+section('Every tool is reachable from the homepage grid');
+
+const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const grid = /<section[^>]*id="tools-preview"[^>]*>([\s\S]*?)<\/section>/.exec(home);
+assert(Boolean(grid), 'index.html has a tools-preview section');
+
+if (grid) {
+  const gridLinks = [...grid[1].matchAll(/href="\/([a-z0-9-]+)"/g)].map((m) => m[1]);
+  const missing = TOOLS.filter((tool) => !gridLinks.includes(tool));
+  assert(missing.length === 0,
+    missing.length ? `homepage grid omits: ${missing.join(', ')}` : `all ${TOOLS.length} tools are in the homepage grid`);
+
+  /* The heading counts the grid out loud, so it has to agree with it. */
+  const words = { 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen' };
+  const heading = /<h2[^>]*>(\w+) tools\b/.exec(grid[1]);
+  const expected = words[TOOLS.length];
+  assert(heading && heading[1] === expected,
+    heading && heading[1] === expected
+      ? `the heading says "${expected} tools", matching the ${TOOLS.length} in the grid`
+      : `the grid holds ${TOOLS.length} tools but the heading says "${heading ? heading[1] : 'nothing'}" (expected "${expected}")`);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed\n`);
 if (failures.length) process.exitCode = 1;

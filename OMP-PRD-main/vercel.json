@@ -79,6 +79,41 @@
       "statusCode": 301
     },
     {
+      "source": "/guides/password-mistakes",
+      "destination": "/articles/common-password-mistakes",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/incident-evidence-preservation-basics",
+      "destination": "/cheatsheets/incident-response-first-hour-cheatsheet",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/database-encryption-strategies",
+      "destination": "/articles/common-cryptography-failures",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/wireless-network-cryptography",
+      "destination": "/articles/common-cryptography-failures",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/devsecops-integration-rules",
+      "destination": "/security-checklist",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/secure-backup-recovery-plan",
+      "destination": "/articles/after-a-data-breach",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/secure-backup-recovery-plan.html",
+      "destination": "/articles/after-a-data-breach",
+      "statusCode": 301
+    },
+    {
       "source": "/guides/:p1(.*)\\.html",
       "destination": "/articles/:p1",
       "statusCode": 301
