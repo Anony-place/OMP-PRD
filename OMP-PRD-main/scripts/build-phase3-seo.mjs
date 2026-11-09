@@ -1303,12 +1303,12 @@ export const CHEATSHEETS = [
     category: 'Defensive Security',
     summary: 'First-hour Linux & account compromise triage checklist: preserving volatile network/process state, isolating hosts, and revoking active sessions.',
     commands: [
-      { title: '1. Snapshot Active Network Connections & Listeners', desc: 'Record all established outbound C2 connections and listening sockets before rebooting.', cmd: 'ss -antup > /tmp/ir-netstat.txt && lsof -i -n -P > /tmp/ir-lsof.txt' },
-      { title: '2. Capture Running Processes & Deleted Binaries', desc: 'List full command lines and spot running processes whose on-disk binary was deleted.', cmd: 'ps auxwwf > /tmp/ir-ps.txt && ls -l /proc/*/exe 2>/dev/null | grep "(deleted)"' },
-      { title: '3. Audit Logged-In Users & Recent Auth Events', desc: 'Check currently active TTY sessions, recent SSH logins, and failed brute-force attempts.', cmd: 'w && last -aiF -n 30 && grep -i "Accepted\\|Failed" /var/log/auth.log | tail -n 50' },
-      { title: '4. Check Persistence: SSH Keys, Systemd & Cron', desc: 'Inspect authorized_keys and recently modified systemd services.', cmd: 'find /home /root -name "authorized_keys" -exec ls -la {} + && find /etc/systemd/system -mtime -7 -ls' },
-      { title: '5. Compute SHA-256 Hashes of Suspicious Artifacts', desc: 'Generate cryptographic digests of suspicious binaries before quarantine.', cmd: 'sha256sum /tmp/suspicious-binary' },
-      { title: '6. Host Firewall Containment (Preserve Investigation SSH)', desc: 'Block all outbound traffic except your management IP during containment.', cmd: 'sudo iptables -A INPUT -s {TARGET} -j ACCEPT && sudo iptables -P OUTPUT DROP' }
+      { title: 'Snapshot Active Network Connections & Listeners', desc: 'Record all established outbound C2 connections and listening sockets before rebooting.', cmd: 'ss -antup > /tmp/ir-netstat.txt && lsof -i -n -P > /tmp/ir-lsof.txt' },
+      { title: 'Capture Running Processes & Deleted Binaries', desc: 'List full command lines and spot running processes whose on-disk binary was deleted.', cmd: 'ps auxwwf > /tmp/ir-ps.txt && ls -l /proc/*/exe 2>/dev/null | grep "(deleted)"' },
+      { title: 'Audit Logged-In Users & Recent Auth Events', desc: 'Check currently active TTY sessions, recent SSH logins, and failed brute-force attempts.', cmd: 'w && last -aiF -n 30 && grep -i "Accepted\\|Failed" /var/log/auth.log | tail -n 50' },
+      { title: 'Check Persistence: SSH Keys, Systemd & Cron', desc: 'Inspect authorized_keys and recently modified systemd services.', cmd: 'find /home /root -name "authorized_keys" -exec ls -la {} + && find /etc/systemd/system -mtime -7 -ls' },
+      { title: 'Compute SHA-256 Hashes of Suspicious Artifacts', desc: 'Generate cryptographic digests of suspicious binaries before quarantine.', cmd: 'sha256sum /tmp/suspicious-binary' },
+      { title: 'Host Firewall Containment (Preserve Investigation SSH)', desc: 'Block all outbound traffic except your management IP during containment.', cmd: 'sudo iptables -A INPUT -s {TARGET} -j ACCEPT && sudo iptables -P OUTPUT DROP' }
     ],
     faqs: [
       { q: 'Why should you never immediately reboot a suspected compromised server?', a: 'Rebooting destroys volatile RAM, active network socket tables, in-memory fileless malware processes, and unlinked /proc/*/exe file descriptors that are essential for determining root cause and lateral movement.' },
@@ -2440,11 +2440,42 @@ function buildCheatsheetsCluster() {
       ]
     };
 
+    /* The replacer used to print all three inputs on every cheat sheet, so a
+       first-hour incident-response page offered a "Wordlist Path" field for a
+       checklist that never takes one. Only render the variables this sheet's
+       commands actually contain - and if it contains none, drop the card
+       entirely rather than showing three boxes that change nothing. */
+    const CS_VARS = [
+      { key: 'TARGET', id: 'cs-var-target', label: 'Target IP / Host', value: '192.0.2.10', phrase: 'the target IP or host' },
+      { key: 'DOMAIN', id: 'cs-var-domain', label: 'Target Domain', value: 'example.com', phrase: 'the target domain' },
+      { key: 'WORDLIST', id: 'cs-var-wordlist', label: 'Wordlist Path', value: '/usr/share/wordlists/common.txt', phrase: 'the wordlist path' },
+      { key: 'LHOST', id: 'cs-var-lhost', label: 'Callback IP (LHOST)', value: '192.0.2.10', phrase: 'your callback IP' },
+    ];
+    const commandText = cs.commands.map((c) => c.cmd).join('\n');
+    const usedVars = CS_VARS.filter((v) => commandText.includes(`{${v.key}}`));
+    const replacerFields = usedVars
+      .map((v) => `<div>
+          <label class="small" for="${v.id}" style="font-weight:600;display:block;margin-bottom:4px">${esc(v.label)}</label>
+          <input id="${v.id}" class="input mono" type="text" value="${esc(v.value)}" data-cs-var="${v.key}">
+        </div>`)
+      .join('');
+    const phrases = usedVars.map((v) => v.phrase);
+    const phraseList = phrases.length > 1
+      ? `${phrases.slice(0, -1).join(', ')} and ${phrases[phrases.length - 1]}`
+      : phrases[0];
+    const replacerIntro = usedVars.length
+      ? `Change ${phraseList} below and every command block on this page updates to match.`
+      : 'Every command on this page is ready to run as written.';
+
     const cmdCards = cs.commands.map((c, cIdx) => {
-      const rendered = c.cmd
-        .replaceAll('{TARGET}', '192.0.2.10')
-        .replaceAll('{DOMAIN}', 'example.com')
-        .replaceAll('{WORDLIST}', '/usr/share/wordlists/common.txt');
+      /* Rendered from CS_VARS rather than a second hand-written list: the build
+         substituted three placeholders and the client substituted the same
+         three, so {LHOST} - used six times on the Metasploit sheet - shipped
+         literally and visitors copied a command that could not run. */
+      const rendered = CS_VARS.reduce(
+        (text, v) => text.replaceAll(`{${v.key}}`, v.value),
+        c.cmd,
+      );
       return `
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
@@ -2469,27 +2500,14 @@ function buildCheatsheetsCluster() {
   <div class="container container-narrow">
     <div class="card card-pad" style="margin-bottom:24px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <h2 class="h-3" style="margin:0">Interactive Target Variable Replacer</h2>
+        <h2 class="h-3" style="margin:0">${usedVars.length ? 'Interactive Target Variable Replacer' : 'Take This Page With You'}</h2>
         <div class="flex gap-8 wrap">
           <button type="button" class="btn btn-secondary btn-sm" data-cs-download-md>Download .md</button>
           <button type="button" class="btn btn-ghost btn-sm" data-cs-print>Print / Save PDF</button>
         </div>
       </div>
-      <p class="muted small mt-8">Customize your target IP, domain, or wordlist below to update every command block on this page automatically.</p>
-      <div class="grid grid-3 mt-12" style="gap:12px">
-        <div>
-          <label class="small" for="cs-var-target" style="font-weight:600;display:block;margin-bottom:4px">Target IP / Host</label>
-          <input id="cs-var-target" class="input mono" type="text" value="192.0.2.10" data-cs-var="TARGET">
-        </div>
-        <div>
-          <label class="small" for="cs-var-domain" style="font-weight:600;display:block;margin-bottom:4px">Target Domain</label>
-          <input id="cs-var-domain" class="input mono" type="text" value="example.com" data-cs-var="DOMAIN">
-        </div>
-        <div>
-          <label class="small" for="cs-var-wordlist" style="font-weight:600;display:block;margin-bottom:4px">Wordlist Path</label>
-          <input id="cs-var-wordlist" class="input mono" type="text" value="/usr/share/wordlists/common.txt" data-cs-var="WORDLIST">
-        </div>
-      </div>
+      <p class="muted small mt-8">${replacerIntro}</p>
+      ${usedVars.length ? `<div class="grid grid-3 mt-12" style="gap:12px">${replacerFields}</div>` : ''}
     </div>
 
     <article class="prose">

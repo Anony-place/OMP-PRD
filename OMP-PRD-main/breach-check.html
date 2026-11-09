@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Breach Check — k-Anonymity Lookup | OopsMyPassword</title>
-  <meta name="description" content="Check if a password appears in data breaches using zero-knowledge k-anonymity (5-char SHA-1 prefix) with offline fallback. 100% client-side.">
+  <title>k-Anonymity Password Check — Breach Lookup | OopsMyPassword</title>
+  <meta name="description" content="A k-anonymity password check sends only a 5-character SHA-1 prefix, so the password is never transmitted. Test it against known breaches in your browser.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="https://oopsmypassword.web.app/breach-check">
@@ -14,14 +14,14 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OopsMyPassword">
   <meta property="og:title" content="Password Breach Check — k-Anonymity Lookup | OopsMyPassword">
-  <meta property="og:description" content="Check if a password appears in data breaches using zero-knowledge k-anonymity (5-char SHA-1 prefix) with offline fallback. 100% client-side.">
+  <meta property="og:description" content="A k-anonymity password check sends only a 5-character SHA-1 prefix, so the password is never transmitted. Test it against known breaches in your browser.">
   <meta property="og:url" content="https://oopsmypassword.web.app/breach-check">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Password Breach Check — k-Anonymity Lookup | OopsMyPassword">
-  <meta name="twitter:description" content="Check if a password appears in data breaches using zero-knowledge k-anonymity (5-char SHA-1 prefix) with offline fallback. 100% client-side.">
+  <meta name="twitter:description" content="A k-anonymity password check sends only a 5-character SHA-1 prefix, so the password is never transmitted. Test it against known breaches in your browser.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -64,7 +64,7 @@
 <section class="page-hero">
   <div class="container">
     <span class="chip chip-accent"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="m12 12 6-6"/></svg> Live tool · k-anonymity prefix query</span>
-    <h1 class="h-1 mt-16">Breach Check</h1>
+    <h1 class="h-1 mt-16">k-Anonymity Password Check</h1>
     <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API. If the database cannot be reached, the tool says so instead of guessing &mdash; it will never call a password safe on the strength of a lookup that failed.</p>
   </div>
 </section>

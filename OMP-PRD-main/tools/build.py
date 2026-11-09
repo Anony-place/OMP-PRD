@@ -250,8 +250,8 @@ def main():
     ))
     write("breach-check.html", page(
         path="/breach-check", active="/tools",
-        title="Password Breach Check — k-Anonymity Lookup | OopsMyPassword",
-        desc="Check if a password appears in data breaches using zero-knowledge k-anonymity (5-char SHA-1 prefix) with offline fallback. 100% client-side.",
+        title="k-Anonymity Password Check — Breach Lookup | OopsMyPassword",
+        desc="A k-anonymity password check sends only a 5-character SHA-1 prefix, so the password is never transmitted. Test it against known breaches in your browser.",
         body=breach_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Breach Check", "/breach-check")]),
         scripts_=["security.js", "breach.js"],

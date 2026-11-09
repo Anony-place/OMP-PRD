@@ -372,7 +372,7 @@
     var printBtn = csRoot.querySelector('[data-cs-print]');
 
     function getVars() {
-      var map = { TARGET: '192.0.2.10', DOMAIN: 'example.com', WORDLIST: '/usr/share/wordlists/common.txt' };
+      var map = { TARGET: '192.0.2.10', DOMAIN: 'example.com', WORDLIST: '/usr/share/wordlists/common.txt', LHOST: '192.0.2.10' };
       varInputs.forEach(function (inp) {
         var k = inp.getAttribute('data-cs-var');
         var v = String(inp.value || '').trim().replace(/[;&|`$><\n\r]/g, '');
@@ -388,7 +388,8 @@
         code.textContent = tpl
           .replace(/\{TARGET\}/g, vars.TARGET)
           .replace(/\{DOMAIN\}/g, vars.DOMAIN)
-          .replace(/\{WORDLIST\}/g, vars.WORDLIST);
+          .replace(/\{WORDLIST\}/g, vars.WORDLIST)
+          .replace(/\{LHOST\}/g, vars.LHOST);
       });
     }
 

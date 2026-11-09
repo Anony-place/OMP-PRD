@@ -359,7 +359,7 @@ def breach_body():
 <section class="page-hero">
   <div class="container">
     <span class="chip chip-accent">{icon("radar","icon-16")} Live tool · k-anonymity prefix query</span>
-    <h1 class="h-1 mt-16">Breach Check</h1>
+    <h1 class="h-1 mt-16">k-Anonymity Password Check</h1>
     <p class="lead">Verify whether a password appears in known public breaches using zero-knowledge <strong>k-anonymity</strong>. Your password is SHA-1 hashed in your browser; only the first 5 hex characters are sent to the range API. If the database cannot be reached, the tool says so instead of guessing &mdash; it will never call a password safe on the strength of a lookup that failed.</p>
   </div>
 </section>
