@@ -57,21 +57,11 @@
           <button type="button" class="btn btn-ghost btn-sm" data-cs-print>Print / Save PDF</button>
         </div>
       </div>
-      <p class="muted small mt-8">Customize your target IP, domain, or wordlist below to update every command block on this page automatically.</p>
-      <div class="grid grid-3 mt-12" style="gap:12px">
-        <div>
+      <p class="muted small mt-8">Change the target IP or host below and every command block on this page updates to match.</p>
+      <div class="grid grid-3 mt-12" style="gap:12px"><div>
           <label class="small" for="cs-var-target" style="font-weight:600;display:block;margin-bottom:4px">Target IP / Host</label>
           <input id="cs-var-target" class="input mono" type="text" value="192.0.2.10" data-cs-var="TARGET">
-        </div>
-        <div>
-          <label class="small" for="cs-var-domain" style="font-weight:600;display:block;margin-bottom:4px">Target Domain</label>
-          <input id="cs-var-domain" class="input mono" type="text" value="example.com" data-cs-var="DOMAIN">
-        </div>
-        <div>
-          <label class="small" for="cs-var-wordlist" style="font-weight:600;display:block;margin-bottom:4px">Wordlist Path</label>
-          <input id="cs-var-wordlist" class="input mono" type="text" value="/usr/share/wordlists/common.txt" data-cs-var="WORDLIST">
-        </div>
-      </div>
+        </div></div>
     </div>
 
     <article class="prose">
@@ -79,7 +69,7 @@
       
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">1. 1. Snapshot Active Network Connections &amp; Listeners</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">1. Snapshot Active Network Connections &amp; Listeners</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="0">Copy Command</button>
         </div>
         <p class="muted small mt-8">Record all established outbound C2 connections and listening sockets before rebooting.</p>
@@ -87,7 +77,7 @@
       </div>
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">2. 2. Capture Running Processes &amp; Deleted Binaries</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">2. Capture Running Processes &amp; Deleted Binaries</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="1">Copy Command</button>
         </div>
         <p class="muted small mt-8">List full command lines and spot running processes whose on-disk binary was deleted.</p>
@@ -95,7 +85,7 @@
       </div>
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">3. 3. Audit Logged-In Users &amp; Recent Auth Events</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">3. Audit Logged-In Users &amp; Recent Auth Events</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="2">Copy Command</button>
         </div>
         <p class="muted small mt-8">Check currently active TTY sessions, recent SSH logins, and failed brute-force attempts.</p>
@@ -103,7 +93,7 @@
       </div>
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">4. 4. Check Persistence: SSH Keys, Systemd &amp; Cron</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">4. Check Persistence: SSH Keys, Systemd &amp; Cron</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="3">Copy Command</button>
         </div>
         <p class="muted small mt-8">Inspect authorized_keys and recently modified systemd services.</p>
@@ -111,7 +101,7 @@
       </div>
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">5. 5. Compute SHA-256 Hashes of Suspicious Artifacts</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">5. Compute SHA-256 Hashes of Suspicious Artifacts</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="4">Copy Command</button>
         </div>
         <p class="muted small mt-8">Generate cryptographic digests of suspicious binaries before quarantine.</p>
@@ -119,7 +109,7 @@
       </div>
       <div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h3 class="h-3" style="font-size:1.03rem;margin:0">6. 6. Host Firewall Containment (Preserve Investigation SSH)</h3>
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">6. Host Firewall Containment (Preserve Investigation SSH)</h3>
           <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="5">Copy Command</button>
         </div>
         <p class="muted small mt-8">Block all outbound traffic except your management IP during containment.</p>

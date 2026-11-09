@@ -611,9 +611,13 @@ jobs:
           # nist-password-guidelines-2026) were orphaned exactly that way in
           # a1c2a96. It is deterministic (no build timestamp), so it is safe to
           # commit on drift.
+          # articles.html carries the noscript list of every published article -
+          # the only crawlable index of them outside /sitemap - so it drifts the
+          # same way sitemap.html does. Both are deterministic.
           git add articles products osint pentest compare cheatsheets glossary \
+                  articles.html sitemap.html \
                   sitemap.xml sitemap.txt sitemap-index.xml google-sitemap.xml \
-                  sitemap.html llms.txt llms-full.txt 2>/dev/null || true
+                  llms.txt llms-full.txt 2>/dev/null || true
           git add assets/data/search-index.json 2>/dev/null || true
           # rss.xml carries a build timestamp, so it would differ on every run
           # and turn "no drift" into a commit per deploy.
