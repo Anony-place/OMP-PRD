@@ -122,10 +122,12 @@ https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-ar
 https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account
 https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead
 https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded
+https://oopsmypassword.web.app/articles/keepassxc-not-opening
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
 https://oopsmypassword.web.app/articles/malware-families-explained
 https://oopsmypassword.web.app/articles/metasploit-database-not-connected
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
+https://oopsmypassword.web.app/articles/nmap-not-recognized
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison
