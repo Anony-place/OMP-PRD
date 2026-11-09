@@ -106,7 +106,9 @@ https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents
 https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do
 https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt
 https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners
+https://oopsmypassword.web.app/articles/bitwarden-autofill-not-working
 https://oopsmypassword.web.app/articles/bitwarden-not-syncing
+https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
@@ -122,6 +124,7 @@ https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects
 https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
 https://oopsmypassword.web.app/articles/malware-families-explained
+https://oopsmypassword.web.app/articles/metasploit-database-not-connected
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site

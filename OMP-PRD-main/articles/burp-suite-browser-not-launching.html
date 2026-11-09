@@ -1,0 +1,204 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Burp Suite Browser Not Launching: 7 Causes, in Order</title><meta name="description" content="Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR."><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="Burp Suite Browser Not Launching: 7 Causes, in Order"><meta property="og:description" content="Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR."><meta property="og:url" content="https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Burp Suite Browser Not Launching: 7 Causes, in Order"><meta name="twitter:description" content="Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR."><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Burp Suite Browser Not Launching: 7 Causes, in Order","description":"Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR.","mainEntityOfPage":"https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-11-09T06:28:22.147622+00:00","dateModified":"2026-11-09T06:28:22.147622+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"Burp Suite Browser Not Launching: 7 Causes, in Order","item":"https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching"}]}</script><meta property="article:published_time" content="2026-11-09T06:28:22.147622+00:00"><meta property="article:modified_time" content="2026-11-09T06:28:22.147622+00:00">  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the key takeaway of Burp Suite Browser Not Launching: 7 Causes, in Order?","acceptedAnswer":{"@type":"Answer","text":"Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR."}},{"@type":"Question","name":"How can I test or apply these security practices safely?","acceptedAnswer":{"@type":"Answer","text":"Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity demo, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser."}}]}</script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-article"><p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">Burp Suite Browser Not Launching: 7 Causes, in Order</h1><p class="lead mt-8">Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR.</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-11-09</span></div></div></section><section class="section-tight"><div class="container container-article"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#find-the-error-before-changing-settings">Find the error before changing settings</a></li><li><a href="#1-linux-burp-is-running-as-root">1. Linux: Burp is running as root</a></li><li><a href="#2-linux-the-chromium-libraries-are-not-installed">2. Linux: the Chromium libraries are not installed</a></li><li><a href="#3-there-is-no-graphical-display">3. There is no graphical display</a></li><li><a href="#4-macos-gatekeeper-is-quarantining-the-browser">4. macOS: Gatekeeper is quarantining the browser</a></li><li><a href="#5-windows-endpoint-security-is-killing-it">5. Windows: endpoint security is killing it</a></li><li><a href="#6-the-browser-installation-is-corrupt">6. The browser installation is corrupt</a></li><li><a href="#7-disk-space-and-temp-directory-permissions">7. Disk space and temp directory permissions</a></li><li><a href="#the-fallback-that-always-works-your-own-browser">The fallback that always works: your own browser</a></li><li><a href="#if-the-browser-opens-but-nothing-loads">If the browser opens but nothing loads</a></li><li><a href="#checklist">Checklist</a></li><li><a href="#frequently-asked-questions">Frequently asked questions</a></li><li><a href="#why-does-burp-s-browser-not-open-on-kali-when-it-worked-before">Why does Burp’s browser not open on Kali when it worked before?</a></li><li><a href="#can-i-use-chrome-or-firefox-instead-of-burp-s-browser">Can I use Chrome or Firefox instead of Burp’s browser?</a></li><li><a href="#is-it-safe-to-run-burp-s-browser-without-the-sandbox">Is it safe to run Burp’s browser without the sandbox?</a></li><li><a href="#the-browser-opens-but-https-pages-fail-with-a-certificate-warning-why">The browser opens but HTTPS pages fail with a certificate warning. Why?</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>Burp starts, the proxy listener comes up, and then you click <strong>Open browser</strong> and nothing happens. Sometimes a window flashes and closes. Sometimes there is a spinner that never resolves. On Linux it is usually silent; on macOS you get a dialog; on Windows you get an antivirus notification you did not read.</p>
+
+<p>Burp’s embedded browser is a bundled Chromium, so the failures are Chromium failures — and Chromium is unusually explicit about why it refuses to start, provided you are looking at the right place to read its complaint.</p>
+
+<h2 id="find-the-error-before-changing-settings">Find the error before changing settings</h2>
+
+<p>Two places record a browser launch failure. Check both:</p>
+
+<ol>
+<li><strong>The terminal you launched Burp from.</strong> Start Burp from a shell rather than from the desktop icon — <code>./BurpSuiteCommunity</code> on Linux, or the launcher script in the Burp directory — so that stderr reaches your screen. Chromium’s own error text lands there.</li>
+<li><strong>Burp’s event log.</strong> In the Dashboard tab, open <strong>Event log</strong>. Browser start failures and the reason are recorded as events.</li>
+</ol>
+
+<p>Almost every cause below produces a recognisable line in one of those two places. Guessing at settings without reading it turns a two-minute fix into an afternoon.</p>
+
+<table tabindex="0">
+<thead><tr><th>Message you see</th><th>Cause</th><th>Go to</th></tr></thead>
+<tbody>
+<tr><td><code>Running as root without --no-sandbox is not supported</code></td><td>Burp is running as root on Linux</td><td>Cause 1</td></tr>
+<tr><td><code>error while loading shared libraries: libnss3.so</code> (or libgbm, libasound, libatk)</td><td>Missing Chromium dependencies</td><td>Cause 2</td></tr>
+<tr><td><code>Missing X server or $DISPLAY</code></td><td>No graphical session</td><td>Cause 3</td></tr>
+<tr><td><code>Burp Browser cannot be opened</code>, macOS dialog</td><td>Gatekeeper quarantine</td><td>Cause 4</td></tr>
+<tr><td>Process starts and exits immediately, no message</td><td>Blocked by endpoint security, or a corrupt install</td><td>Cause 5 or 6</td></tr>
+<tr><td>Browser opens but every site fails to load</td><td>Not a launch failure — the proxy path is wrong</td><td>The last section</td></tr>
+</tbody>
+</table>
+
+<h2 id="1-linux-burp-is-running-as-root">1. Linux: Burp is running as root</h2>
+
+<p>The most common cause on Kali, and the one with the most misleading symptom: no error dialog in Burp at all, just a browser that never appears.</p>
+
+<p>Chromium refuses to start as root without disabling its sandbox, because a browser running as root with sandboxing off is a privilege-escalation primitive pointed at your own machine. On Kali it is easy to end up here without noticing — a lot of the documentation assumes a root shell, and <code>sudo burpsuite</code> is a habit.</p>
+
+<p><strong>The correct fix is to stop running Burp as root.</strong> Run it as your normal desktop user. If you installed Burp into a root-owned directory, move it somewhere your user can execute, or run the installer as that user.</p>
+
+<p>There is a workaround for the case where root really is unavoidable — a container, a throwaway VM: <strong>Settings → Tools → Burp’s browser → Allow Burp’s browser to run without a sandbox</strong>. Understand what that does before ticking it. It removes the process sandbox from a browser that is, by design, pointed at hostile web applications. A throwaway VM against a target you are authorised to test is the situation it is for; a daily-driver machine is not.</p>
+
+<h2 id="2-linux-the-chromium-libraries-are-not-installed">2. Linux: the Chromium libraries are not installed</h2>
+
+<p>Burp bundles Chromium but not the system libraries Chromium links against. A minimal Debian, a headless Kali install, or a container image without a desktop environment will be missing most of them.</p>
+
+<p>The fastest way to see the full list is to run the bundled binary directly and read the loader’s complaint:</p>
+
+<pre><code># The browser lives inside Burp's own directory
+find ~/.BurpSuite/browser -name 'chrome' -type f 2&gt;/dev/null
+~/.BurpSuite/browser/*/chrome --version</code></pre>
+
+<p>Each run reports one missing library, then the next. Installing them on Debian and Kali:</p>
+
+<pre><code>sudo apt update
+sudo apt install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+  libdrm2 libgbm1 libasound2 libxkbcommon0 libxcomposite1 libxdamage1 \
+  libxfixes3 libxrandr2 libpango-1.0-0 libcairo2 libatspi2.0-0</code></pre>
+
+<p>Package names drift between Debian releases — <code>libasound2t64</code> on newer Ubuntu, for example. If apt reports a package as unavailable, install the rest and run the binary again; the loader names exactly what is still missing.</p>
+
+<h2 id="3-there-is-no-graphical-display">3. There is no graphical display</h2>
+
+<p>Chromium needs a window system. If you are on a headless server, inside WSL without WSLg, or connected over plain SSH, there is nothing for it to draw on and it exits.</p>
+
+<p>The error is explicit: <code>Missing X server or $DISPLAY</code>. Confirm your environment:</p>
+
+<pre><code>echo "DISPLAY=$DISPLAY WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
+# both empty = no graphical session</code></pre>
+
+<p>Three ways forward, and the first is usually right:</p>
+
+<ul>
+<li><strong>Run Burp on the machine with the screen.</strong> Testing is interactive work; a desktop is the correct environment for it.</li>
+<li><strong>X11 forwarding over SSH</strong> — <code>ssh -X</code> with an X server running locally. It works but is slow enough that the browser feels broken.</li>
+<li><strong>Skip Burp’s browser entirely</strong> and point your local browser at the remote proxy — see the fallback section below. This is what most people doing remote testing actually do.</li>
+</ul>
+
+<h2 id="4-macos-gatekeeper-is-quarantining-the-browser">4. macOS: Gatekeeper is quarantining the browser</h2>
+
+<p>macOS tags files downloaded from the internet with a quarantine attribute, and it treats the bundled Chromium as an app the first time it runs. The result is a dialog saying the browser cannot be opened because Apple cannot check it for malicious software, or a silent exit.</p>
+
+<p>Check whether the quarantine flag is present:</p>
+
+<pre><code>xattr -l ~/.BurpSuite/browser/*/Burp\ Browser.app | grep quarantine</code></pre>
+
+<p>If it is, clear it and launch Burp again:</p>
+
+<pre><code>xattr -dr com.apple.quarantine ~/.BurpSuite/browser</code></pre>
+
+<p>If macOS still blocks it, open <strong>System Settings → Privacy &amp; Security</strong> and look for the message about the blocked app near the bottom of the window — there is an <strong>Open Anyway</strong> button there for the last blocked item.</p>
+
+<h2 id="5-windows-endpoint-security-is-killing-it">5. Windows: endpoint security is killing it</h2>
+
+<p>Burp’s browser is an unsigned-off vendor Chromium build that launches from a directory most users have never heard of, which is a close match for how malware behaves. Antivirus, EDR and Windows’ Controlled Folder Access all react to that pattern.</p>
+
+<p>Signs: the process starts and disappears, or the browser launches and is killed within a second, and the event log has nothing useful because the kill came from outside Burp.</p>
+
+<p>Check your endpoint product’s protection history for a detection on the Burp browser path (<code>%LOCALAPPDATA%\BurpSuite\browser</code>). If it is there, add an exclusion for the Burp Suite directory — and be explicit with yourself about doing it: an exclusion on a directory is an exclusion on everything that ever gets written to it.</p>
+
+<h2 id="6-the-browser-installation-is-corrupt">6. The browser installation is corrupt</h2>
+
+<p>An interrupted download leaves a partial Chromium that starts and dies. Burp downloads the browser on first use, and a flaky connection or a full disk produces exactly this.</p>
+
+<p>Delete the browser directory and let Burp fetch it again:</p>
+
+<pre><code># Linux and macOS
+rm -rf ~/.BurpSuite/browser
+
+# Windows (PowerShell)
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\BurpSuite\browser"</code></pre>
+
+<p>Then relaunch Burp and open the browser once. Watch the event log while it re-downloads — if it fails again, the cause is almost always network (a proxy intercepting the download) or disk space.</p>
+
+<h2 id="7-disk-space-and-temp-directory-permissions">7. Disk space and temp directory permissions</h2>
+
+<p>Chromium needs room to write its profile and cache, and it needs <code>/tmp</code> to be writable. A full partition produces a launch failure with an unhelpful message, and it is common on VMs provisioned with a small disk.</p>
+
+<pre><code>df -h ~ /tmp
+# and check the browser's own profile directory is owned by you
+ls -ld ~/.BurpSuite</code></pre>
+
+<p>If Burp was ever run with <code>sudo</code>, <code>~/.BurpSuite</code> may now be root-owned and unwritable by your normal user — another reason cause 1 is worth fixing properly rather than working around.</p>
+
+<h2 id="the-fallback-that-always-works-your-own-browser">The fallback that always works: your own browser</h2>
+
+<p>Burp’s browser is a convenience, not a requirement. Any browser can be pointed at Burp’s proxy, and this route bypasses every launch problem above in one move.</p>
+
+<ol>
+<li>In Burp, confirm the proxy listener: <strong>Settings → Tools → Proxy → Proxy listeners</strong>. Note the interface and port.</li>
+<li>In your browser, set the HTTP and HTTPS proxy to <code>127.0.0.1</code> and that port.</li>
+<li>Install Burp’s CA certificate so HTTPS traffic is not rejected. With the proxy configured, browse to <code>http://burp/</code> and download the certificate, then import it into your browser’s trust store.</li>
+</ol>
+
+<p>For a browser you switch between proxied and direct, an extension such as FoxyProxy makes this a toggle instead of a settings trip. Use a separate browser profile for proxied work so that your normal browsing does not quietly flow through Burp.</p>
+
+<p>A dedicated profile also protects you from the more expensive mistake: forgetting the proxy is on and logging into personal accounts through a tool that records every request.</p>
+
+<h2 id="if-the-browser-opens-but-nothing-loads">If the browser opens but nothing loads</h2>
+
+<p>That is a different failure with a different cause list, and it is worth separating clearly:</p>
+
+<ul>
+<li><strong>Burp’s proxy listener is not running</strong> — the browser was configured to use a port nothing is listening on.</li>
+<li><strong>An upstream proxy is required</strong> — corporate networks need Burp itself configured to chain through their proxy: <strong>Settings → Network → Connections → Upstream proxy servers</strong>.</li>
+<li><strong>The browser’s proxy settings point at the old port</strong> — if you changed the listener port after first launch, Burp’s browser keeps the old value. Reset the browser settings in <strong>Settings → Tools → Burp’s browser</strong>.</li>
+<li><strong>HTTPS certificate not trusted</strong> — you get certificate warnings on every site, not a blank page. Install Burp’s CA.</li>
+</ul>
+
+<h2 id="checklist">Checklist</h2>
+
+<table tabindex="0">
+<thead><tr><th>Platform</th><th>Check first</th><th>Command or setting</th></tr></thead>
+<tbody>
+<tr><td>Linux</td><td>Are you root?</td><td><code>id -u</code> — <code>0</code> means yes</td></tr>
+<tr><td>Linux</td><td>Are the libraries present?</td><td>Run the bundled <code>chrome</code> binary directly</td></tr>
+<tr><td>Linux</td><td>Is there a display?</td><td><code>echo $DISPLAY</code></td></tr>
+<tr><td>macOS</td><td>Is it quarantined?</td><td><code>xattr -l</code> on the browser app</td></tr>
+<tr><td>Windows</td><td>Did EDR kill it?</td><td>Endpoint protection history</td></tr>
+<tr><td>Any</td><td>Is the install complete?</td><td>Delete the browser directory, relaunch</td></tr>
+<tr><td>Any</td><td>Is there disk space?</td><td><code>df -h</code></td></tr>
+<tr><td>Any</td><td>Does your own browser work?</td><td>Set proxy to <code>127.0.0.1:8080</code></td></tr>
+</tbody>
+</table>
+
+<h2 id="frequently-asked-questions">Frequently asked questions</h2>
+
+<h3 id="why-does-burp-s-browser-not-open-on-kali-when-it-worked-before">Why does Burp’s browser not open on Kali when it worked before?</h3>
+<p>Most often because an update changed the bundled Chromium and it now needs a system library your install does not have, or because the previous run left a root-owned <code>~/.BurpSuite</code> directory behind. Run the bundled binary from a terminal — the loader names the missing library or the permission problem directly.</p>
+
+<h3 id="can-i-use-chrome-or-firefox-instead-of-burp-s-browser">Can I use Chrome or Firefox instead of Burp’s browser?</h3>
+<p>Yes, and many testers prefer it. Configure the browser’s proxy to Burp’s listener and install Burp’s CA certificate, and you have the same interception with a browser you already trust and know the developer tools of. The only thing you lose is Burp’s automatic proxy configuration and its isolated profile.</p>
+
+<h3 id="is-it-safe-to-run-burp-s-browser-without-the-sandbox">Is it safe to run Burp’s browser without the sandbox?</h3>
+<p>In a disposable VM pointed at an authorised target, the trade-off is acceptable. On the machine where you read your email, it is not: the browser exists to load hostile content, and the sandbox is the layer that stops a browser exploit from becoming a host compromise. Fix the root problem instead.</p>
+
+<h3 id="the-browser-opens-but-https-pages-fail-with-a-certificate-warning-why">The browser opens but HTTPS pages fail with a certificate warning. Why?</h3>
+<p>Burp re-signs HTTPS traffic with its own CA, and the browser does not trust it yet. Burp’s own browser is configured automatically; an external browser needs the certificate installed. Browse to <code>http://burp/</code> through the proxy, download the CA, and import it into the browser’s trusted authorities.</p><hr class="hr-fade" style="margin-top:48px"></article></div></div></section><section class="section-tight" style="padding-top:0"><div class="container container-article"><p class="back-link-row" style="margin:0"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p></div></section><section class="section-tight"><div class="container container-article"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px"><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/metasploit-database-not-connected">Metasploit Database Not Connected: 6 Causes, in Order</a></h3><p class="feed-excerpt">db_status says no connection, or msfconsole starts with database support disabled. The six real causes in order — PostgreSQL down, socket paths, credentials.</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/bitwarden-autofill-not-working">Bitwarden Autofill Not Working: 9 Causes, in Order</a></h3><p class="feed-excerpt">The inline prompt missing on one site or everywhere. The nine real causes in order — URI match rules, site access, the Never list, and mobile autofill settings.</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">How-To</span><h3 class="feed-title"><a href="/articles/bitwarden-not-syncing">Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</a></h3><p class="feed-excerpt">New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…</p></div></article></div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>

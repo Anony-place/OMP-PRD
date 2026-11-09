@@ -31,10 +31,24 @@
     },
     {
       "type": "Guide",
+      "title": "Bitwarden Autofill Not Working: 9 Causes, in Order",
+      "desc": "The inline prompt missing on one site or everywhere. The nine real causes in order — URI match rules, site access, the Never list, and mobile autofill settings.",
+      "url": "/articles/bitwarden-autofill-not-working",
+      "kw": "bitwarden autofill not working guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them",
       "desc": "New logins missing on one device, or an empty vault on a new phone. The nine real causes in order — wrong region, clock skew, org collections, stale cache —…",
       "url": "/articles/bitwarden-not-syncing",
       "kw": "bitwarden not syncing guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Burp Suite Browser Not Launching: 7 Causes, in Order",
+      "desc": "Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR.",
+      "url": "/articles/burp-suite-browser-not-launching",
+      "kw": "burp suite browser not launching guide articles"
     },
     {
       "type": "Guide",
@@ -140,6 +154,13 @@
       "desc": "A malware family is a group of samples built from the same code. How the main types differ, how analysts identify a family, and what to do.",
       "url": "/articles/malware-families-explained",
       "kw": "malware families explained guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Metasploit Database Not Connected: 6 Causes, in Order",
+      "desc": "db_status says no connection, or msfconsole starts with database support disabled. The six real causes in order — PostgreSQL down, socket paths, credentials.",
+      "url": "/articles/metasploit-database-not-connected",
+      "kw": "metasploit database not connected guide articles"
     },
     {
       "type": "Guide",
