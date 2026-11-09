@@ -591,7 +591,14 @@ jobs:
       # until #89 committed them by hand.
       #
       # This step closes the loop: whatever the build just rendered from the
-      # database is committed back, so git, Firebase and Vercel converge.
+      # database is committed back, so the committed tree converges with
+      # Firebase. It does NOT converge Vercel on its own: this job pushes with
+      # the workflow GITHUB_TOKEN, and GitHub never delivers push events made
+      # with that token to GitHub Apps - so Vercel's git integration never sees
+      # these commits (observed 2026-11-09: sync commit ed43ebc stayed
+      # undeployed while 404ing pages sat in the tree). The deploy-hook step
+      # after this one kicks Vercel when VERCEL_DEPLOY_HOOK is configured;
+      # until then a sync commit only ships on the next user push to main.
       # It runs last, so every gate above has already approved the artifact,
       # and it stages only generated content - build.py also rewrites ~40
       # template files for unrelated reasons and those must not be swept in.
@@ -644,3 +651,28 @@ jobs:
             sleep 5
           done
           echo "::warning::could not push the rebuilt pages; the next deploy will retry"
+
+      - name: Kick the Vercel mirror so sync commits do not wait for a push
+        # Vercel serves committed HTML (see vercel-build.sh), and it deploys
+        # through its GitHub integration on push events. Those events never
+        # fire for GITHUB_TOKEN pushes, so the sync commit above would sit
+        # undeployed until the next human push to main. A Vercel Deploy Hook
+        # closes the gap from inside this workflow: create one under
+        # project Settings -> Git -> Deploy Hooks (branch: main) and store the
+        # URL as the repository secret VERCEL_DEPLOY_HOOK. The value never
+        # needs to pass through chat. Without the secret this step only says
+        # so and exits cleanly.
+        continue-on-error: true
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          set -uo pipefail
+          if [ -z "${VERCEL_DEPLOY_HOOK}" ]; then
+            echo "::notice::VERCEL_DEPLOY_HOOK is not configured; Vercel will serve the sync commit after the next push to main. Add a Vercel Deploy Hook to close this gap."
+            exit 0
+          fi
+          if curl -fsS -X POST "${VERCEL_DEPLOY_HOOK}" >/dev/null; then
+            echo "Vercel deploy hook pinged; it will build the latest committed tree."
+          else
+            echo "::warning::Vercel deploy hook ping failed; the sync commit stays undeployed until a push reaches Vercel's git integration."
+          fi
