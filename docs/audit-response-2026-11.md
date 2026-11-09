@@ -9,6 +9,29 @@ this project's constraints.
 This document records the verdict on each claim, the one defect that actually
 caps growth, and the execution plan that follows from it.
 
+> ### Correction — 2026-11-09, after the first Search Console export
+>
+> Claim 1 below, and therefore the priority of the whole P0 section, is **wrong
+> about the deployed site.** The 201 canonical tags in the *repository* do say
+> `web.app`, but `vercel-build.sh` (the Vercel build command) rewrites every
+> text file `web.app → vercel.app` before the deployment is published. The live
+> origin was checked directly on 2026-11-09:
+>
+> - `https://oopsmypassword.vercel.app/robots.txt` advertises four `vercel.app`
+>   sitemaps and names the `vercel.app` Search Console property.
+> - `https://oopsmypassword.vercel.app/sitemap.txt` lists 100 % `vercel.app`
+>   URLs.
+>
+> So **production is not split.** Google fetches the `vercel.app` sitemap
+> successfully (297 discovered) and the `web.app` property fails because
+> `web.app` is a 301 host — which is correct behaviour, not a bug. The host
+> split is a *repository hygiene* problem (one build script is the only thing
+> standing between a clean deploy and a regression), not a growth blocker.
+>
+> P0 is therefore downgraded from "the defect that caps growth" to routine
+> cleanup. The measured cap is **demand**, not plumbing — see
+> `docs/gsc-read-2026-11-09.md`.
+
 ---
 
 ## 1. Claim-by-claim verdict
