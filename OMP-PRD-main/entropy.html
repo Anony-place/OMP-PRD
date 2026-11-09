@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Password Entropy Calculator | OopsMyPassword</title>
-  <meta name="description" content="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.">
+  <meta name="description" content="Password crack time calculator: entropy and crack times for online, slow-hash and GPU-rig attackers — from length and pools (H = L·log₂N) or a real password.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="https://oopsmypassword.web.app/entropy">
@@ -14,14 +14,14 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OopsMyPassword">
   <meta property="og:title" content="Password Entropy Calculator | OopsMyPassword">
-  <meta property="og:description" content="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.">
+  <meta property="og:description" content="Password crack time calculator: entropy and crack times for online, slow-hash and GPU-rig attackers — from length and pools (H = L·log₂N) or a real password.">
   <meta property="og:url" content="https://oopsmypassword.web.app/entropy">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Password Entropy Calculator | OopsMyPassword">
-  <meta name="twitter:description" content="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.">
+  <meta name="twitter:description" content="Password crack time calculator: entropy and crack times for online, slow-hash and GPU-rig attackers — from length and pools (H = L·log₂N) or a real password.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -119,6 +119,15 @@
   </div>
 </section>
 
+<section class="section" id="faq">
+  <div class="container container-narrow">
+    <h2 class="h-2">Frequently asked questions</h2>
+    <div class="mt-16">
+      <details class="faq-item"><summary>How long does it take to crack my password?<span class="chev"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="faq-body"><p>That is what the calculator above answers: type the password (it never leaves the browser) and the estimate shows crack times against three realistic attackers &mdash; a throttled online form, a stolen hash on a slow KDF, and a GPU rig against a fast hash. The answer is dominated by length and by whether the password is a pattern.</p></div></details>
+      <details class="faq-item"><summary>What is a password crack time calculator?<span class="chev"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="faq-body"><p>It converts a password&#39;s entropy &mdash; bits of unpredictability from length and character pools &mdash; into the time an attacker needs to guess it. This page is exactly that: the formula, the pool math, and live crack times for online, slow-hash and GPU-rig attackers.</p></div></details>
+    </div>
+  </div>
+</section>
 </main>
 <footer class="site-footer">
   <div class="container">

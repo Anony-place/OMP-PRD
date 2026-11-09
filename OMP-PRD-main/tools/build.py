@@ -267,7 +267,7 @@ def main():
     write("entropy.html", page(
         path="/entropy", active="/tools",
         title="Password Entropy Calculator | OopsMyPassword",
-        desc="Calculate password entropy from length and character pools (H = L·log₂N), or from a real password — with crack times for online, slow-hash and GPU-rig attackers.",
+        desc="Password crack time calculator: entropy and crack times for online, slow-hash and GPU-rig attackers — from length and pools (H = L·log₂N) or a real password.",
         body=entropy_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Entropy Calculator", "/entropy")]),
         scripts_=["security.js", "wordlist.js", "entropy.js"],
