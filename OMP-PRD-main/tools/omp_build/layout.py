@@ -25,6 +25,12 @@ ICONS = {
     "key": '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.8 12.2 9.4-9.4"/><path d="m17 6 3 3"/><path d="m14 9 2.5 2.5"/>',
     "sigma": '<path d="M17 5H7l6 7-6 7h10"/>',
     "hash": '<path d="M4 9h16"/><path d="M4 15h16"/><path d="M10 3 8 21"/><path d="m16 3-2 18"/>',
+    # The three practitioner tools already ship with these exact glyphs on
+    # /tools. Copied here verbatim so the homepage grid and that page cannot
+    # drift apart.
+    "search": '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    "jwt-lock": '<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    "shield-scan": '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
     "list": '<path d="m3 6 1.5 1.5L7 5"/><path d="m3 12 1.5 1.5L7 11"/><path d="m3 18 1.5 1.5L7 17"/><path d="M11 6h10"/><path d="M11 12h10"/><path d="M11 18h10"/>',
     "book": '<path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
@@ -404,6 +410,21 @@ TOOLS = [
     {"name": "Security Checklist", "href": "/security-checklist", "icon": "list", "status": "live",
      "desc": "A practical account-security checklist you can work through in minutes — progress stays on your device.",
      "cta": "Open the checklist"},
+    # The three practitioner tools. They shipped before this list did, so the
+    # homepage grid, the /tools page and the HTML sitemap all omitted them and
+    # they were reachable only from a link buried further down the homepage.
+    # Search Console (2026-11-09) has them ranking without being linked:
+    # /dork-builder position 7.0, /url-scanner position 4.0, on single-digit
+    # impressions. Listed last so the password-first reading order survives.
+    {"name": "OSINT Dork Builder", "href": "/dork-builder", "icon": "search", "status": "live",
+     "desc": "Compose Google, GitHub, and Shodan search operators visually with 24 defensive recon presets.",
+     "cta": "Build search query"},
+    {"name": "Hash & JWT Inspector", "href": "/hash-inspector", "icon": "jwt-lock", "status": "live",
+     "desc": "Offline WebCrypto SHA-256/512 calculator, password hash identifier, JWT security auditor, and Base64/Hex encoder.",
+     "cta": "Inspect hash or JWT"},
+    {"name": "Phishing URL Scanner", "href": "/url-scanner", "icon": "shield-scan", "status": "live",
+     "desc": "Client-side lexical URL analyzer detecting IDN homograph punycode (xn--), @-authority tricks, and brand typosquatting.",
+     "cta": "Scan a link locally"},
 ]
 
 

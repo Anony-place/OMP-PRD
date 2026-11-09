@@ -244,7 +244,7 @@ def main():
     write("tools.html", page(
         path="/tools", active="/tools",
         title="Password Security Tools — All Free & Client-Side | OopsMyPassword",
-        desc="Eight browser-based password tools: checker, generator, breach-check demo, health audit, passphrases, entropy calculator, random strings and a security checklist.",
+        desc="Eleven free browser-based security tools: password checker, generator, breach check, health audit, passphrases, entropy, dork builder, hash/JWT inspector and URL scanner.",
         body=tools_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Tools", "/tools")]),
     ))

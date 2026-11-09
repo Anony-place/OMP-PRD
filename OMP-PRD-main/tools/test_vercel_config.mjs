@@ -149,11 +149,30 @@ const sitemapPaths = (() => {
   /* A redirect whose destination has no file behind it just swaps one 404 for
      another, one hop later. */
   const cleanTarget = (dest) => dest.split('#')[0].split('?')[0];
-  const exists = (p) => {
+  const fileExists = (p) => {
     if (p === '/') return fs.existsSync(path.join(ROOT, 'index.html'));
     const abs = path.join(ROOT, p);
     return fs.existsSync(abs) || fs.existsSync(`${abs}.html`) || fs.existsSync(path.join(abs, 'index.html'));
   };
+  /* A destination is real when a file serves it OR when a rewrite serves it.
+     /articles/<slug> has no file of its own - it is rewritten to
+     /guides/<slug> - so a filesystem-only check called three valid redirect
+     destinations "dangling" and would have blocked this fix. */
+  const rewriteServes = (p, depth = 0) => {
+    if (depth > 3) return false;
+    return vercel.rewrites.some((rule) => {
+      let matched = false;
+      try {
+        matched = Boolean(match(rule.source, { decode: decodeURIComponent })(p));
+      } catch {
+        return false;
+      }
+      if (!matched) return false;
+      const dest = cleanTarget(rule.destination);
+      return fileExists(dest) || rewriteServes(dest, depth + 1);
+    });
+  };
+  const exists = (p) => fileExists(p) || rewriteServes(p);
   const danglingRedirects = vercel.redirects.filter((r) => {
     if (/^https?:/.test(r.destination)) return false;
     /* Placeholder destinations are filled from the match; skip those. */
@@ -163,6 +182,31 @@ const sitemapPaths = (() => {
   assert(danglingRedirects.length === 0,
     `every static redirect destination exists (${danglingRedirects.length} dangling)`);
   for (const d of danglingRedirects) console.log(`      ${d.source} -> ${d.destination} (no such page)`);
+
+  /* The check above skips parameterised destinations, because the match fills
+     them in. That blind spot is exactly how eight retired guide slugs ended up
+     301-ing to /articles/<slug>, which has no page behind it: Google keeps the
+     old URL indexed, the visitor gets a 404, and the migration never
+     consolidates. These slugs were all still receiving impressions in the
+     90-day Search Console export of 2026-11-09 (167 impressions, best position
+     12.54), so each one needs a literal rule pointing at a page that resolves. */
+  const RETIRED_GUIDES = {
+    '/guides/password-mistakes': '/articles/common-password-mistakes',
+    '/guides/incident-evidence-preservation-basics': '/cheatsheets/incident-response-first-hour-cheatsheet',
+    '/guides/database-encryption-strategies': '/articles/common-cryptography-failures',
+    '/guides/wireless-network-cryptography': '/articles/common-cryptography-failures',
+    '/guides/devsecops-integration-rules': '/security-checklist',
+    '/guides/secure-backup-recovery-plan': '/articles/after-a-data-breach',
+  };
+  const retiredBroken = Object.entries(RETIRED_GUIDES).filter(([from, to]) => {
+    const rule = vercel.redirects.find((r) => r.source === from);
+    if (!rule) return true;
+    if (cleanTarget(rule.destination) !== to) return true;
+    return !exists(to);
+  });
+  assert(retiredBroken.length === 0,
+    `every retired guide slug has its own rule to a live page (${retiredBroken.length} of ${Object.keys(RETIRED_GUIDES).length} broken)`);
+  for (const [from, to] of retiredBroken) console.log(`      ${from} -> ${to} (missing or dangling)`);
 
   section('Rewrites: destinations resolve, sources are real pages');
   const compilers = vercel.rewrites.map((r) => {
