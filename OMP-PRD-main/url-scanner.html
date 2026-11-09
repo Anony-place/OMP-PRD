@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phishing URL &amp; Suspicious Link Risk Scanner | OopsMyPassword</title>
-  <meta name="description" content="Free client-side phishing link analyzer. Detect IDN homograph punycode (xn--), @-authority tricks, brand typosquatting, and open redirects offline.">
+  <title>Phishing Link Checker &amp; Suspicious URL Scanner | OopsMyPassword</title>
+  <meta name="description" content="Free phishing link checker: is this link safe? Analyze any URL in your browser — IDN homoglyphs (xn--), @-authority tricks, typosquatting, open redirects.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="https://oopsmypassword.web.app/url-scanner">
@@ -14,15 +14,15 @@
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OopsMyPassword">
-  <meta property="og:title" content="Phishing URL &amp; Suspicious Link Risk Scanner | OopsMyPassword">
-  <meta property="og:description" content="Free client-side phishing link analyzer. Detect IDN homograph punycode (xn--), @-authority tricks, brand typosquatting, and open redirects offline.">
+  <meta property="og:title" content="Phishing Link Checker &amp; Suspicious URL Scanner | OopsMyPassword">
+  <meta property="og:description" content="Free phishing link checker: is this link safe? Analyze any URL in your browser — IDN homoglyphs (xn--), @-authority tricks, typosquatting, open redirects.">
   <meta property="og:url" content="https://oopsmypassword.web.app/url-scanner">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Phishing URL &amp; Suspicious Link Risk Scanner | OopsMyPassword">
-  <meta name="twitter:description" content="Free client-side phishing link analyzer. Detect IDN homograph punycode (xn--), @-authority tricks, brand typosquatting, and open redirects offline.">
+  <meta name="twitter:title" content="Phishing Link Checker &amp; Suspicious URL Scanner | OopsMyPassword">
+  <meta name="twitter:description" content="Free phishing link checker: is this link safe? Analyze any URL in your browser — IDN homoglyphs (xn--), @-authority tricks, typosquatting, open redirects.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -30,7 +30,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Phishing URL \u0026 Suspicious Link Risk Scanner","url":"https://oopsmypassword.web.app/url-scanner","applicationCategory":"SecurityApplication","operatingSystem":"All","description":"Client-side phishing URL analyzer that detects IDN homograph punycode (xn--), @-authority tricks, brand typosquatting, deceptive .zip TLDs, and open redirects."}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Phishing Link Checker \u0026 Suspicious URL Scanner","url":"https://oopsmypassword.web.app/url-scanner","applicationCategory":"SecurityApplication","operatingSystem":"All","description":"Client-side phishing URL analyzer that detects IDN homograph punycode (xn--), @-authority tricks, brand typosquatting, deceptive .zip TLDs, and open redirects."}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does the @ symbol trick work in phishing URLs?","acceptedAnswer":{"@type":"Answer","text":"According to RFC 3986, anything before an @ symbol in a URL authority section is treated as a username, and the real destination host comes immediately after @. A link like https://google.com@evil.example/login actually takes you to evil.example."}},{"@type":"Question","name":"What is an IDN homograph (xn--) phishing attack?","acceptedAnswer":{"@type":"Answer","text":"Attackers register domains containing Cyrillic or Greek characters that look identical to Latin letters. Browsers encode these internationalized domains as Punycode starting with xn--, which our scanner flags automatically."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://oopsmypassword.web.app/tools"},{"@type":"ListItem","position":3,"name":"Phishing URL Scanner","item":"https://oopsmypassword.web.app/url-scanner"}]}</script>
 </head>
@@ -44,6 +44,16 @@
     <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/tools" style="color:var(--purple)">Tools</a> <span class="divider-dot">/</span> <span>Phishing URL Scanner</span></nav>
     <h1 class="h-1 mt-16">Phishing URL &amp; Suspicious Link Risk Scanner</h1>
     <p class="lead mt-8">Inspect any suspicious link locally for IDN homograph punycode (<code>xn--</code>), <code>@</code> authority confusion, brand typosquatting, deceptive <code>.zip</code> TLDs, and open redirects — without visiting the link or sending it to a server.</p>
+  </div>
+</section>
+<section class="section" id="faq">
+  <div class="container container-narrow">
+    <h2 class="h-2">Frequently asked questions</h2>
+    <div class="mt-16">
+      <details class="faq-item"><summary>Is this link safe to open?<span class="chev"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="faq-body"><p>No checker can answer that with certainty, but the parts of a link that make it dangerous are easy to flag: lookalike domains, hidden @-authority tricks and open-redirect parameters are the working parts of most phishing campaigns, and this analyzer finds all three locally in your browser. Anything asking for a password, a card or a payment: type the site&#39;s address yourself instead of clicking.</p></div></details>
+      <details class="faq-item"><summary>What does a phishing link checker actually detect?<span class="chev"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="faq-body"><p>The patterns phishing URLs are built from: IDN homograph domains (punycode xn-- lookalikes), typosquatting of well-known brands, @-authority tricks that hide the real destination, deceptive subdomains, open-redirect parameters and other lexical tells. It reads the URL string itself &mdash; nothing you paste is sent to a server.</p></div></details>
+      <details class="faq-item"><summary>Can a phishing link checker guarantee a site is safe?<span class="chev"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="faq-body"><p>No. Lexical analysis catches impersonation; it cannot see a legitimate site that has been compromised or a clean-looking domain used in a live campaign. Treat the result as one signal alongside the sender, the context, and where a login page really lives.</p></div></details>
+    </div>
   </div>
 </section>
 <section class="section-tight" data-url-scanner>

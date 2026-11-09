@@ -426,6 +426,15 @@ def breach_body():
     </div>
   </div>
 </section>
+<section class="section" id="faq">
+  <div class="container container-narrow">
+    <h2 class="h-2">Frequently asked questions</h2>
+    <div class="mt-16">
+      <details class="faq-item"><summary>How do I check if my password is leaked?<span class="chev">{icon("chevron","icon-18")}</span></summary><div class="faq-body"><p>This page does it without sending the password anywhere: your browser hashes it with SHA-1, asks the breach database for one 5-character prefix, and compares the returned list locally. A count above zero means the password appears in known breaches &mdash; change it everywhere it was used.</p></div></details>
+      <details class="faq-item"><summary>What should I do if my password is compromised?<span class="chev">{icon("chevron","icon-18")}</span></summary><div class="faq-body"><p>Change it on every account that used it, starting with your email &mdash; that is the key to password resets everywhere. Turn on 2FA, and replace reused passwords with unique generated ones so the next breach costs one account instead of all of them.</p></div></details>
+    </div>
+  </div>
+</section>
 """
 
 
@@ -532,6 +541,15 @@ def entropy_body():
     <h2 id="formula">The formula</h2>
     <p><code>H = L × log₂(N)</code> — length times the base-2 logarithm of the pool size. Each random lowercase letter adds ~4.7 bits; each mixed-case alphanumeric ~5.95 bits; each full-set character ~6.57 bits; each word from a 1,296-word list ~10.34 bits.</p>
     <p>The catch: the formula only holds when selection is truly random. Human choices collapse the effective pool dramatically. Details, tables and attacker models: <a href="/articles/password-entropy">How Password Entropy Works</a>.</p>
+  </div>
+</section>
+<section class="section" id="faq">
+  <div class="container container-narrow">
+    <h2 class="h-2">Frequently asked questions</h2>
+    <div class="mt-16">
+      <details class="faq-item"><summary>How long does it take to crack my password?<span class="chev">{icon("chevron","icon-18")}</span></summary><div class="faq-body"><p>That is what the calculator above answers: type the password (it never leaves the browser) and the estimate shows crack times against three realistic attackers &mdash; a throttled online form, a stolen hash on a slow KDF, and a GPU rig against a fast hash. The answer is dominated by length and by whether the password is a pattern.</p></div></details>
+      <details class="faq-item"><summary>What is a password crack time calculator?<span class="chev">{icon("chevron","icon-18")}</span></summary><div class="faq-body"><p>It converts a password&#39;s entropy &mdash; bits of unpredictability from length and character pools &mdash; into the time an attacker needs to guess it. This page is exactly that: the formula, the pool math, and live crack times for online, slow-hash and GPU-rig attackers.</p></div></details>
+    </div>
   </div>
 </section>
 """
