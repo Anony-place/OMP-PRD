@@ -81,3 +81,29 @@ hashcat page, `keepassxc-not-opening` → database-corrupt page, `hashcat-token-
 **Connector lesson:** `$c$` dollar-quoting works for INSERT content but an UPDATE using a
 `$c$` literal silently matches 0 rows. For UPDATEs use plain single-quoted strings (escape
 double quotes as `&quot;`), and always `RETURNING` to confirm the write landed.
+
+---
+
+# Batch 6 result (2026-11-10, agent-decided)
+
+Probes: `msfvenom not` / `ffuf connection` = empty (dropped). Two fresh WINs confirmed by
+autocomplete: **wireshark "no interfaces found"** (10 variants incl. windows 11/7, linux,
+ubuntu, fedora) and **sqlmap connection** cluster (refused / reset to the target url /
+timed out / ssl error).
+
+| Page | State |
+| --- | --- |
+| `meterpreter-session-died` (6 causes; "Reason: Died" + "is not valid" family) | ✅ INSERTed — **filter PASSED** (failure-diagnosis framing; no persistence/evasion content) |
+| `wireshark-no-interfaces-found` (per-platform fixes: Npcap / group caps / BPF privacy) | ✅ INSERTed + published |
+| `sqlmap-connection-refused` (refused vs reset vs timeout triage) | ⛔ **connector security filter blocked** — parked with the other two drafts (`.drafts/articles/sqlmap-connection-refused.html`). Not resent, not altered. |
+
+Sibling links added: `metasploit-database-not-connected` → meterpreter page,
+`wireshark-not-capturing-packets` → no-interfaces page.
+
+**Blocked-draft policy (agent decision, 2026-11-10):** the three parked drafts
+(burp-suite-not-intercepting, gobuster-connection-refused, sqlmap-connection-refused)
+stay parked. They are never resent to the filter and never reworded to evade it. User
+may paste any of them via the Supabase dashboard at any time; a genuine editorial
+rework remains available on request.
+
+Probe dead-ends this round: msfvenom/ffuf sibling-error queries (empty).
