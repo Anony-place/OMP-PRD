@@ -246,7 +246,7 @@ def checker_body():
       <div class="card card-pad"><span class="card-icon">{icon("alert","icon-22")}</span><h3>Pattern penalties</h3><p>Common passwords (exact and embedded), dictionary words including leetspeak forms, repeated runs (<span class="mono">aaaa</span>), sequences (<span class="mono">abcd</span>), keyboard walks (<span class="mono">qwerty</span>) and year-like dates.</p></div>
       <div class="card card-pad"><span class="card-icon">{icon("sigma","icon-22")}</span><h3>Entropy & crack time</h3><p>Pool-based entropy (<span class="mono">L·log₂N</span>) adjusted downward by detected patterns, then translated into an indicative offline crack time at ~10¹¹ guesses/second.</p></div>
     </div>
-    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Honest limits.</strong> A heuristic cannot know how your password was generated or where else you used it. A randomly generated 20-character password will outlive any "clever" human one regardless of what any meter says — including ours. <a href="/articles/password-entropy" style="color:var(--purple)">Read how entropy works</a>.</p></div>
+    <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Honest limits.</strong> A heuristic cannot know how your password was generated or where else you used it. A randomly generated 20-character password will outlive any "clever" human one regardless of what any meter says — including ours. <a href="/articles/password-entropy" style="color:var(--purple)">Read how entropy works</a>, or see <a href="/articles/nist-password-guidelines-2026" style="color:var(--purple)">what the current NIST password guidelines actually recommend</a>.</p></div>
   </div>
 </section>
 <section class="section" style="padding-top:0">
@@ -350,6 +350,24 @@ def tools_body():
     <div class="notice-band mt-48">{icon("info","icon-20")}<p><strong>No fake tools, no fake stats.</strong> OMP never labels something "connected to a breach database" when it isn't, and never shows invented counters like "12M passwords checked". What you see is what runs.</p></div>
   </div>
 </section>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Command references</span>
+      <h2 class="h-2">CLI cheat sheets</h2>
+      <p class="lead">One-page command references for the tools this work actually runs on — each sheet is a single page you can keep open in a tab.</p>
+    </div>
+    <div class="flex gap-12 wrap">
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/nmap-command-cheatsheet">Nmap</a>
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/curl-command-cheatsheet">curl</a>
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/ffuf-web-fuzzing-cheatsheet">ffuf</a>
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/hydra-brute-force-cheatsheet">Hydra</a>
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/metasploit-command-cheatsheet">Metasploit</a>
+      <a class="btn btn-ghost btn-sm" href="/cheatsheets/http-security-headers-cheatsheet">HTTP security headers</a>
+      <a class="btn btn-primary btn-sm" href="/cheatsheets">All cheat sheets →</a>
+    </div>
+  </div>
+</section>
 """
 
 
@@ -384,7 +402,7 @@ def breach_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("radar","icon-22")}</span>
         <h3>What is a breach?</h3>
-        <p>When a service is compromised, its user database — emails, password hashes, personal details — can be stolen and later published or sold. Billions of such records circulate in "combo lists" used for credential stuffing.</p>
+        <p>When a service is compromised, its user database — emails, password hashes, personal details — can be stolen and later published or sold. Billions of such records circulate in "combo lists" used for <a href="/glossary/credential-stuffing" style="color:var(--purple)">credential stuffing</a>.</p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("alert","icon-22")}</span>
@@ -400,7 +418,7 @@ def breach_body():
     <div class="section-head">
       <span class="eyebrow">The model</span>
       <h2 class="h-1">How k-anonymity breach lookup works</h2>
-      <p class="lead">The privacy-preserving range architecture powered by Have I Been Pwned's Pwned Passwords API.</p>
+      <p class="lead">The privacy-preserving range architecture powered by <a href="/osint/have-i-been-pwned" style="color:var(--purple)">Have I Been Pwned's Pwned Passwords API</a>.</p>
     </div>
     <div class="steps">
       <div class="step"><h3 class="h-3">Hash locally</h3><p class="muted">Your password is hashed on your device using WebCrypto SHA-1. The plaintext password and full 40-character digest never leave your browser.</p></div>
@@ -523,6 +541,7 @@ def entropy_body():
           <tbody data-ec-table></tbody>
         </table></div>
         <p class="tiny muted mt-8">Average = half the search space. Real resistance also depends on hashing, rate limits and 2FA.</p>
+        <p class="tiny muted mt-8">The offline attacks above are exactly what tools like Hashcat and John the Ripper run against leaked databases — <a href="/compare/hashcat-vs-john-the-ripper">see them compared</a>.</p>
       </div>
       <div class="card card-pad">
         <h2 class="h-3">…or from an actual password</h2>
