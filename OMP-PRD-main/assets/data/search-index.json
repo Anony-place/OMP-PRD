@@ -52,6 +52,13 @@
     },
     {
       "type": "Guide",
+      "title": "Chainalysis & Chainstack Breach",
+      "desc": "Two November 2026 breaches — Chainalysis (all users) and Chainstack — exposed customer password hashes. If you reused a password on either, treat it as public…",
+      "url": "/articles/chainalysis-chainstack-breach-what-to-do",
+      "kw": "chainalysis chainstack breach what to do guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Cloudflare Verification Asking You to Press Win+R? It’s a Scam",
       "desc": "If a website shows a Cloudflare-style “Verify you are human” page and then tells you to press Windows + R , press Ctrl + V , and hit Enter , stop. That is not…",
       "url": "/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam",
