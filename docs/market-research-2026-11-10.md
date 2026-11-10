@@ -62,3 +62,22 @@ backlink/Request-Indexing kit running (`crawl-demand-kit-2026-11-10.md`).
 | Breach page: impressions on `chainalysis breach` / `chainstack breach` queries | 3–7 days (news decay) |
 | New error pages: per-page impressions ≥10 | 14 days post-index |
 | 47-URL crawl progress (drilldown diff) | 11-17 / 11-24 exports |
+
+---
+
+# Batch 5b result (2026-11-10)
+
+| # | Page | State |
+| --- | --- | --- |
+| 1 | `hashcat-no-hashes-loaded` (5 causes; covers "no hash mode matches" + "salt-value exception" + "says no hashes loaded") | ✅ INSERTed + published |
+| 2 | `burp-suite-certificate-download` (download + install: Android, iOS, Firefox, desktop) | ✅ INSERTed + published |
+| 3 | `keepassxc-database-corrupt` (6 causes; file read error / corrupt / not connected) | ✅ INSERTed + published |
+| 4 | `gobuster-connection-refused` (6 causes; refused-vs-timeout tell) | ⛔ **connector security filter blocked the INSERT** — content NOT resent, NOT altered. Draft preserved: `.drafts/articles/gobuster-connection-refused.html`. User's call: dashboard paste or editorial rework. |
+
+Sibling cross-links added (crawl-demand weave): `john-the-ripper-no-password-hashes-loaded` →
+hashcat page, `keepassxc-not-opening` → database-corrupt page, `hashcat-token-length-exception`
+→ parent "No hashes loaded" page.
+
+**Connector lesson:** `$c$` dollar-quoting works for INSERT content but an UPDATE using a
+`$c$` literal silently matches 0 rows. For UPDATEs use plain single-quoted strings (escape
+double quotes as `&quot;`), and always `RETURNING` to confirm the write landed.
