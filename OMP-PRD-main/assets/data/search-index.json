@@ -52,6 +52,13 @@
     },
     {
       "type": "Guide",
+      "title": "Burp Suite Certificate Download & Install: Android, iOS, Browsers",
+      "desc": "Where to download the Burp Suite CA certificate and how to install it on Android, iOS, Firefox and desktop browsers — so HTTPS traffic loads in your proxy…",
+      "url": "/articles/burp-suite-certificate-download",
+      "kw": "burp suite certificate download guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Chainalysis & Chainstack Breach",
       "desc": "Two November 2026 breaches — Chainalysis (all users) and Chainstack — exposed customer password hashes. If you reused a password on either, treat it as public…",
       "url": "/articles/chainalysis-chainstack-breach-what-to-do",
@@ -108,6 +115,13 @@
     },
     {
       "type": "Guide",
+      "title": "Hashcat \"No Hashes Loaded\": 5 Causes, in Order",
+      "desc": "Every hashcat load failure ends in \"No hashes loaded\" — whether it printed a token length exception, \"No hash mode matches\" or a salt-value exception first…",
+      "url": "/articles/hashcat-no-hashes-loaded",
+      "kw": "hashcat no hashes loaded guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Hashcat Token Length Exception: Every Cause, One Fix",
       "desc": "\"Token length exception\" means hashcat rejected a line before cracking it. The six real causes, in the order they actually happen, and the command for each.",
       "url": "/articles/hashcat-token-length-exception",
@@ -147,6 +161,13 @@
       "desc": "John refuses to load your hash file. The eight real causes in frequency order, the build trap that hits most Kali users, and a five-command diagnostic that…",
       "url": "/articles/john-the-ripper-no-password-hashes-loaded",
       "kw": "john the ripper no password hashes loaded guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "KeePassXC Database Corrupt or \"File Read Error\"",
+      "desc": "KeePassXC opens but the .kdbx will not — \"file read error\", \"database corrupt\", \"not connected\". Six causes in order, from sync copies and lost key files to…",
+      "url": "/articles/keepassxc-database-corrupt",
+      "kw": "keepassxc database corrupt guide articles"
     },
     {
       "type": "Guide",

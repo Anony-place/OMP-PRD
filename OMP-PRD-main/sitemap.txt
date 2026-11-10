@@ -109,6 +109,7 @@ https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners
 https://oopsmypassword.web.app/articles/bitwarden-autofill-not-working
 https://oopsmypassword.web.app/articles/bitwarden-not-syncing
 https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching
+https://oopsmypassword.web.app/articles/burp-suite-certificate-download
 https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
@@ -117,12 +118,14 @@ https://oopsmypassword.web.app/articles/data-classification-guide
 https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata
 https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works
 https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report
+https://oopsmypassword.web.app/articles/hashcat-no-hashes-loaded
 https://oopsmypassword.web.app/articles/hashcat-token-length-exception
 https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison
 https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence
 https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account
 https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead
 https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded
+https://oopsmypassword.web.app/articles/keepassxc-database-corrupt
 https://oopsmypassword.web.app/articles/keepassxc-not-opening
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
 https://oopsmypassword.web.app/articles/malware-families-explained
