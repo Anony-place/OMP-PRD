@@ -130,6 +130,7 @@ https://oopsmypassword.web.app/articles/keepassxc-not-opening
 https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys
 https://oopsmypassword.web.app/articles/malware-families-explained
 https://oopsmypassword.web.app/articles/metasploit-database-not-connected
+https://oopsmypassword.web.app/articles/meterpreter-session-died
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-not-recognized
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
@@ -138,6 +139,7 @@ https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-compa
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
 https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
+https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it
 https://oopsmypassword.web.app/products/master-in-ai-prompt

@@ -199,6 +199,13 @@
     },
     {
       "type": "Guide",
+      "title": "Meterpreter Session Died / \"Is Not Valid\": 6 Causes, in Order",
+      "desc": "\"Meterpreter session closed. Reason: Died\" or \"session is not valid and will be closed\" — the session opened, then vanished. Six causes in order, from payload…",
+      "url": "/articles/meterpreter-session-died",
+      "kw": "meterpreter session died guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "NIST Password Guidelines 2026",
       "desc": "SP 800-63B Revision 4 is still the 2026 standard: 15 characters alone, 8 inside MFA, no composition rules, no rotation, mandatory breach screening. Both…",
       "url": "/articles/nist-password-guidelines-2026",
@@ -252,6 +259,13 @@
       "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
       "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
       "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Wireshark \"No Interfaces Found\": Fixes for Windows, Linux, macOS",
+      "desc": "Wireshark opens with an empty interface list — \"No interfaces found\" or \"no interfaces to be displayed\". The fixes per platform: Npcap on Windows, group…",
+      "url": "/articles/wireshark-no-interfaces-found",
+      "kw": "wireshark no interfaces found guide articles"
     },
     {
       "type": "Guide",
