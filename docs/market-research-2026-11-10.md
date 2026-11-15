@@ -107,3 +107,20 @@ may paste any of them via the Supabase dashboard at any time; a genuine editoria
 rework remains available on request.
 
 Probe dead-ends this round: msfvenom/ffuf sibling-error queries (empty).
+
+## Batch-7 result (2026-11-10) — India salary page + nmap fold page
+
+**Decision ("tum khud decide kro" + "kaam nhi rukna cahaye"):** ship before the
+23 Nov stop-rule read instead of idling — batch-7 = the P1 India salary page +
+the P2 nmap-errors fold, both with fresh probe evidence.
+
+| Page | Demand proof | Status |
+| --- | --- | --- |
+| `cyber-security-salary-in-india-2026` | 8 autocomplete variants (`per month`, `for freshers`, `per month for freshers`, `government`, `for 5 years experience`, `in indian rupees`, `for 2 years experience`) + GSC: India 8.24 % CTR vs US 0.09 % | ✅ INSERTed + published — **filter PASSED** (consumer/career content) |
+| `nmap-host-seems-down` | `nmap failed to` = 10 variants (open device eth0/wlan0/ppp0/eth1/windows, determine route, resolve ip, normal output file) + `host seems down` = 6 variants incl. hackthebox/tryhackme + `no route to host` | ✅ INSERTed + published — **filter PASSED** (failure-diagnosis framing) |
+
+- Titles: `Cyber Security Salary in India in 2026: Per-Month, Fresher & City Bands (₹)` / `Nmap "Host Seems Down" / "No Route to Host": 6 Errors, Causes in Order`.
+- Salary figures = real 2026 aggregator bands (salaryinfo.in, Scaler, futurense, netsalary.in, cybersectrainings, knowledgehut), hedged as estimates; US BLS benchmark cited for the India-vs-US FAQ. No mock numbers.
+- Category split honored: salary page → `1b41feb7…` (same as US salary guide), nmap page → `f13dd7e4…` (error-playbook category).
+- Sibling links (plain-string `&quot;` UPDATEs, RETURNING-confirmed): US salary → India (len 16485); nmap-not-recognized → new (9041); nmap-requires-root-privileges → new (6784). India page cross-links the US guide in-content.
+- P2 queue after this batch: only `msfconsole` info pages remain (weak odds vs official docs) — revisit only with fresh demand.
