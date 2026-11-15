@@ -80,6 +80,13 @@
     },
     {
       "type": "Guide",
+      "title": "Cyber Security Salary in India in 2026",
+      "desc": "Cyber security salary in India in 2026: 3.5-8 LPA for freshers (25,000-65,000 per month), 12-25 LPA mid-level, city and role splits, government pay levels, and…",
+      "url": "/articles/cyber-security-salary-in-india-2026",
+      "kw": "cyber security salary in india 2026 guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Cyber Security Salary in the USA in 2026: Full Guide",
       "desc": "If you're considering a career in cybersecurity, one of the biggest questions is: how much can you earn in cybersecurity in the USA? The answer depends on your…",
       "url": "/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
@@ -210,6 +217,13 @@
       "desc": "SP 800-63B Revision 4 is still the 2026 standard: 15 characters alone, 8 inside MFA, no composition rules, no rotation, mandatory breach screening. Both…",
       "url": "/articles/nist-password-guidelines-2026",
       "kw": "nist password guidelines 2026 guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Nmap \"Host Seems Down\" / \"No Route to Host\"",
+      "desc": "An nmap scan that ends with a message instead of results — \"Host seems down\", \"No route to host\", \"Failed to open device eth0\" and friends. Six errors, what…",
+      "url": "/articles/nmap-host-seems-down",
+      "kw": "nmap host seems down guide articles"
     },
     {
       "type": "Guide",

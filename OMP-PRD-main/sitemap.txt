@@ -113,6 +113,7 @@ https://oopsmypassword.web.app/articles/burp-suite-certificate-download
 https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
+https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
 https://oopsmypassword.web.app/articles/data-classification-guide
 https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata
@@ -132,6 +133,7 @@ https://oopsmypassword.web.app/articles/malware-families-explained
 https://oopsmypassword.web.app/articles/metasploit-database-not-connected
 https://oopsmypassword.web.app/articles/meterpreter-session-died
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
+https://oopsmypassword.web.app/articles/nmap-host-seems-down
 https://oopsmypassword.web.app/articles/nmap-not-recognized
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
