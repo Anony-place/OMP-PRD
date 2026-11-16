@@ -83,51 +83,43 @@
 </section>
 
 <!-- ===== Popular tools (home = navigation hub; every tool has its own page) ===== -->
-<section class="section-tight" id="popular-tools">
+<section class="section-tight" id="popular-tools" style="background: var(--bg-soft); border-block: 1px solid var(--border)">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Start here</span>
       <h2 class="h-1">Popular tools</h2>
       <p class="lead">Six tools people reach for most. Each runs on its own page — nothing is squeezed into this one.</p>
     </div>
-    <div class="tool-grid">
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 3.5-3.5"/><path d="M20.2 17a8.5 8.5 0 1 0-16.4 0"/></svg></div>
-        <h3 class="h-2">Password Strength Checker</h3>
-        <p class="muted">Live strength score with entropy, pattern detection and crack-time estimates.</p>
-        <a class="t-primary" href="/checker">Check a password &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/></svg></div>
-        <h3 class="h-2">Password Generator</h3>
-        <p class="muted">Up to 64-character passwords or a diceware passphrase, generated locally.</p>
-        <a class="t-primary" href="/generator">Generate a password &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="m12 12 6-6"/></svg></div>
-        <h3 class="h-2">Breach Check</h3>
-        <p class="muted">See whether a password or its pattern appears in known breach corpora.</p>
-        <a class="t-primary" href="/breach-check">Check exposure &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4.2" ry="9"/></svg></div>
-        <h3 class="h-2">What Is My IP</h3>
-        <p class="muted">Your public IP, ISP and country — cross-checked against two services.</p>
-        <a class="t-primary" href="/what-is-my-ip">See my IP address &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4m0 0-5 6m5-6 5 6"/></svg></div>
-        <h3 class="h-2">DNS Leak Test</h3>
-        <p class="muted">See which resolver really handles your DNS — and whether it bypasses your VPN.</p>
-        <a class="t-primary" href="/dns-leak-test">Check my DNS path &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3 class="h-2">URL Scanner</h3>
-        <p class="muted">Free-scope verdicts: open ports, TLS, DNS and search-dork matches.</p>
-        <a class="t-primary" href="/url-scanner">Scan a URL &rarr;</a>
-      </div>
-    </div>
+    <div class="grid grid-3"><a href="/checker" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 3.5-3.5"/><path d="M20.2 17a8.5 8.5 0 1 0-16.4 0"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">Password Checker</h2>
+  <p>Real-time, fully local strength analysis with pattern detection, entropy estimates and actionable fixes.</p>
+  <span class="tool-cta">Check a password <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a>
+<a href="/generator" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">Password Generator</h2>
+  <p>Cryptographically secure passwords built with crypto.getRandomValues() — never Math.random().</p>
+  <span class="tool-cta">Generate a password <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a>
+<a href="/breach-check" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="m12 12 6-6"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">Breach Check</h2>
+  <p>Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix — plus an offline built-in list of well-known breached passwords. Your password never leaves your browser.</p>
+  <span class="tool-cta">Check for breaches <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a>
+<a href="/what-is-my-ip" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4.2" ry="9"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">What Is My IP</h2>
+  <p>See your public IP address, ISP and country as websites see them — cross-checked against two independent services. Every request is listed on the page.</p>
+  <span class="tool-cta">See my IP address <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a>
+<a href="/dns-leak-test" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4m0 0-5 6m5-6 5 6"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">DNS Leak Test</h2>
+  <p>See which resolver actually handles your DNS lookups — and whether they bypass your VPN and reach your ISP instead.</p>
+  <span class="tool-cta">Check my DNS path <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a>
+<a href="/url-scanner" class="card tool-card card-link">
+  <div class="tool-top"><span class="card-icon"><svg class="icon-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span class="badge badge-live">Live</span></div>
+  <h2 class="tool-card-title">Phishing URL Scanner</h2>
+  <p>Client-side lexical URL analyzer detecting IDN homograph punycode (xn--), @-authority tricks, and brand typosquatting.</p>
+  <span class="tool-cta">Scan a link locally <svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></a></div>
   </div>
 </section>
 
