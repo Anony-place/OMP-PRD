@@ -1043,6 +1043,34 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .icon-menu { display: block; }
 .icon-close { display: none; }
 .check-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+/* ---------- Wide checker dashboard (home + /checker) ---------- */
+.checker-top { display: block; }
+.checker-mid { display: grid; gap: 0; }
+.checker-score { min-width: 0; }
+.checker-stats { min-width: 0; }
+@media (min-width: 1000px) {
+  .checker-mid { grid-template-columns: 340px 1fr; gap: 0 32px; align-items: center; }
+  .checker-stats { align-self: center; }
+  .checker-stats .stat-grid { margin-top: 0; }
+}
+@media (min-width: 1120px) {
+  .checker-card--wide .stat-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 860px) {
+  .checker-card--wide .analysis-panel { grid-template-columns: 1fr 1fr; }
+}
+
+/* Home hero, single centered column (checker lives in its own band below) */
+.hero-copy { max-width: 820px; margin-inline: auto; text-align: center; }
+.hero-copy .hero-cta, .hero-copy .hero-trust { justify-content: center; }
+.hero-copy .lead { max-width: 620px; margin-inline: auto; }
+/* IP & Leak Check session tones */
+[data-tone="ok"] { border-color: rgba(52, 211, 153, .45) !important; }
+[data-tone="warn"] { border-color: rgba(251, 146, 60, .55) !important; }
+@media (max-width: 640px) {
+  .checker-mid .score-row { margin-top: 18px; }
+}
 .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
 @media (max-width: 640px) { .result-grid { grid-template-columns: 1fr; } }
 .tab-row { display: inline-flex; gap: 6px; padding: 5px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); margin-bottom: 24px; }

@@ -31,6 +31,7 @@ ICONS = {
     "search": '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     "jwt-lock": '<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     "shield-scan": '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    "globe": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4.2" ry="9"/>',
     "list": '<path d="m3 6 1.5 1.5L7 5"/><path d="m3 12 1.5 1.5L7 11"/><path d="m3 18 1.5 1.5L7 17"/><path d="M11 6h10"/><path d="M11 12h10"/><path d="M11 18h10"/>',
     "book": '<path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
@@ -219,6 +220,7 @@ def footer():
             ("Password Checker", "/checker"),
             ("Password Generator", "/generator"),
             ("Breach Check", "/breach-check"),
+            ("IP & Leak Check", "/ip-check"),
             ("Password Health", "/password-health"),
             ("All Tools", "/tools"),
         ]),
@@ -313,7 +315,8 @@ def checker_markup(context="page"):
     """The live password checker component (bound by checker.js)."""
     return f"""
 <div class="checker-shell" data-checker-context="{context}">
-  <div class="card checker-card" data-checker>
+  <div class="card checker-card checker-card--wide" data-checker>
+    <div class="checker-top">
     <div class="field-label">
       <label for="pw-{context}">Enter a password to analyze</label>
       <span class="counter" data-pw-counter>0 chars</span>
@@ -329,8 +332,11 @@ def checker_markup(context="page"):
       </div>
     </div>
     <p class="privacy-note" id="pw-privacy-{context}">{icon("lock","icon-16")} Your password stays in your browser. Analysis runs locally — nothing is sent, stored or logged.</p>
+    </div>
 
-    <div class="score-row">
+    <div class="checker-mid">
+      <div class="checker-score">
+      <div class="score-row">
       <div>
         <div class="score-number"><span data-score-number>0</span><span class="of">/100</span></div>
         <div class="tiny muted">Heuristic strength score</div>
@@ -340,7 +346,9 @@ def checker_markup(context="page"):
 
     <div class="meter" data-meter></div>
     <div class="meter-scale" aria-hidden="true"><span>Very Weak</span><span>Weak</span><span>Fair</span><span>Strong</span><span>Excellent</span></div>
+      </div>
 
+      <div class="checker-stats">
     <div class="stat-grid">
       <div class="stat"><div class="k">Length</div><div class="v" data-stat="length">—</div></div>
       <div class="stat"><div class="k">Est. entropy</div><div class="v mono" data-stat="entropy">—</div></div>
@@ -349,6 +357,8 @@ def checker_markup(context="page"):
     </div>
 
     <div class="check-chip-row" data-cats></div>
+      </div>
+    </div>
 
     <div class="analysis-panel">
       <h2 class="sr-only">Live strength analysis</h2>
@@ -395,6 +405,9 @@ TOOLS = [
     {"name": "Breach Check", "href": "/breach-check", "icon": "radar", "status": "live",
      "desc": "Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix (plus offline demo fallback). Your password never leaves your browser.",
      "cta": "Check for breaches"},
+    {"name": "IP & Leak Check", "href": "/ip-check", "icon": "globe", "status": "live",
+     "desc": "See your public IP address and test for WebRTC and DNS-resolver leaks — the two mistakes that betray VPNs. Every network call this page makes is listed on it.",
+     "cta": "Check your IP & leaks"},
     {"name": "Password Health", "href": "/password-health", "icon": "pulse", "status": "live",
      "desc": "Run a full local audit — length, diversity, patterns, entropy and reuse hygiene — with a letter grade.",
      "cta": "Audit a password"},

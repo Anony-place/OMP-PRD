@@ -24,8 +24,9 @@ from omp_build.guides1 import GUIDES_1  # noqa: E402
 from omp_build.guides2 import GUIDES_2  # noqa: E402
 from omp_build.guides3 import GUIDES_3  # noqa: E402
 from omp_build.pages_core import (  # noqa: E402
-    FAQ_ITEMS, breach_body, checker_body, checklist_body, entropy_body,
-    generator_body, health_body, home_body, passphrase_body,
+    CHECKER_FAQ, FAQ_ITEMS, GENERATOR_FAQ, IPCHECK_FAQ, breach_body,
+    checker_body, checklist_body, entropy_body,
+    generator_body, health_body, home_body, ip_check_body, passphrase_body,
     random_string_body, tools_body,
 )
 from omp_build.pages_blog import articles_body, osint_body, pentest_body, products_body  # noqa: E402
@@ -230,21 +231,32 @@ def main():
         title="Password Strength Checker — Private & Free | OopsMyPassword",
         desc="Test password strength in real time with pattern detection, entropy estimates and crack-time indication. 100% client-side: your password never leaves your browser.",
         body=checker_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Checker", "/checker")]),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("Password Checker", "/checker")]),
+                jsonld_faq(CHECKER_FAQ)],
         scripts_=["security.js", "wordlist.js", "checker.js"],
+    ))
+    write("ip-check.html", page(
+        path="/ip-check", active="/ip-check",
+        title="What Is My IP Address? IP & VPN Leak Check | OopsMyPassword",
+        desc="See your public IP address and run WebRTC and DNS leak tests on one page. Every network call is disclosed — no accounts, no tracking, no stored data.",
+        body=ip_check_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("IP & Leak Check", "/ip-check")]),
+                jsonld_faq(IPCHECK_FAQ)],
+        scripts_=["ip-check.js"],
     ))
     write("generator.html", page(
         path="/generator", active="/generator",
         title="Secure Random Password Generator | OopsMyPassword",
-        desc="Generate cryptographically secure passwords locally with crypto.getRandomValues(). Length slider, character options, ambiguous-character filter. No Math.random(), ever.",
+        desc="Free online random password generator — cryptographically secure, made locally. Length slider, character options, special characters included.",
         body=generator_body(),
-        jsonld=jsonld_breadcrumb([("Home", "/"), ("Password Generator", "/generator")]),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("Password Generator", "/generator")]),
+                jsonld_faq(GENERATOR_FAQ)],
         scripts_=["security.js", "generator.js"],
     ))
     write("tools.html", page(
         path="/tools", active="/tools",
         title="Password Security Tools — All Free & Client-Side | OopsMyPassword",
-        desc="Eleven free browser-based security tools: password checker, generator, breach check, health audit, passphrases, entropy, dork builder, hash/JWT inspector and URL scanner.",
+        desc="Twelve free browser-based security tools: password checker, generator, breach check, IP & leak check, entropy, dork builder, hash/JWT inspector and URL scanner.",
         body=tools_body(),
         jsonld=jsonld_breadcrumb([("Home", "/"), ("Tools", "/tools")]),
     ))
