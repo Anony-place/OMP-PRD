@@ -61,6 +61,10 @@ def faq_details(items):
 # ------------------------------------------------------------------ Home
 def home_body(guides):
     tool_cards = "\n".join(tool_card(t) for t in TOOLS)
+    by_href = {t["href"]: t for t in TOOLS}
+    popular_cards = "\n".join(tool_card(by_href[h]) for h in (
+        "/checker", "/generator", "/breach-check",
+        "/what-is-my-ip", "/dns-leak-test", "/url-scanner"))
     guide_cards = "\n".join(guide_card(g) for g in guides[:6])
     faq_preview = faq_details(FAQ_ITEMS[:5])
     return f"""
@@ -84,51 +88,14 @@ def home_body(guides):
 </section>
 
 <!-- ===== Popular tools (home = navigation hub; every tool has its own page) ===== -->
-<section class="section-tight" id="popular-tools">
+<section class="section-tight" id="popular-tools" style="background: var(--bg-soft); border-block: 1px solid var(--border)">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Start here</span>
       <h2 class="h-1">Popular tools</h2>
       <p class="lead">Six tools people reach for most. Each runs on its own page — nothing is squeezed into this one.</p>
     </div>
-    <div class="tool-grid">
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("gauge")}</div>
-        <h3 class="h-2">Password Strength Checker</h3>
-        <p class="muted">Live strength score with entropy, pattern detection and crack-time estimates.</p>
-        <a class="t-primary" href="/checker">Check a password &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("dice")}</div>
-        <h3 class="h-2">Password Generator</h3>
-        <p class="muted">Up to 64-character passwords or a diceware passphrase, generated locally.</p>
-        <a class="t-primary" href="/generator">Generate a password &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("radar")}</div>
-        <h3 class="h-2">Breach Check</h3>
-        <p class="muted">See whether a password or its pattern appears in known breach corpora.</p>
-        <a class="t-primary" href="/breach-check">Check exposure &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("globe")}</div>
-        <h3 class="h-2">What Is My IP</h3>
-        <p class="muted">Your public IP, ISP and country — cross-checked against two services.</p>
-        <a class="t-primary" href="/what-is-my-ip">See my IP address &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("nodes")}</div>
-        <h3 class="h-2">DNS Leak Test</h3>
-        <p class="muted">See which resolver really handles your DNS — and whether it bypasses your VPN.</p>
-        <a class="t-primary" href="/dns-leak-test">Check my DNS path &rarr;</a>
-      </div>
-      <div class="tool-card reveal">
-        <div class="icon-box icon-box-accent">{icon("shield-scan")}</div>
-        <h3 class="h-2">URL Scanner</h3>
-        <p class="muted">Free-scope verdicts: open ports, TLS, DNS and search-dork matches.</p>
-        <a class="t-primary" href="/url-scanner">Scan a URL &rarr;</a>
-      </div>
-    </div>
+    <div class="grid grid-3">{popular_cards}</div>
   </div>
 </section>
 
