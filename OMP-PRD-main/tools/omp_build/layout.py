@@ -406,7 +406,7 @@ TOOLS = [
      "desc": "Cryptographically secure passwords built with crypto.getRandomValues() — never Math.random().",
      "cta": "Generate a password"},
     {"name": "Breach Check", "href": "/breach-check", "icon": "radar", "status": "live",
-     "desc": "Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix (plus offline demo fallback). Your password never leaves your browser.",
+     "desc": "Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix — plus an offline built-in list of well-known breached passwords. Your password never leaves your browser.",
      "cta": "Check for breaches"},
     {"name": "What Is My IP", "href": "/what-is-my-ip", "icon": "globe", "status": "live",
      "desc": "See your public IP address, ISP and country as websites see them — cross-checked against two independent services. Every request is listed on the page.",
