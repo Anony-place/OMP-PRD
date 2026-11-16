@@ -5,7 +5,7 @@
    Demonstrates the k-anonymity model locally:
    1. The password is SHA-1 hashed in your browser (never sent anywhere).
    2. Only the first 5 hex characters of the hash are "queried".
-   3. They are compared against a tiny built-in demo list of hashes
+   3. They are compared against a small built-in list of well-known breached-password hashes
       of well-known compromised passwords.
 
    In a production deployment the prefix would be sent to a
