@@ -144,6 +144,7 @@ https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-compa
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
 https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
+https://oopsmypassword.web.app/articles/what-is-an-sbom
 https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it

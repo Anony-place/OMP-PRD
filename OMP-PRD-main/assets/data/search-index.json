@@ -164,8 +164,8 @@
     },
     {
       "type": "Guide",
-      "title": "John the Ripper: No Password Hashes Loaded (All 8 Causes)",
-      "desc": "John refuses to load your hash file. The eight real causes in frequency order, the build trap that hits most Kali users, and a five-command diagnostic that…",
+      "title": "No password hashes loaded (see FAQ) — John the Ripper fix",
+      "desc": "John stops with No password hashes loaded (see FAQ). The 8 real causes in order, each with the one command that proves it — no guessing.",
       "url": "/articles/john-the-ripper-no-password-hashes-loaded",
       "kw": "john the ripper no password hashes loaded guide articles"
     },
@@ -273,6 +273,13 @@
       "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
       "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
       "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "What Is an SBOM? Software Bill of Materials Explained",
+      "desc": "SBOM meaning, explained: what a software bill of materials lists, why regulators and CI pipelines now demand one, and how to generate it free.",
+      "url": "/articles/what-is-an-sbom",
+      "kw": "what is an sbom guide articles"
     },
     {
       "type": "Guide",
