@@ -329,7 +329,9 @@ export const COMPARISONS = [
     workflowB: '# Inspect WebAuthn RP ID origin binding in browser DevTools\nnavigator.credentials.get({ publicKey: { rpId: "oopsmypassword.web.app", challenge } })',
     faqs: [
       { q: 'Do both YubiKeys and synced passkeys stop real-time evilginx phishing proxies?', a: 'Yes. Both use the FIDO2 WebAuthn protocol, which cryptographically binds the authentication signature to the browser origin domain. A phishing domain never matches the legitimate Relying Party ID.' },
-      { q: 'Why do security teams still require physical YubiKeys over synced passkeys?', a: 'A synced passkey is only as secure as the cloud account or password manager syncing it. A YubiKey stores the private key in dedicated hardware silicon from which it can never be exported or copied.' }
+      { q: 'Why do security teams still require physical YubiKeys over synced passkeys?', a: 'A synced passkey is only as secure as the cloud account or password manager syncing it. A YubiKey stores the private key in dedicated hardware silicon from which it can never be exported or copied.' },
+      { q: 'Is a passkey the same thing as a FIDO2 security key?', a: 'A passkey is the credential; FIDO2 (WebAuthn) is the protocol that creates and uses it. A YubiKey holds FIDO2 passkeys in device-bound hardware, while Apple, Google and Bitwarden hold synced passkeys in a cloud keychain. Both are passkeys — the difference is where the private key lives and whether it can be copied.' },
+      { q: 'Can a YubiKey store passkeys the way a phone does?', a: 'A YubiKey 5 (firmware 5.7+) can store resident passkeys on the device itself, but it holds a limited number and never syncs them. Phones and password managers trade that hardware guarantee for unlimited, cloud-synced passkeys — which is why many security teams use both: a hardware key for root and admin accounts, synced passkeys for everyday logins.' }
     ],
     relatedLinks: [
       { label: 'Passkeys Explained Guide', url: '/articles/passkeys-explained' },
@@ -1702,7 +1704,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'A Software Bill of Materials (SBOM) is a machine-readable inventory (in CycloneDX or SPDX format) listing every open-source and third-party library, version, and transitive dependency packaged inside an application.',
     howItWorks: 'Modern software typically pulls in hundreds of transitive npm, PyPI, Maven, or Go packages. When a zero-day vulnerability like Log4Shell is disclosed, organizations with an automated SBOM generated during CI/CD can query their inventory in seconds to see exactly which containers and services include the affected version.',
     mitigation: 'Generate CycloneDX or SPDX SBOMs automatically in your CI/CD build pipeline, pin dependency versions with lockfiles, and scan dependencies continuously against CVE advisories.',
-    relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
+    relatedTool: { label: 'SBOM Explained: What Is a Software Bill of Materials?', url: '/articles/what-is-an-sbom' },
   },
   {
     slug: 'diceware-passphrase',
