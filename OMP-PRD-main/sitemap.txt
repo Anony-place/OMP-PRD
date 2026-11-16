@@ -7,7 +7,9 @@ https://oopsmypassword.web.app/products
 https://oopsmypassword.web.app/osint
 https://oopsmypassword.web.app/pentest
 https://oopsmypassword.web.app/breach-check
-https://oopsmypassword.web.app/ip-check
+https://oopsmypassword.web.app/what-is-my-ip
+https://oopsmypassword.web.app/ip-leak-test
+https://oopsmypassword.web.app/dns-leak-test
 https://oopsmypassword.web.app/about
 https://oopsmypassword.web.app/privacy
 https://oopsmypassword.web.app/terms

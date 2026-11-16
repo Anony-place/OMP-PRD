@@ -71,7 +71,7 @@ def home_body(guides):
       <h1 class="h-display reveal reveal-d1">Know how strong <span class="grad-text">your password</span> really is.</h1>
       <p class="lead reveal reveal-d2">Test your password strength in real-time, check security risks, generate stronger passwords, and learn how to protect your digital life.</p>
       <div class="hero-cta reveal reveal-d3">
-        <a class="btn btn-primary btn-lg" href="#checker">{icon("gauge","icon-18")} Check Your Password</a>
+        <a class="btn btn-primary btn-lg" href="/checker">{icon("gauge","icon-18")} Check Your Password</a>
         <a class="btn btn-secondary btn-lg" href="/generator">{icon("dice","icon-18")} Generate Strong Password</a>
       </div>
       <div class="hero-trust reveal reveal-d3">
@@ -83,10 +83,51 @@ def home_body(guides):
   </div>
 </section>
 
-<section class="section-tight" id="checker" style="padding-top:0; scroll-margin-top: calc(var(--nav-h) + 24px)">
+<!-- ===== Popular tools (home = navigation hub; every tool has its own page) ===== -->
+<section class="section-tight" id="popular-tools">
   <div class="container">
-    <div class="reveal reveal-d1">
-      {checker_markup("home")}
+    <div class="section-head reveal">
+      <span class="eyebrow">Start here</span>
+      <h2 class="h-1">Popular tools</h2>
+      <p class="lead">Six tools people reach for most. Each runs on its own page — nothing is squeezed into this one.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("gauge")}</div>
+        <h3 class="h-2">Password Strength Checker</h3>
+        <p class="muted">Live strength score with entropy, pattern detection and crack-time estimates.</p>
+        <a class="t-primary" href="/checker">Check a password &rarr;</a>
+      </div>
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("dice")}</div>
+        <h3 class="h-2">Password Generator</h3>
+        <p class="muted">Up to 64-character passwords or a diceware passphrase, generated locally.</p>
+        <a class="t-primary" href="/generator">Generate a password &rarr;</a>
+      </div>
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("radar")}</div>
+        <h3 class="h-2">Breach Check</h3>
+        <p class="muted">See whether a password or its pattern appears in known breach corpora.</p>
+        <a class="t-primary" href="/breach-check">Check exposure &rarr;</a>
+      </div>
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("globe")}</div>
+        <h3 class="h-2">What Is My IP</h3>
+        <p class="muted">Your public IP, ISP and country — cross-checked against two services.</p>
+        <a class="t-primary" href="/what-is-my-ip">See my IP address &rarr;</a>
+      </div>
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("nodes")}</div>
+        <h3 class="h-2">DNS Leak Test</h3>
+        <p class="muted">See which resolver really handles your DNS — and whether it bypasses your VPN.</p>
+        <a class="t-primary" href="/dns-leak-test">Check my DNS path &rarr;</a>
+      </div>
+      <div class="tool-card reveal">
+        <div class="icon-box icon-box-accent">{icon("shield-scan")}</div>
+        <h3 class="h-2">URL Scanner</h3>
+        <p class="muted">Free-scope verdicts: open ports, TLS, DNS and search-dork matches.</p>
+        <a class="t-primary" href="/url-scanner">Scan a URL &rarr;</a>
+      </div>
     </div>
   </div>
 </section>
@@ -132,7 +173,7 @@ def home_body(guides):
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Toolbox</span>
-      <h2 class="h-1">Twelve tools. Zero accounts.</h2>
+      <h2 class="h-1">Fourteen tools. Zero accounts.</h2>
       <p class="lead">Every tool below actually works, in your browser, right now. Anything we haven't finished is labeled instead of faked.</p>
     </div>
     <div class="grid grid-4">{tool_cards}</div>
@@ -140,32 +181,14 @@ def home_body(guides):
 </section>
 
 <section class="section" id="generate">
-  <div class="container two-col" style="align-items:center">
-    <div class="reveal">
-      <span class="eyebrow">Generator</span>
-      <h2 class="h-1">Strong passwords, generated in front of you</h2>
-      <p class="lead">Built on <code class="mono">crypto.getRandomValues()</code> with bias-free sampling — the same class of randomness browsers use for cryptography. <strong>Generated locally in your browser.</strong></p>
-      <ul class="list-plain mt-24">
-        <li>{icon("check","icon-18")}<span><strong>20-character default</strong> with all character types</span></li>
-        <li>{icon("check","icon-18")}<span><strong>Every character type enforced</strong>, then shuffled securely</span></li>
-        <li>{icon("check","icon-18")}<span><strong>Ambiguity filter</strong> for <span class="mono">Il1O0</span>-confusable situations</span></li>
-      </ul>
-      <a class="btn btn-secondary mt-24" href="/generator">Open full generator {icon("arrow","icon-16")}</a>
-    </div>
-    <div class="card card-pad reveal reveal-d1" data-generator>
-      <h3 class="h-3">Quick generate</h3>
-      <div class="gen-output mt-16"><code data-gen-output aria-live="polite"></code>
-        <button class="icon-btn" type="button" data-copy-btn aria-label="Copy password"></button>
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2 class="h-1">Need a strong password <em>right now?</em></h2>
+      <p class="lead mt-8" style="max-width:620px;margin-inline:auto">The generator builds up to 64-character passwords or a diceware passphrase with pro options — generated locally with <code class="mono">crypto.getRandomValues()</code>, copy in one click. It lives on its own page.</p>
+      <div class="flex gap-12 wrap mt-24" style="justify-content:center">
+        <a class="btn btn-primary btn-lg" href="/generator">{icon("dice","icon-18")} Generate a Password</a>
+        <a class="btn btn-secondary btn-lg" href="/passphrase">Passphrase Generator</a>
       </div>
-      <div class="meter" data-gen-meter aria-hidden="true"></div>
-      <div class="flex justify-between items-center mt-8">
-        <span class="tiny muted">Estimated entropy</span>
-        <span class="tiny muted mono" data-gen-entropy></span>
-      </div>
-      <div class="slider-head mt-24"><label for="qg-length"><strong>Length</strong></label><output id="qg-length-out" data-gen-length-out for="qg-length">20</output></div>
-      <input type="range" id="qg-length" min="8" max="64" value="20" step="1" data-gen-length aria-describedby="qg-length-out">
-      <button class="btn btn-primary mt-24" type="button" data-gen-btn style="width:100%">{icon("refresh","icon-18")} Regenerate</button>
-      <p class="privacy-note">{icon("lock","icon-16")} Generated locally in your browser — nothing is transmitted.</p>
     </div>
   </div>
 </section>
@@ -236,7 +259,7 @@ def home_body(guides):
       <h2 class="h-1">Your next password can be your best one</h2>
       <p class="lead mt-8" style="max-width:560px;margin-inline:auto">Test it, replace it, or learn why it works — all without creating an account.</p>
       <div class="flex gap-12 wrap mt-24" style="justify-content:center">
-        <a class="btn btn-primary btn-lg" href="#checker">{icon("gauge","icon-18")} Check Your Password</a>
+        <a class="btn btn-primary btn-lg" href="/checker">{icon("gauge","icon-18")} Check Your Password</a>
         <a class="btn btn-secondary btn-lg" href="/articles">Explore the Articles</a>
       </div>
     </div>
@@ -255,7 +278,7 @@ def checker_body():
     <p class="lead">Real-time analysis with pattern detection, entropy estimation, crack-time indication and concrete recommendations — computed entirely in your browser.</p>
   </div>
 </section>
-<section class="section-tight" style="padding-top:24px">
+<section class="section-tight" id="checker" style="padding-top:24px">
   <div class="container">
     {checker_markup("page")}
   </div>
@@ -395,9 +418,9 @@ def tools_body():
               "Test, generate and audit secrets. Every tool in this group runs fully in your browser — no request leaves the page.",
               ["/checker", "/generator", "/password-health", "/passphrase",
                "/entropy", "/random-string", "/security-checklist"])
-        + group("Privacy & leak checks",
+        + group("Privacy & network checks",
               "See what the internet sees about you — and which leaks betray a VPN. The network calls these make are listed on each page.",
-              ["/breach-check", "/ip-check"], grid="grid-2")
+              ["/breach-check", "/what-is-my-ip", "/ip-leak-test", "/dns-leak-test"], grid="grid-4")
         + group("Scanning & OSINT",
               "Practitioner tools for suspicious links, hashes and search — all client-side analysis.",
               ["/dork-builder", "/hash-inspector", "/url-scanner"], grid="grid-3")
@@ -407,7 +430,7 @@ def tools_body():
   <div class="container">
     <span class="chip chip-accent">{icon("shield","icon-16")} All tools live unless labeled</span>
     <h1 class="h-1 mt-16">The OMP Toolbox</h1>
-    <p class="lead">Twelve focused utilities in three groups — for testing, generating and understanding passwords, checking what the internet sees, and inspecting suspicious links and hashes. Anything that isn't finished says "Coming Soon" instead of pretending.</p>
+    <p class="lead">Fourteen focused utilities in three groups — for testing, generating and understanding passwords, checking what the internet sees, and inspecting suspicious links and hashes. Anything that isn't finished says "Coming Soon" instead of pretending.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:16px">
@@ -845,87 +868,249 @@ def checklist_body():
 """
 
 
-# ------------------------------------------------------------------ IP & Leak Check page
-IPCHECK_FAQ = [
-    ("What is my IP address?",
-     "The public IP address your internet connection presents to websites — assigned by your ISP, or by your VPN when one is connected. Press the buttons above to see it with the ISP and country attached to it. Private local addresses (like 192.168.x.x) are separate and show up in the WebRTC check."),
-    ("How do I check if my VPN is leaking my IP?",
-     "Run the checks above with the VPN connected: the public IP should be the VPN provider's, not your ISP's; the WebRTC check should show no unexpected public address; and the DNS resolver should belong to the VPN. If the public IP looks right but DNS still shows your ISP, your DNS is leaking."),
-    ("What is a WebRTC leak?",
-     "WebRTC — the browser technology behind real-time audio and video — can discover your real public and local IP addresses outside a VPN tunnel. The check above lists every address your browser would advertise to a website that asks for them."),
+# ---------------------------------------------------- What Is My IP / IP Leak / DNS Leak pages
+WHATISMYIP_FAQ = [
+    ("Does a VPN change what this page sees?",
+     "Yes — while it is connected, the IP, ISP and country shown here belong to the VPN server, not your connection. If the ISP and country look unfamiliar after you connect, that is usually a sign the VPN is working."),
+    ("Is IPv6 included, and why does it matter?",
+     "If your connection has a public IPv6 address, the lookup shows it beside the IPv4 where the service reports it. It matters because some VPNs route only IPv4 — sites can then see your real IPv6 alongside the VPN's IPv4. Compare both against your VPN's expected location."),
+    ("Why does the page make network requests?",
+     "An IP can only be discovered by asking an outside service. This page calls exactly two — speed.cloudflare.com/meta (primary) and api.ipify.org (cross-check) — and only when you press the button. Both are listed on the page; nothing else is contacted."),
+    ("Does the checker or generator ever see my password?",
+     "No. Every password tool on this site — checker, generator, passphrase, health — runs entirely in your browser and performs zero network requests. The leak tests here are the only pages that talk to the network, and only to the hosts listed on each page."),
+    ("What is my IP address on my phone?",
+     "The same thing this page shows when you open it in your phone's browser: the public address your mobile carrier or Wi-Fi network gives the device. Private addresses like 192.168.x.x or 10.x.x.x are internal — the router or carrier translates them at the edge, and websites never see them."),
+]
+
+IPLEAK_FAQ = [
+    ("What is a WebRTC IP leak?",
+     "WebRTC is the browser technology behind in-browser video and voice. To connect quickly, it can discover your real IP addresses through STUN lookups — even while a VPN is active. If a candidate address here matches your real connection instead of your VPN's, the VPN is leaking."),
+    ("How do I read the verdicts on this test?",
+     "Local (host) addresses are what your device exposes on its own network; mDNS aliases mean your browser is already hiding them. Public addresses seen via STUN are compared against your baseline — if they match, they belong to your current connection; if they differ while a VPN is on, that is a likely WebRTC leak."),
+    ("Does the site see my IP when I run this test?",
+     "Only two services are contacted, and only when you press the button: a Google STUN server (stun.l.google.com:19302) for the WebRTC candidates and speed.cloudflare.com/meta for the baseline IP. Your browser talks to them directly — our server is not in the path."),
+    ("What is the baseline comparison?",
+     "The baseline is your public IP captured by the What Is My IP page — held in this tab's memory only. Turn your VPN on and run the leak test: any WebRTC candidate matching that baseline belongs to the real connection, not the tunnel. If no baseline exists yet, the verdict says so instead of guessing."),
+    ("Should I disable WebRTC in my browser?",
+     "Not necessarily. On Chrome and Edge, WebRTC already hides local addresses behind mDNS (.local) candidates, and modern browsers give you IP-handling policies. If your VPN consistently leaks, first update the VPN app — blocking WebRTC entirely can break legitimate video calls."),
+]
+
+DNSLEAK_FAQ = [
     ("What is a DNS leak?",
-     "Your DNS lookups (translating site names into IP addresses) can travel outside the VPN tunnel and reach your ISP's resolver — revealing which sites you visit even while the traffic itself is protected. The resolver check shows who actually handles your lookups."),
-    ("Does this page send my passwords or track me?",
-     "No. It never asks for a password and has no backend to store anything. The only requests it makes are the three disclosed at the top of the page, each triggered by a button press: two to see your public IP and one DNS-over-HTTPS query. The password tools on this site remain 100% local."),
+     "A DNS leak happens when your DNS lookups — the requests that turn domain names into IP addresses — bypass your VPN and go straight to your ISP or another resolver. Websites still load through the tunnel, but someone watching the resolver can see which sites you visit."),
+    ("How do I read the resolver, ECS and NS rows?",
+     "The resolver row shows the IP and provider of the service that actually answered the query. ECS shows the client network your resolver advertises to authoritative DNS — your ISP's network here can mean a leak. NS shows which authoritative nameserver saw the lookup. If the resolver belongs to your VPN provider, you are routed correctly."),
+    ("What should the result show when a VPN is active?",
+     "The resolver should belong to your VPN provider or a privacy service it routes through — not your ISP. If the resolver's IP and provider match your ISP while the VPN is on, the tunnel is not carrying your DNS. Reconnect, enable the VPN's DNS-leak protection, and run the test again."),
+    ("Does this test send my DNS queries to your server?",
+     "No. Your browser queries dns.google directly — Google's public DNS-over-HTTPS service — asking it to report which resolver actually handled the lookup (a standard whoami trick). Our server is not in the path, and only that one host is contacted."),
+    ("Can I fix a DNS leak without changing VPN?",
+     "Sometimes. Switching your system or router DNS to a resolver you trust (your VPN's, or a public one like Cloudflare's 1.1.1.1) closes the leak for lookups, but the VPN's own leak protection is the stronger fix because it keeps DNS inside the tunnel. Update the VPN app first — most leaks come from outdated clients."),
 ]
 
 
-def ip_check_body():
+# ------------------------------------------------------------------ What Is My IP page
+def what_is_my_ip_body():
     return f"""
 <section class="page-hero">
   <div class="container">
-    <span class="chip chip-accent">{icon("globe","icon-16")} Live tool · privacy checks</span>
-    <h1 class="h-1 mt-16">What Is My IP Address? IPv4/IPv6 + VPN Leak Check</h1>
-    <p class="lead">See the public IP address websites see, then run the two checks that betray VPNs: WebRTC and DNS. Four separate sessions on one honest page — with every network call it makes listed openly.</p>
+    <span class="chip chip-accent">{icon("globe","icon-16")} Live tool · network facts</span>
+    <h1 class="h-1 mt-16">What Is My IP Address?</h1>
+    <p class="lead">See the public IPv4 (and IPv6) address websites see, plus its ISP and country — cross-checked against two independent services. Wondering what my IP is on a VPN or on your phone? The answer below is what the internet sees right now.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:16px">
   <div class="container">
-    <div class="notice-band">{icon("info","icon-20")}<p><strong>What this page contacts, exactly.</strong> Any "what is my IP" service needs one request to a server to see your public address — ours are listed here: <span class="mono">speed.cloudflare.com</span> and <span class="mono">api.ipify.org</span> (public IP, ISP, country), and <span class="mono">dns.google</span> (which resolver handles your DNS lookups). Your password tools stay 100% local; this page cannot be. Nothing is stored — the page has no backend.</p></div>
-    <div class="grid grid-2 mt-32" style="align-items:start">
-      <div class="card card-pad">
-        <span class="card-icon">{icon("globe","icon-22")}</span>
-        <h2 class="h-3">1 · Public IP — what sites see</h2>
-        <p class="muted">The IP address the internet sees, with the ISP and country attached to it. The request happens only when you press the button.</p>
-        <button class="btn btn-primary mt-8" type="button" data-ip-run>Show my IP</button>
-        <div class="stat-grid mt-16" data-ip-box hidden>
-          <div class="stat"><div class="k">Public IP</div><div class="v mono" data-ip-addr>—</div></div>
-          <div class="stat"><div class="k">ISP / Organization</div><div class="v" data-ip-org>—</div></div>
-          <div class="stat"><div class="k">Country / City</div><div class="v" data-ip-geo>—</div></div>
-          <div class="stat"><div class="k">Second opinion</div><div class="v" data-ip-second>—</div></div>
+    <div class="grid" style="gap:16px">
+      <div class="card card-pad reveal">
+        <span class="chip chip-accent">{icon("globe","icon-16")} Identity</span>
+        <h2 class="h-3 mt-12">IP address, ISP &amp; country</h2>
+        <p class="muted mt-8">Primary lookup via Cloudflare, cross-checked against ipify — both responses shown, so a single wrong answer can't fool you.</p>
+        <button class="btn btn-primary mt-16" type="button" data-ip-run>Show my IP</button>
+        <p class="tiny mt-8 mono" data-ip-status role="status" aria-live="polite">Waiting — nothing runs until you press the button.</p>
+        <div class="mt-16" data-ip-box hidden>
+          <ul class="list-plain">
+            <li>{icon("check","icon-18")}<span>Public IP: <strong class="mono" data-ip-addr>—</strong></span></li>
+            <li>{icon("check","icon-18")}<span>Network: <strong class="mono" data-ip-org>—</strong></span></li>
+            <li>{icon("check","icon-18")}<span>Location: <strong class="mono" data-ip-geo>—</strong></span></li>
+            <li>{icon("check","icon-18")}<span>ipify cross-check: <strong class="mono" data-ip-second>—</strong></span></li>
+          </ul>
         </div>
-        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-ip-status role="status" aria-live="polite">Nothing requested yet.</span></p>
-      </div>
-      <div class="card card-pad">
-        <span class="card-icon">{icon("radar","icon-22")}</span>
-        <h2 class="h-3">2 · WebRTC leak check</h2>
-        <p class="muted">WebRTC can expose local and real public addresses even behind a VPN. This opens a browser-only peer connection and reads the addresses it would advertise. No page request is involved.</p>
-        <button class="btn btn-primary mt-8" type="button" data-rtc-run>Run WebRTC check</button>
-        <ul class="check-list mt-16" data-rtc-out></ul>
-        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-rtc-status role="status" aria-live="polite">Runs entirely in your browser.</span></p>
-      </div>
-      <div class="card card-pad">
-        <span class="card-icon">{icon("search","icon-22")}</span>
-        <h2 class="h-3">3 · DNS resolver check</h2>
-        <p class="muted">DNS lookups can bypass your VPN and reach your ISP directly. This asks a public resolver who handled the query — with a VPN on, the answer should be the VPN's resolver, not your ISP's.</p>
-        <button class="btn btn-primary mt-8" type="button" data-dns-run>Check my DNS path</button>
-        <ul class="check-list mt-16" data-dns-out></ul>
-        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-dns-status role="status" aria-live="polite">One DNS-over-HTTPS query when you press the button.</span></p>
-      </div>
-      <div class="card card-pad">
-        <span class="card-icon">{icon("fingerprint","icon-22")}</span>
-        <h2 class="h-3">4 · Privacy tells</h2>
-        <p class="muted">The small mismatches that reveal you: a timezone that disagrees with your IP's country, or browser languages that betray your region. Computed locally from what your browser already exposes.</p>
-        <button class="btn btn-primary mt-8" type="button" data-tell-run>Show my privacy tells</button>
-        <ul class="check-list mt-16" data-tell-out></ul>
-        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-tell-status role="status" aria-live="polite">Runs locally; compares with the IP session when you have run it.</span></p>
       </div>
     </div>
-  </div>
-</section>
-<section class="section" id="faq">
-  <div class="container container-narrow">
-    <div class="section-head">
-      <span class="eyebrow">FAQ</span>
-      <h2 class="h-2">IP addresses &amp; VPN leaks — common questions</h2>
+    <div class="flex gap-12 wrap mt-24">
+      <a class="btn btn-secondary btn-sm" href="/ip-leak-test">{icon("fingerprint","icon-16")} Run the WebRTC leak test</a>
+      <a class="btn btn-secondary btn-sm" href="/dns-leak-test">{icon("nodes","icon-16")} Run the DNS leak test</a>
     </div>
-    {faq_details(IPCHECK_FAQ)}
+    <div class="card card-pad mt-24 reveal">
+      <span class="card-icon">{icon("server-off","icon-22")}</span>
+      <h3 class="h-3">Every request this page makes</h3>
+      <p class="muted mt-8">Pressing the button runs exactly two browser-side calls — our server is not in the path:</p>
+      <ul class="list-plain mt-16">
+        <li>{icon("check","icon-18")}<span><span class="mono tiny">speed.cloudflare.com/meta</span> — primary IP, ASN, organization, country, city</span></li>
+        <li>{icon("check","icon-18")}<span><span class="mono tiny">api.ipify.org/?format=json</span> — independent cross-check of the IP</span></li>
+      </ul>
+      <p class="tiny muted mt-8">Nothing else is contacted. Nothing you type on this site is ever sent anywhere — the password tools on oopsmypassword.com are 100% client-side.</p>
+    </div>
+    <div class="disclosure-band reveal mt-24">
+      <div class="disclosure-icon">{icon("shield","icon-22")}</div>
+      <div>
+        <h3 class="h-3">How this works — and how to verify it</h3>
+        <p>These tests make direct, browser-side calls to three services — <span class="mono tiny">speed.cloudflare.com</span>, <span class="mono tiny">api.ipify.org</span> and <span class="mono tiny">dns.google</span> — and to a public STUN server. Nothing else is contacted. <strong>Verify it yourself:</strong> open your browser's Network tab, run each test, and compare the request list.</p>
+      </div>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">What your public IP address reveals</h2>
+      <p class="muted mt-8">Your public IP is the return address your router or carrier gives every request leaving your network. From it, a website can read your approximate area (city-level at best), your ISP or mobile carrier, and whether the address belongs to a datacenter — which is how sites detect most VPNs. It cannot identify you personally, but it is one of the strongest signals in a browser fingerprint.</p>
+      <p class="muted mt-8">Two details are worth checking regularly. First, IPv6: if your connection carries a public IPv6 address and your VPN only routes IPv4, sites can see both — the leak tests on this site catch that class of mismatch. Second, consistency: the cross-check above exists because a single lookup can be wrong or manipulated; two independent services agreeing is a much stronger answer.</p>
+      <p class="muted mt-8">On a phone, this page shows the address your carrier or Wi-Fi network gives the browser — the same address any website sees from the device.</p>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">What Is My IP — common questions</h2>
+      <div class="grid mt-16" style="gap:10px">{faq_details(WHATISMYIP_FAQ)}</div>
+    </div>
   </div>
 </section>
 <section class="section" style="padding-top:0">
   <div class="container container-narrow grid grid-3">
+    <a class="card card-pad card-link center" href="/ip-leak-test"><span class="card-icon">{icon("fingerprint","icon-22")}</span><h3>Is your VPN leaking?</h3><p>Run the WebRTC leak test with a baseline comparison.</p></a>
+    <a class="card card-pad card-link center" href="/dns-leak-test"><span class="card-icon">{icon("nodes","icon-22")}</span><h3>Where does your DNS go?</h3><p>See which resolver actually handles your lookups.</p></a>
     <a class="card card-pad card-link center" href="/breach-check"><span class="card-icon">{icon("radar","icon-22")}</span><h3>Has a password leaked?</h3><p>Run a zero-knowledge breach lookup against known leak lists.</p></a>
-    <a class="card card-pad card-link center" href="/url-scanner"><span class="card-icon">{icon("shield-scan","icon-22")}</span><h3>Is this link safe?</h3><p>Scan suspicious URLs locally for phishing and typosquatting tells.</p></a>
+  </div>
+</section>
+"""
+
+
+# ------------------------------------------------------------------ IP Leak Test page
+def ip_leak_test_body():
+    return f"""
+<section class="page-hero">
+  <div class="container">
+    <span class="chip chip-accent">{icon("fingerprint","icon-16")} Live tool · WebRTC &amp; privacy tells</span>
+    <h1 class="h-1 mt-16">WebRTC IP Leak Test</h1>
+    <p class="lead">Is your VPN leaking your real IP? Run a WebRTC leak test with a baseline comparison, then check the privacy tells browsers reveal alongside an IP. Each check is a separate, button-triggered session — nothing runs behind your back.</p>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:16px">
+  <div class="container">
+    <div class="grid" style="gap:16px">
+      <div class="card card-pad reveal">
+        <span class="chip chip-accent">{icon("fingerprint","icon-16")} Exposure</span>
+        <h2 class="h-3 mt-12">WebRTC IP leak test</h2>
+        <p class="muted mt-8">Your browser negotiates a peer connection the way it would for a video call. Any candidate IP it discovers is shown and compared against your baseline — mDNS-only (.local) candidates mean your browser is already hiding local addresses.</p>
+        <button class="btn btn-primary mt-16" type="button" data-rtc-run>Run the leak test</button>
+        <p class="tiny mt-8 mono" data-rtc-status role="status" aria-live="polite">Waiting — nothing runs until you press the button.</p>
+        <ul class="list-plain mt-16" data-rtc-out></ul>
+      </div>
+      <div class="card card-pad reveal">
+        <span class="chip chip-accent">{icon("shield","icon-16")} Fingerprint</span>
+        <h2 class="h-3 mt-12">Privacy tells</h2>
+        <p class="muted mt-8">Your timezone and language settings are shared automatically — compared against your IP's country to spot mismatches, along with your Do Not Track setting.</p>
+        <button class="btn btn-primary mt-16" type="button" data-tell-run>Check privacy tells</button>
+        <p class="tiny mt-8 mono" data-tell-status role="status" aria-live="polite">Waiting — nothing runs until you press the button.</p>
+        <ul class="list-plain mt-16" data-tell-out></ul>
+      </div>
+    </div>
+    <div class="flex gap-12 wrap mt-24">
+      <a class="btn btn-secondary btn-sm" href="/what-is-my-ip">{icon("globe","icon-16")} What is my IP address?</a>
+      <a class="btn btn-secondary btn-sm" href="/dns-leak-test">{icon("nodes","icon-16")} DNS leak test</a>
+    </div>
+    <div class="card card-pad mt-24 reveal">
+      <span class="card-icon">{icon("server-off","icon-22")}</span>
+      <h3 class="h-3">Every request these tests make</h3>
+      <p class="muted mt-8">Each session is button-triggered and makes direct, browser-side calls — our server is not in the path:</p>
+      <ul class="list-plain mt-16">
+        <li>{icon("check","icon-18")}<span><span class="mono tiny">stun.l.google.com:19302</span> — WebRTC candidate discovery (leak test)</span></li>
+        <li>{icon("check","icon-18")}<span><span class="mono tiny">speed.cloudflare.com/meta</span> — your baseline public IP (run it on What Is My IP)</span></li>
+      </ul>
+      <p class="tiny muted mt-8">Nothing else is contacted. Nothing you type on this site is ever sent anywhere — the password tools on oopsmypassword.com are 100% client-side.</p>
+    </div>
+    <div class="disclosure-band reveal mt-24">
+      <div class="disclosure-icon">{icon("shield","icon-22")}</div>
+      <div>
+        <h3 class="h-3">How this works — and how to verify it</h3>
+        <p>These tests make direct, browser-side calls to three services — <span class="mono tiny">speed.cloudflare.com</span>, <span class="mono tiny">api.ipify.org</span> and <span class="mono tiny">dns.google</span> — and to a public STUN server. Nothing else is contacted. <strong>Verify it yourself:</strong> open your browser's Network tab, run each test, and compare the request list.</p>
+      </div>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">How a WebRTC IP leak happens</h2>
+      <p class="muted mt-8">WebRTC needs real addresses to build peer-to-peer audio and video streams. To find them, the browser asks a STUN server — in this test, a public Google one — to report the IP it sees. The catch: this lookup can use the direct network interface instead of the VPN tunnel, which is exactly how your real IP ends up in the candidate list while everything else looks protected.</p>
+      <p class="muted mt-8">The baseline comparison turns that into a definite answer. The What Is My IP page captures your public IP in this tab's memory; with your VPN on, run the leak test and any candidate matching that baseline belongs to the real connection, not the tunnel. If no baseline exists, the verdict says so instead of guessing. And if your browser only reports <span class="mono tiny">.local</span> mDNS candidates — the default on modern Chrome and Edge — local addresses are already masked and there is nothing sensitive to leak.</p>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">WebRTC &amp; IP leaks — common questions</h2>
+      <div class="grid mt-16" style="gap:10px">{faq_details(IPLEAK_FAQ)}</div>
+    </div>
+  </div>
+</section>
+<section class="section" style="padding-top:0">
+  <div class="container container-narrow grid grid-3">
+    <a class="card card-pad card-link center" href="/what-is-my-ip"><span class="card-icon">{icon("globe","icon-22")}</span><h3>What is my IP address?</h3><p>See the public IP, ISP and country behind this connection.</p></a>
+    <a class="card card-pad card-link center" href="/dns-leak-test"><span class="card-icon">{icon("nodes","icon-22")}</span><h3>Is your DNS leaking?</h3><p>See which resolver actually handles your lookups.</p></a>
+    <a class="card card-pad card-link center" href="/glossary"><span class="card-icon">{icon("book","icon-22")}</span><h3>IP, DNS, VPN — in plain words</h3><p>The security glossary defines every term this page uses.</p></a>
+  </div>
+</section>
+"""
+
+
+# ------------------------------------------------------------------ DNS Leak Test page
+def dns_leak_test_body():
+    return f"""
+<section class="page-hero">
+  <div class="container">
+    <span class="chip chip-accent">{icon("nodes","icon-16")} Live tool · resolver check</span>
+    <h1 class="h-1 mt-16">DNS Leak Test</h1>
+    <p class="lead">See which DNS resolver actually handles your lookups — and whether your DNS leaks past the VPN to your ISP. A VPN can hide the sites you visit while its DNS still betrays them; this test shows the real path.</p>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:16px">
+  <div class="container">
+    <div class="grid" style="gap:16px">
+      <div class="card card-pad reveal">
+        <span class="chip chip-accent">{icon("nodes","icon-16")} Resolver</span>
+        <h2 class="h-3 mt-12">Who handles your DNS</h2>
+        <p class="muted mt-8">Your browser asks the resolver to identify itself (a standard whoami lookup) — showing the IP and provider that really handle your DNS, the client network it advertises, and the nameserver that sees the query.</p>
+        <button class="btn btn-primary mt-16" type="button" data-dns-run>Run the DNS leak test</button>
+        <p class="tiny mt-8 mono" data-dns-status role="status" aria-live="polite">Waiting — nothing runs until you press the button.</p>
+        <ul class="list-plain mt-16" data-dns-out></ul>
+      </div>
+    </div>
+    <div class="flex gap-12 wrap mt-24">
+      <a class="btn btn-secondary btn-sm" href="/what-is-my-ip">{icon("globe","icon-16")} What is my IP address?</a>
+      <a class="btn btn-secondary btn-sm" href="/ip-leak-test">{icon("fingerprint","icon-16")} WebRTC IP leak test</a>
+    </div>
+    <div class="card card-pad mt-24 reveal">
+      <span class="card-icon">{icon("server-off","icon-22")}</span>
+      <h3 class="h-3">Every request this test makes</h3>
+      <p class="muted mt-8">One button, one browser-side call — our server is not in the path:</p>
+      <ul class="list-plain mt-16">
+        <li>{icon("check","icon-18")}<span><span class="mono tiny">dns.google/resolve?name=whoami.ds.akahelp.net</span> — reports the resolver IP, advertised client network (ECS) and nameserver that handled the lookup</span></li>
+      </ul>
+      <p class="tiny muted mt-8">Nothing else is contacted. Nothing you type on this site is ever sent anywhere — the password tools on oopsmypassword.com are 100% client-side.</p>
+    </div>
+    <div class="disclosure-band reveal mt-24">
+      <div class="disclosure-icon">{icon("shield","icon-22")}</div>
+      <div>
+        <h3 class="h-3">How this works — and how to verify it</h3>
+        <p>These tests make direct, browser-side calls to three services — <span class="mono tiny">speed.cloudflare.com</span>, <span class="mono tiny">api.ipify.org</span> and <span class="mono tiny">dns.google</span> — and to a public STUN server. Nothing else is contacted. <strong>Verify it yourself:</strong> open your browser's Network tab, run each test, and compare the request list.</p>
+      </div>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">What a DNS leak means — and how to fix one</h2>
+      <p class="muted mt-8">Every site you visit starts with a DNS lookup. If those lookups travel outside the VPN tunnel, your ISP — or whatever resolver receives them — sees your browsing destinations even while the page content itself is encrypted. That is a DNS leak: the traffic is protected, the map of where you go is not.</p>
+      <p class="muted mt-8">Reading the result is simple. The resolver row shows the IP and provider that answered; if it belongs to your VPN provider (or a privacy service the VPN routes through), you are routed correctly. If it belongs to your ISP while the VPN is on, the lookups are escaping. The ECS row is the giveaway for forwarded setups — it shows the client network your resolver advertises upstream — and the NS row shows which authoritative nameserver saw the query.</p>
+      <p class="muted mt-8">Fixing a leak starts with the VPN client: update it, turn on its DNS-leak protection, and prefer its own resolvers. If the leak persists, setting your system or router DNS to a resolver you trust — your VPN's, or a public one like Cloudflare's 1.1.1.1 — closes the escape route, though keeping DNS inside the tunnel is the stronger protection. Re-run this test after every change; it is the only honest way to confirm a fix.</p>
+    </div>
+    <div class="mt-32">
+      <h2 class="h-2">DNS leak test — common questions</h2>
+      <div class="grid mt-16" style="gap:10px">{faq_details(DNSLEAK_FAQ)}</div>
+    </div>
+  </div>
+</section>
+<section class="section" style="padding-top:0">
+  <div class="container container-narrow grid grid-3">
+    <a class="card card-pad card-link center" href="/ip-leak-test"><span class="card-icon">{icon("fingerprint","icon-22")}</span><h3>Is your VPN leaking?</h3><p>Run the WebRTC leak test with a baseline comparison.</p></a>
+    <a class="card card-pad card-link center" href="/what-is-my-ip"><span class="card-icon">{icon("globe","icon-22")}</span><h3>What is my IP address?</h3><p>See the public IP, ISP and country behind this connection.</p></a>
     <a class="card card-pad card-link center" href="/glossary"><span class="card-icon">{icon("book","icon-22")}</span><h3>IP, DNS, VPN — in plain words</h3><p>The security glossary defines every term this page uses.</p></a>
   </div>
 </section>

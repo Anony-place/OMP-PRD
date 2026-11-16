@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 Nov 2026 13:31:23 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 14:02:14 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -38,6 +38,41 @@
       <description>Best Free OSINT Tools for Beginners in 2026</description>
     </item>
     <item>
+      <title>Bitwarden Autofill Not Working: 9 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/bitwarden-autofill-not-working</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/bitwarden-autofill-not-working</guid>
+      <category>Security Research</category>
+      <description>Bitwarden Autofill Not Working: 9 Causes, in Order</description>
+    </item>
+    <item>
+      <title>Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</title>
+      <link>https://oopsmypassword.web.app/articles/bitwarden-not-syncing</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/bitwarden-not-syncing</guid>
+      <category>Security Research</category>
+      <description>Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</description>
+    </item>
+    <item>
+      <title>Burp Suite Browser Not Launching: 7 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching</guid>
+      <category>Security Research</category>
+      <description>Burp Suite Browser Not Launching: 7 Causes, in Order</description>
+    </item>
+    <item>
+      <title>Burp Suite Certificate Download &amp; Install: Android, iOS, Browsers</title>
+      <link>https://oopsmypassword.web.app/articles/burp-suite-certificate-download</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/burp-suite-certificate-download</guid>
+      <category>Security Research</category>
+      <description>Burp Suite Certificate Download &amp; Install: Android, iOS, Browsers</description>
+    </item>
+    <item>
+      <title>Chainalysis &amp; Chainstack Breach: What to Do If Your Password Leaked</title>
+      <link>https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do</guid>
+      <category>Security Research</category>
+      <description>Chainalysis &amp; Chainstack Breach: What to Do If Your Password Leaked</description>
+    </item>
+    <item>
       <title>Cloudflare Verification Asking You to Press Win+R? It’s a Scam</title>
       <link>https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam</guid>
@@ -50,6 +85,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/common-cryptography-failures</guid>
       <category>Security Research</category>
       <description>Common Cryptography Failures and How to Spot Them in Code</description>
+    </item>
+    <item>
+      <title>Cyber Security Salary in India in 2026: Per-Month, Fresher &amp; City Bands (₹)</title>
+      <link>https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026</guid>
+      <category>Security Research</category>
+      <description>Cyber Security Salary in India in 2026: Per-Month, Fresher &amp; City Bands (₹)</description>
     </item>
     <item>
       <title>Cyber Security Salary in the USA in 2026: Full Guide</title>
@@ -66,6 +108,13 @@
       <description>Data Classification: A Practical Guide from Public to Restricted</description>
     </item>
     <item>
+      <title>ExifTool Remove All Metadata: The Command, and What Survives It</title>
+      <link>https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata</guid>
+      <category>Security Research</category>
+      <description>ExifTool Remove All Metadata: The Command, and What Survives It</description>
+    </item>
+    <item>
       <title>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</title>
       <link>https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</guid>
@@ -78,6 +127,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report</guid>
       <category>Security Research</category>
       <description>Pentest Report Template: Structure, Fields, Example</description>
+    </item>
+    <item>
+      <title>Hashcat &quot;No Hashes Loaded&quot;: 5 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/hashcat-no-hashes-loaded</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/hashcat-no-hashes-loaded</guid>
+      <category>Security Research</category>
+      <description>Hashcat &quot;No Hashes Loaded&quot;: 5 Causes, in Order</description>
     </item>
     <item>
       <title>Hashcat Token Length Exception: Every Cause, One Fix</title>
@@ -115,6 +171,27 @@
       <description>Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead</description>
     </item>
     <item>
+      <title>John the Ripper: No Password Hashes Loaded (All 8 Causes)</title>
+      <link>https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded</guid>
+      <category>Security Research</category>
+      <description>John the Ripper: No Password Hashes Loaded (All 8 Causes)</description>
+    </item>
+    <item>
+      <title>KeePassXC Database Corrupt or &quot;File Read Error&quot;: 6 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/keepassxc-database-corrupt</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/keepassxc-database-corrupt</guid>
+      <category>Security Research</category>
+      <description>KeePassXC Database Corrupt or &quot;File Read Error&quot;: 6 Causes, in Order</description>
+    </item>
+    <item>
+      <title>KeePassXC Not Opening: 8 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/keepassxc-not-opening</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/keepassxc-not-opening</guid>
+      <category>Security Research</category>
+      <description>KeePassXC Not Opening: 8 Causes, in Order</description>
+    </item>
+    <item>
       <title>CVE-2026-0768: Langflow Flaw Exploited to Steal Cloud Keys</title>
       <link>https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-steal-openai-aws-keys</guid>
@@ -127,6 +204,41 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/malware-families-explained</guid>
       <category>Security Research</category>
       <description>Malware Families Explained: Types, Behaviour and Response</description>
+    </item>
+    <item>
+      <title>Metasploit Database Not Connected: 6 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/metasploit-database-not-connected</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/metasploit-database-not-connected</guid>
+      <category>Security Research</category>
+      <description>Metasploit Database Not Connected: 6 Causes, in Order</description>
+    </item>
+    <item>
+      <title>Meterpreter Session Died / &quot;Is Not Valid&quot;: 6 Causes, in Order</title>
+      <link>https://oopsmypassword.web.app/articles/meterpreter-session-died</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/meterpreter-session-died</guid>
+      <category>Security Research</category>
+      <description>Meterpreter Session Died / &quot;Is Not Valid&quot;: 6 Causes, in Order</description>
+    </item>
+    <item>
+      <title>NIST Password Guidelines 2026: What SP 800-63B-4 Actually Requires</title>
+      <link>https://oopsmypassword.web.app/articles/nist-password-guidelines-2026</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nist-password-guidelines-2026</guid>
+      <category>Security Research</category>
+      <description>NIST Password Guidelines 2026: What SP 800-63B-4 Actually Requires</description>
+    </item>
+    <item>
+      <title>Nmap &quot;Host Seems Down&quot; / &quot;No Route to Host&quot;: 6 Errors, Causes in Order</title>
+      <link>https://oopsmypassword.web.app/articles/nmap-host-seems-down</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nmap-host-seems-down</guid>
+      <category>Security Research</category>
+      <description>Nmap &quot;Host Seems Down&quot; / &quot;No Route to Host&quot;: 6 Errors, Causes in Order</description>
+    </item>
+    <item>
+      <title>Nmap &quot;Not Recognized&quot; as an Internal or External Command: 7 Fixes</title>
+      <link>https://oopsmypassword.web.app/articles/nmap-not-recognized</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nmap-not-recognized</guid>
+      <category>Security Research</category>
+      <description>Nmap &quot;Not Recognized&quot; as an Internal or External Command: 7 Fixes</description>
     </item>
     <item>
       <title>Nmap Requires Root Privileges: Why, and What Works Without</title>
@@ -157,11 +269,32 @@
       <description>SIEM Alerts and Noise: How to Tune Rules Without Going Blind</description>
     </item>
     <item>
+      <title>sqlmap “does not appear to be dynamic”: What to Change</title>
+      <link>https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic</guid>
+      <category>Security Research</category>
+      <description>sqlmap “does not appear to be dynamic”: What to Change</description>
+    </item>
+    <item>
       <title>Top 5 Books for Learning Ethical Hacking PDF</title>
       <link>https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf</guid>
       <category>Security Research</category>
       <description>Top 5 Books for Learning Ethical Hacking PDF</description>
+    </item>
+    <item>
+      <title>Wireshark &quot;No Interfaces Found&quot;: Fixes for Windows, Linux, macOS</title>
+      <link>https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found</guid>
+      <category>Security Research</category>
+      <description>Wireshark &quot;No Interfaces Found&quot;: Fixes for Windows, Linux, macOS</description>
+    </item>
+    <item>
+      <title>Wireshark Not Capturing Packets: 8 Causes, In Order</title>
+      <link>https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets</guid>
+      <category>Security Research</category>
+      <description>Wireshark Not Capturing Packets: 8 Causes, In Order</description>
     </item>
     <item>
       <title>Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It</title>

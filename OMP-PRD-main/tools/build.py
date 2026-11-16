@@ -24,9 +24,11 @@ from omp_build.guides1 import GUIDES_1  # noqa: E402
 from omp_build.guides2 import GUIDES_2  # noqa: E402
 from omp_build.guides3 import GUIDES_3  # noqa: E402
 from omp_build.pages_core import (  # noqa: E402
-    CHECKER_FAQ, FAQ_ITEMS, GENERATOR_FAQ, IPCHECK_FAQ, breach_body,
+    CHECKER_FAQ, DNSLEAK_FAQ, FAQ_ITEMS, GENERATOR_FAQ, IPLEAK_FAQ, WHATISMYIP_FAQ,
+    breach_body,
     checker_body, checklist_body, entropy_body,
-    generator_body, health_body, home_body, ip_check_body, passphrase_body,
+    dns_leak_test_body, generator_body, health_body, home_body, ip_leak_test_body,
+    passphrase_body, what_is_my_ip_body,
     random_string_body, tools_body,
 )
 from omp_build.pages_blog import articles_body, osint_body, pentest_body, products_body  # noqa: E402
@@ -235,13 +237,31 @@ def main():
                 jsonld_faq(CHECKER_FAQ)],
         scripts_=["security.js", "wordlist.js", "checker.js"],
     ))
-    write("ip-check.html", page(
-        path="/ip-check", active="/ip-check",
-        title="What Is My IP Address? IP & VPN Leak Check | OopsMyPassword",
-        desc="See your public IP address and run WebRTC and DNS leak tests on one page. Every network call is disclosed — no accounts, no tracking, no stored data.",
-        body=ip_check_body(),
-        jsonld=[jsonld_breadcrumb([("Home", "/"), ("IP & Leak Check", "/ip-check")]),
-                jsonld_faq(IPCHECK_FAQ)],
+    write("what-is-my-ip.html", page(
+        path="/what-is-my-ip", active="/what-is-my-ip",
+        title="What Is My IP Address? See Your Public IP | OopsMyPassword",
+        desc="See your public IP address, ISP and country as websites see them — cross-checked against two independent services. Every request is listed openly.",
+        body=what_is_my_ip_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("What Is My IP", "/what-is-my-ip")]),
+                jsonld_faq(WHATISMYIP_FAQ)],
+        scripts_=["ip-check.js"],
+    ))
+    write("ip-leak-test.html", page(
+        path="/ip-leak-test", active="/ip-leak-test",
+        title="WebRTC IP Leak Test — Is Your VPN Leaking? | OopsMyPassword",
+        desc="Test whether WebRTC exposes your real IP behind your VPN — with a baseline comparison and plain-language verdicts. Browser-only; every request listed.",
+        body=ip_leak_test_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("IP Leak Test", "/ip-leak-test")]),
+                jsonld_faq(IPLEAK_FAQ)],
+        scripts_=["ip-check.js"],
+    ))
+    write("dns-leak-test.html", page(
+        path="/dns-leak-test", active="/dns-leak-test",
+        title="DNS Leak Test — Is Your DNS Leaking? | OopsMyPassword",
+        desc="See which resolver actually handles your DNS lookups — and whether they bypass your VPN and reach your ISP instead. One request, listed openly.",
+        body=dns_leak_test_body(),
+        jsonld=[jsonld_breadcrumb([("Home", "/"), ("DNS Leak Test", "/dns-leak-test")]),
+                jsonld_faq(DNSLEAK_FAQ)],
         scripts_=["ip-check.js"],
     ))
     write("generator.html", page(
