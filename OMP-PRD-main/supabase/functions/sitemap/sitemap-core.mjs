@@ -43,6 +43,7 @@ export const STATIC_ROUTES = [
   '/osint',
   '/pentest',
   '/breach-check',
+  '/ip-check',
   '/about',
   '/privacy',
   '/terms',

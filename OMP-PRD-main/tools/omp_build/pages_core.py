@@ -27,6 +27,29 @@ FAQ_ITEMS = [
 ]
 
 
+CHECKER_FAQ = [
+    ("What is a password strength test?",
+     "A password strength test estimates how hard a password is to guess. This one scores 0–100 from length, character variety and pattern detection (dictionary words, repeats, keyboard walks), with an entropy estimate and an indicative crack time — all computed in your browser."),
+    ("How do I test my password strength?",
+     "Type or paste the password into the field above. The score, meter and analysis update as you type, and nothing is sent anywhere. For a fuller picture — including reuse hygiene — run the Password Health audit."),
+    ("How accurate is a password strength test?",
+     "It is an estimate, not a guarantee. Heuristics cannot know how a password was generated or whether it was reused elsewhere. A random 20-character password outlives any clever human one regardless of what the meter says — including ours."),
+    ("What is a good password strength test score?",
+     "Aim for Strong or Excellent (roughly 70+ out of 100) with no pattern warnings. Length matters most: 16+ characters, ideally a generated password or a multi-word passphrase."),
+]
+
+GENERATOR_FAQ = [
+    ("Is this random password generator free and online?",
+     "Yes — free, no account, and it runs in your browser on crypto.getRandomValues(). Nothing is transmitted, so the generator keeps working even if your connection does not."),
+    ("How many characters should a random password have?",
+     "12 characters is a practical floor, 15–16 is the current sweet spot, and 20 is the default here. Every extra character multiplies the search space, so length beats every other trick."),
+    ("Can I generate a random password with special characters?",
+     "Yes — uppercase, lowercase, numbers and symbols are included by default, and every character type is enforced before a secure shuffle. Sites that reject symbols can be served with the type toggles."),
+    ("What is an easy-to-remember strong password?",
+     "A passphrase: several random words strung together, like the Passphrase Generator builds. Randomness — not cleverness — is what makes it strong, and 5–7 words is both memorable and slow to crack."),
+]
+
+
 def faq_details(items):
     return "\n".join(
         f'<details class="faq-item"><summary>{q}<span class="chev">{icon("chevron","icon-18")}</span></summary>'
@@ -42,7 +65,7 @@ def home_body(guides):
     faq_preview = faq_details(FAQ_ITEMS[:5])
     return f"""
 <section class="hero">
-  <div class="container hero-grid">
+  <div class="container hero-copy">
     <div>
       <span class="chip chip-accent reveal">{icon("shield","icon-16")} Privacy-first · 100% client-side</span>
       <h1 class="h-display reveal reveal-d1">Know how strong <span class="grad-text">your password</span> really is.</h1>
@@ -57,7 +80,12 @@ def home_body(guides):
         <span class="chip">{icon("check","icon-16")} Privacy-first</span>
       </div>
     </div>
-    <div id="checker" class="reveal reveal-d1" style="scroll-margin-top: calc(var(--nav-h) + 24px)">
+  </div>
+</section>
+
+<section class="section-tight" id="checker" style="padding-top:0; scroll-margin-top: calc(var(--nav-h) + 24px)">
+  <div class="container">
+    <div class="reveal reveal-d1">
       {checker_markup("home")}
     </div>
   </div>
@@ -104,7 +132,7 @@ def home_body(guides):
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Toolbox</span>
-      <h2 class="h-1">Eleven tools. Zero accounts.</h2>
+      <h2 class="h-1">Twelve tools. Zero accounts.</h2>
       <p class="lead">Every tool below actually works, in your browser, right now. Anything we haven't finished is labeled instead of faked.</p>
     </div>
     <div class="grid grid-4">{tool_cards}</div>
@@ -229,9 +257,7 @@ def checker_body():
 </section>
 <section class="section-tight" style="padding-top:24px">
   <div class="container">
-    <div class="container-narrow" style="margin-inline:auto">
-      {checker_markup("page")}
-    </div>
+    {checker_markup("page")}
   </div>
 </section>
 <section class="section">
@@ -247,6 +273,15 @@ def checker_body():
       <div class="card card-pad"><span class="card-icon">{icon("sigma","icon-22")}</span><h3>Entropy & crack time</h3><p>Pool-based entropy (<span class="mono">L·log₂N</span>) adjusted downward by detected patterns, then translated into an indicative offline crack time at ~10¹¹ guesses/second.</p></div>
     </div>
     <div class="notice-band mt-32">{icon("info","icon-20")}<p><strong>Honest limits.</strong> A heuristic cannot know how your password was generated or where else you used it. A randomly generated 20-character password will outlive any "clever" human one regardless of what any meter says — including ours. <a href="/articles/password-entropy" style="color:var(--purple)">Read how entropy works</a>, or see <a href="/articles/nist-password-guidelines-2026" style="color:var(--purple)">what the current NIST password guidelines actually recommend</a>.</p></div>
+  </div>
+</section>
+<section class="section" id="faq" style="padding-top:0">
+  <div class="container container-narrow">
+    <div class="section-head">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="h-2">Password strength test — common questions</h2>
+    </div>
+    {faq_details(CHECKER_FAQ)}
   </div>
 </section>
 <section class="section" style="padding-top:0">
@@ -271,8 +306,8 @@ def generator_body():
 <section class="page-hero">
   <div class="container">
     <span class="chip chip-accent">{icon("dice","icon-16")} Live tool · CSPRNG</span>
-    <h1 class="h-1 mt-16">Password Generator</h1>
-    <p class="lead">Cryptographically secure passwords with <span class="mono">crypto.getRandomValues()</span> — generated locally in your browser. Default: 20 characters, all character types.</p>
+    <h1 class="h-1 mt-16">Random Password Generator</h1>
+    <p class="lead">Cryptographically secure random passwords with <span class="mono">crypto.getRandomValues()</span> — generated locally in your browser, free and online. Default: 20 characters, all character types.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:24px">
@@ -329,24 +364,55 @@ def generator_body():
       </div>
     </div>
   </div>
+  <div class="container-narrow mt-48">
+    <div class="section-head">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="h-2">Random password generator — common questions</h2>
+    </div>
+    {faq_details(GENERATOR_FAQ)}
+  </div>
 </section>
 """
 
 
 # ------------------------------------------------------------------ Tools page
 def tools_body():
-    cards = "\n".join(tool_card(t) for t in TOOLS)
+    by_href = {t["href"]: t for t in TOOLS}
+
+    def cards_for(hrefs):
+        return "\n".join(tool_card(by_href[h]) for h in hrefs)
+
+    def group(title, lead, hrefs, grid="grid-4"):
+        return f"""
+    <div class="section-head">
+      <h2 class="h-2">{title}</h2>
+      <p class="lead">{lead}</p>
+    </div>
+    <div class="grid {grid}">{cards_for(hrefs)}</div>"""
+
+    sessions = (
+        group("Password & account tools",
+              "Test, generate and audit secrets. Every tool in this group runs fully in your browser — no request leaves the page.",
+              ["/checker", "/generator", "/password-health", "/passphrase",
+               "/entropy", "/random-string", "/security-checklist"])
+        + group("Privacy & leak checks",
+              "See what the internet sees about you — and which leaks betray a VPN. The network calls these make are listed on each page.",
+              ["/breach-check", "/ip-check"], grid="grid-2")
+        + group("Scanning & OSINT",
+              "Practitioner tools for suspicious links, hashes and search — all client-side analysis.",
+              ["/dork-builder", "/hash-inspector", "/url-scanner"], grid="grid-3")
+    )
     return f"""
 <section class="page-hero">
   <div class="container">
     <span class="chip chip-accent">{icon("shield","icon-16")} All tools live unless labeled</span>
     <h1 class="h-1 mt-16">The OMP Toolbox</h1>
-    <p class="lead">Eleven focused utilities for testing, generating and understanding passwords. Each one runs entirely in your browser — and any tool that isn't finished will say "Coming Soon" instead of pretending.</p>
+    <p class="lead">Twelve focused utilities in three groups — for testing, generating and understanding passwords, checking what the internet sees, and inspecting suspicious links and hashes. Anything that isn't finished says "Coming Soon" instead of pretending.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:16px">
   <div class="container">
-    <div class="grid grid-4">{cards}</div>
+    {sessions}
     <div class="notice-band mt-48">{icon("info","icon-20")}<p><strong>No fake tools, no fake stats.</strong> OMP never labels something "connected to a breach database" when it isn't, and never shows invented counters like "12M passwords checked". What you see is what runs.</p></div>
   </div>
 </section>
@@ -774,6 +840,93 @@ def checklist_body():
     </div>
     <div class="grid mt-32" style="gap:36px">{''.join(groups)}</div>
     <div class="notice-band mt-48">{icon("info","icon-20")}<p>Done with the basics? The <a href="/articles" style="color:var(--purple)">guides</a> go deeper on managers, 2FA, passkeys and breach response.</p></div>
+  </div>
+</section>
+"""
+
+
+# ------------------------------------------------------------------ IP & Leak Check page
+IPCHECK_FAQ = [
+    ("What is my IP address?",
+     "The public IP address your internet connection presents to websites — assigned by your ISP, or by your VPN when one is connected. Press the buttons above to see it with the ISP and country attached to it. Private local addresses (like 192.168.x.x) are separate and show up in the WebRTC check."),
+    ("How do I check if my VPN is leaking my IP?",
+     "Run the checks above with the VPN connected: the public IP should be the VPN provider's, not your ISP's; the WebRTC check should show no unexpected public address; and the DNS resolver should belong to the VPN. If the public IP looks right but DNS still shows your ISP, your DNS is leaking."),
+    ("What is a WebRTC leak?",
+     "WebRTC — the browser technology behind real-time audio and video — can discover your real public and local IP addresses outside a VPN tunnel. The check above lists every address your browser would advertise to a website that asks for them."),
+    ("What is a DNS leak?",
+     "Your DNS lookups (translating site names into IP addresses) can travel outside the VPN tunnel and reach your ISP's resolver — revealing which sites you visit even while the traffic itself is protected. The resolver check shows who actually handles your lookups."),
+    ("Does this page send my passwords or track me?",
+     "No. It never asks for a password and has no backend to store anything. The only requests it makes are the three disclosed at the top of the page, each triggered by a button press: two to see your public IP and one DNS-over-HTTPS query. The password tools on this site remain 100% local."),
+]
+
+
+def ip_check_body():
+    return f"""
+<section class="page-hero">
+  <div class="container">
+    <span class="chip chip-accent">{icon("globe","icon-16")} Live tool · privacy checks</span>
+    <h1 class="h-1 mt-16">What Is My IP Address? IPv4/IPv6 + VPN Leak Check</h1>
+    <p class="lead">See the public IP address websites see, then run the two checks that betray VPNs: WebRTC and DNS. Four separate sessions on one honest page — with every network call it makes listed openly.</p>
+  </div>
+</section>
+<section class="section-tight" style="padding-top:16px">
+  <div class="container">
+    <div class="notice-band">{icon("info","icon-20")}<p><strong>What this page contacts, exactly.</strong> Any "what is my IP" service needs one request to a server to see your public address — ours are listed here: <span class="mono">speed.cloudflare.com</span> and <span class="mono">api.ipify.org</span> (public IP, ISP, country), and <span class="mono">dns.google</span> (which resolver handles your DNS lookups). Your password tools stay 100% local; this page cannot be. Nothing is stored — the page has no backend.</p></div>
+    <div class="grid grid-2 mt-32" style="align-items:start">
+      <div class="card card-pad">
+        <span class="card-icon">{icon("globe","icon-22")}</span>
+        <h2 class="h-3">1 · Public IP — what sites see</h2>
+        <p class="muted">The IP address the internet sees, with the ISP and country attached to it. The request happens only when you press the button.</p>
+        <button class="btn btn-primary mt-8" type="button" data-ip-run>Show my IP</button>
+        <div class="stat-grid mt-16" data-ip-box hidden>
+          <div class="stat"><div class="k">Public IP</div><div class="v mono" data-ip-addr>—</div></div>
+          <div class="stat"><div class="k">ISP / Organization</div><div class="v" data-ip-org>—</div></div>
+          <div class="stat"><div class="k">Country / City</div><div class="v" data-ip-geo>—</div></div>
+          <div class="stat"><div class="k">Second opinion</div><div class="v" data-ip-second>—</div></div>
+        </div>
+        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-ip-status role="status" aria-live="polite">Nothing requested yet.</span></p>
+      </div>
+      <div class="card card-pad">
+        <span class="card-icon">{icon("radar","icon-22")}</span>
+        <h2 class="h-3">2 · WebRTC leak check</h2>
+        <p class="muted">WebRTC can expose local and real public addresses even behind a VPN. This opens a browser-only peer connection and reads the addresses it would advertise. No page request is involved.</p>
+        <button class="btn btn-primary mt-8" type="button" data-rtc-run>Run WebRTC check</button>
+        <ul class="check-list mt-16" data-rtc-out></ul>
+        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-rtc-status role="status" aria-live="polite">Runs entirely in your browser.</span></p>
+      </div>
+      <div class="card card-pad">
+        <span class="card-icon">{icon("search","icon-22")}</span>
+        <h2 class="h-3">3 · DNS resolver check</h2>
+        <p class="muted">DNS lookups can bypass your VPN and reach your ISP directly. This asks a public resolver who handled the query — with a VPN on, the answer should be the VPN's resolver, not your ISP's.</p>
+        <button class="btn btn-primary mt-8" type="button" data-dns-run>Check my DNS path</button>
+        <ul class="check-list mt-16" data-dns-out></ul>
+        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-dns-status role="status" aria-live="polite">One DNS-over-HTTPS query when you press the button.</span></p>
+      </div>
+      <div class="card card-pad">
+        <span class="card-icon">{icon("fingerprint","icon-22")}</span>
+        <h2 class="h-3">4 · Privacy tells</h2>
+        <p class="muted">The small mismatches that reveal you: a timezone that disagrees with your IP's country, or browser languages that betray your region. Computed locally from what your browser already exposes.</p>
+        <button class="btn btn-primary mt-8" type="button" data-tell-run>Show my privacy tells</button>
+        <ul class="check-list mt-16" data-tell-out></ul>
+        <p class="privacy-note mt-8">{icon("lock","icon-16")} <span data-tell-status role="status" aria-live="polite">Runs locally; compares with the IP session when you have run it.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="faq">
+  <div class="container container-narrow">
+    <div class="section-head">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="h-2">IP addresses &amp; VPN leaks — common questions</h2>
+    </div>
+    {faq_details(IPCHECK_FAQ)}
+  </div>
+</section>
+<section class="section" style="padding-top:0">
+  <div class="container container-narrow grid grid-3">
+    <a class="card card-pad card-link center" href="/breach-check"><span class="card-icon">{icon("radar","icon-22")}</span><h3>Has a password leaked?</h3><p>Run a zero-knowledge breach lookup against known leak lists.</p></a>
+    <a class="card card-pad card-link center" href="/url-scanner"><span class="card-icon">{icon("shield-scan","icon-22")}</span><h3>Is this link safe?</h3><p>Scan suspicious URLs locally for phishing and typosquatting tells.</p></a>
+    <a class="card card-pad card-link center" href="/glossary"><span class="card-icon">{icon("book","icon-22")}</span><h3>IP, DNS, VPN — in plain words</h3><p>The security glossary defines every term this page uses.</p></a>
   </div>
 </section>
 """

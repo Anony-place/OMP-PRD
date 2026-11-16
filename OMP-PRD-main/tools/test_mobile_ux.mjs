@@ -48,7 +48,7 @@ const css = STYLE_SHEETS
 const TOOLS = [
   'checker', 'generator', 'passphrase', 'entropy', 'random-string',
   'password-health', 'breach-check', 'dork-builder', 'hash-inspector',
-  'url-scanner', 'security-checklist'
+  'url-scanner', 'security-checklist', 'ip-check'
 ];
 
 /* --- a small CSS reader ------------------------------------------------

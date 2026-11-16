@@ -224,7 +224,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co https://esm.sh https://api.pwnedpasswords.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; block-all-mixed-content"
+          "value": "default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://aeehfulikupskyrvcpzb.supabase.co https://esm.sh https://api.pwnedpasswords.com https://speed.cloudflare.com https://api.ipify.org https://dns.google; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; block-all-mixed-content"
         }
       ]
     },
@@ -476,7 +476,7 @@
       ]
     },
     {
-      "source": "/:p(checker|generator|tools|articles|products|osint|pentest|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist|dork-builder|hash-inspector|url-scanner|compare|cheatsheets)",
+      "source": "/:p(checker|generator|tools|articles|products|osint|pentest|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist|dork-builder|hash-inspector|url-scanner|ip-check|compare|cheatsheets)",
       "headers": [
         {
           "key": "Cache-Control",
