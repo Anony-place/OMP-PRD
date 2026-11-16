@@ -46,7 +46,17 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://oopsmypassword.web.app/ip-check</loc>
+    <loc>https://oopsmypassword.web.app/what-is-my-ip</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/ip-leak-test</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/dns-leak-test</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

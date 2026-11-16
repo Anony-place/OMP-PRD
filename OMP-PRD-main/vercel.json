@@ -59,6 +59,11 @@
       "statusCode": 301
     },
     {
+      "source": "/ip-check",
+      "destination": "/what-is-my-ip",
+      "statusCode": 301
+    },
+    {
       "source": "/blog.html",
       "destination": "/articles",
       "statusCode": 301
@@ -476,7 +481,7 @@
       ]
     },
     {
-      "source": "/:p(checker|generator|tools|articles|products|osint|pentest|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist|dork-builder|hash-inspector|url-scanner|ip-check|compare|cheatsheets)",
+      "source": "/:p(checker|generator|tools|articles|products|osint|pentest|breach-check|about|privacy|terms|contact|faq|glossary|security|sitemap|password-health|entropy|passphrase|random-string|security-checklist|dork-builder|hash-inspector|url-scanner|what-is-my-ip|ip-leak-test|dns-leak-test|compare|cheatsheets)",
       "headers": [
         {
           "key": "Cache-Control",

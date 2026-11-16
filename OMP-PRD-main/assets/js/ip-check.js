@@ -1,4 +1,4 @@
-/* ip-check.js — OMP IP & Leak Check (/ip-check)
+/* ip-check.js — OMP network tools (/what-is-my-ip, /ip-leak-test, /dns-leak-test)
  *
  * Four independent, button-triggered sessions:
  *   1. Public IP        -> fetch speed.cloudflare.com/meta + api.ipify.org (cross-check)
@@ -15,6 +15,10 @@
   'use strict';
 
   var state = { ip: null, country: null, city: null, org: null };
+  try {
+    var saved = JSON.parse(sessionStorage.getItem('omp.ipBaseline') || 'null');
+    if (saved && saved.ip) { state = saved; }
+  } catch (e) {}
 
   function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -56,6 +60,7 @@
           state.country = m.country || null;
           state.city = m.city || null;
           state.org = m.asOrganization || null;
+          try { sessionStorage.setItem('omp.ipBaseline', JSON.stringify(state)); } catch (e) {}
           $('[data-ip-addr]', root).textContent = state.ip || 'not returned';
           $('[data-ip-org]', root).textContent = (m.asOrganization ? m.asOrganization + (m.asn ? ' (AS' + m.asn + ')' : '') : 'not returned');
           $('[data-ip-geo]', root).textContent = [m.city, m.region, m.country].filter(Boolean).join(', ') || 'not returned';
@@ -134,8 +139,10 @@
           var viaTunnel = state.ip && srflx.indexOf(state.ip) !== -1;
           rows.push(['Public address(es) seen via STUN: ' + srflx.join(', '), 'warn']);
           rows.push(viaTunnel
-            ? ['They match the public IP from session 1 — consistent with your current connection ✓', 'ok']
-            : ['They differ from session 1' + (state.ip ? ' (' + state.ip + ')' : '') + ' — if you use a VPN, this may be a WebRTC leak.', 'warn']);
+            ? ['They match your baseline public IP — consistent with your current connection ✓', 'ok']
+            : state.ip
+              ? ['They differ from your baseline (' + state.ip + ') — if you use a VPN, this may be a WebRTC leak.', 'warn']
+              : ['Run What Is My IP first to capture a baseline — then this comparison becomes a definite verdict.', null]);
         } else {
           rows.push(['No public address leaked through STUN ✓', 'ok']);
         }
@@ -172,7 +179,7 @@
           else rows.push(['No EDNS client subnet is forwarded about you ✓', 'ok']);
           if (ns) rows.push(['Seen by the authoritative nameserver as: ' + ns, null]);
           rows.push(['With a VPN on, these addresses should belong to the VPN provider. If they match your ISP instead, your DNS is leaking.', null]);
-          if (state.ip) rows.push(['Session 1 saw your public IP as ' + state.ip + (state.org ? ' (' + state.org + ')' : '') + ' — compare the two.', null]);
+          if (state.ip) rows.push(['Your baseline public IP (What Is My IP) is ' + state.ip + (state.org ? ' (' + state.org + ')' : '') + ' — compare the two.', null]);
           fill(out, rows);
           status.textContent = 'Done. One query, no logs kept by this page.';
           busy(btn, false);
@@ -223,7 +230,7 @@
         }
         rows.push(['IP city from session 1: ' + (state.city || 'not returned') + ' — big-city IPs with rural expectations are another fingerprint.', null]);
       } else {
-        rows.push(['Run session 1 (Show my IP) first and this adds the timezone-vs-country comparison.', null]);
+        rows.push(['Open What Is My IP, press its button, and this adds the timezone-vs-country comparison.', null]);
       }
       if (navigator.doNotTrack === '1') rows.push(['Do Not Track is on ✓', 'ok']);
       fill(out, rows);

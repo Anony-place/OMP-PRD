@@ -32,6 +32,7 @@ ICONS = {
     "jwt-lock": '<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     "shield-scan": '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
     "globe": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4.2" ry="9"/>',
+    "nodes": '<circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4m0 0-5 6m5-6 5 6"/>',
     "list": '<path d="m3 6 1.5 1.5L7 5"/><path d="m3 12 1.5 1.5L7 11"/><path d="m3 18 1.5 1.5L7 17"/><path d="M11 6h10"/><path d="M11 12h10"/><path d="M11 18h10"/>',
     "book": '<path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
@@ -200,7 +201,7 @@ def header(active):
         <span class="theme-icon-moon">{icon("moon","icon-18")}</span>
         <span class="theme-icon-sun">{icon("sun","icon-18")}</span>
       </button>
-      <a class="btn btn-primary btn-sm btn-get-started" href="/#checker">Get Started</a>
+      <a class="btn btn-primary btn-sm btn-get-started" href="/checker">Get Started</a>
       <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
         <span class="icon-menu">{icon("menu","icon-20")}</span>
         <span class="icon-close">{icon("x","icon-20")}</span>
@@ -210,7 +211,7 @@ def header(active):
 </header>
 <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
   {mobile_links}
-  <a class="btn btn-primary btn-lg" href="/#checker">Check Your Password</a>
+  <a class="btn btn-primary btn-lg" href="/checker">Check Your Password</a>
 </nav>"""
 
 
@@ -220,7 +221,9 @@ def footer():
             ("Password Checker", "/checker"),
             ("Password Generator", "/generator"),
             ("Breach Check", "/breach-check"),
-            ("IP & Leak Check", "/ip-check"),
+            ("What Is My IP", "/what-is-my-ip"),
+            ("IP Leak Test", "/ip-leak-test"),
+            ("DNS Leak Test", "/dns-leak-test"),
             ("Password Health", "/password-health"),
             ("All Tools", "/tools"),
         ]),
@@ -405,9 +408,15 @@ TOOLS = [
     {"name": "Breach Check", "href": "/breach-check", "icon": "radar", "status": "live",
      "desc": "Zero-knowledge k-anonymity lookup using a 5-character SHA-1 prefix (plus offline demo fallback). Your password never leaves your browser.",
      "cta": "Check for breaches"},
-    {"name": "IP & Leak Check", "href": "/ip-check", "icon": "globe", "status": "live",
-     "desc": "See your public IP address and test for WebRTC and DNS-resolver leaks — the two mistakes that betray VPNs. Every network call this page makes is listed on it.",
-     "cta": "Check your IP & leaks"},
+    {"name": "What Is My IP", "href": "/what-is-my-ip", "icon": "globe", "status": "live",
+     "desc": "See your public IP address, ISP and country as websites see them — cross-checked against two independent services. Every request is listed on the page.",
+     "cta": "See my IP address"},
+    {"name": "IP Leak Test (WebRTC)", "href": "/ip-leak-test", "icon": "fingerprint", "status": "live",
+     "desc": "Check whether WebRTC exposes your real IP behind a VPN — with a baseline comparison and plain-language verdicts. Browser-only test.",
+     "cta": "Run the leak test"},
+    {"name": "DNS Leak Test", "href": "/dns-leak-test", "icon": "nodes", "status": "live",
+     "desc": "See which resolver actually handles your DNS lookups — and whether they bypass your VPN and reach your ISP instead.",
+     "cta": "Check my DNS path"},
     {"name": "Password Health", "href": "/password-health", "icon": "pulse", "status": "live",
      "desc": "Run a full local audit — length, diversity, patterns, entropy and reuse hygiene — with a letter grade.",
      "cta": "Audit a password"},
