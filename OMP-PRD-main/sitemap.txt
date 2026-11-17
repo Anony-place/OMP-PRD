@@ -116,6 +116,7 @@ https://oopsmypassword.web.app/articles/burp-suite-certificate-download
 https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
+https://oopsmypassword.web.app/articles/cvss-score-explained
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
 https://oopsmypassword.web.app/articles/data-classification-guide

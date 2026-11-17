@@ -10,8 +10,8 @@
     },
     {
       "type": "Guide",
-      "title": "Android App Blocked to Protect Your Device? What to Do",
-      "desc": "Android says “App blocked to protect your device”? Learn what the warning means, how to check an APK, and what to do safely before installing it.",
+      "title": "How to Disable \"App Blocked to Protect Your Device\" (Android)",
+      "desc": "Android says \"app blocked to protect your device\"? Why Play Protect blocks apps, how to disable or bypass the block safely — and when you should not. FAQ…",
       "url": "/articles/android-app-blocked-to-protect-your-device-what-to-do",
       "kw": "android app blocked to protect your device what to do guide articles"
     },
@@ -77,6 +77,13 @@
       "desc": "Encryption that looks fine and protects nothing: ECB mode, reused IVs, hardcoded keys, MD5 for passwords and hand-rolled crypto.",
       "url": "/articles/common-cryptography-failures",
       "kw": "common cryptography failures guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "What Is a CVSS Score? Metrics, Bands & v4.0 Explained",
+      "desc": "CVSS score explained: the 0–10 severity bands, every base metric, a worked 9.8 calculation by hand, and what changed in v4.0. Severity is not risk — here is…",
+      "url": "/articles/cvss-score-explained",
+      "kw": "cvss score explained guide articles"
     },
     {
       "type": "Guide",
@@ -199,8 +206,8 @@
     },
     {
       "type": "Guide",
-      "title": "Malware Families Explained: Types, Behaviour and Response",
-      "desc": "A malware family is a group of samples built from the same code. How the main types differ, how analysts identify a family, and what to do.",
+      "title": "Malware Families Explained: Types, Behaviour & Response (2026)",
+      "desc": "The main malware families — ransomware, RATs, worms, trojans, info-stealers — how each behaves, how they spread, and the first response step. Real examples…",
       "url": "/articles/malware-families-explained",
       "kw": "malware families explained guide articles"
     },
