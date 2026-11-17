@@ -9,6 +9,7 @@
 - [Google Dork & OSINT Search Query Builder](https://oopsmypassword.web.app/dork-builder): Visual composer for site:, filetype:, inurl:, intitle:, and intext: queries with 24 presets.
 - [Client-Side Hash, JWT & Encoding Inspector](https://oopsmypassword.web.app/hash-inspector): Offline WebCrypto SHA-256/384/512 calculator, password hash identifier, and JWT security auditor.
 - [Phishing URL & Suspicious Link Risk Scanner](https://oopsmypassword.web.app/url-scanner): Lexical URL analyzer for IDN homograph punycode (xn--), @-authority confusion, and brand typosquatting.
+- [CVSS Score Calculator (v3.1) & v4.0 Decoder](https://oopsmypassword.web.app/cvss-calculator): Exact v3.1 base, temporal and environmental scoring from vector strings, computed client-side with the FIRST formula, plus a v4.0 vector decoder.
 - [Diceware Passphrase Generator](https://oopsmypassword.web.app/passphrase): Multi-word passphrases with exact bit-entropy calculation.
 - [Password Entropy Calculator](https://oopsmypassword.web.app/entropy): Interactive character pool and keyspace calculator.
 - [Password Health Audit](https://oopsmypassword.web.app/password-health): 10-point local credential hygiene check.

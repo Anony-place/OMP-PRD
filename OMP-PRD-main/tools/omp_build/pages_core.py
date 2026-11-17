@@ -140,7 +140,7 @@ def home_body(guides):
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Toolbox</span>
-      <h2 class="h-1">Fourteen tools. Zero accounts.</h2>
+      <h2 class="h-1">Fifteen tools. Zero accounts.</h2>
       <p class="lead">Every tool below actually works, in your browser, right now. Anything we haven't finished is labeled instead of faked.</p>
     </div>
     <div class="grid grid-4">{tool_cards}</div>
@@ -389,15 +389,15 @@ def tools_body():
               "See what the internet sees about you — and which leaks betray a VPN. The network calls these make are listed on each page.",
               ["/breach-check", "/what-is-my-ip", "/ip-leak-test", "/dns-leak-test"], grid="grid-4")
         + group("Scanning & OSINT",
-              "Practitioner tools for suspicious links, hashes and search — all client-side analysis.",
-              ["/dork-builder", "/hash-inspector", "/url-scanner"], grid="grid-3")
+              "Practitioner tools for suspicious links, hashes, search and severity scoring — all client-side analysis.",
+              ["/dork-builder", "/hash-inspector", "/url-scanner", "/cvss-calculator"], grid="grid-4")
     )
     return f"""
 <section class="page-hero">
   <div class="container">
     <span class="chip chip-accent">{icon("shield","icon-16")} All tools live unless labeled</span>
     <h1 class="h-1 mt-16">The OMP Toolbox</h1>
-    <p class="lead">Fourteen focused utilities in three groups — for testing, generating and understanding passwords, checking what the internet sees, and inspecting suspicious links and hashes. Anything that isn't finished says "Coming Soon" instead of pretending.</p>
+    <p class="lead">Fifteen focused utilities in three groups — for testing, generating and understanding passwords, checking what the internet sees, and inspecting suspicious links, hashes and severity scores. Anything that isn't finished says "Coming Soon" instead of pretending.</p>
   </div>
 </section>
 <section class="section-tight" style="padding-top:16px">
