@@ -119,6 +119,7 @@ function siteMobileMenu(active = '') {
     ['Dork Builder', '/dork-builder'],
     ['Hash & JWT Inspector', '/hash-inspector'],
     ['URL Risk Scanner', '/url-scanner'],
+    ['CVSS Calculator', '/cvss-calculator'],
     ['Generator', '/generator'],
     ['Breach Check', '/breach-check'],
     ['About', '/about'],
@@ -146,7 +147,7 @@ const UPDATED_FOOTER = `<footer class="site-footer">
           </div>
         </div>
       </div>
-      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/cvss-calculator">CVSS Calculator</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
@@ -3260,6 +3261,7 @@ ${feedItems.map((it) => `    <item>
 - [Google Dork & OSINT Search Query Builder](${SITE}/dork-builder): Visual composer for site:, filetype:, inurl:, intitle:, and intext: queries with 24 presets.
 - [Client-Side Hash, JWT & Encoding Inspector](${SITE}/hash-inspector): Offline WebCrypto SHA-256/384/512 calculator, password hash identifier, and JWT security auditor.
 - [Phishing URL & Suspicious Link Risk Scanner](${SITE}/url-scanner): Lexical URL analyzer for IDN homograph punycode (xn--), @-authority confusion, and brand typosquatting.
+- [CVSS Score Calculator (v3.1) & v4.0 Decoder](${SITE}/cvss-calculator): Exact v3.1 base, temporal and environmental scoring from vector strings, computed client-side with the FIRST formula, plus a v4.0 vector decoder.
 - [Diceware Passphrase Generator](${SITE}/passphrase): Multi-word passphrases with exact bit-entropy calculation.
 - [Password Entropy Calculator](${SITE}/entropy): Interactive character pool and keyspace calculator.
 - [Password Health Audit](${SITE}/password-health): 10-point local credential hygiene check.

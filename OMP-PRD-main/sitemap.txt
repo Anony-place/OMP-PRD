@@ -26,6 +26,7 @@ https://oopsmypassword.web.app/security-checklist
 https://oopsmypassword.web.app/dork-builder
 https://oopsmypassword.web.app/hash-inspector
 https://oopsmypassword.web.app/url-scanner
+https://oopsmypassword.web.app/cvss-calculator
 https://oopsmypassword.web.app/compare
 https://oopsmypassword.web.app/compare/bitwarden-vs-1password
 https://oopsmypassword.web.app/compare/bitwarden-vs-proton-pass

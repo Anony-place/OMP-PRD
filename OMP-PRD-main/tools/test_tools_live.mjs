@@ -466,6 +466,37 @@ checks.push(async () => {
   return dom;
 });
 
+/* ------------------------------------------------------- cvss-calculator */
+checks.push(async () => {
+  section('CVSS calculator: the v3.1 formula scores vectors, v4.0 is decoded not faked');
+  const dom = await loadPage('cvss-calculator');
+  const { window } = dom;
+  const html = fs.readFileSync(path.join(root, 'cvss-calculator.html'), 'utf8');
+  await runScripts(window, html);
+
+  const input = window.document.querySelector('[data-cvss-input]');
+  assert(!!input, 'the calculator has a vector field');
+
+  type(window, input, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H');
+  await new Promise((r) => setTimeout(r, 40));
+  const rce = num(window.document.querySelector('[data-cvss-score]'));
+  assert(rce === 9.8, `the unauth RCE vector scores 9.8 (got ${rce})`);
+
+  type(window, input, 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N');
+  await new Promise((r) => setTimeout(r, 40));
+  const xss = num(window.document.querySelector('[data-cvss-score]'));
+  assert(xss === 6.1, `the XSS vector scores 6.1 (got ${xss})`);
+  assert(xss !== rce, 'two different vectors produce different scores');
+
+  type(window, input, 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H');
+  await new Promise((r) => setTimeout(r, 40));
+  const panel = window.document.querySelector('[data-cvss-v4panel]');
+  assert(panel && !panel.hidden, 'a v4.0 vector opens the decoder panel');
+  assert(/macrovector/i.test(panel.textContent), 'the decoder explains that v4.0 scores need the reference implementation');
+  assert(/AT/.test(panel.textContent), 'the v4.0 vector is decoded metric by metric');
+  return dom;
+});
+
 for (const check of checks) {
   try {
     await check();

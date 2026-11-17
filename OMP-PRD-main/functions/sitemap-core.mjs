@@ -62,6 +62,7 @@ export const STATIC_ROUTES = [
   '/dork-builder',
   '/hash-inspector',
   '/url-scanner',
+  '/cvss-calculator',
   '/compare',
   '/compare/bitwarden-vs-1password',
   '/compare/bitwarden-vs-proton-pass',

@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 16 Nov 2026 14:50:26 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 17 Nov 2026 13:37:35 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -85,6 +85,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/common-cryptography-failures</guid>
       <category>Security Research</category>
       <description>Common Cryptography Failures and How to Spot Them in Code</description>
+    </item>
+    <item>
+      <title>CVSS Score Explained: Metrics, Severity Bands &amp; v4.0 Changes</title>
+      <link>https://oopsmypassword.web.app/articles/cvss-score-explained</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cvss-score-explained</guid>
+      <category>Security Research</category>
+      <description>CVSS Score Explained: Metrics, Severity Bands &amp; v4.0 Changes</description>
     </item>
     <item>
       <title>Cyber Security Salary in India in 2026: Per-Month, Fresher &amp; City Bands (₹)</title>
@@ -178,6 +185,13 @@
       <description>John the Ripper: No Password Hashes Loaded (All 8 Causes)</description>
     </item>
     <item>
+      <title>K-Anonymity Password Check: How Lookup Stays Private</title>
+      <link>https://oopsmypassword.web.app/articles/k-anonymity-password-check</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/k-anonymity-password-check</guid>
+      <category>Security Research</category>
+      <description>K-Anonymity Password Check: How Lookup Stays Private</description>
+    </item>
+    <item>
       <title>KeePassXC Database Corrupt or &quot;File Read Error&quot;: 6 Causes, in Order</title>
       <link>https://oopsmypassword.web.app/articles/keepassxc-database-corrupt</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/keepassxc-database-corrupt</guid>
@@ -255,6 +269,13 @@
       <description>PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site</description>
     </item>
     <item>
+      <title>Secure Remote Access: Models, Hardening and a 30-Day Plan</title>
+      <link>https://oopsmypassword.web.app/articles/secure-remote-access</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/secure-remote-access</guid>
+      <category>Security Research</category>
+      <description>Secure Remote Access: Models, Hardening and a 30-Day Plan</description>
+    </item>
+    <item>
       <title>Sherlock vs Maigret: Which Username OSINT Tool Should You Use?</title>
       <link>https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison</guid>
@@ -281,6 +302,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf</guid>
       <category>Security Research</category>
       <description>Top 5 Books for Learning Ethical Hacking PDF</description>
+    </item>
+    <item>
+      <title>What Is an SBOM? Software Bill of Materials Explained</title>
+      <link>https://oopsmypassword.web.app/articles/what-is-an-sbom</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/what-is-an-sbom</guid>
+      <category>Security Research</category>
+      <description>What Is an SBOM? Software Bill of Materials Explained</description>
     </item>
     <item>
       <title>Wireshark &quot;No Interfaces Found&quot;: Fixes for Windows, Linux, macOS</title>
@@ -584,7 +612,7 @@
       <description>Authorized Active Directory security assessment commands for SMB signing checks, BloodHound collection, SPN Kerberoasting, and AD CS auditing.</description>
     </item>
     <item>
-      <title>Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT</title>
+      <title>Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon</title>
       <link>https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet</guid>
       <category>OSINT &amp; Recon</category>
@@ -598,7 +626,7 @@
       <description>Copy-ready HTTP response headers (Strict-Transport-Security, Content-Security-Policy, X-Frame-Options, Permissions-Policy) and curl audit commands.</description>
     </item>
     <item>
-      <title>Incident Response First-Hour Cheat Sheet: Triage &amp; Containment</title>
+      <title>Incident Response First-Hour Checklist: Triage &amp; Containment</title>
       <link>https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/cheatsheets/incident-response-first-hour-cheatsheet</guid>
       <category>Defensive Security</category>

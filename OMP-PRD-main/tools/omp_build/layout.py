@@ -24,6 +24,7 @@ ICONS = {
     "pulse": '<path d="M19.5 12.5 12 20l-7.5-7.5a5 5 0 1 1 7.5-6.6 5 5 0 1 1 7.5 6.6Z"/><path d="M4 12h4l1.5-2.5 2 5L13 12h3"/>',
     "key": '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.8 12.2 9.4-9.4"/><path d="m17 6 3 3"/><path d="m14 9 2.5 2.5"/>',
     "sigma": '<path d="M17 5H7l6 7-6 7h10"/>',
+    "target": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     "hash": '<path d="M4 9h16"/><path d="M4 15h16"/><path d="M10 3 8 21"/><path d="m16 3-2 18"/>',
     # The three practitioner tools already ship with these exact glyphs on
     # /tools. Copied here verbatim so the homepage grid and that page cannot
@@ -447,6 +448,9 @@ TOOLS = [
     {"name": "Phishing URL Scanner", "href": "/url-scanner", "icon": "shield-scan", "status": "live",
      "desc": "Client-side lexical URL analyzer detecting IDN homograph punycode (xn--), @-authority tricks, and brand typosquatting.",
      "cta": "Scan a link locally"},
+    {"name": "CVSS Score Calculator", "href": "/cvss-calculator", "icon": "target", "status": "live",
+     "desc": "Exact CVSS v3.1 base, temporal and environmental scores from any vector string — plus a v4.0 vector decoder. Computed in your browser with the FIRST formula.",
+     "cta": "Score a vector"},
 ]
 
 

@@ -49,7 +49,7 @@ const TOOLS = [
   'checker', 'generator', 'passphrase', 'entropy', 'random-string',
   'password-health', 'breach-check', 'dork-builder', 'hash-inspector',
   'url-scanner', 'security-checklist', 'what-is-my-ip', 'ip-leak-test',
-  'dns-leak-test'
+  'dns-leak-test', 'cvss-calculator'
 ];
 
 /* --- a small CSS reader ------------------------------------------------
@@ -255,7 +255,7 @@ if (grid) {
     missing.length ? `homepage grid omits: ${missing.join(', ')}` : `all ${TOOLS.length} tools are in the homepage grid`);
 
   /* The heading counts the grid out loud, so it has to agree with it. */
-  const words = { 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen' };
+  const words = { 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen' };
   const heading = /<h2[^>]*>(\w+) tools\b/.exec(grid[1]);
   const expected = words[TOOLS.length];
   assert(heading && heading[1] === expected,
