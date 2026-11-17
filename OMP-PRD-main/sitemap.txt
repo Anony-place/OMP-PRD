@@ -142,6 +142,7 @@ https://oopsmypassword.web.app/articles/nmap-host-seems-down
 https://oopsmypassword.web.app/articles/nmap-not-recognized
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
+https://oopsmypassword.web.app/articles/secure-remote-access
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
 https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic

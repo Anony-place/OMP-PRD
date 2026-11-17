@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT</title>
+  <title>Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon</title>
   <meta name="description" content="Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
@@ -14,14 +14,14 @@
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OopsMyPassword">
-  <meta property="og:title" content="Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT">
+  <meta property="og:title" content="Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon">
   <meta property="og:description" content="Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.">
   <meta property="og:url" content="https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT">
+  <meta name="twitter:title" content="Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon">
   <meta name="twitter:description" content="Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
@@ -30,7 +30,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Shodan Search Filters Cheat Sheet: Attack Surface \u0026 OSINT","description":"Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.","datePublished":"2026-09-18","dateModified":"2026-10-29","mainEntityOfPage":"https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon","description":"Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.","datePublished":"2026-09-18","dateModified":"2026-10-29","mainEntityOfPage":"https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does ssl.cert.subject.cn help find servers hidden behind Cloudflare?","acceptedAnswer":{"@type":"Answer","text":"When a web server is configured with an SSL certificate for example.com and its firewall fails to restrict port 443 to Cloudflare IP ranges only, Shodan indexes that certificate on the server public IP."}},{"@type":"Question","name":"What is http.favicon.hash used for in Shodan?","acceptedAnswer":{"@type":"Answer","text":"Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"CLI Cheat Sheets","item":"https://oopsmypassword.web.app/cheatsheets"},{"@type":"ListItem","position":3,"name":"Shodan Search Filters","item":"https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet"}]}</script>
 </head>
@@ -43,11 +43,11 @@
   <div class="container container-narrow">
     <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/cheatsheets">← Back to cheat sheets</a></p>
     <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/cheatsheets" style="color:var(--purple)">CLI Cheat Sheets</a> <span class="divider-dot">/</span> <span>Shodan Search Filters</span></nav>
-    <h1 class="h-1 mt-16">Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT</h1>
+    <h1 class="h-1 mt-16">Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon</h1>
     <p class="lead mt-8">Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.</p>
   </div>
 </section>
-<section class="section-tight" data-cheatsheet-page data-cs-title="Shodan Search Filters Cheat Sheet: Attack Surface &amp; OSINT">
+<section class="section-tight" data-cheatsheet-page data-cs-title="Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon">
   <div class="container container-narrow">
     <div class="card card-pad" style="margin-bottom:24px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">

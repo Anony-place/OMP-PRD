@@ -248,8 +248,8 @@
     },
     {
       "type": "Guide",
-      "title": "Nmap Requires Root Privileges: Why, and What Works Without",
-      "desc": "Which scan types need raw sockets and which do not, why -sT works unprivileged, and the setcap route with its real security trade-off.",
+      "title": "Nmap \"Requires Root Privileges\" (see FAQ) — what works without",
+      "desc": "Why nmap wants root (raw sockets), which scans work unprivileged (-sT, no SYN), and the sudo/capabilities fixes — with FAQ.",
       "url": "/articles/nmap-requires-root-privileges",
       "kw": "nmap requires root privileges guide articles"
     },
@@ -259,6 +259,13 @@
       "desc": "PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site Published 1 November 2026 · Reading time about 8 minutes · Category: Web Security In late…",
       "url": "/articles/php2shell-explained-risks-fixes-how-to-protect-your-site",
       "kw": "php2shell explained risks fixes how to protect your site guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Secure Remote Access: Practical Guide (VPN vs RDP vs ZTNA)",
+      "desc": "Secure remote access for real setups: the four requirements, VPN vs RDP vs ZTNA trade-offs, RDP and SSH hardening, phishing-resistant MFA, and a 30-day rollout…",
+      "url": "/articles/secure-remote-access",
+      "kw": "secure remote access guide articles"
     },
     {
       "type": "Guide",
