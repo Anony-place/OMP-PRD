@@ -1250,7 +1250,7 @@ export const CHEATSHEETS = [
   },
   {
     slug: 'shodan-search-filters-cheatsheet',
-    title: 'Shodan Search Filters Cheat Sheet: Attack Surface & OSINT',
+    title: 'Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon',
     shortTitle: 'Shodan Search Filters',
     category: 'OSINT & Recon',
     summary: 'Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.',
