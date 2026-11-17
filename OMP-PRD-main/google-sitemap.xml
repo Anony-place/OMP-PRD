@@ -680,6 +680,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/articles/k-anonymity-password-check</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/articles/keepassxc-database-corrupt</loc>
     <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>

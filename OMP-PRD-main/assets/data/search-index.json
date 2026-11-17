@@ -94,8 +94,8 @@
     },
     {
       "type": "Guide",
-      "title": "Data Classification: A Practical Guide from Public to Restricted",
-      "desc": "Classify data into four levels, decide with the right criteria, and attach handling rules that make the labels mean something.",
+      "title": "GDPR Data Classification: 4 Levels That Actually Work",
+      "desc": "Data classification for GDPR: the 4 levels (public to restricted), handling rules per level, special-category data, and the rollout mistakes that kill the…",
       "url": "/articles/data-classification-guide",
       "kw": "data classification guide guide articles"
     },
@@ -168,6 +168,13 @@
       "desc": "John stops with No password hashes loaded (see FAQ). The 8 real causes in order, each with the one command that proves it — no guessing.",
       "url": "/articles/john-the-ripper-no-password-hashes-loaded",
       "kw": "john the ripper no password hashes loaded guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "K-Anonymity Password Check — How It Works, Is It Safe?",
+      "desc": "A k-anonymity password check finds breached passwords without seeing yours: only 5 SHA-1 characters leave the browser. How the HIBP range API works — and what…",
+      "url": "/articles/k-anonymity-password-check",
+      "kw": "k anonymity password check guide articles"
     },
     {
       "type": "Guide",
@@ -290,8 +297,8 @@
     },
     {
       "type": "Guide",
-      "title": "Wireshark Not Capturing Packets: 8 Causes, In Order",
-      "desc": "No interfaces found, or an interface that captures nothing. The eight real causes on Windows and Linux, the group-membership trap, and why offload makes…",
+      "title": "Not capturing packets (see FAQ) — Wireshark fix",
+      "desc": "Wireshark not capturing? 8 causes in order — Npcap, dumpcap permission denied, capture filter, wrong interface, offload, EDR. One-minute triage + FAQ.",
       "url": "/articles/wireshark-not-capturing-packets",
       "kw": "wireshark not capturing packets guide articles"
     },
