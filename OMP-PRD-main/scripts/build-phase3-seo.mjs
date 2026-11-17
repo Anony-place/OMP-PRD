@@ -1300,7 +1300,7 @@ export const CHEATSHEETS = [
   },
   {
     slug: 'incident-response-first-hour-cheatsheet',
-    title: 'Incident Response First-Hour Cheat Sheet: Triage & Containment',
+    title: 'Incident Response First-Hour Checklist: Triage & Containment',
     shortTitle: 'Incident Response First Hour',
     category: 'Defensive Security',
     summary: 'First-hour Linux & account compromise triage checklist: preserving volatile network/process state, isolating hosts, and revoking active sessions.',
@@ -1659,7 +1659,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'CVE (Common Vulnerabilities and Exposures) is the standardized global identifier for publicly disclosed security flaws (e.g., CVE-2026-0768), while CVSS (Common Vulnerability Scoring System) rates technical severity from 0.0 to 10.0.',
     howItWorks: 'When a vulnerability is disclosed, a CVE Numbering Authority assigns a unique CVE ID so advisories, scanners, and patches reference the exact same bug. CVSS computes a numerical score based on Attack Vector (Network vs Local), Attack Complexity, Privileges Required, User Interaction, and CIA impact—while CISA KEV tracks whether the CVE is actively exploited in the wild.',
     mitigation: 'Prioritize patching by combining CVSS severity with active exploitation intelligence (CISA KEV / EPSS) and internet exposure rather than relying on CVSS base score alone.',
-    relatedTool: { label: 'Nuclei Pentest Guide', url: '/pentest/nuclei' },
+    relatedTool: { label: 'CVSS Score Explained (Worked Example)', url: '/articles/cvss-score-explained' },
   },
   {
     slug: 'siem-and-soar',
