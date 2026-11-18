@@ -1,6 +1,6 @@
 # Plan — Wide checker layout + "What is my IP" tool family (APPROVAL PENDING)
 
-> Status: **research + plan only — no code changed**. Prepared after batch-7
+> Status: **Part 1 SHIPPED in batch-17 (2026-11-18, approved via ask_user)** — wide checker band on home + /checker parity. Part 2 IP family shipped earlier as /what-is-my-ip, /ip-leak-test, /dns-leak-test. Original research note: prepared after batch-7
 > (see `market-research-2026-11-10.md`). Implementation starts only after the
 > operator approves.
 

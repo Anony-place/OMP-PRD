@@ -75,7 +75,7 @@ def home_body(guides):
       <h1 class="h-display reveal reveal-d1">Know how strong <span class="grad-text">your password</span> really is.</h1>
       <p class="lead reveal reveal-d2">Test your password strength in real-time, check security risks, generate stronger passwords, and learn how to protect your digital life.</p>
       <div class="hero-cta reveal reveal-d3">
-        <a class="btn btn-primary btn-lg" href="/checker">{icon("gauge","icon-18")} Check Your Password</a>
+        <a class="btn btn-primary btn-lg" href="#checker">{icon("gauge","icon-18")} Check Your Password</a>
         <a class="btn btn-secondary btn-lg" href="/generator">{icon("dice","icon-18")} Generate Strong Password</a>
       </div>
       <div class="hero-trust reveal reveal-d3">
@@ -87,13 +87,21 @@ def home_body(guides):
   </div>
 </section>
 
+<!-- ===== Live checker band (full-width; /#checker deep links land here) ===== -->
+<section class="section-tight" id="checker" style="padding-top:8px">
+  <div class="container">
+    <h2 class="sr-only">Password Strength Checker</h2>
+    {checker_markup("home")}
+  </div>
+</section>
+
 <!-- ===== Popular tools (home = navigation hub; every tool has its own page) ===== -->
 <section class="section-tight" id="popular-tools" style="background: var(--bg-soft); border-block: 1px solid var(--border)">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Start here</span>
       <h2 class="h-1">Popular tools</h2>
-      <p class="lead">Six tools people reach for most. Each runs on its own page — nothing is squeezed into this one.</p>
+      <p class="lead">Six tools people reach for most — each with its own focused page.</p>
     </div>
     <div class="grid grid-3">{popular_cards}</div>
   </div>
