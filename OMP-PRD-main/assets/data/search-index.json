@@ -164,6 +164,13 @@
     },
     {
       "type": "Guide",
+      "title": "How TOTP Works: The 30-Second Authenticator Code Explained",
+      "desc": "How TOTP works, worked by hand with the RFC 6238 test vector: HMAC-SHA1 truncation, clock drift, why the QR code is the credential, and what real-time phishing…",
+      "url": "/articles/how-totp-works",
+      "kw": "how totp works guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Is SMS 2FA Safe in 2026?",
       "desc": "If an account offers two-factor authentication (2FA) by text message, turning it on is generally better than protecting the account with a password alone. But…",
       "url": "/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead",
