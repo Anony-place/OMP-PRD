@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Authenticator vs Authy: Authenticator App Comparison…</title>
+  <meta name="description" content="Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret.">
+  <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
+  <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
+  <link rel="canonical" href="https://oopsmypassword.web.app/compare/google-authenticator-vs-authy">
+  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+  <meta name="application-name" content="OopsMyPassword">
+  <meta name="theme-color" content="#F6F8FC">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="OopsMyPassword">
+  <meta property="og:title" content="Google Authenticator vs Authy: Authenticator App Comparison…">
+  <meta property="og:description" content="Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret.">
+  <meta property="og:url" content="https://oopsmypassword.web.app/compare/google-authenticator-vs-authy">
+  <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Google Authenticator vs Authy: Authenticator App Comparison…">
+  <meta name="twitter:description" content="Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret.">
+  <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme-init.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Google Authenticator vs Authy: Authenticator App Comparison (2026)","description":"Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret.","datePublished":"2026-09-15","dateModified":"2026-10-29","mainEntityOfPage":"https://oopsmypassword.web.app/compare/google-authenticator-vs-authy","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I use Google Authenticator and Authy for the same account at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. If you scan the same enrollment QR (the same secret seed) into both apps, they show the same codes — both compute TOTP from one shared secret. Keeping both is a common mutual-backup habit, but remember that every copy is another place the seed lives."}},{"@type":"Question","name":"Is Authy or Google Authenticator more secure?","acceptedAnswer":{"@type":"Answer","text":"Neither is more secure at the code level — both generate standard TOTP codes with the same 30-second window and the same real-time phishing limit. The difference is the surface around the seed: Google Authenticator with sync on ties it to your Google account, Authy ties its backup to your phone number. Harden whichever account anchors your seeds, and prefer passkeys where they are offered."}},{"@type":"Question","name":"What happened to the Authy desktop app?","acceptedAnswer":{"@type":"Answer","text":"Twilio ended support for the Authy desktop apps in 2024 and pointed users at the mobile apps. If a workflow depended on codes on your computer, a local TOTP-capable password manager or an open-source desktop authenticator is the replacement path."}},{"@type":"Question","name":"Which authenticator app is best for privacy?","acceptedAnswer":{"@type":"Answer","text":"A local-only open-source app such as Aegis, 2FAS or Ente Auth: seeds never leave the device unless you export an encrypted backup yourself. No Google account, no phone number, no cloud copy."}},{"@type":"Question","name":"Do authenticator apps work without internet?","acceptedAnswer":{"@type":"Answer","text":"Yes. After enrollment, codes are computed on the device from the stored seed and the clock — which is why they work in airplane mode, and why losing the phone without a backup means losing the factor."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Google Authenticator vs Authy","item":"https://oopsmypassword.web.app/compare/google-authenticator-vs-authy"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools" aria-current="page">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header>
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools" aria-current="page">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/compare">Comparisons<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cheatsheets">Cheat Sheets<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/glossary">Glossary<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/dork-builder">Dork Builder<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/hash-inspector">Hash &amp; JWT Inspector<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/url-scanner">URL Risk Scanner<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/cvss-calculator">CVSS Calculator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/checker">Check Your Password</a></nav>
+<main id="main">
+
+<section class="article-hero">
+  <div class="container container-narrow">
+    <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/compare">← Back to comparisons</a></p>
+    <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>Google Authenticator vs Authy</span></nav>
+    <h1 class="h-1 mt-16">Google Authenticator vs Authy: Authenticator App Comparison (2026)</h1>
+    <p class="lead mt-8">Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret seeds and which identity the backup is anchored to.</p>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="container container-narrow">
+    <article class="prose">
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> The codes are identical — both compute RFC 6238 TOTP from the same seed. Choose by backup model: Google Authenticator keeps seeds in your Google account (cloud sync is optional), Authy keeps them in an encrypted cloud backup keyed to your phone number. If you want neither identity anchor, a local-only app like Aegis is the honest third option.</p></div>
+      <h2>Executive Verdict: When to Choose Each</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Google Authenticator if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for minimal setups: one Google account, optional cloud sync, nothing extra to manage.</p>
+        </div>
+        <div class="card card-pad">
+          <h3 class="h-3" style="margin-top:0">Choose Authy (Twilio) if…</h3>
+          <p class="small muted" style="margin-bottom:0">Best for multi-device convenience: encrypted backups synced across devices, anchored to your phone number.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Feature-by-Feature Technical Matrix</h2>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Dimension</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Google Authenticator</th>
+              <th style="padding:12px;border-bottom:2px solid var(--border)">Authy (Twilio)</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Backup &amp; Sync</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Optional cloud sync to your Google account; off until you opt in</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Encrypted cloud backup with a separate backup password; multi-device sync is the core feature</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Account Anchor</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Your Google account — if that account is taken over, synced seeds are exposed</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Your phone number — SIM-swap and number-recycling attacks reach the account layer; Twilio disclosed an Authy phone-number breach in 2024</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Platforms</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">iOS, Android and Wear OS; no desktop app</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">iOS and Android; Twilio ended the desktop apps in 2024</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Moving to a New Phone</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Sign into your Google account (if sync is on), or scan transfer QR codes device to device</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Install Authy, verify your phone number, decrypt the backup with your backup password</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Open Source</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">No — closed source</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">No — closed source; Aegis, 2FAS and Ente Auth are the open-source alternatives</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Phishing Resistance</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">None — a relayed code works inside its 30-second window</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">None — same TOTP protocol, same limit</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Works Offline</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Yes — codes are computed on the device after enrollment</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Yes — same on-device TOTP computation</td>
+      </tr></tbody>
+        </table>
+      </div>
+
+      <h2 class="mt-32">When Google Authenticator is the right call</h2>
+      <p>You already live in one Google account and want the fewest moving parts. Cloud sync is optional: leave it off and seeds stay on the phone, at the cost of losing everything if the phone dies; turn it on and migration becomes trivial, at the cost of making your Google account part of your second factor.</p><ul><li>Simplest interface of the mainstream options</li><li>No phone-number account to SIM-swap</li><li>Wear OS support for codes on a watch</li></ul>
+      <h2 class="mt-32">When Authy is the right call</h2>
+      <p>You regularly need codes on more than one device, or you have been burned by losing a phone. Authy encrypted backups with a separate backup password and multi-device sync are genuinely convenient — the price is that the account layer is your phone number, so the SIM card becomes security-relevant in a way it is not for Google Authenticator.</p><ul><li>Multi-device sync is built in</li><li>Backups are encrypted with a password Authy never sees</li><li>The phone number is the account — protect the carrier account with a PIN</li></ul>
+      <h2 class="mt-32">The security truth both apps share</h2>
+      <p>Whichever app you pick, the rules are the same. The seed is the credential: anyone who obtains it can generate every future code, so never screenshot enrollment QR codes and treat exported backups like password files. TOTP codes can be relayed by real-time phishing proxies inside their 30-second window — both apps are convenience-strong and phishing-weak. For the accounts that matter most, a passkey or hardware security key is the phishing-resistant upgrade.</p><ul><li>Never screenshot the enrollment QR — the QR is the seed</li><li>Printed backup codes stored offline are the recovery plan that actually works</li><li>Passkeys beat TOTP for phishing resistance; TOTP beats SMS for everything else</li></ul>
+      <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
+      <div class="grid grid-2 mt-16" style="gap:16px">
+        <div>
+          <h3>Google Authenticator Example</h3>
+          <pre><code># The enrollment QR encodes the seed itself — treat it like a password:
+otpauth://totp/Example:you@example.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=Example</code></pre>
+        </div>
+        <div>
+          <h3>Authy (Twilio) Example</h3>
+          <pre><code># Both apps compute the same code from the same seed (RFC 6238):
+# code = Truncate(HMAC-SHA1(seed, floor(unix_time / 30))) mod 10^6</code></pre>
+        </div>
+      </div>
+
+      <h2 class="mt-32">Frequently Asked Questions</h2>
+      <h3>Can I use Google Authenticator and Authy for the same account at once?</h3><p>Yes. If you scan the same enrollment QR (the same secret seed) into both apps, they show the same codes — both compute TOTP from one shared secret. Keeping both is a common mutual-backup habit, but remember that every copy is another place the seed lives.</p>
+<h3>Is Authy or Google Authenticator more secure?</h3><p>Neither is more secure at the code level — both generate standard TOTP codes with the same 30-second window and the same real-time phishing limit. The difference is the surface around the seed: Google Authenticator with sync on ties it to your Google account, Authy ties its backup to your phone number. Harden whichever account anchors your seeds, and prefer passkeys where they are offered.</p>
+<h3>What happened to the Authy desktop app?</h3><p>Twilio ended support for the Authy desktop apps in 2024 and pointed users at the mobile apps. If a workflow depended on codes on your computer, a local TOTP-capable password manager or an open-source desktop authenticator is the replacement path.</p>
+<h3>Which authenticator app is best for privacy?</h3><p>A local-only open-source app such as Aegis, 2FAS or Ente Auth: seeds never leave the device unless you export an encrypted backup yourself. No Google account, no phone number, no cloud copy.</p>
+<h3>Do authenticator apps work without internet?</h3><p>Yes. After enrollment, codes are computed on the device from the stored seed and the clock — which is why they work in airplane mode, and why losing the phone without a backup means losing the factor.</p>
+
+      <hr class="hr-fade" style="margin-top:40px">
+      <h2>Related Tools, Cheat Sheets &amp; Comparisons</h2>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/articles/how-totp-works"><strong>How TOTP Works (RFC 6238 Worked Example)</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/glossary/totp-rfc-6238"><strong>TOTP (RFC 6238) Glossary</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a><a class="card card-pad card-link" href="/articles/passkeys-explained"><strong>Passkeys Explained</strong><p class="small muted mt-8" style="margin-bottom:0">Explore on OopsMyPassword →</p></a>
+      </div>
+      <div class="grid grid-3 mt-16" style="gap:12px">
+        <a class="card card-pad card-link" href="/compare/yubikey-vs-passkeys"><strong>YubiKey vs Passkeys</strong><p class="small muted mt-8" style="margin-bottom:0">Authentication comparison →</p></a><a class="card card-pad card-link" href="/compare/nmap-vs-masscan"><strong>Nmap vs Masscan</strong><p class="small muted mt-8" style="margin-bottom:0">Network &amp; Pentest comparison →</p></a><a class="card card-pad card-link" href="/compare/burp-suite-vs-owasp-zap"><strong>Burp Suite vs OWASP ZAP</strong><p class="small muted mt-8" style="margin-bottom:0">Web App Security comparison →</p></a>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/cvss-calculator">CVSS Calculator</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script>
+</body>
+</html>

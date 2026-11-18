@@ -171,6 +171,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/compare/google-authenticator-vs-authy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/compare/nmap-vs-masscan</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

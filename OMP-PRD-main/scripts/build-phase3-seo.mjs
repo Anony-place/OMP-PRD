@@ -309,6 +309,58 @@ export const COMPARISONS = [
     ]
   },
   {
+    slug: 'google-authenticator-vs-authy',
+    title: 'Google Authenticator vs Authy: Authenticator App Comparison (2026)',
+    shortTitle: 'Google Authenticator vs Authy',
+    category: 'Authentication',
+    toolA: 'Google Authenticator',
+    toolB: 'Authy (Twilio)',
+    summary: 'Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret seeds and which identity the backup is anchored to.',
+    verdictA: 'Best for minimal setups: one Google account, optional cloud sync, nothing extra to manage.',
+    verdictB: 'Best for multi-device convenience: encrypted backups synced across devices, anchored to your phone number.',
+    quickAnswer: 'The codes are identical — both compute RFC 6238 TOTP from the same seed. Choose by backup model: Google Authenticator keeps seeds in your Google account (cloud sync is optional), Authy keeps them in an encrypted cloud backup keyed to your phone number. If you want neither identity anchor, a local-only app like Aegis is the honest third option.',
+    rows: [
+      ['Backup & Sync', 'Optional cloud sync to your Google account; off until you opt in', 'Encrypted cloud backup with a separate backup password; multi-device sync is the core feature'],
+      ['Account Anchor', 'Your Google account — if that account is taken over, synced seeds are exposed', 'Your phone number — SIM-swap and number-recycling attacks reach the account layer; Twilio disclosed an Authy phone-number breach in 2024'],
+      ['Platforms', 'iOS, Android and Wear OS; no desktop app', 'iOS and Android; Twilio ended the desktop apps in 2024'],
+      ['Moving to a New Phone', 'Sign into your Google account (if sync is on), or scan transfer QR codes device to device', 'Install Authy, verify your phone number, decrypt the backup with your backup password'],
+      ['Open Source', 'No — closed source', 'No — closed source; Aegis, 2FAS and Ente Auth are the open-source alternatives'],
+      ['Phishing Resistance', 'None — a relayed code works inside its 30-second window', 'None — same TOTP protocol, same limit'],
+      ['Works Offline', 'Yes — codes are computed on the device after enrollment', 'Yes — same on-device TOTP computation']
+    ],
+    workflowA: '# The enrollment QR encodes the seed itself — treat it like a password:\notpauth://totp/Example:you@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example',
+    workflowB: '# Both apps compute the same code from the same seed (RFC 6238):\n# code = Truncate(HMAC-SHA1(seed, floor(unix_time / 30))) mod 10^6',
+    faqs: [
+      { q: 'Can I use Google Authenticator and Authy for the same account at once?', a: 'Yes. If you scan the same enrollment QR (the same secret seed) into both apps, they show the same codes — both compute TOTP from one shared secret. Keeping both is a common mutual-backup habit, but remember that every copy is another place the seed lives.' },
+      { q: 'Is Authy or Google Authenticator more secure?', a: 'Neither is more secure at the code level — both generate standard TOTP codes with the same 30-second window and the same real-time phishing limit. The difference is the surface around the seed: Google Authenticator with sync on ties it to your Google account, Authy ties its backup to your phone number. Harden whichever account anchors your seeds, and prefer passkeys where they are offered.' },
+      { q: 'What happened to the Authy desktop app?', a: 'Twilio ended support for the Authy desktop apps in 2024 and pointed users at the mobile apps. If a workflow depended on codes on your computer, a local TOTP-capable password manager or an open-source desktop authenticator is the replacement path.' },
+      { q: 'Which authenticator app is best for privacy?', a: 'A local-only open-source app such as Aegis, 2FAS or Ente Auth: seeds never leave the device unless you export an encrypted backup yourself. No Google account, no phone number, no cloud copy.' },
+      { q: 'Do authenticator apps work without internet?', a: 'Yes. After enrollment, codes are computed on the device from the stored seed and the clock — which is why they work in airplane mode, and why losing the phone without a backup means losing the factor.' }
+    ],
+    sections: [
+      {
+        heading: 'When Google Authenticator is the right call',
+        paragraphs: ['You already live in one Google account and want the fewest moving parts. Cloud sync is optional: leave it off and seeds stay on the phone, at the cost of losing everything if the phone dies; turn it on and migration becomes trivial, at the cost of making your Google account part of your second factor.'],
+        bullets: ['Simplest interface of the mainstream options', 'No phone-number account to SIM-swap', 'Wear OS support for codes on a watch']
+      },
+      {
+        heading: 'When Authy is the right call',
+        paragraphs: ['You regularly need codes on more than one device, or you have been burned by losing a phone. Authy encrypted backups with a separate backup password and multi-device sync are genuinely convenient — the price is that the account layer is your phone number, so the SIM card becomes security-relevant in a way it is not for Google Authenticator.'],
+        bullets: ['Multi-device sync is built in', 'Backups are encrypted with a password Authy never sees', 'The phone number is the account — protect the carrier account with a PIN']
+      },
+      {
+        heading: 'The security truth both apps share',
+        paragraphs: ['Whichever app you pick, the rules are the same. The seed is the credential: anyone who obtains it can generate every future code, so never screenshot enrollment QR codes and treat exported backups like password files. TOTP codes can be relayed by real-time phishing proxies inside their 30-second window — both apps are convenience-strong and phishing-weak. For the accounts that matter most, a passkey or hardware security key is the phishing-resistant upgrade.'],
+        bullets: ['Never screenshot the enrollment QR — the QR is the seed', 'Printed backup codes stored offline are the recovery plan that actually works', 'Passkeys beat TOTP for phishing resistance; TOTP beats SMS for everything else']
+      }
+    ],
+    relatedLinks: [
+      { label: 'How TOTP Works (RFC 6238 Worked Example)', url: '/articles/how-totp-works' },
+      { label: 'TOTP (RFC 6238) Glossary', url: '/glossary/totp-rfc-6238' },
+      { label: 'Passkeys Explained', url: '/articles/passkeys-explained' }
+    ]
+  },
+  {
     slug: 'yubikey-vs-passkeys',
     title: 'YubiKey vs Synced Passkeys: FIDO2 Auth Comparison',
     shortTitle: 'YubiKey vs Passkeys',

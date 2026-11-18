@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Nov 2026 13:09:44 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 18 Nov 2026 13:33:01 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -470,6 +470,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/compare/keepassxc-vs-bitwarden</guid>
       <category>Password Managers</category>
       <description>Should you store passwords in a local offline KDBX 4.1 file with KeePassXC or a zero-knowledge cloud vault with Bitwarden? Threat model comparison.</description>
+    </item>
+    <item>
+      <title>Google Authenticator vs Authy: Authenticator App Comparison (2026)</title>
+      <link>https://oopsmypassword.web.app/compare/google-authenticator-vs-authy</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/compare/google-authenticator-vs-authy</guid>
+      <category>Authentication</category>
+      <description>Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret seeds and which identity the backup is anchored to.</description>
     </item>
     <item>
       <title>YubiKey vs Synced Passkeys: FIDO2 Auth Comparison</title>
