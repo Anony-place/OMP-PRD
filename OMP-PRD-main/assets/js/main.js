@@ -569,3 +569,29 @@
     });
   }
 })();
+/* ---------- External links open in a new tab (site rule 2026-11-18) ----------
+   Static builds already emit target="_blank"; this net catches dynamic
+   markup too. Internal links (relative or our own hosts) stay same-tab. */
+(function () {
+  function fixExternalLinks(root) {
+    var links = (root || document).querySelectorAll('a[href]');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      if (a.getAttribute('target')) continue;
+      var href = a.getAttribute('href') || '';
+      if (!/^(https?:)?\/\//i.test(href)) continue;
+      var host = href.replace(/^(https?:)?\/\//i, '').split(/[/?#]/)[0];
+      if (/oopsmypassword|omp-prd/i.test(host)) continue;
+      a.setAttribute('target', '_blank');
+      var rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
+      if (rel.indexOf('noopener') === -1) rel.push('noopener');
+      if (rel.indexOf('noreferrer') === -1) rel.push('noreferrer');
+      a.setAttribute('rel', rel.join(' '));
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { fixExternalLinks(); });
+  } else {
+    fixExternalLinks();
+  }
+})();
