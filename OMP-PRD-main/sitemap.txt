@@ -180,6 +180,7 @@ https://oopsmypassword.web.app/pentest/burp-suite
 https://oopsmypassword.web.app/pentest/dnsx
 https://oopsmypassword.web.app/pentest/ffuf
 https://oopsmypassword.web.app/pentest/frida
+https://oopsmypassword.web.app/pentest/ghidra
 https://oopsmypassword.web.app/pentest/gitleaks
 https://oopsmypassword.web.app/pentest/hashcat
 https://oopsmypassword.web.app/pentest/httpx-probe
