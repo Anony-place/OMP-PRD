@@ -325,6 +325,13 @@
     },
     {
       "type": "Guide",
+      "title": "Wireshark SSL Decryption Not Working: Fix HTTPS & SSLKEYLOGFILE",
+      "desc": "Wireshark not decrypting HTTPS? The causes fail in a fixed order: dissection, key-log path, app key logging, captured handshake, PFS dead ends, filters. Fixes…",
+      "url": "/articles/wireshark-ssl-decryption-not-working",
+      "kw": "wireshark ssl decryption not working guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Zero-Day Vulnerability Explained",
       "desc": "Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It. what is zero day vulnerability in cyber security ?",
       "url": "/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it",

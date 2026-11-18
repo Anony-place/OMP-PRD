@@ -152,6 +152,7 @@ https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking
 https://oopsmypassword.web.app/articles/what-is-an-sbom
 https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
+https://oopsmypassword.web.app/articles/wireshark-ssl-decryption-not-working
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it
 https://oopsmypassword.web.app/products/master-in-ai-prompt
 https://oopsmypassword.web.app/products/why-we-suddenly-forget-why-we-entered-the-room
