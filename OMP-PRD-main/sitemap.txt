@@ -32,6 +32,7 @@ https://oopsmypassword.web.app/compare/bitwarden-vs-1password
 https://oopsmypassword.web.app/compare/bitwarden-vs-proton-pass
 https://oopsmypassword.web.app/compare/keepassxc-vs-bitwarden
 https://oopsmypassword.web.app/compare/yubikey-vs-passkeys
+https://oopsmypassword.web.app/compare/google-authenticator-vs-authy
 https://oopsmypassword.web.app/compare/nmap-vs-masscan
 https://oopsmypassword.web.app/compare/burp-suite-vs-owasp-zap
 https://oopsmypassword.web.app/compare/ffuf-vs-gobuster

@@ -1,0 +1,1 @@
+PARKED 2026-11-18: connector security filter blocked the INSERT. Not resent, not reworded (blocked-draft policy 2026-11-10). User may paste via Supabase dashboard or request an editorial rework.

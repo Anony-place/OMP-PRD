@@ -18,7 +18,7 @@
 ## Hubs & Reference
 - [OSINT Hub](https://oopsmypassword.web.app/osint): 16 OSINT investigation tools for usernames, email, domains and phones, each with install steps and a side-by-side comparison drawer.
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): 37 authorized penetration-testing tools grouped by assessment phase, each with install steps and its vendor documentation.
-- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 18 head-to-head technical comparisons.
+- [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 19 head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 14 interactive, printable command references.
 - [Security Glossary](https://oopsmypassword.web.app/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](https://oopsmypassword.web.app/articles): Long-form cybersecurity guides and threat analysis.
@@ -27,6 +27,7 @@
 - [Bitwarden vs 1Password: Security & Vault Comparison](https://oopsmypassword.web.app/compare/bitwarden-vs-1password): Head-to-head comparison of Bitwarden and 1Password across encryption architecture, Secret Key defense, open-source auditing, self-hosting, and pricing.
 - [Bitwarden vs Proton Pass: Privacy & Encryption Guide](https://oopsmypassword.web.app/compare/bitwarden-vs-proton-pass): Compare Bitwarden and Proton Pass across end-to-end metadata encryption, hide-my-email aliases, Argon2id key derivation, and Swiss privacy laws.
 - [KeePassXC vs Bitwarden: Offline Vault vs Cloud Sync](https://oopsmypassword.web.app/compare/keepassxc-vs-bitwarden): Should you store passwords in a local offline KDBX 4.1 file with KeePassXC or a zero-knowledge cloud vault with Bitwarden? Threat model comparison.
+- [Google Authenticator vs Authy: Authenticator App Comparison (2026)](https://oopsmypassword.web.app/compare/google-authenticator-vs-authy): Both apps generate the same standard TOTP codes, so any site that accepts one accepts the other. The real difference is where each app stores your secret seeds and which identity the backup is anchored to.
 - [YubiKey vs Synced Passkeys: FIDO2 Auth Comparison](https://oopsmypassword.web.app/compare/yubikey-vs-passkeys): Compare hardware security keys (YubiKey 5 / FIDO2 device-bound passkeys) against cloud-synced passkeys in Apple iCloud Keychain, Google, and Bitwarden.
 - [Nmap vs Masscan: Network Port Scanner Comparison](https://oopsmypassword.web.app/compare/nmap-vs-masscan): Technical comparison of Nmap and Masscan across packet transmission architecture, service version fingerprinting, NSE scripting, and scan accuracy.
 - [Burp Suite vs OWASP ZAP: Web Security Proxy Guide](https://oopsmypassword.web.app/compare/burp-suite-vs-owasp-zap): Compare Burp Suite and OWASP ZAP for manual HTTP request tampering, automated DAST CI/CD scanning, Intruder fuzzing, and extension ecosystems.

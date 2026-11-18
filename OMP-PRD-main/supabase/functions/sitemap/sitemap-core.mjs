@@ -68,6 +68,7 @@ export const STATIC_ROUTES = [
   '/compare/bitwarden-vs-proton-pass',
   '/compare/keepassxc-vs-bitwarden',
   '/compare/yubikey-vs-passkeys',
+  '/compare/google-authenticator-vs-authy',
   '/compare/nmap-vs-masscan',
   '/compare/burp-suite-vs-owasp-zap',
   '/compare/ffuf-vs-gobuster',
