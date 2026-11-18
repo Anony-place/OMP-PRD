@@ -297,6 +297,50 @@ def scripts(*names):
     return out
 
 
+import re
+
+
+# Site rule (2026-11-18): every EXTERNAL link opens in a new tab
+# (target="_blank" rel="noopener noreferrer"). Internal links (relative
+# paths and our own hosts) keep normal same-tab navigation. JSON-LD
+# script blocks are never touched. Idempotent.
+_LD_JSON_SPLIT = re.compile(r'(<script\b[^>]*type\s*=\s*["\']application/ld\+json["\'][^>]*>[\s\S]*?</script>)', re.I)
+
+
+def _externalize_anchor(m):
+    tag = m.group(0)
+    if re.search(r'\btarget\s*=', tag, re.I):
+        return tag
+    hm = re.search(r'\bhref\s*=\s*("([^"]*)"|\'([^\']*)\')', tag, re.I)
+    if not hm:
+        return tag
+    href = hm.group(2) if hm.group(2) is not None else hm.group(3)
+    if not re.match(r'^(https?:)?//', href, re.I):
+        return tag
+    host = re.sub(r'^(https?:)?//', '', href, flags=re.I).split('/')[0].split('?')[0].split('#')[0]
+    if re.search(r'oopsmypassword|omp-prd', host, re.I):
+        return tag
+    out = re.sub(r'>$', ' target="_blank">', tag)
+    rm = re.search(r'\brel\s*=\s*"([^"]*)"', out, re.I)
+    if not rm:
+        out = re.sub(r'>$', ' rel="noopener noreferrer">', out)
+    elif not re.search(r'noopener', rm.group(1), re.I) or not re.search(r'noreferrer', rm.group(1), re.I):
+        merged = sorted(set(rm.group(1).split()) | {'noopener', 'noreferrer'}, key=str.lower)
+        out = out.replace(rm.group(0), 'rel="%s"' % ' '.join(merged))
+    return out
+
+
+def externalize_html(html):
+    if not html:
+        return html
+    parts = _LD_JSON_SPLIT.split(html)
+    for i in range(len(parts)):
+        if i % 2 == 1:  # ld+json block — never touch
+            continue
+        parts[i] = re.sub(r'<a\b[^>]*>', _externalize_anchor, parts[i], flags=re.I)
+    return ''.join(parts)
+
+
 def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scripts_=None, head_extra="", body_class="", robots=None):
     html = (
         head(title=title, desc=desc, path=path, og_type=og_type, jsonld=jsonld, extra=head_extra, robots=robots)
@@ -311,7 +355,7 @@ def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scr
     # These tables intentionally scroll horizontally on narrow screens.
     html = html.replace('<table', '<table tabindex="0"')
     html = html.replace('class="table-scroll"', 'class="table-scroll" tabindex="0" aria-label="Scrollable comparison table"')
-    return html
+    return externalize_html(html)
 
 
 # ---------------------------------------------------------------- shared UI

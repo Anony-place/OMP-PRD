@@ -14,9 +14,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CROSS_CANONICAL } from './lib/cross-canonical.mjs';
+import { externalizeHtml } from './lib/external-links.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
+
+/* Site rule: external links open in a new tab. Wrap every .html write
+   so generated pages can never miss the rule. Non-HTML writes (xml/txt)
+   pass through untouched. */
+const writeFileSyncRaw = fs.writeFileSync.bind(fs);
+fs.writeFileSync = (file, data, ...rest) =>
+  writeFileSyncRaw(file, typeof data === 'string' && String(file).endsWith('.html') ? externalizeHtml(data) : data, ...rest);
 const SITE = 'https://oopsmypassword.web.app';
 /* Filled by the sitemap step so the build log reports the real URL count
    instead of a number that goes stale the next time a section is retired. */

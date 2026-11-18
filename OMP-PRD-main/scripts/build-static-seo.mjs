@@ -1,5 +1,11 @@
 import safeArticleHTML from '../functions/safe-article-html.cjs';
-import { mkdir, rm, writeFile, readFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile as writeFileRaw, readFile } from 'node:fs/promises';
+import { externalizeHtml } from './lib/external-links.mjs';
+
+/* Site rule: external links open in a new tab. Every generated HTML
+   page passes through here so the rule can never be missed. */
+const writeFile = async (file, data, ...rest) =>
+  writeFileRaw(file, typeof data === 'string' && String(file).endsWith('.html') ? externalizeHtml(data) : data, ...rest);
 import { join } from 'node:path';
 import { STATIC_ROUTES, isValidSlug, priorityForRoute } from '../functions/sitemap-core.mjs';
 import { pickRelated } from './lib/related.mjs';
