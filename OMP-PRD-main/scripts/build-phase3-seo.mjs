@@ -1507,7 +1507,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'TOTP (RFC 6238) is an offline two-factor authentication algorithm that computes a short-lived 6- to 8-digit code from a shared secret key and the current Unix timestamp, rotating every 30 seconds.',
     howItWorks: 'When you scan a 2FA QR code into an authenticator app (such as Aegis, Ente Auth, 2FAS, or Bitwarden), your device stores a Base32-encoded secret seed. Every 30 seconds, both your phone and the server divide the current Unix time by 30 and compute an HMAC-SHA1 digest over that counter, truncating the result into a 6-digit numeric code without requiring internet connectivity.',
     mitigation: 'Use TOTP authenticator apps instead of SMS 2FA to eliminate SIM-swapping risk, and remember that TOTP codes can still be relayed by real-time Adversary-in-the-Middle (AitM) phishing sites—verify the domain URL or upgrade to passkeys where supported.',
-    relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
+    relatedTool: { label: 'How TOTP Works (RFC 6238 Worked Example)', url: '/articles/how-totp-works' },
   },
   {
     slug: 'browser-in-the-browser-bitb',
