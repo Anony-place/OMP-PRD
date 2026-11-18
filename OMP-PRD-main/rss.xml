@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Nov 2026 12:18:58 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 18 Nov 2026 13:09:44 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -171,6 +171,13 @@
       <description>How to Spot Fake Passkey Setup Scams Before They Steal Your Account</description>
     </item>
     <item>
+      <title>How TOTP Works: The 30-Second Authenticator Code Explained</title>
+      <link>https://oopsmypassword.web.app/articles/how-totp-works</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-totp-works</guid>
+      <category>Security Research</category>
+      <description>How TOTP Works: The 30-Second Authenticator Code Explained</description>
+    </item>
+    <item>
       <title>Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead</title>
       <link>https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead</guid>
@@ -323,6 +330,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets</guid>
       <category>Security Research</category>
       <description>Wireshark Not Capturing Packets: 8 Causes, In Order</description>
+    </item>
+    <item>
+      <title>Wireshark SSL Decryption Not Working: Fix HTTPS, SSLKEYLOGFILE &amp; Non-Standard Ports</title>
+      <link>https://oopsmypassword.web.app/articles/wireshark-ssl-decryption-not-working</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/wireshark-ssl-decryption-not-working</guid>
+      <category>Security Research</category>
+      <description>Wireshark SSL Decryption Not Working: Fix HTTPS, SSLKEYLOGFILE &amp; Non-Standard Ports</description>
     </item>
     <item>
       <title>Zero-Day Vulnerability Explained: Meaning, Examples, and How to Protect Against It</title>
