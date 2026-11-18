@@ -17,7 +17,7 @@ def about_body():
   <div class="container two-col" style="align-items:start">
     <div class="prose">
       <h2 id="what">What OMP is</h2>
-      <p>OMP is a set of free, browser-based tools: a real-time password strength checker, a cryptographically-secure generator, a passphrase generator, an entropy calculator, a password health audit, an educational breach-check demo, and a library of practical guides. Every tool works the moment the page loads — no sign-up wall, no trial, no email field.</p>
+      <p>OMP is a set of free, browser-based tools: a real-time password strength checker, a cryptographically-secure generator, a passphrase generator, an entropy calculator, a password health audit, a breach-check tool, and a library of practical guides. Every tool works the moment the page loads — no sign-up wall, no trial, no email field.</p>
       <h2 id="why">Why it exists</h2>
       <p>Two things bothered us about the status quo:</p>
       <ul>
@@ -44,7 +44,7 @@ def about_body():
       <div class="card card-pad">
         <span class="card-icon">{icon("server-off","icon-22")}</span>
         <h3>No unnecessary data collection</h3>
-        <p>OMP does not run analytics that could touch what you type, does not place passwords in URLs, and does not log inputs. If a future feature ever needs a network call (like an opt-in breach lookup), it will be documented, consent-based, and built on k-anonymity.</p>
+        <p>OMP does not run analytics that could touch what you type, does not place passwords in URLs, and does not log inputs. The breach-check tool is the one feature that makes a network call, and only when you run it: it is built on k-anonymity, so just a 5-character hash prefix leaves your browser.</p>
       </div>
       <div class="card card-pad">
         <span class="card-icon">{icon("grad","icon-22")}</span>
@@ -82,8 +82,8 @@ def privacy_body():
     <h2 id="accounts">2. No account, no login</h2>
     <p>Every tool and every article works without an account. Your theme preference and Security Checklist progress are stored in this browser using localStorage, and never leave the device. Clearing browser data removes them. Site administrators use a separate protected publishing login; it is not required for visitors and creates no visitor record.</p>
 
-    <h2 id="breach-demo">3. The breach-check demo</h2>
-    <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and compares a 5-character hash prefix against a small corpus bundled with the page. No network request is made with any part of your input or its hash. The demo is labeled accordingly and does not represent a live breach database query.</p>
+    <h2 id="breach-demo">3. The breach-check tool</h2>
+    <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and sends only the first 5 hash characters to the Pwned Passwords range API — the k-anonymity pattern, documented on the page itself. Your password and its full hash never leave the browser, and if the database cannot be reached the tool says so instead of guessing.</p>
 
     <h2 id="hosting">4. Hosting and server logs</h2>
     <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and may retain it under its own security, reliability and retention policies. We do not sell, rent, or share that data.</p>

@@ -113,7 +113,7 @@ NAV_LINKS = [
 
 def head(*, title, desc, path, og_type="website", jsonld=None, extra="", robots=None):
     canonical = SITE + path
-    # `robots` overrides the default indexable behaviour. Error pages (404)
+    # `robots` overrides the default indexable behavior. Error pages (404)
     # pass "noindex" — and in that case no canonical is emitted, because a
     # canonical on a 404 makes Google treat it as a soft 404 and wastes crawl.
     noindex = bool(robots) and "noindex" in robots
@@ -229,13 +229,11 @@ def footer():
             ("All Tools", "/tools"),
         ]),
         ("Resources", [
-            ("Articles", "/articles"),
             ("Products", "/products"),
             ("OSINT Hub", "/osint"),
             ("Pentest Hub", "/pentest"),
             ("Security Checklist", "/security-checklist"),
             ("FAQ", "/faq"),
-            ("Glossary", "/glossary"),
         ]),
         ("Learn", [
             ("Articles", "/articles"),
@@ -354,7 +352,7 @@ def page(*, path, active, title, desc, body, og_type="website", jsonld=None, scr
     )
     # These tables intentionally scroll horizontally on narrow screens.
     html = html.replace('<table', '<table tabindex="0"')
-    html = html.replace('class="table-scroll"', 'class="table-scroll" tabindex="0" aria-label="Scrollable comparison table"')
+    html = re.sub(r'class="(table-scroll[^"]*)"', r'class="\1" tabindex="0" aria-label="Scrollable comparison table"', html)
     return externalize_html(html)
 
 
@@ -539,7 +537,7 @@ def jsonld_webapp():
         "operatingSystem": "Any (web browser)",
         "isAccessibleForFree": True,
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-        "featureList": "Password strength checker, password generator, passphrase generator, entropy calculator, password health audit, breach-check demo",
+        "featureList": "Password strength checker, password generator, passphrase generator, entropy calculator, password health audit, breach check",
         "description": "Client-side password security toolkit. No account required; passwords never leave the browser.",
     }
 

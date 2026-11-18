@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Nov 2026 14:36:36 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 18 Nov 2026 15:38:34 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -567,14 +567,14 @@
       <link>https://oopsmypassword.web.app/compare/nmap-vs-rustscan</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/compare/nmap-vs-rustscan</guid>
       <category>Network &amp; Pentest</category>
-      <description>Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when the speed advantage is real.</description>
+      <description>Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when the speed advantage is real.</description>
     </item>
     <item>
       <title>LinPEAS vs WinPEAS: Privilege Escalation Enumeration</title>
       <link>https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/compare/linpeas-vs-winpeas</guid>
       <category>Network &amp; Pentest</category>
-      <description>Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.</description>
+      <description>Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the detection and authorization risks of running either.</description>
     </item>
     <item>
       <title>Hashcat vs John the Ripper: Which Is Faster?</title>

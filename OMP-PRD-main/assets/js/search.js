@@ -333,7 +333,7 @@
     + '.omp-search-trigger svg{width:14px;height:14px;flex:none}'
     + '.omp-search-trigger kbd{font:600 10.5px/1 var(--font-mono);color:var(--muted-2);border:1px solid var(--border);border-radius:5px;padding:3px 5px;background:var(--bg-soft)}'
     + '@media (max-width:860px){.omp-search-trigger kbd{display:none}.omp-search-trigger .omp-st-label{display:none}.omp-search-trigger{padding:8px 10px}}'
-    + '.omp-search-overlay{position:fixed;inset:0;z-index:10000;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px;background:rgba(2,6,23,.72);backdrop-filter:blur(4px)}'
+    + '.omp-search-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;max-width:100vw;box-sizing:border-box;z-index:10000;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px;background:rgba(2,6,23,.72);backdrop-filter:blur(4px)}'
     + '.omp-search-overlay[hidden]{display:none}'
     + '.omp-search-dialog{width:min(640px,100%);background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;transform:translateY(6px);opacity:0;transition:transform .18s var(--ease),opacity .18s var(--ease)}'
     + '.omp-search-overlay.omp-open .omp-search-dialog{transform:none;opacity:1}'
@@ -356,10 +356,13 @@
     + '.omp-sr-badge.b-page{color:var(--muted);background:rgba(148,163,184,.12)}'
     + '.omp-sr-badge.b-faq{color:#FDE68A;background:rgba(234,179,8,.14)}'
     + '.omp-sr-badge.b-glossary{color:#A7F3D0;background:rgba(16,185,129,.14)}'
-    + '.omp-sr-main{min-width:0}'
-    + '.omp-sr-title{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.omp-sr-main{min-width:0;display:block}'
+    /* display:block is required: as inline spans the nowrap/ellipsis never
+       clipped, so title+desc concatenated on one line and overflowed the
+       dialog horizontally (audit 2026-11-18). */
+    + '.omp-sr-title{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.omp-sr-title mark{background:rgba(34,211,238,.22);color:inherit;border-radius:3px;padding:0 1px}'
-    + '.omp-sr-desc{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.omp-sr-desc{display:block;margin-top:2px;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.omp-sr-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px}'
     + '.omp-sr-foot{display:flex;gap:14px;align-items:center;padding:9px 16px;border-top:1px solid var(--border);color:var(--muted-2);font-size:11.5px;flex-wrap:wrap}'
     + '.omp-sr-foot kbd{font:600 10px/1 var(--font-mono);border:1px solid var(--border);border-radius:4px;padding:2px 4px;background:var(--bg-soft)}'
@@ -492,7 +495,13 @@
     if (!overlay) return;
     lastFocus = document.activeElement;
     overlay.hidden = false;
-    requestAnimationFrame(function () { if (overlay) overlay.classList.add('omp-open'); });
+    /* Add .omp-open synchronously AND via rAF/timeout fallbacks: the dialog
+       starts at opacity:0, and if rAF is throttled the modal stayed invisible
+       over a visible backdrop (audit 2026-11-18). Idempotent. */
+    var reveal = function () { if (overlay) overlay.classList.add('omp-open'); };
+    reveal();
+    requestAnimationFrame(reveal);
+    setTimeout(reveal, 120);
     savedScrollLock = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     setPageInert(true);

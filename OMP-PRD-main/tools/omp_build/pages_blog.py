@@ -189,7 +189,7 @@ def pentest_body():
     <h1 class="h-1 mt-16">Pentest Hub</h1>
     <p class="lead">Explore penetration testing tools by assessment phase. Compare purpose, pricing and access type, then open a dedicated tool guide for official websites, installation instructions and documentation.</p>
     <p class="hero-meta" data-pentest-stats>Browse the full catalog below — every tool page lists how to install and run it, plus the vendor's official site.</p>
-    <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Read the <a href="/articles" style="color:var(--purple)">authorised-testing guides</a> first.</p></div>
+    <div class="notice-band mt-24">{icon("lock","icon-20")}<p><strong>Authorized testing only.</strong> Only ever test systems you own or have explicit written permission to assess. New to the rules? Read the <a href="/articles" style="color:var(--purple)">authorized-testing guides</a> first.</p></div>
   </div>
 </section>
 <section class="section-tight" style="padding-top:8px">

@@ -628,7 +628,7 @@ export const COMPARISONS = [
         heading: 'Cost, and what the free tiers really allow',
         paragraphs: [
           'Both products are freemium and both meters are tight enough that you should decide the workflow before paying. A single host lookup or one targeted search is fine on either free account. Continuous monitoring of a CIDR range, exports, and API calls are paid on both.',
-          'If the budget is zero, the honest pattern is: use the free tier for the one or two questions that matter, and use the open alternatives (certificate transparency search, passive DNS, and your own nmap against hosts you are authorised to touch) for everything repetitive.'
+          'If the budget is zero, the honest pattern is: use the free tier for the one or two questions that matter, and use the open alternatives (certificate transparency search, passive DNS, and your own nmap against hosts you are authorized to touch) for everything repetitive.'
         ]
       },
       {
@@ -638,7 +638,7 @@ export const COMPARISONS = [
         ]
       }
     ],
-    workflowA: '# Identify the product and check its tags for known CVEs\nshodan host 203.0.113.10\n\n# Everything in an organisation that looks like a camera\nshodan search \'org:"Example Ltd" product:"Hikvision IP Camera"\'\n\n# Origin hunt: hosts presenting the certificate for the domain\nshodan search \'ssl.cert.subject.cn:"example.com" -http.title:"Cloudflare"\'',
+    workflowA: '# Identify the product and check its tags for known CVEs\nshodan host 203.0.113.10\n\n# Everything in an organization that looks like a camera\nshodan search \'org:"Example Ltd" product:"Hikvision IP Camera"\'\n\n# Origin hunt: hosts presenting the certificate for the domain\nshodan search \'ssl.cert.subject.cn:"example.com" -http.title:"Cloudflare"\'',
     workflowB: '# Hosts presenting a certificate that names the domain\ncensys search \'services.tls.certificates.leaf_data.names: "example.com"\'\n\n# Same idea against certificate history, which outlives the current scan\ncensys search \'certificates.parsed.names: "example.com" and not services.service_name: CLOUDFLARE\'',
     faqs: [
       { q: 'How do Shodan and Censys reveal the real origin IP behind a CDN or WAF?', a: 'If an origin server still accepts direct HTTPS connections on IPv4 and presents the organization TLS certificate, both Shodan and Censys index that certificate on the raw IP address, allowing defenders to spot firewall bypasses.' },
@@ -646,7 +646,7 @@ export const COMPARISONS = [
       { q: 'Is Shodan or Censys better for finding exposed industrial systems?', a: 'Shodan, for the first pass. It labels devices by product and protocol, so a filter for a known PLC or camera model returns something readable. Censys can reach the same hosts through protocol fields, but you need to know the field names before you start.' },
       { q: 'Do both offer an API on the free plan?', a: 'No. Shodan gives a limited free API key with a small query allowance, and Censys keeps API access behind a paid plan. Both let you search in the browser for free with a quota.' },
       { q: 'Can I use these results as evidence in a report?', a: 'Yes, with the timestamp and the query attached. A banner seen today is not proof of what was exposed last month, and both indexes lag the live host, so repeat the lookup at report time and screenshot the result.' },
-      { q: 'What is the difference between Shodan Monitor and Censys ASM?', a: 'Both watch a range you own and alert on change. Shodan Monitor is priced per monitored IP and is quick to set up for a small estate; Censys ASM is aimed at larger organisations and ties alerts to a certificate and service inventory rather than to individual banners.' }
+      { q: 'What is the difference between Shodan Monitor and Censys ASM?', a: 'Both watch a range you own and alert on change. Shodan Monitor is priced per monitored IP and is quick to set up for a small estate; Censys ASM is aimed at larger organizations and ties alerts to a certificate and service inventory rather than to individual banners.' }
     ],
     relatedLinks: [
       { label: 'Shodan OSINT Guide', url: '/osint/shodan' },
@@ -695,19 +695,19 @@ export const COMPARISONS = [
     updated: '2026-11-03',
     summary: 'Compare TruffleHog and Gitleaks for secret scanning: live credential verification, detection accuracy, git history coverage, custom rules, CI integration and the false-positive trade-off.',
     quickAnswer: 'Use Gitleaks to stop secrets from being committed - it is fast, MIT-licensed and belongs in a pre-commit hook. Use TruffleHog when you already have a mess to clean up, because it verifies findings against the provider and tells you which keys are still live.',
-    verdictA: 'Best for audits and incident triage: verifies each finding against the real provider API, scans git, S3, Docker images, CI logs and whole organisations, so a 900-finding report collapses into the handful of keys that actually work.',
+    verdictA: 'Best for audits and incident triage: verifies each finding against the real provider API, scans git, S3, Docker images, CI logs and whole organizations, so a 900-finding report collapses into the handful of keys that actually work.',
     verdictB: 'Best for prevention: a fast, dependency-free binary with readable TOML rules, fingerprints to ignore accepted legacy findings, and a pre-commit hook that stops the secret before it ever enters history.',
     rows: [
       ['Written in', 'Go - single static binary, Docker image, official GitHub Action', 'Go - single static binary, Docker image, official GitHub Action'],
       ['Detection model', 'Verified detectors: pattern match, then an optional live check against the provider API', 'Rules: regular expressions plus entropy scoring, defined in TOML'],
       ['Are findings verified?', 'Yes - --only-verified keeps only credentials the provider confirms are active', 'No - matching only; a live key and a dead one look identical'],
-      ['Sources it can scan', 'Git history, filesystem, S3, GCS, Docker images, CircleCI and GitHub Actions logs, whole GitHub/GitLab organisations', 'Git history, a directory tree, or standard input'],
+      ['Sources it can scan', 'Git history, filesystem, S3, GCS, Docker images, CircleCI and GitHub Actions logs, whole GitHub/GitLab organizations', 'Git history, a directory tree, or standard input'],
       ['Custom rules', 'Custom detectors, written in Go and compiled into the tool', 'Drop a TOML file with a regex and an entropy floor - no code'],
       ['Ignoring accepted findings', 'Exclusions and result filtering on re-runs', 'Fingerprint file (.gitleaksignore) and --baseline-path for a known-findings baseline'],
       ['Speed', 'Fast when matching; slower with verification on, because each hit is an outbound HTTPS call', 'Very fast - no network calls, no verification stage'],
       ['Output formats', 'JSON, plus a plain listing', 'JSON, CSV, SARIF, JUnit - SARIF uploads straight to GitHub code scanning'],
       ['Pre-commit hook', 'Possible, but heavy for every commit', 'Purpose-built: gitleaks protect --staged'],
-      ['Licence', 'AGPL-3.0, with a paid enterprise edition', 'MIT'],
+      ['License', 'AGPL-3.0, with a paid enterprise edition', 'MIT'],
       ['Best first use', 'A quarterly audit across every repository and bucket you own', 'A pre-commit hook and a CI job on every pull request']
     ],
     sections: [
@@ -717,7 +717,7 @@ export const COMPARISONS = [
           'A secret scanner has one job that matters more than coverage: telling you which findings are real. Both tools find keys. Only one tells you whether the key still works.',
           'Run Gitleaks across ten repositories and you will get a report with hundreds of entries. Some are AWS keys that were rotated in 2023, some are example strings in test fixtures, some are live. The report does not distinguish, so a human has to open every hit and check it by hand. In practice that means the report gets skimmed, the live key on page nine gets missed, and the scan becomes something the team learns to ignore.',
           'TruffleHog takes the same hits and calls the provider with each one. An AWS key is checked with STS, a GitHub token with the user endpoint, a Stripe key with a harmless read. What comes back is two lists: credentials the provider accepted, and everything else. The first list is usually short enough to fix today.',
-          'That difference is not a feature on a comparison table. It decides whether the tool changes behaviour.'
+          'That difference is not a feature on a comparison table. It decides whether the tool changes behavior.'
         ],
         bullets: [
           'A verified finding is evidence that something is exposed now, which is usually enough to justify an emergency rotation.',
@@ -731,13 +731,13 @@ export const COMPARISONS = [
           'The two tools are not competing for the same slot. Putting them on a timeline makes the split obvious.',
           'Before the commit, Gitleaks runs as a pre-commit hook and refuses the commit. Nothing has been pushed, nothing needs rotating, and the cost of the finding is a nuisance rather than an incident. This is the only stage where a secret scan is cheap.',
           'On the pull request, either tool works. Gitleaks is the lighter choice because a diff is small and the run has to finish quickly; SARIF output gives inline annotations on the exact line. TruffleHog adds value here only if you configure verification, which turns a red build into a clear message: this key is live, rotate it now.',
-          'On a schedule, TruffleHog earns its place. Point it at every repository in the organisation, at the buckets, and at the Docker images that were built before anyone set up the hook. This is the run that finds the secret committed two years ago, which no pre-commit hook will ever see.'
+          'On a schedule, TruffleHog earns its place. Point it at every repository in the organization, at the buckets, and at the Docker images that were built before anyone set up the hook. This is the run that finds the secret committed two years ago, which no pre-commit hook will ever see.'
         ]
       },
       {
         heading: 'The limits both tools share',
         paragraphs: [
-          'Neither tool can find a format it does not know. An internal API key with a custom prefix, a licence key in a base64 blob, or a password split across two variables will pass both scanners. If your organisation has its own token format, Gitleaks needs a TOML rule and TruffleHog needs a custom detector; neither ships with knowledge of your private systems.',
+          'Neither tool can find a format it does not know. An internal API key with a custom prefix, a license key in a base64 blob, or a password split across two variables will pass both scanners. If your organization has its own token format, Gitleaks needs a TOML rule and TruffleHog needs a custom detector; neither ships with knowledge of your private systems.',
           'Neither tool rotates anything. Finding a live key is the start of an incident, not the end of one: the credential has to be revoked at the provider, issued again, redeployed, and the old one checked in the provider logs for use that was not yours.',
           'And neither is a substitute for not storing secrets in repositories at all. A scanner catches the mistake after it has been made. Removing secrets from history is worth doing, but it does not undo the exposure - assume anything that reached a remote is compromised and rotate it.'
         ]
@@ -747,10 +747,10 @@ export const COMPARISONS = [
     workflowB: '# Write a baseline once, then fail only on secrets that are new since then\ngitleaks git . --baseline-path .gitleaks-baseline.json --report-format sarif --report-path gitleaks.sarif\n\n# Stop a secret before it is committed (pre-commit hook)\ngitleaks protect --staged --redact',
     faqs: [
       { q: 'Does TruffleHog replace Gitleaks?', a: 'No. They answer different questions. Gitleaks asks "does this diff contain something that looks like a secret", and answers it in milliseconds, before the commit exists. TruffleHog asks "is this credential still alive", which requires a network round trip and is worth paying for during an audit, not on every keystroke.' },
-      { q: 'Are verified findings always live credentials?', a: 'They are the strongest signal either tool produces, but treat them as evidence rather than proof. A provider may answer a verification request for an expired-but-recognised token, a key may be valid but scoped to nothing, and a detector may be matching a format that a different service also uses. Confirm in the provider console before you write the incident report.' },
+      { q: 'Are verified findings always live credentials?', a: 'They are the strongest signal either tool produces, but treat them as evidence rather than proof. A provider may answer a verification request for an expired-but-recognized token, a key may be valid but scoped to nothing, and a detector may be matching a format that a different service also uses. Confirm in the provider console before you write the incident report.' },
       { q: 'Can Gitleaks scan only the commits in a pull request?', a: 'Yes. In CI, pass the commit range to the git mode, for example --log-opts with the merge-base range, so the job looks at the change rather than the whole history. Scanning only the diff keeps runtime low, but it also means a secret committed before the job existed stays invisible until you run a full history scan.' },
       { q: 'How do I stop Gitleaks flagging a test fixture?', a: 'Add the finding fingerprint to .gitleaksignore, or build a baseline file from a known-good commit and pass --baseline-path. Both are deliberate and reviewable, which is the point: an allowlist that lives in the repository shows up in code review, while a rule that silently ignores an entire file does not.' },
-      { q: 'Is the AGPL licence a problem if we run TruffleHog in CI?', a: 'Running an AGPL tool inside your own build pipeline is ordinary use and does not normally impose obligations on your code. The licence matters when you redistribute the software or offer a modified version as a service. If your company has a strict policy on copyleft licences, check before standardising on it - that is a question for your legal team, not for a comparison table.' },
+      { q: 'Is the AGPL license a problem if we run TruffleHog in CI?', a: 'Running an AGPL tool inside your own build pipeline is ordinary use and does not normally impose obligations on your code. The license matters when you redistribute the software or offer a modified version as a service. If your company has a strict policy on copyleft licenses, check before standardising on it - that is a question for your legal team, not for a comparison table.' },
       { q: 'What should we do when either tool finds a live key?', a: 'Revoke first, investigate second. Issue a new credential, deploy it, then check the provider activity log for requests you cannot account for. Rotating is cheap and reversible; assuming nobody used the key is neither.' }
     ],
     relatedLinks: [
@@ -774,7 +774,7 @@ export const COMPARISONS = [
     verdictB: 'Best for depth: recursive by default, auto-calibrated against wildcard responses, extension-aware, able to resume an interrupted scan, and it extracts links from the pages it has already fetched.',
     rows: [
       ['Written in', 'Go', 'Rust'],
-      ['Recursion', 'Not built in - you script it or run a second pass per directory found', 'Default behaviour, depth controlled with --depth'],
+      ['Recursion', 'Not built in - you script it or run a second pass per directory found', 'Default behavior, depth controlled with --depth'],
       ['Wildcard / soft-404 handling', 'Manual: compare response length and pass --exclude-length', 'Automatic calibration, plus --autotune to retune if the server starts lying mid-scan'],
       ['Enumeration modes', 'dir, dns, vhost, fuzz, s3, gcs - each a separate subcommand', 'HTTP content discovery, with link extraction and forced extension collection'],
       ['Extension handling', '-x to append a fixed list to every request', '-x for a fixed list, or --collect-extensions to learn extensions from a response'],
@@ -817,7 +817,7 @@ export const COMPARISONS = [
       { q: 'Which one is faster?', a: 'They are close enough that the answer depends on your settings, not the tool: thread count, rate limits, wordlist size and whether recursion is on all matter more than the language they are written in. A recursive Feroxbuster run sends far more requests than a flat Gobuster run, so raw speed comparisons between the two are usually comparing different amounts of work.' },
       { q: 'Can they share wordlists?', a: 'Yes, and they should. Both read a plain newline-delimited wordlist, so the SecLists collections work unchanged: Wordlists like common.txt or raft-medium-directories.txt are the usual starting points. A custom wordlist built from the target technology stack will outperform any generic list with either tool.' },
       { q: 'Why does Gobuster report every word as found?', a: 'The application is answering 200 to paths that do not exist. Pick a random string that is certain not to exist, request it, note the response length, and pass that number to --exclude-length. If the length varies slightly per request, add a second exclusion for line count or switch to a tool that calibrates automatically.' },
-      { q: 'Is content discovery legal without permission?', a: 'No. Directory brute-forcing sends thousands of unsolicited requests to a system, which is unauthorised access in most jurisdictions regardless of whether anything is exploited. Run these tools only against systems you own, your own lab, or a target with written authorisation that defines the scope and the allowed request rate.' }
+      { q: 'Is content discovery legal without permission?', a: 'No. Directory brute-forcing sends thousands of unsolicited requests to a system, which is unauthorized access in most jurisdictions regardless of whether anything is exploited. Run these tools only against systems you own, your own lab, or a target with written authorization that defines the scope and the allowed request rate.' }
     ],
     relatedLinks: [
       { label: 'ffuf Pentest Guide', url: '/pentest/ffuf' },
@@ -875,7 +875,7 @@ export const COMPARISONS = [
         paragraphs: [
           'It is fashionable to call Nikto obsolete. That is too strong. Its check database covers a long tail of legacy paths - old CGI directories, sample scripts, backup naming conventions - that community template authors have little reason to write, because nobody scans a 2011 install any more. When the target genuinely is an old box, that coverage is the point.',
           'It also requires no setup. There is no template directory, no version pinning, no update step to forget. On a fresh assessment of an unknown host, running it costs a minute and occasionally finds something nobody expected.',
-          'What it should not be is the scanner you build a programme around. It has no severity model, no maintained template ecosystem and no concurrency to speak of, and an organisation that wants to scan two hundred hosts on a schedule needs all three.'
+          'What it should not be is the scanner you build a programme around. It has no severity model, no maintained template ecosystem and no concurrency to speak of, and an organization that wants to scan two hundred hosts on a schedule needs all three.'
         ]
       }
     ],
@@ -885,7 +885,7 @@ export const COMPARISONS = [
       { q: 'Should I still run Nikto in 2026?', a: 'Yes, on one condition: treat its output as a list of things to check, not a list of vulnerabilities. It costs a minute and occasionally finds a leftover backup archive or an exposed status page. On a maintained host, expect most of the report to be version-banner noise you dismiss after a glance.' },
       { q: 'Can Nuclei fully replace Nikto?', a: 'Mostly, for modern targets. The gap is the legacy long tail: obscure CGI paths, old sample scripts and backup naming conventions that the community has little reason to template. If you scan old infrastructure regularly, keeping Nikto in the toolbox costs nothing.' },
       { q: 'How do I keep Nuclei templates current?', a: 'Run nuclei -update-templates before a scan, or pin a template version in CI so results are reproducible. Pinning matters more than updating: an unpinned template set can turn a previously clean target red because somebody else added a check overnight, and that makes the scan impossible to compare against last week.' },
-      { q: 'Do either of these tools exploit a vulnerability?', a: 'Neither performs post-exploitation. Nuclei templates can send a proof-of-concept request that demonstrates a flaw - which can still change server state or crash a fragile service - and Nikto mostly reads. Run both only against systems you are authorised to test, and never enable aggressive template categories against production without a maintenance window.' },
+      { q: 'Do either of these tools exploit a vulnerability?', a: 'Neither performs post-exploitation. Nuclei templates can send a proof-of-concept request that demonstrates a flaw - which can still change server state or crash a fragile service - and Nikto mostly reads. Run both only against systems you are authorized to test, and never enable aggressive template categories against production without a maintenance window.' },
       { q: 'Which one should I run first on an unknown target?', a: 'Nikto first, because it answers a cheap question - is this box neglected - in about a minute. Then Nuclei by severity, because that is where the findings that matter will be. Running a full Nuclei scan before the cheap sanity check usually means triaging noise first.' }
     ],
     relatedLinks: [
@@ -903,7 +903,7 @@ export const COMPARISONS = [
     toolB: 'RustScan',
     published: '2026-11-03',
     updated: '2026-11-03',
-    summary: 'Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when the speed advantage is real.',
+    summary: 'Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when the speed advantage is real.',
     quickAnswer: 'RustScan is not an Nmap replacement - it is a faster way to find open ports, and its own documentation tells you to pipe the result into Nmap for everything else. Use RustScan when a full 65,535-port sweep is the bottleneck; use Nmap directly when you need service detection, OS fingerprinting, NSE scripts, or when the network is fragile.',
     verdictA: 'Best for the part of the job RustScan cannot do: service and version detection, OS fingerprinting, NSE script libraries, UDP scanning, output in five formats, and scan tuning that survives packet loss and rate limiting.',
     verdictB: 'Best for the one thing it does: finding open ports across all 65,535 of them in seconds, then handing those ports to Nmap automatically so the slow part of the scan is skipped entirely.',
@@ -916,11 +916,11 @@ export const COMPARISONS = [
       ['Scripting', 'NSE - a large library of Lua scripts for TLS, SMB, HTTP, vuln checks', 'Not supported'],
       ['UDP scanning', '-sU, with service detection for common UDP services', 'TCP focused; UDP is not the use case'],
       ['Hand-off to Nmap', 'Not applicable', 'Built in: -sV runs Nmap against the discovered ports automatically'],
-      ['Adaptive behaviour', 'Manual tuning: -T4, --min-rate, --max-retries', 'Automatic - it backs off when the host starts dropping packets'],
+      ['Adaptive behavior', 'Manual tuning: -T4, --min-rate, --max-retries', 'Automatic - it backs off when the host starts dropping packets'],
       ['Output formats', 'Normal, XML, grepable and the "all" flag (-oA)', 'Plain list by default; Nmap formats once handed off'],
-      ['Firewall and IDS behaviour', 'Configurable stealth, fragmenting, decoys, source-port tricks', 'Loud by design - thousands of packets per second look like a scan'],
-      ['Licence', 'NPSL (Nmap Public Source Licence) - open source with redistribution conditions', 'GPL-3.0'],
-      ['Best first use', 'A careful, complete assessment of a host you are authorised to test', 'A quick answer to "which of the 65,535 ports are even open" on a lab or CTF target']
+      ['Firewall and IDS behavior', 'Configurable stealth, fragmenting, decoys, source-port tricks', 'Loud by design - thousands of packets per second look like a scan'],
+      ['License', 'NPSL (Nmap Public Source License) - open source with redistribution conditions', 'GPL-3.0'],
+      ['Best first use', 'A careful, complete assessment of a host you are authorized to test', 'A quick answer to "which of the 65,535 ports are even open" on a lab or CTF target']
     ],
     sections: [
       {
@@ -960,7 +960,7 @@ export const COMPARISONS = [
       { q: 'Does RustScan replace Nmap?', a: 'No, and its own documentation says so. RustScan finds open ports quickly and can pass them to Nmap for service detection. Everything Nmap is known for - version probes, OS fingerprints, NSE scripts, UDP, output formats - is still Nmap.' },
       { q: 'How much faster is RustScan really?', a: 'For a full 65,535-port TCP scan on a host with a few open ports, the difference is typically seconds versus minutes. For a default top-1,000-port scan the gap is much smaller, because there is far less work to skip. If you usually scan the default port set, the speed advantage is close to irrelevant.' },
       { q: 'Why did RustScan report a port as closed that Nmap shows as open?', a: 'Usually packet loss or rate limiting. RustScan retries a limited number of times and moves on, so on a lossy path a slow reply can be treated as no reply. Lower the batch size, raise the timeout, or confirm the finding with Nmap before writing it down.' },
-      { q: 'Will a fast scan get me blocked?', a: 'Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorisation for that, and never run it against a system you do not own.' },
+      { q: 'Will a fast scan get me blocked?', a: 'Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorization for that, and never run it against a system you do not own.' },
       { q: 'Can I use the --ulimit advice I see everywhere?', a: 'Raising the open-file limit lets RustScan run more concurrent connections, which is where the speed comes from. On modern systems the Docker image or the packaged build often handles it. If RustScan warns about file descriptors, that warning is the instruction.' }
     ],
     relatedLinks: [
@@ -978,14 +978,14 @@ export const COMPARISONS = [
     toolB: 'WinPEAS (Windows)',
     published: '2026-11-03',
     updated: '2026-11-03',
-    summary: 'Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.',
-    quickAnswer: 'They are the same tool for two operating systems, so the comparison is not "which is better" but "what each one can and cannot see". LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, colour-coded list of things a human still has to read.',
+    summary: 'Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the detection and authorization risks of running either.',
+    quickAnswer: 'They are the same tool for two operating systems, so the comparison is not "which is better" but "what each one can and cannot see". LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, color-coded list of things a human still has to read.',
     verdictA: 'Best for Linux post-exploitation enumeration: SUID and capabilities, sudo rules, cron and systemd timers, writable paths, container escapes, credential files and keys, plus a fast mode that skips the slow filesystem sweeps.',
     verdictB: 'Best for Windows enumeration: service binary permissions, unquoted service paths, token privileges such as SeImpersonatePrivilege, AlwaysInstallElevated, stored credentials, autologon registry values and scheduled tasks.',
     rows: [
       ['Runs on', 'Linux - a bash script assembled from many small checks', 'Windows - a .NET executable, with a PowerShell script alternative'],
       ['What it needs', 'A shell, and preferably an execution method that leaves no file behind', 'A shell; the executable is often dropped to disk, which is a detection event'],
-      ['Typical output', 'Thousands of lines, colour-coded by how exploitable each finding is usually considered', 'The same idea, with sections for services, tokens, registry and credentials'],
+      ['Typical output', 'Thousands of lines, color-coded by how exploitable each finding is usually considered', 'The same idea, with sections for services, tokens, registry and credentials'],
       ['Coverage: users', 'Local users, groups, sudo rules, home directory permissions', 'Local accounts, group membership, logon sessions, token privileges'],
       ['Coverage: files', 'SUID/SGID binaries, capabilities, world-writable files and directories', 'Service binaries and their ACLs, unquoted paths, writable Program Files paths'],
       ['Coverage: scheduled work', 'cron jobs, systemd units and timers, at jobs', 'Scheduled tasks, services with weak start permissions'],
@@ -997,9 +997,9 @@ export const COMPARISONS = [
     ],
     sections: [
       {
-        heading: 'The colours are a starting point, not a finding list',
+        heading: 'The colors are a starting point, not a finding list',
         paragraphs: [
-          'Both tools colour their output, and the convention is widely misread. Red means "this often leads somewhere", not "this is exploitable". A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.',
+          'Both tools color their output, and the convention is widely misread. Red means "this often leads somewhere", not "this is exploitable". A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.',
           'The practical consequence is that a PEAS run is not a scan result you can paste into a report. It is a search index. The work is opening the red lines one at a time and asking the only question that matters: can I control anything this binary or service reads, executes or loads?',
           'Experienced testers run PEAS with a narrowed focus - one section at a time, or in the fast mode that skips the expensive filesystem walk - precisely because reading everything at once produces a list too long to reason about.'
         ]
@@ -1008,7 +1008,7 @@ export const COMPARISONS = [
         heading: 'Where the two diverge',
         paragraphs: [
           'On Linux, privilege escalation is largely about files: which ones are set-uid, which directories are writable by your user, which cron job runs as root and reads from a path you can write to. That is why LinPEAS spends most of its output on filesystem facts, and why capabilities - a detail older checklists ignore entirely - get their own section.',
-          'On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organises its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.',
+          'On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organizes its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.',
           'Neither tool can see what it was not designed to see. LinPEAS will not tell you a Windows domain trusts an unconstrained delegation; WinPEAS will not read a Linux sudoers file. On a mixed network the answer is not to pick a winner - it is to know which host you are on.'
         ]
       },
@@ -1016,7 +1016,7 @@ export const COMPARISONS = [
         heading: 'Running either one safely and lawfully',
         paragraphs: [
           'Both tools are noisy by nature. On the Linux side, the script spawns a large number of short-lived processes, walks the filesystem and may attempt outbound lookups; on the Windows side, the executable is dropped to disk and scanned. Any competent endpoint protection or SIEM will produce alerts, which is fine in a lab and a problem in production.',
-          'That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorised access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.',
+          'That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorized access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.',
           'If you are learning, use your own virtual machines. Metasploitable, the published Hack The Box and TryHackMe labs, and a local Windows VM with weak configuration are enough to see what real output looks like.'
         ]
       }
@@ -1024,11 +1024,11 @@ export const COMPARISONS = [
     workflowA: '# Standard run to a file, then read it back locally\n./linpeas.sh -a > linpeas-full.txt 2>/dev/null\n\n# Fast pass: skip the slow filesystem sweeps first\ntimeout 180 ./linpeas.sh -o system_information,software_information,container -q',
     workflowB: '# Run WinPEAS and write a readable report\n.\\winPEASx64.exe > winpeas.txt 2>&1\n\n# Narrow the scope to the sections that usually pay\n.\\winPEASx64.exe servicesinfo userinfo > winpeas-targeted.txt',
     faqs: [
-      { q: 'Are LinPEAS and WinPEAS the same project?', a: 'Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters.' },
+      { q: 'Are LinPEAS and WinPEAS the same project?', a: 'Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and color it by how often it matters.' },
       { q: 'Does a red line mean I have root or SYSTEM?', a: 'No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report.' },
       { q: 'Why is the output so long?', a: 'Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable.' },
-      { q: 'Will PEAS get me caught during an authorised test?', a: 'Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because "it was only enumeration" is not a defence if it was not in scope.' },
-      { q: 'Can I run these against production?', a: 'Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.' }
+      { q: 'Will PEAS get me caught during an authorized test?', a: 'Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because "it was only enumeration" is not a defense if it was not in scope.' },
+      { q: 'Can I run these against production?', a: 'Only with explicit written authorization, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.' }
     ],
     relatedLinks: [
       { label: 'Linux Privilege Escalation Cheat Sheet', url: '/cheatsheets/linux-privilege-escalation-cheatsheet' },
@@ -1108,7 +1108,7 @@ export const COMPARISONS = [
       { q: 'Can John the Ripper use a GPU?', a: 'Partially, through OpenCL in some jumbo builds, but GPU throughput is not the design centre. If GPU speed is the goal, that is Hashcat.' },
       { q: 'Can Hashcat read converter output?', a: 'Often yes once the matching mode is known, but the layouts differ and converter output can carry fields a mode rejects. Load it in John first to confirm the format, then move it.' },
       { q: 'Which is easier for a beginner?', a: 'John, because it detects the format for you. Hashcat needs a mode number first, and the canonical example list is the fastest way past that step.' },
-      { q: 'Are these tools legal to use?', a: 'Both are legal to install and to use on hashes you own or are authorised to test. Running them against credentials that are not yours is a criminal offence in most jurisdictions.' }
+      { q: 'Are these tools legal to use?', a: 'Both are legal to install and to use on hashes you own or are authorized to test. Running them against credentials that are not yours is a criminal offence in most jurisdictions.' }
     ],
     relatedLinks: [
       { label: 'Hashcat Pentest Guide', url: '/pentest/hashcat' },
@@ -1406,7 +1406,7 @@ export const CHEATSHEETS = [
       { q: 'What is the difference between -i, -I and -v?', a: '-i includes the response headers in the output alongside the body. -I sends a HEAD request instead of GET, so you get headers and no body at all. -v writes the whole conversation - request line, request headers, TLS details and response headers - to stderr, which is what you want when a request fails for a reason the body does not explain.' },
       { q: 'Why does curl return nothing when the URL works in a browser?', a: 'Usually one of four things: the site needs a header the browser sent automatically, the request is being redirected and you did not pass -L, the response is compressed and you are piping it somewhere that mangled it, or the browser had a cookie. Start with -v and read the request headers curl actually sent.' },
       { q: 'How do I stop curl from leaking a token in shell history?', a: 'Prefix the command with a space if your shell has HISTCONTROL=ignorespace, or pass the value from an environment variable that you read from a file. Do not paste production tokens into a shared terminal; a leaked credential in history is a real incident, not a nuisance.' },
-      { q: 'Is curl safe to point at a target I am testing?', a: 'Only for the same reason any request is safe: because you are authorised. curl itself does not exploit anything, but sending crafted requests to a system you do not own is unauthorised access regardless of the tool.' }
+      { q: 'Is curl safe to point at a target I am testing?', a: 'Only for the same reason any request is safe: because you are authorized. curl itself does not exploit anything, but sending crafted requests to a system you do not own is unauthorized access regardless of the tool.' }
     ],
     relatedLinks: [
       { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
@@ -1438,7 +1438,7 @@ export const CHEATSHEETS = [
       { q: 'How many threads are safe?', a: 'One or two against anything with an account lockout policy, and never more than the target can tolerate. Hydra\'s default of 16 is tuned for speed, not for staying undetected or for keeping an account unlocked. You only need one valid credential; a locked domain administrator account and a hundred thousand failed attempts is a worse outcome than a slow scan.' },
       { q: 'What is the difference between ^USER^ and ^PASS^?', a: 'They are placeholders Hydra substitutes from the -l/-L and -p/-P lists. Without them in the form body, the same static request is sent for every attempt, which produces a uniform failure and a report full of false positives.' },
       { q: 'Can Hydra get past a CSRF token or a captcha?', a: 'Not on its own. A per-request token has to be fetched and injected, which Hydra handles only awkwardly and slowly; a captcha stops it entirely. At that point the realistic finding is the absence of rate limiting on the login endpoint - report the weakness rather than forcing the tool.' },
-      { q: 'Is brute-forcing a login lawful?', a: 'Only with written authorisation that names the target and the allowed method. Password guessing against a system you do not own is unauthorised access in most jurisdictions, and it is one of the fastest ways to get an engagement terminated when it locks a production account.' }
+      { q: 'Is brute-forcing a login lawful?', a: 'Only with written authorization that names the target and the allowed method. Password guessing against a system you do not own is unauthorized access in most jurisdictions, and it is one of the fastest ways to get an engagement terminated when it locks a production account.' }
     ],
     relatedLinks: [
       { label: 'Hydra Pentest Guide', url: '/pentest/hydra' },
@@ -1466,11 +1466,11 @@ export const CHEATSHEETS = [
       { title: 'Quiet Batch Mode for One-Off Runs', desc: '-x runs a command string without an interactive console, which is what a scripted lab run wants.', cmd: 'msfconsole -q -x "use auxiliary/scanner/smb/smb_version; set RHOSTS {TARGET}; run; exit"' }
     ],
     faqs: [
-      { q: 'Why does my payload get blocked immediately?', a: 'Because a stock msfvenom binary is one of the most widely signatured files on the internet; every endpoint product has seen the default templates for years. That is a detection result, not an evasion puzzle - in an authorised test, report that the endpoint control works. Building your own loader is a different activity with a different scope.' },
+      { q: 'Why does my payload get blocked immediately?', a: 'Because a stock msfvenom binary is one of the most widely signatured files on the internet; every endpoint product has seen the default templates for years. That is a detection result, not an evasion puzzle - in an authorized test, report that the endpoint control works. Building your own loader is a different activity with a different scope.' },
       { q: 'Does check actually tell me the target is vulnerable?', a: 'Only sometimes. check is implemented per module and many simply do not have one; those that do often rely on a version banner, which backported patches make unreliable. Treat check as a hint and verify the finding another way before writing it up.' },
       { q: 'What is the difference between a staged and a stageless payload?', a: 'A staged payload (windows/x64/meterpreter/reverse_tcp) is a small stager that connects back and downloads the rest, so the initial file is tiny but needs a listener that can serve the second stage. A stageless payload (…/meterpreter_reverse_tcp) carries everything in one file, which is larger and behaves identically once it runs.' },
       { q: 'Why did my reverse shell never connect?', a: 'In order of frequency: LHOST was set to a private address the target cannot route to, the port was blocked outbound, the handler was not running or was on a different payload, or the target has no egress except through a proxy. Confirm the handler is listening locally before blaming the target.' },
-      { q: 'Is running an exploit module lawful?', a: 'Only inside written authorisation that names the hosts and the techniques. Exploitation can crash a service, corrupt data or leave a system unusable, so an authorised test also includes agreeing what happens when that occurs.' }
+      { q: 'Is running an exploit module lawful?', a: 'Only inside written authorization that names the hosts and the techniques. Exploitation can crash a service, corrupt data or leave a system unusable, so an authorized test also includes agreeing what happens when that occurs.' }
     ],
     relatedLinks: [
       { label: 'Metasploit Pentest Guide', url: '/pentest/metasploit' },
@@ -1502,7 +1502,7 @@ export const CHEATSHEETS = [
       { q: 'What is the difference between John and hashcat?', a: 'John excels at breadth - hundreds of formats and a converter for almost every file type you will meet - and runs on the CPU. hashcat is built for GPU throughput and wins decisively on raw speed for common fast hashes. In practice: use John when you have an odd format, hashcat when you have a lot of hashes of a known type.' },
       { q: 'Why does --show return nothing when something was cracked?', a: 'You are pointing at a different file than the run that cracked it, or the hash file was edited in between so the line no longer matches. John stores results in ~/.john/john.pot keyed on the ciphertext; deleting that file loses the history, not the hashes.' },
       { q: 'How long will a password take to crack?', a: 'That depends on the hash type, the candidate space and the hardware - and on nothing else. A fast hash such as unsalted MD5 is effectively transparent for short passwords; bcrypt, scrypt and Argon2id are designed so that each guess costs real time. Use the site calculator to reason about entropy rather than trusting a table of "seconds to crack".' },
-      { q: 'Is cracking a hash lawful?', a: 'Only for hashes you are entitled to test: your own, your lab\'s, or a client\'s under written authorisation. Hashes from a breach dump are someone else\'s data, and attacking live accounts with recovered passwords is a criminal act regardless of how the hash was obtained.' }
+      { q: 'Is cracking a hash lawful?', a: 'Only for hashes you are entitled to test: your own, your lab\'s, or a client\'s under written authorization. Hashes from a breach dump are someone else\'s data, and attacking live accounts with recovered passwords is a criminal act regardless of how the hash was obtained.' }
     ],
     relatedLinks: [
       { label: 'John the Ripper Pentest Guide', url: '/pentest/john-the-ripper' },

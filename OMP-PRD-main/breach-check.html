@@ -74,10 +74,12 @@
     <div class="card card-pad" data-breach>
       <h2 class="h-3">Run a k-anonymity breach lookup</h2>
       <p class="muted small mt-8">Type any password. Your browser computes its SHA-1 hash locally and queries only the 5-character prefix against the Pwned Passwords range API. The password and full hash never leave your device. If the database cannot be reached, you get an unavailable message with the reason and a retry &mdash; not a verdict.</p>
+      <form data-breach-form>
       <div class="pw-input-wrap mt-16">
         <input class="pw-input" type="password" data-breach-input placeholder="Password to check…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Password to check">
       </div>
-      <button class="btn btn-primary mt-16" type="button" data-breach-btn>Check for breaches</button>
+      <button class="btn btn-primary mt-16" type="submit" data-breach-btn>Check for breaches</button>
+      </form>
       <div class="hash-view" data-breach-hash hidden></div>
       <div class="breach-result" data-breach-result aria-live="polite" aria-atomic="true">
         <div data-breach-status></div>

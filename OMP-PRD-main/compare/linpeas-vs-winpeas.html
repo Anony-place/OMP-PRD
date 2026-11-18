@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinPEAS vs WinPEAS: Privilege Escalation Enumeration</title>
-  <meta name="description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta name="description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="https://oopsmypassword.web.app/compare/linpeas-vs-winpeas">
@@ -15,14 +15,14 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OopsMyPassword">
   <meta property="og:title" content="LinPEAS vs WinPEAS: Privilege Escalation Enumeration">
-  <meta property="og:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta property="og:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the.">
   <meta property="og:url" content="https://oopsmypassword.web.app/compare/linpeas-vs-winpeas">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LinPEAS vs WinPEAS: Privilege Escalation Enumeration">
-  <meta name="twitter:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.">
+  <meta name="twitter:description" content="Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -30,8 +30,8 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LinPEAS vs WinPEAS: Privilege Escalation Enumeration","description":"Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/linpeas-vs-winpeas","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are LinPEAS and WinPEAS the same project?","acceptedAnswer":{"@type":"Answer","text":"Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters."}},{"@type":"Question","name":"Does a red line mean I have root or SYSTEM?","acceptedAnswer":{"@type":"Answer","text":"No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report."}},{"@type":"Question","name":"Why is the output so long?","acceptedAnswer":{"@type":"Answer","text":"Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable."}},{"@type":"Question","name":"Will PEAS get me caught during an authorised test?","acceptedAnswer":{"@type":"Answer","text":"Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because \"it was only enumeration\" is not a defence if it was not in scope."}},{"@type":"Question","name":"Can I run these against production?","acceptedAnswer":{"@type":"Answer","text":"Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LinPEAS vs WinPEAS: Privilege Escalation Enumeration","description":"Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/linpeas-vs-winpeas","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are LinPEAS and WinPEAS the same project?","acceptedAnswer":{"@type":"Answer","text":"Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and color it by how often it matters."}},{"@type":"Question","name":"Does a red line mean I have root or SYSTEM?","acceptedAnswer":{"@type":"Answer","text":"No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report."}},{"@type":"Question","name":"Why is the output so long?","acceptedAnswer":{"@type":"Answer","text":"Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable."}},{"@type":"Question","name":"Will PEAS get me caught during an authorized test?","acceptedAnswer":{"@type":"Answer","text":"Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because \"it was only enumeration\" is not a defense if it was not in scope."}},{"@type":"Question","name":"Can I run these against production?","acceptedAnswer":{"@type":"Answer","text":"Only with explicit written authorization, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"LinPEAS vs WinPEAS","item":"https://oopsmypassword.web.app/compare/linpeas-vs-winpeas"}]}</script>
 </head>
 <body>
@@ -44,13 +44,13 @@
     <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/compare">← Back to comparisons</a></p>
     <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>LinPEAS vs WinPEAS</span></nav>
     <h1 class="h-1 mt-16">LinPEAS vs WinPEAS: Privilege Escalation Enumeration</h1>
-    <p class="lead mt-8">Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the detection and authorisation risks of running either.</p>
+    <p class="lead mt-8">Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the detection and authorization risks of running either.</p>
   </div>
 </section>
 <section class="section-tight">
   <div class="container container-narrow">
     <article class="prose">
-      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> They are the same tool for two operating systems, so the comparison is not &quot;which is better&quot; but &quot;what each one can and cannot see&quot;. LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, colour-coded list of things a human still has to read.</p></div>
+      <div class="callout callout-info" style="margin-bottom:28px"><p style="margin:0"><strong>Short answer:</strong> They are the same tool for two operating systems, so the comparison is not &quot;which is better&quot; but &quot;what each one can and cannot see&quot;. LinPEAS reads files, permissions and scheduled jobs on Linux; WinPEAS queries registry hives, services and token privileges on Windows. Neither escalates anything - both produce a long, color-coded list of things a human still has to read.</p></div>
       <h2>Executive Verdict: When to Choose Each</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
         <div class="card card-pad">
@@ -86,7 +86,7 @@
       </tr>
       <tr>
         <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Typical output</td>
-        <td style="padding:12px;border-bottom:1px solid var(--border)">Thousands of lines, colour-coded by how exploitable each finding is usually considered</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">Thousands of lines, color-coded by how exploitable each finding is usually considered</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">The same idea, with sections for services, tokens, registry and credentials</td>
       </tr>
       <tr>
@@ -132,17 +132,17 @@
         </table>
       </div>
 
-      <h2 class="mt-32">The colours are a starting point, not a finding list</h2>
-      <p>Both tools colour their output, and the convention is widely misread. Red means &quot;this often leads somewhere&quot;, not &quot;this is exploitable&quot;. A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.</p>
+      <h2 class="mt-32">The colors are a starting point, not a finding list</h2>
+      <p>Both tools color their output, and the convention is widely misread. Red means &quot;this often leads somewhere&quot;, not &quot;this is exploitable&quot;. A world-writable file inside a directory the current user cannot traverse is usually useless. A SUID binary that only calls execv on a path you cannot write is a dead end.</p>
       <p>The practical consequence is that a PEAS run is not a scan result you can paste into a report. It is a search index. The work is opening the red lines one at a time and asking the only question that matters: can I control anything this binary or service reads, executes or loads?</p>
       <p>Experienced testers run PEAS with a narrowed focus - one section at a time, or in the fast mode that skips the expensive filesystem walk - precisely because reading everything at once produces a list too long to reason about.</p>
       <h2 class="mt-32">Where the two diverge</h2>
       <p>On Linux, privilege escalation is largely about files: which ones are set-uid, which directories are writable by your user, which cron job runs as root and reads from a path you can write to. That is why LinPEAS spends most of its output on filesystem facts, and why capabilities - a detail older checklists ignore entirely - get their own section.</p>
-      <p>On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organises its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.</p>
+      <p>On Windows, it is largely about configuration and privilege: a service that starts from an unquoted path with a space in it, an installer that runs as SYSTEM regardless of who invokes it, a token that already carries an impersonation privilege the documentation calls dangerous. WinPEAS organizes its output around those, which is why its sections look like a checklist of Windows hardening failures rather than a filesystem inventory.</p>
       <p>Neither tool can see what it was not designed to see. LinPEAS will not tell you a Windows domain trusts an unconstrained delegation; WinPEAS will not read a Linux sudoers file. On a mixed network the answer is not to pick a winner - it is to know which host you are on.</p>
       <h2 class="mt-32">Running either one safely and lawfully</h2>
       <p>Both tools are noisy by nature. On the Linux side, the script spawns a large number of short-lived processes, walks the filesystem and may attempt outbound lookups; on the Windows side, the executable is dropped to disk and scanned. Any competent endpoint protection or SIEM will produce alerts, which is fine in a lab and a problem in production.</p>
-      <p>That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorised access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.</p>
+      <p>That matters twice over. Technically, a scan that gets you blocked or the service degraded is a failed assessment. Legally, running an enumeration script against a host you do not own is unauthorized access in most jurisdictions, whether or not anything is exploited - the tool does not need to succeed at privilege escalation to be a problem.</p>
       <p>If you are learning, use your own virtual machines. Metasploitable, the published Hack The Box and TryHackMe labs, and a local Windows VM with weak configuration are enough to see what real output looks like.</p>
       <h2 class="mt-32">Side-by-Side CLI &amp; Operational Workflow</h2>
       <div class="grid grid-2 mt-16" style="gap:16px">
@@ -165,11 +165,11 @@ timeout 180 ./linpeas.sh -o system_information,software_information,container -q
       </div>
 
       <h2 class="mt-32">Frequently Asked Questions</h2>
-      <h3>Are LinPEAS and WinPEAS the same project?</h3><p>Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and colour it by how often it matters.</p>
+      <h3>Are LinPEAS and WinPEAS the same project?</h3><p>Yes - both are part of PEASS-ng, maintained together. LinPEAS is the bash script for Linux and WinPEAS is the compiled tool for Windows, but the philosophy is identical: collect everything that might matter and color it by how often it matters.</p>
 <h3>Does a red line mean I have root or SYSTEM?</h3><p>No. It means the condition commonly appears in real escalations. Most red lines cannot be turned into an escalation on a given host, because some other permission blocks the path. Treat each one as a hypothesis to test, not a result to report.</p>
 <h3>Why is the output so long?</h3><p>Because it is a search index, not a summary. Both tools err toward showing everything rather than missing the one finding that matters. Use the section flags to run one category at a time and the output becomes readable.</p>
-<h3>Will PEAS get me caught during an authorised test?</h3><p>Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because &quot;it was only enumeration&quot; is not a defence if it was not in scope.</p>
-<h3>Can I run these against production?</h3><p>Only with explicit written authorisation, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.</p>
+<h3>Will PEAS get me caught during an authorized test?</h3><p>Very likely, yes. Expect a large number of process spawns on Linux and a dropped binary on Windows. Agree with the client in advance which systems may be enumerated and when, because &quot;it was only enumeration&quot; is not a defense if it was not in scope.</p>
+<h3>Can I run these against production?</h3><p>Only with explicit written authorization, a defined maintenance window, and a plan for the alerts it will raise. The scripts read protected files and spawn hundreds of processes; on a busy system that is enough to break something unrelated.</p>
 
       <hr class="hr-fade" style="margin-top:40px">
       <h2>Related Tools, Cheat Sheets &amp; Comparisons</h2>

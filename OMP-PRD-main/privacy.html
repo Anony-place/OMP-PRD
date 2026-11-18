@@ -84,8 +84,8 @@
     <h2 id="accounts">2. No account, no login</h2>
     <p>Every tool and every article works without an account. Your theme preference and Security Checklist progress are stored in this browser using localStorage, and never leave the device. Clearing browser data removes them. Site administrators use a separate protected publishing login; it is not required for visitors and creates no visitor record.</p>
 
-    <h2 id="breach-demo">3. The breach-check demo</h2>
-    <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and compares a 5-character hash prefix against a small corpus bundled with the page. No network request is made with any part of your input or its hash. The demo is labeled accordingly and does not represent a live breach database query.</p>
+    <h2 id="breach-demo">3. The breach-check tool</h2>
+    <p>The Breach Check page hashes input locally with SHA-1 (WebCrypto) and sends only the first 5 hash characters to the Pwned Passwords range API — the k-anonymity pattern, documented on the page itself. Your password and its full hash never leave the browser, and if the database cannot be reached the tool says so instead of guessing.</p>
 
     <h2 id="hosting">4. Hosting and server logs</h2>
     <p>Like nearly every website, the static-hosting provider serving these files processes standard technical metadata (IP address, user agent, requested path) to deliver pages, and may retain it under its own security, reliability and retention policies. We do not sell, rent, or share that data.</p>
