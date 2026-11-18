@@ -153,6 +153,12 @@
     statusEl.appendChild(div);
   }
 
+  var form = shell.querySelector('[data-breach-form]');
+  if (form) form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!btn.disabled) btn.click();
+  });
+
   btn.addEventListener('click', function () {
     var pw = input.value;
     if (!pw) {

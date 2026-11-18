@@ -213,6 +213,17 @@ h1, h2, h3, h4 { line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; }
 }
 .nav-links a:hover { color: var(--text); background: rgba(139, 92, 246, .08); }
 .nav-links a[aria-current="page"] { color: var(--text); background: rgba(139, 92, 246, .12); }
+/* Explicit contrast for the active nav item in both themes (audit 2026-11-18
+   saw low-contrast text on the purple pill in dark mode). */
+html[data-theme="dark"] .nav-links a[aria-current="page"],
+html:not([data-theme="light"]) .nav-links a[aria-current="page"] {
+  color: #F8FAFC;
+  background: rgba(139, 92, 246, .32);
+}
+[data-theme="light"] .nav-links a[aria-current="page"] {
+  color: #0F172A;
+  background: rgba(139, 92, 246, .18);
+}
 .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -553,6 +564,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 select.input, .input {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--bg-soft);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
@@ -620,6 +633,7 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .guide-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
 .guide-card p { font-size: .9rem; }
 .guide-card .read-more { margin-top: 16px; font-size: .88rem; font-weight: 600; color: var(--purple); display: inline-flex; align-items: center; gap: 6px; }
+.read-more { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 
 .article-layout {
   /* Reading column first, contents rail second: the text then starts flush with
@@ -860,7 +874,9 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .footer-connect a:hover { color: var(--text); }
 .footer-bottom {
   border-top: 1px solid var(--border);
-  padding: 22px 0;
+  /* bottom padding keeps the fixed Back-to-Top button from covering the
+     Terms link at scroll bottom (audit 2026-11-18) */
+  padding: 22px 0 64px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   color: var(--muted-2); font-size: .84rem;
 }
@@ -915,7 +931,10 @@ select.input:focus, .input:focus { outline: none; border-color: var(--purple); b
 .grade-ring .ring-label .t { font-size: .68rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
 
 /* crack time table */
-.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); }
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-soft); scrollbar-width: thin; }
+.table-scroll::-webkit-scrollbar { height: 8px; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
 .table-scroll .crack-table { min-width: 560px; }
 .table-scroll .crack-table th, .table-scroll .crack-table td { white-space: nowrap; }
 .crack-table { width: 100%; border-collapse: collapse; font-size: .92rem; }

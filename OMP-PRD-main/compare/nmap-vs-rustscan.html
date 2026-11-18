@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nmap vs RustScan: Port Scanning Speed Compared | OopsMyPassword</title>
-  <meta name="description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.">
+  <meta name="description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when.">
   <meta name="google-site-verification" content="ilff-p9F52ymQPjAUhrWXMh2zidY67vxMIp0QskcbfY" />
   <meta name="google-site-verification" content="MsDOM6JlqwnItZo1uJAFNYWAEkaDQPOJvzyfIIE9Vbg" />
   <link rel="canonical" href="https://oopsmypassword.web.app/compare/nmap-vs-rustscan">
@@ -15,14 +15,14 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OopsMyPassword">
   <meta property="og:title" content="Nmap vs RustScan: Port Scanning Speed Compared | OopsMyPassword">
-  <meta property="og:description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.">
+  <meta property="og:description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when.">
   <meta property="og:url" content="https://oopsmypassword.web.app/compare/nmap-vs-rustscan">
   <meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nmap vs RustScan: Port Scanning Speed Compared | OopsMyPassword">
-  <meta name="twitter:description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.">
+  <meta name="twitter:description" content="Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when.">
   <meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg">
   <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -30,8 +30,8 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Nmap vs RustScan: Port Scanning Speed Compared","description":"Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/nmap-vs-rustscan","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does RustScan replace Nmap?","acceptedAnswer":{"@type":"Answer","text":"No, and its own documentation says so. RustScan finds open ports quickly and can pass them to Nmap for service detection. Everything Nmap is known for - version probes, OS fingerprints, NSE scripts, UDP, output formats - is still Nmap."}},{"@type":"Question","name":"How much faster is RustScan really?","acceptedAnswer":{"@type":"Answer","text":"For a full 65,535-port TCP scan on a host with a few open ports, the difference is typically seconds versus minutes. For a default top-1,000-port scan the gap is much smaller, because there is far less work to skip. If you usually scan the default port set, the speed advantage is close to irrelevant."}},{"@type":"Question","name":"Why did RustScan report a port as closed that Nmap shows as open?","acceptedAnswer":{"@type":"Answer","text":"Usually packet loss or rate limiting. RustScan retries a limited number of times and moves on, so on a lossy path a slow reply can be treated as no reply. Lower the batch size, raise the timeout, or confirm the finding with Nmap before writing it down."}},{"@type":"Question","name":"Will a fast scan get me blocked?","acceptedAnswer":{"@type":"Answer","text":"Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorisation for that, and never run it against a system you do not own."}},{"@type":"Question","name":"Can I use the --ulimit advice I see everywhere?","acceptedAnswer":{"@type":"Answer","text":"Raising the open-file limit lets RustScan run more concurrent connections, which is where the speed comes from. On modern systems the Docker image or the packaged build often handles it. If RustScan warns about file descriptors, that warning is the instruction."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Nmap vs RustScan: Port Scanning Speed Compared","description":"Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when.","datePublished":"2026-11-03","dateModified":"2026-11-03","mainEntityOfPage":"https://oopsmypassword.web.app/compare/nmap-vs-rustscan","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does RustScan replace Nmap?","acceptedAnswer":{"@type":"Answer","text":"No, and its own documentation says so. RustScan finds open ports quickly and can pass them to Nmap for service detection. Everything Nmap is known for - version probes, OS fingerprints, NSE scripts, UDP, output formats - is still Nmap."}},{"@type":"Question","name":"How much faster is RustScan really?","acceptedAnswer":{"@type":"Answer","text":"For a full 65,535-port TCP scan on a host with a few open ports, the difference is typically seconds versus minutes. For a default top-1,000-port scan the gap is much smaller, because there is far less work to skip. If you usually scan the default port set, the speed advantage is close to irrelevant."}},{"@type":"Question","name":"Why did RustScan report a port as closed that Nmap shows as open?","acceptedAnswer":{"@type":"Answer","text":"Usually packet loss or rate limiting. RustScan retries a limited number of times and moves on, so on a lossy path a slow reply can be treated as no reply. Lower the batch size, raise the timeout, or confirm the finding with Nmap before writing it down."}},{"@type":"Question","name":"Will a fast scan get me blocked?","acceptedAnswer":{"@type":"Answer","text":"Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorization for that, and never run it against a system you do not own."}},{"@type":"Question","name":"Can I use the --ulimit advice I see everywhere?","acceptedAnswer":{"@type":"Answer","text":"Raising the open-file limit lets RustScan run more concurrent connections, which is where the speed comes from. On modern systems the Docker image or the packaged build often handles it. If RustScan warns about file descriptors, that warning is the instruction."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Comparisons","item":"https://oopsmypassword.web.app/compare"},{"@type":"ListItem","position":3,"name":"Nmap vs RustScan","item":"https://oopsmypassword.web.app/compare/nmap-vs-rustscan"}]}</script>
 </head>
 <body>
@@ -44,7 +44,7 @@
     <p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/compare">← Back to comparisons</a></p>
     <nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/compare" style="color:var(--purple)">Comparisons</a> <span class="divider-dot">/</span> <span>Nmap vs RustScan</span></nav>
     <h1 class="h-1 mt-16">Nmap vs RustScan: Port Scanning Speed Compared</h1>
-    <p class="lead mt-8">Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when the speed advantage is real.</p>
+    <p class="lead mt-8">Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when the speed advantage is real.</p>
   </div>
 </section>
 <section class="section-tight">
@@ -115,7 +115,7 @@
         <td style="padding:12px;border-bottom:1px solid var(--border)">Built in: -sV runs Nmap against the discovered ports automatically</td>
       </tr>
       <tr>
-        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Adaptive behaviour</td>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Adaptive behavior</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Manual tuning: -T4, --min-rate, --max-retries</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Automatic - it backs off when the host starts dropping packets</td>
       </tr>
@@ -125,18 +125,18 @@
         <td style="padding:12px;border-bottom:1px solid var(--border)">Plain list by default; Nmap formats once handed off</td>
       </tr>
       <tr>
-        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Firewall and IDS behaviour</td>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Firewall and IDS behavior</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Configurable stealth, fragmenting, decoys, source-port tricks</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">Loud by design - thousands of packets per second look like a scan</td>
       </tr>
       <tr>
-        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Licence</td>
-        <td style="padding:12px;border-bottom:1px solid var(--border)">NPSL (Nmap Public Source Licence) - open source with redistribution conditions</td>
+        <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">License</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">NPSL (Nmap Public Source License) - open source with redistribution conditions</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">GPL-3.0</td>
       </tr>
       <tr>
         <td style="font-weight:600;padding:12px;border-bottom:1px solid var(--border)">Best first use</td>
-        <td style="padding:12px;border-bottom:1px solid var(--border)">A careful, complete assessment of a host you are authorised to test</td>
+        <td style="padding:12px;border-bottom:1px solid var(--border)">A careful, complete assessment of a host you are authorized to test</td>
         <td style="padding:12px;border-bottom:1px solid var(--border)">A quick answer to &quot;which of the 65,535 ports are even open&quot; on a lab or CTF target</td>
       </tr></tbody>
         </table>
@@ -179,7 +179,7 @@ rustscan -a {TARGET} --batch-size 200 --timeout 2000 -- -sV</code></pre>
       <h3>Does RustScan replace Nmap?</h3><p>No, and its own documentation says so. RustScan finds open ports quickly and can pass them to Nmap for service detection. Everything Nmap is known for - version probes, OS fingerprints, NSE scripts, UDP, output formats - is still Nmap.</p>
 <h3>How much faster is RustScan really?</h3><p>For a full 65,535-port TCP scan on a host with a few open ports, the difference is typically seconds versus minutes. For a default top-1,000-port scan the gap is much smaller, because there is far less work to skip. If you usually scan the default port set, the speed advantage is close to irrelevant.</p>
 <h3>Why did RustScan report a port as closed that Nmap shows as open?</h3><p>Usually packet loss or rate limiting. RustScan retries a limited number of times and moves on, so on a lossy path a slow reply can be treated as no reply. Lower the batch size, raise the timeout, or confirm the finding with Nmap before writing it down.</p>
-<h3>Will a fast scan get me blocked?</h3><p>Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorisation for that, and never run it against a system you do not own.</p>
+<h3>Will a fast scan get me blocked?</h3><p>Possibly, and on a production system that is a real outcome rather than a theoretical one. Thousands of connection attempts per second are easy to detect. Set an explicit rate, scan outside business hours if you have authorization for that, and never run it against a system you do not own.</p>
 <h3>Can I use the --ulimit advice I see everywhere?</h3><p>Raising the open-file limit lets RustScan run more concurrent connections, which is where the speed comes from. On modern systems the Docker image or the packaged build often handles it. If RustScan warns about file descriptors, that warning is the instruction.</p>
 
       <hr class="hr-fade" style="margin-top:40px">

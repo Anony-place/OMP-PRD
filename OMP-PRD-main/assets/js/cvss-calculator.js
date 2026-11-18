@@ -216,7 +216,11 @@
   var state = {};
 
   function defaults() {
-    BASE_KEYS.forEach(function (k) { state[k] = k === 'S' ? 'U' : (k === 'C' || k === 'I' || k === 'A' ? 'N' : 'N'); });
+    /* AC must be L/M/H in CVSS 3.1 — a plain 'N' default parsed as
+       "bad value N for AC; missing base metric: AC" and showed a red error
+       on every fresh load (audit 2026-11-18). This neutral default vector
+       (AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N) is valid and still scores 0.0. */
+    BASE_KEYS.forEach(function (k) { state[k] = k === 'S' ? 'U' : (k === 'AC' ? 'L' : 'N'); });
     state.S = 'U';
     TEMP_KEYS.concat(ENV_KEYS).concat(MOD_KEYS).forEach(function (k) { state[k] = 'X'; });
     state.MS = 'X';
