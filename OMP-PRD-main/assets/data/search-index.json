@@ -389,7 +389,7 @@
     {
       "type": "Comparison",
       "title": "LinPEAS vs WinPEAS: Privilege Escalation Enumeration",
-      "desc": "Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the colouring works, which findings actually matter, and the.",
+      "desc": "Compare LinPEAS and WinPEAS for privilege escalation enumeration: what each collects, how the coloring works, which findings actually matter, and the.",
       "url": "/compare/linpeas-vs-winpeas",
       "kw": "linpeas vs winpeas comparison compare"
     },
@@ -403,7 +403,7 @@
     {
       "type": "Comparison",
       "title": "Nmap vs RustScan: Port Scanning Speed Compared",
-      "desc": "Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behaviour and when.",
+      "desc": "Compare Nmap and RustScan for port scanning: raw scan speed, the hand-off to Nmap for service detection, accuracy trade-offs, firewall behavior and when.",
       "url": "/compare/nmap-vs-rustscan",
       "kw": "nmap vs rustscan comparison compare"
     },
