@@ -192,14 +192,18 @@ https://oopsmypassword.web.app/pentest/katana
 https://oopsmypassword.web.app/pentest/kiterunner
 https://oopsmypassword.web.app/pentest/masscan
 https://oopsmypassword.web.app/pentest/metasploit
+https://oopsmypassword.web.app/pentest/mitmproxy
 https://oopsmypassword.web.app/pentest/mobsf
+https://oopsmypassword.web.app/pentest/netexec
 https://oopsmypassword.web.app/pentest/nikto
 https://oopsmypassword.web.app/pentest/nmap
 https://oopsmypassword.web.app/pentest/nuclei
 https://oopsmypassword.web.app/pentest/owasp-amass
 https://oopsmypassword.web.app/pentest/owasp-zap
 https://oopsmypassword.web.app/pentest/prowler
+https://oopsmypassword.web.app/pentest/responder
 https://oopsmypassword.web.app/pentest/schemathesis
+https://oopsmypassword.web.app/pentest/seclists
 https://oopsmypassword.web.app/pentest/semgrep
 https://oopsmypassword.web.app/pentest/sqlmap
 https://oopsmypassword.web.app/pentest/subfinder
@@ -209,6 +213,7 @@ https://oopsmypassword.web.app/pentest/trivy
 https://oopsmypassword.web.app/pentest/trufflehog
 https://oopsmypassword.web.app/pentest/volatility-3
 https://oopsmypassword.web.app/pentest/wireshark
+https://oopsmypassword.web.app/pentest/wpscan
 https://oopsmypassword.web.app/pentest/category/active-directory-internal-network
 https://oopsmypassword.web.app/pentest/category/api-security-testing
 https://oopsmypassword.web.app/pentest/category/cloud-container-security
