@@ -530,7 +530,7 @@ export const COMPARISONS = [
     verdictA: 'Best for fast, lightweight CLI username checks across 400+ mainstream social platforms with minimal dependencies.',
     verdictB: 'Best for deep OSINT investigations requiring profile bio parsing, linked account extraction, and visual HTML/XMind reports.',
     rows: [
-      ['Site Database Size', '400+ curated mainstream social & developer sites', '2,500+ global, regional, and forum platforms'],
+      ['Site Database Size', '400+ curated mainstream social & developer sites', '5,900+ global, regional, and forum platforms (default run checks the top 500 by traffic)'],
       ['Profile Content Parsing', 'Checks account existence (HTTP status / response string)', 'Extracts full name, bio, avatar URL, creation date, and linked handles'],
       ['Recursive Pivoting', 'Single-pass username check', 'Automatically pivots onto new usernames/IDs discovered on profiles'],
       ['False Positive Handling', 'Curated regex/status checks on high-reliability sites', 'Tag-based site filtering (--tags) and heuristic page analysis'],
