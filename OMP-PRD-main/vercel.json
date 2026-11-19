@@ -59,6 +59,16 @@
       "statusCode": 301
     },
     {
+      "source": "/learning/cyber-security/cyber-security-track/secure-remote-access",
+      "destination": "/articles/secure-remote-access",
+      "statusCode": 301
+    },
+    {
+      "source": "/learning/cyber-security/learning-track/totp",
+      "destination": "/articles/how-totp-works",
+      "statusCode": 301
+    },
+    {
       "source": "/ip-check",
       "destination": "/what-is-my-ip",
       "statusCode": 301
