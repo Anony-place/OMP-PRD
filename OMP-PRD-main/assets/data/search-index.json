@@ -178,7 +178,7 @@
     },
     {
       "type": "Guide",
-      "title": "No password hashes loaded (see FAQ) — John the Ripper fix",
+      "title": "John the Ripper: No password hashes loaded (see FAQ) — 8 fixes",
       "desc": "John stops with No password hashes loaded (see FAQ). The 8 real causes in order, each with the one command that proves it — no guessing.",
       "url": "/articles/john-the-ripper-no-password-hashes-loaded",
       "kw": "john the ripper no password hashes loaded guide articles"
@@ -213,7 +213,7 @@
     },
     {
       "type": "Guide",
-      "title": "Malware Families Explained: Types, Behaviour & Response (2026)",
+      "title": "Malware Families Explained: Ransomware, RATs, Worms & Trojans",
       "desc": "The main malware families — ransomware, RATs, worms, trojans, info-stealers — how each behaves, how they spread, and the first response step. Real examples…",
       "url": "/articles/malware-families-explained",
       "kw": "malware families explained guide articles"
@@ -318,7 +318,7 @@
     },
     {
       "type": "Guide",
-      "title": "Not capturing packets (see FAQ) — Wireshark fix",
+      "title": "Wireshark Not Capturing Packets? 8 Causes, Fixed in Order",
       "desc": "Wireshark not capturing? 8 causes in order — Npcap, dumpcap permission denied, capture filter, wrong interface, offload, EDR. One-minute triage + FAQ.",
       "url": "/articles/wireshark-not-capturing-packets",
       "kw": "wireshark not capturing packets guide articles"
