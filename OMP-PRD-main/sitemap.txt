@@ -107,6 +107,7 @@ https://oopsmypassword.web.app/articles/check-if-password-was-leaked
 https://oopsmypassword.web.app/articles/phishing-attacks
 https://oopsmypassword.web.app/articles/password-entropy
 https://oopsmypassword.web.app/articles/password-cracking-time-table
+https://oopsmypassword.web.app/articles/active-directory-lateral-movement
 https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents
 https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do
 https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt
@@ -150,6 +151,7 @@ https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-compa
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
 https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
+https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing
 https://oopsmypassword.web.app/articles/what-is-an-sbom
 https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets

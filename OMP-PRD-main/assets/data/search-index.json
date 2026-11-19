@@ -3,6 +3,13 @@
   "items": [
     {
       "type": "Guide",
+      "title": "Active Directory Lateral Movement: 6 Techniques & Detection",
+      "desc": "How attackers spread through Active Directory after one foothold: pass-the-hash, remote-service abuse, Kerberoasting, and the Event IDs that detect each.",
+      "url": "/articles/active-directory-lateral-movement",
+      "kw": "active directory lateral movement guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "AI Agents Can Hack Other AI Agents: A New Security Threat",
       "desc": "AI agents are becoming capable of performing complex cyber operations. Here is what recent real-world incidents actually show about AI agent security, agent…",
       "url": "/articles/ai-agents-can-hack-other-ai-agents",
@@ -301,6 +308,13 @@
       "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
       "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
       "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Vulnerability Assessment vs Penetration Testing: Key Differences",
+      "desc": "Vulnerability assessment vs penetration testing: what each does, PCI DSS frequency (quarterly scans, annual tests), real outputs, and when you need both.",
+      "url": "/articles/vulnerability-assessment-vs-penetration-testing",
+      "kw": "vulnerability assessment vs penetration testing guide articles"
     },
     {
       "type": "Guide",
