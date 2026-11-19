@@ -229,7 +229,7 @@ export function buildVercelConfig(firebaseConfig) {
      old article URL wins over any broad legacy rule it might now fall under. */
   const managed = readManagedRedirects();
   const managedSources = new Set(managed.map((rule) => rule.source));
-  const redirects = [...RETIRED_PATHS, ...managed];
+  const redirects = [...managed, ...RETIRED_PATHS];
   for (const rule of managed) {
     const clash = (hosting.redirects || []).find((r) => r.source === rule.source && !isSelfRedirect(r));
     if (clash) {

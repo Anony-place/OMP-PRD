@@ -89,13 +89,15 @@ const sitemapPaths = (() => {
      a rule), so its size comes from RETIRED_PATHS rather than a literal. The
      literal used to be here, and adding a redirect failed this gate for a
      reason that had nothing to do with the mirror. */
-  const retired = vercel.redirects.slice(0, RETIRED_PATHS.length);
   /* Managed redirects (content/redirects.json - panel-written slug moves) are
-     assembled after the retired list and before the legacy rules. They are a
-     third source, so the count formula has to include them: without this the
-     first managed redirect failed a gate for a reason that had nothing to do
-     with the mirror - the same trap the literal used to be. */
+     assembled FIRST - ahead of the retired block - so an old slug's exact rule
+     wins over any broad catch-all it might fall under (the generator's own
+     comment demands this). They are a third source, so both the slice below
+     and the count formula include them: without that, the first managed
+     redirect failed a gate for a reason that had nothing to do with the
+     mirror - the same trap the literal used to be. */
   const managed = JSON.parse(fs.readFileSync(path.join(ROOT, 'content', 'redirects.json'), 'utf8')).redirects || [];
+  const retired = vercel.redirects.slice(managed.length, managed.length + RETIRED_PATHS.length);
   assert(vercel.redirects.length === legacyRules.length + RETIRED_PATHS.length + managed.length,
     `legacy redirects carried over: ${vercel.redirects.length}/${legacyRules.length} + ${RETIRED_PATHS.length} retired + ${managed.length} managed`);
   /* Regex-based legacy rules convert to a different `source` shape, and their

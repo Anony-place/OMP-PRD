@@ -4,6 +4,16 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/learning/cyber-security/cyber-security-track/secure-remote-access",
+      "destination": "/articles/secure-remote-access",
+      "statusCode": 301
+    },
+    {
+      "source": "/learning/cyber-security/learning-track/totp",
+      "destination": "/articles/how-totp-works",
+      "statusCode": 301
+    },
+    {
       "source": "/learning/cyber-security/cyber-security-track/malware-families",
       "destination": "/articles/malware-families-explained",
       "statusCode": 301
@@ -56,16 +66,6 @@
     {
       "source": "/certificate.html",
       "destination": "/",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/secure-remote-access",
-      "destination": "/articles/secure-remote-access",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/learning-track/totp",
-      "destination": "/articles/how-totp-works",
       "statusCode": 301
     },
     {
