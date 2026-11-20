@@ -24,6 +24,13 @@
     },
     {
       "type": "Guide",
+      "title": "Application Control vs EDR: Which Stops Ransomware?",
+      "desc": "Application control blocks unknown programs before they run; EDR watches what runs and responds. The real difference for ransomware prevention, and when to use…",
+      "url": "/articles/application-control-vs-edr",
+      "kw": "application control vs edr guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT",
       "desc": "Custom GPTs can be useful. You can find GPTs designed for coding, writing, research, education, productivity, data analysis, and many other tasks. But there is…",
       "url": "/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt",
@@ -315,6 +322,13 @@
       "desc": "Vulnerability assessment vs penetration testing: what each does, PCI DSS frequency (quarterly scans, annual tests), real outputs, and when you need both.",
       "url": "/articles/vulnerability-assessment-vs-penetration-testing",
       "kw": "vulnerability assessment vs penetration testing guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Web Application Security Basics: OWASP Risks Explained",
+      "desc": "Web application security basics, mapped to the OWASP Top 10:2025: access control, injection, crypto failures, supply chain risks - and the tools that test each.",
+      "url": "/articles/web-application-security-basics",
+      "kw": "web application security basics guide articles"
     },
     {
       "type": "Guide",

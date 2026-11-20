@@ -564,6 +564,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/articles/application-control-vs-edr</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -812,6 +818,12 @@
   <url>
     <loc>https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing</loc>
     <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/articles/web-application-security-basics</loc>
+    <lastmod>2026-11-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
