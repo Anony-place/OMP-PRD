@@ -117,6 +117,7 @@ export const STATIC_ROUTES = [
   '/glossary/google-dorking',
   '/glossary/subdomain-takeover',
   '/glossary/kerberoasting',
+  '/glossary/cia-triad',
   '/glossary/canary-token',
   '/glossary/cors-misconfiguration',
   '/glossary/cve-and-cvss',
