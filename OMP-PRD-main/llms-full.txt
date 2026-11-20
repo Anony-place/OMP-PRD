@@ -20,7 +20,7 @@
 - [Pentest Hub](https://oopsmypassword.web.app/pentest): 43 authorized penetration-testing tools grouped by assessment phase, each with install steps and its vendor documentation.
 - [Tool Comparisons Hub](https://oopsmypassword.web.app/compare): 19 head-to-head technical comparisons.
 - [CLI Cheat Sheets Hub](https://oopsmypassword.web.app/cheatsheets): 14 interactive, printable command references.
-- [Security Glossary](https://oopsmypassword.web.app/glossary): 30 foundational security, cryptography, and OSINT term deep-dives.
+- [Security Glossary](https://oopsmypassword.web.app/glossary): 31 foundational security, cryptography, and OSINT term deep-dives.
 - [Articles & Security Research](https://oopsmypassword.web.app/articles): Long-form cybersecurity guides and threat analysis.
 
 ## Tool Comparisons
@@ -85,6 +85,7 @@
 - [Canary Token (Honeytoken)](https://oopsmypassword.web.app/glossary/canary-token): A Canary Token (or honeytoken) is a decoy credential, fake API key, tracked document, or unique DNS/HTTP URL planted in sensitive systems that has no legitimate operational use—so any access immediately alerts defenders to an active intrusion.
 - [CVE & CVSS Score](https://oopsmypassword.web.app/glossary/cve-and-cvss): CVE (Common Vulnerabilities and Exposures) is the standardized global identifier for publicly disclosed security flaws (e.g., CVE-2026-0768), while CVSS (Common Vulnerability Scoring System) rates technical severity from 0.0 to 10.0.
 - [SIEM & SOAR](https://oopsmypassword.web.app/glossary/siem-and-soar): SIEM (Security Information and Event Management) aggregates, normalizes, and correlates security logs across an organization to detect threats, while SOAR (Security Orchestration, Automation, and Response) automates triage playbooks and containment actions.
+- [CIA Triad](https://oopsmypassword.web.app/glossary/cia-triad): The CIA triad is the foundational information-security model that defines three properties a system must protect: confidentiality (only authorized reading), integrity (authorized, verifiable changes), and availability (access when needed).
 - [EDR & XDR (Endpoint Detection & Response)](https://oopsmypassword.web.app/glossary/edr-and-xdr): EDR (Endpoint Detection and Response) continuously monitors workstation and server process trees, memory, file changes, and network sockets to detect and contain behavioral threats, while XDR extends that correlation across identity, cloud, and network layers.
 - [CORS Misconfiguration](https://oopsmypassword.web.app/glossary/cors-misconfiguration): A Cross-Origin Resource Sharing (CORS) misconfiguration occurs when a server dynamically reflects an arbitrary Origin header in Access-Control-Allow-Origin alongside Access-Control-Allow-Credentials: true, allowing malicious websites to read authenticated API responses.
 - [Banner Grabbing](https://oopsmypassword.web.app/glossary/shodan-banner-grabbing): Banner grabbing is the technique of reading the initial handshake or response headers returned by a network service (such as SSH, HTTP, SMTP, or FTP) to identify the software product, version number, and operating system.

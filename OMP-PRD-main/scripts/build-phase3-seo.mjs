@@ -1558,6 +1558,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'A passkey is a phishing-resistant digital credential based on FIDO2 and WebAuthn public-key cryptography that replaces passwords with a cryptographic key pair bound to the website genuine domain.',
     howItWorks: 'When you register a passkey, your device or hardware security key generates a unique public/private key pair for that specific domain (Relying Party ID). The website stores only the public key. During sign-in, the site sends a random cryptographic challenge, and your device signs it locally after biometric or PIN verification. No shared secret ever crosses the network.',
     mitigation: 'Enable passkeys on primary email, cloud, GitHub, and password manager accounts, and register a physical FIDO2 backup security key in case your primary phone or laptop is lost.',
+    deepDive: { label: "FIDO2 vs Passkeys: What's the Difference?", url: '/articles/fido2-vs-passkeys' },
     relatedTool: { label: 'YubiKey vs Passkeys Comparison', url: '/compare/yubikey-vs-passkeys' },
   },
   {
@@ -1737,6 +1738,16 @@ export const GLOSSARY_TERMS = [
     howItWorks: 'A SIEM ingests authentication logs, EDR telemetry, DNS queries, firewall flows, and cloud audit trails into a central searchable index where correlation rules and Sigma detections flag suspicious sequences. SOAR connects to the SIEM to enrich alerts automatically (e.g., reputation lookups) and execute approved containment steps such as disabling a compromised account.',
     mitigation: 'Focus on high-signal log sources (identity provider logs, process creation, DNS, and privileged actions) and tune alert rules continuously to prevent analyst alert fatigue.',
     relatedTool: { label: 'Incident Response Cheat Sheet', url: '/cheatsheets/incident-response-first-hour-cheatsheet' },
+  },
+  {
+    slug: 'cia-triad',
+    term: 'CIA Triad',
+    category: 'Defensive Security',
+    shortDef: 'The CIA triad is the foundational information-security model that defines three properties a system must protect: confidentiality (only authorized reading), integrity (authorized, verifiable changes), and availability (access when needed).',
+    howItWorks: 'Every security control serves at least one of the three properties. Encryption and access control protect confidentiality; checksums, signatures and audit logs protect integrity; redundancy, backups and DDoS mitigation protect availability. Incident reviews use the triad to sort what was lost, which immediately points at the controls that failed.',
+    mitigation: 'For each asset, ask the three questions: who can read it, who can change it and would we know, and what breaks if it disappears. Where the three are not enough - a stolen encrypted laptop, a forged but intact message, an unreadable backup - reach for the Parkerian hexad (possession, authenticity, utility).',
+    deepDive: { label: 'CIA Triad Explained: Confidentiality, Integrity & Availability', url: '/articles/cia-triad-explained' },
+    relatedTool: { label: 'Security Checklist', url: '/security-checklist' },
   },
   {
     slug: 'edr-and-xdr',
