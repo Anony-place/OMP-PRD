@@ -81,6 +81,7 @@ https://oopsmypassword.web.app/glossary/jwt-json-web-token
 https://oopsmypassword.web.app/glossary/google-dorking
 https://oopsmypassword.web.app/glossary/subdomain-takeover
 https://oopsmypassword.web.app/glossary/kerberoasting
+https://oopsmypassword.web.app/glossary/cia-triad
 https://oopsmypassword.web.app/glossary/canary-token
 https://oopsmypassword.web.app/glossary/cors-misconfiguration
 https://oopsmypassword.web.app/glossary/cve-and-cvss
@@ -118,6 +119,7 @@ https://oopsmypassword.web.app/articles/bitwarden-not-syncing
 https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching
 https://oopsmypassword.web.app/articles/burp-suite-certificate-download
 https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
+https://oopsmypassword.web.app/articles/cia-triad-explained
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
 https://oopsmypassword.web.app/articles/cvss-score-explained
@@ -126,6 +128,7 @@ https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-gu
 https://oopsmypassword.web.app/articles/data-classification-guide
 https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata
 https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works
+https://oopsmypassword.web.app/articles/fido2-vs-passkeys
 https://oopsmypassword.web.app/articles/from-finding-to-fixing-writing-a-usable-pentest-report
 https://oopsmypassword.web.app/articles/hashcat-no-hashes-loaded
 https://oopsmypassword.web.app/articles/hashcat-token-length-exception

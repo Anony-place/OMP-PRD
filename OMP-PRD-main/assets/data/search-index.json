@@ -80,6 +80,13 @@
     },
     {
       "type": "Guide",
+      "title": "CIA Triad Explained: Confidentiality, Integrity & Availability",
+      "desc": "The CIA triad - confidentiality, integrity, availability - explained with real attack examples, the quiz answers people search, and where the model falls short.",
+      "url": "/articles/cia-triad-explained",
+      "kw": "cia triad explained guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Cloudflare Verification Asking You to Press Win+R? It’s a Scam",
       "desc": "If a website shows a Cloudflare-style “Verify you are human” page and then tells you to press Windows + R , press Ctrl + V , and hit Enter , stop. That is not…",
       "url": "/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam",
@@ -133,6 +140,13 @@
       "desc": "You click a link and a Google or Microsoft login window appears. The window looks legitimate. It has a familiar logo, a lock icon, browser controls, and even…",
       "url": "/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
       "kw": "fake login popup showing a real url how browser in the browser phishing works guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "FIDO2 vs Passkeys: What's the Difference?",
+      "desc": "FIDO2 is the protocol family; a passkey is a synced FIDO2 credential. The real differences - key storage, sync, attestation, recovery - and which one to use…",
+      "url": "/articles/fido2-vs-passkeys",
+      "kw": "fido2 vs passkeys guide articles"
     },
     {
       "type": "Guide",
@@ -448,6 +462,13 @@
       "desc": "A Canary Token (or honeytoken) is a decoy credential, fake API key, tracked document, or unique DNS/HTTP URL planted in sensitive systems that has no.",
       "url": "/glossary/canary-token",
       "kw": "canary token glossary glossary"
+    },
+    {
+      "type": "Glossary",
+      "title": "What Is CIA Triad? Security Glossary",
+      "desc": "The CIA triad is the foundational information-security model that defines three properties a system must protect: confidentiality (only authorized.",
+      "url": "/glossary/cia-triad",
+      "kw": "cia triad glossary glossary"
     },
     {
       "type": "Glossary",
