@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Nov 2026 06:51:52 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 20 Nov 2026 07:17:58 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -29,6 +29,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do</guid>
       <category>Security Research</category>
       <description>Android App Blocked to Protect Your Device? What to Do</description>
+    </item>
+    <item>
+      <title>Application Control vs EDR: Which Stops Ransomware?</title>
+      <link>https://oopsmypassword.web.app/articles/application-control-vs-edr</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/application-control-vs-edr</guid>
+      <category>Security Research</category>
+      <description>Application Control vs EDR: Which Stops Ransomware?</description>
     </item>
     <item>
       <title>Are Custom GPTs Safe? How to Spot a Malicious ChatGPT GPT</title>
@@ -323,6 +330,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing</guid>
       <category>Security Research</category>
       <description>Vulnerability Assessment vs Penetration Testing: What&#39;s the Difference?</description>
+    </item>
+    <item>
+      <title>Web Application Security Basics: OWASP Risks Explained</title>
+      <link>https://oopsmypassword.web.app/articles/web-application-security-basics</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/web-application-security-basics</guid>
+      <category>Security Research</category>
+      <description>Web Application Security Basics: OWASP Risks Explained</description>
     </item>
     <item>
       <title>What Is an SBOM? Software Bill of Materials Explained</title>
