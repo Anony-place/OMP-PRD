@@ -1585,6 +1585,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Insecure Direct Object Reference (IDOR), a form of Broken Object Level Authorization (BOLA), occurs when an application uses a client-supplied identifier (such as ?invoice_id=1042) to fetch or modify a record without verifying that the logged-in user owns that object.',
     howItWorks: 'A user logs in legitimately and sees a request to GET /api/v1/orders/5001. If the backend database query simply runs SELECT * FROM orders WHERE id = 5001 without checking AND user_id = current_session.user_id, an attacker can increment or decrement the ID to 5002 and read or modify another customer private data.',
     mitigation: 'Enforce server-side object ownership checks on every read, update, and delete controller action, and use unpredictable UUIDv4 or scoped indirect references alongside strict authorization middleware.',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'Burp Suite vs OWASP ZAP', url: '/compare/burp-suite-vs-owasp-zap' },
   },
   {
@@ -1594,6 +1595,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Server-Side Request Forgery (SSRF) is a web vulnerability where an attacker tricks a backend server into making HTTP or network requests to internal-only services, localhost ports, or cloud metadata endpoints.',
     howItWorks: 'Features such as webhook testers, PDF generators, avatar URL fetchers, and link previewers take a URL from the user and fetch it from the server. If the server does not validate the destination IP, an attacker can supply http://169.254.169.254/latest/meta-data/ (cloud instance metadata) or http://127.0.0.1:6379/ to steal temporary IAM credentials or query internal databases behind the firewall.',
     mitigation: 'Enforce strict allowlists of permitted outbound domains, resolve DNS once and block RFC 1918 private IPs, loopback (127.0.0.0/8), and link-local metadata ranges (169.254.169.254), and enforce IMDSv2 hop-limit=1 on cloud instances.',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
   },
   {
@@ -1603,6 +1605,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Cross-Site Scripting (XSS) is an injection vulnerability where untrusted data is rendered into a web page without context-aware output encoding, allowing an attacker to execute arbitrary JavaScript in another user browser session.',
     howItWorks: 'Whether Stored (saved in a database comment/profile), Reflected (bounced off a URL parameter), or DOM-based (written via unsafe innerHTML sinks in client JS), XSS executes inside the victim origin. That gives the attacker script full access to the DOM, CSRF tokens, non-HttpOnly cookies, and authenticated API endpoints.',
     mitigation: 'Use modern auto-escaping UI templates, never pass untrusted strings to innerHTML or document.write without sanitization, mark session cookies HttpOnly, and deploy a strict Content-Security-Policy (CSP).',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
   },
   {
@@ -1612,6 +1615,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'SQL Injection (SQLi) is a critical vulnerability where user input is concatenated directly into a database query string, allowing an attacker to alter the SQL syntax and read, modify, or delete arbitrary database data.',
     howItWorks: 'When code builds a query via string concatenation like "SELECT * FROM users WHERE email = \'" + input + "\'", supplying \' OR 1=1-- breaks out of the data literal and changes the boolean logic of the WHERE clause. Attackers use UNION queries, error messages, or blind time delays to extract entire tables.',
     mitigation: 'Always use parameterized queries (prepared statements) where the SQL structure is compiled ahead of time and user inputs are bound strictly as non-executable parameters.',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'sqlmap Cheat Sheet', url: '/cheatsheets/sqlmap-pentest-cheatsheet' },
   },
   {
@@ -1621,6 +1625,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Cross-Site Request Forgery (CSRF) is an attack that tricks an authenticated user browser into sending an unwanted state-changing HTTP request (such as changing an email or transferring funds) to a web application where they are currently signed in.',
     howItWorks: 'Browsers automatically attach session cookies to cross-site requests unless restricted by SameSite attributes. If a site relies solely on cookies to authenticate a POST /account/email change without checking a secret anti-CSRF token or custom header, a hidden form on an attacker website can submit that request silently when visited.',
     mitigation: 'Include cryptographically random synchronizer CSRF tokens on state-changing requests, set SameSite=Lax or SameSite=Strict on session cookies, and require re-authentication for sensitive account changes.',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
   },
   {
@@ -1693,6 +1698,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Lateral movement refers to the techniques an attacker uses after compromising one endpoint to pivot across the internal network to other workstations, servers, and domain controllers in search of high-value assets.',
     howItWorks: 'Attackers harvest credentials, SSH keys, Kerberos tickets, or NTLM hashes from the initially compromised host and use protocols such as SMB, WinRM, RDP, WMI, or SSH to authenticate to adjacent machines—eventually reaching domain administrator or production database access.',
     mitigation: 'Enforce network micro-segmentation and host firewallsblocking workstation-to-workstation SMB/RDP, require SMB signing, disable NTLMv1, and use LAPS (Local Administrator Password Solution) so every workstation has a unique local admin password.',
+    deepDive: { label: 'Active Directory Lateral Movement: Techniques and Detection', url: '/articles/active-directory-lateral-movement' },
     relatedTool: { label: 'Active Directory Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
   },
   {
@@ -1702,6 +1708,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'Kerberoasting is an Active Directory post-exploitation technique where any authenticated domain user requests Kerberos TGS service tickets for accounts with Service Principal Names (SPNs) and cracks those tickets offline to recover the service account cleartext password.',
     howItWorks: 'By design, Active Directory allows any domain user to request a Ticket Granting Service (TGS) ticket for any registered SPN. A portion of that TGS ticket is encrypted with the target service account NTLM/AES password hash. The attacker exports the ticket from memory and runs Hashcat offline at millions of guesses per second without sending any failed logins to the Domain Controller.',
     mitigation: 'Use Group Managed Service Accounts (gMSAs) with 120-character random passwords, ensure human/admin accounts never have SPNs attached, and enforce AES-256 Kerberos encryption instead of legacy RC4-HMAC.',
+    deepDive: { label: 'Kerberoasting in the Attack Chain: Detection and Prevention', url: '/articles/active-directory-lateral-movement' },
     relatedTool: { label: 'Active Directory Cheat Sheet', url: '/cheatsheets/active-directory-enumeration-cheatsheet' },
   },
   {
@@ -1738,6 +1745,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'EDR (Endpoint Detection and Response) continuously monitors workstation and server process trees, memory, file changes, and network sockets to detect and contain behavioral threats, while XDR extends that correlation across identity, cloud, and network layers.',
     howItWorks: 'Unlike legacy antivirus that only checks static file hashes against known signatures, EDR sensors record behavioral telemetry—such as Microsoft Word spawning PowerShell, a process reading LSASS memory, or a web server spawning a reverse shell—and allow SOC analysts to isolate the host from the network with one click.',
     mitigation: 'Deploy EDR across all workstations and servers with tamper protection enabled, and forward endpoint telemetry into your central SIEM for cross-host correlation.',
+    deepDive: { label: 'Application Control vs EDR: Which Stops Ransomware?', url: '/articles/application-control-vs-edr' },
     relatedTool: { label: 'Linux PrivEsc Cheat Sheet', url: '/cheatsheets/linux-privilege-escalation-cheatsheet' },
   },
   {
@@ -1747,6 +1755,7 @@ export const GLOSSARY_TERMS = [
     shortDef: 'A Cross-Origin Resource Sharing (CORS) misconfiguration occurs when a server dynamically reflects an arbitrary Origin header in Access-Control-Allow-Origin alongside Access-Control-Allow-Credentials: true, allowing malicious websites to read authenticated API responses.',
     howItWorks: 'The browser Same-Origin Policy blocks evil.com from reading responses from api.bank.com. However, if api.bank.com blindly echoes back Access-Control-Allow-Origin: https://evil.com (or trusts weakly validated subdomains/regexes) with credentials enabled, JavaScript on evil.com can fetch the logged-in victim private API data and exfiltrate it.',
     mitigation: 'Validate Origin headers against a strict exact-match allowlist of trusted origins, never combine wildcard/reflected origins with Access-Control-Allow-Credentials: true, and reject the "null" origin.',
+    deepDive: { label: 'Web Application Security Basics: OWASP Risks Explained', url: '/articles/web-application-security-basics' },
     relatedTool: { label: 'HTTP Security Headers Cheat Sheet', url: '/cheatsheets/http-security-headers-cheatsheet' },
   },
   {
@@ -2746,6 +2755,10 @@ function buildGlossaryCluster() {
           <div class="small muted">CLI Cheat Sheet</div>
           <h3 class="h-3 mt-8" style="margin-bottom:0">${esc(relatedSheet.label)} →</h3>
         </a>
+        ${t.deepDive ? `<a class="card card-pad card-link" href="${esc(t.deepDive.url)}">
+          <div class="small muted">Deep-Dive Guide</div>
+          <h3 class="h-3 mt-8" style="margin-bottom:0">${esc(t.deepDive.label)} →</h3>
+        </a>` : ''}
       </div>
 
       <hr class="hr-fade" style="margin-top:40px">
