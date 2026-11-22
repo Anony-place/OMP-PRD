@@ -18,7 +18,7 @@
     {
       "type": "Guide",
       "title": "How to Disable \"App Blocked to Protect Your Device\" (Android)",
-      "desc": "Android says \"app blocked to protect your device\"? Why Play Protect blocks apps, how to disable or bypass the block safely — and when you should not. FAQ…",
+      "desc": "Google Play Protect unsafe app blocked dialog explained: why Android blocks apps, 5 safe fixes, and when not to bypass it. 2026 guide.",
       "url": "/articles/android-app-blocked-to-protect-your-device-what-to-do",
       "kw": "android app blocked to protect your device what to do guide articles"
     },
@@ -220,8 +220,8 @@
     },
     {
       "type": "Guide",
-      "title": "John the Ripper: No password hashes loaded (see FAQ) — 8 fixes",
-      "desc": "John stops with No password hashes loaded (see FAQ). The 8 real causes in order, each with the one command that proves it — no guessing.",
+      "title": "No Password Hashes Loaded (see FAQ): 8 John the Ripper Fixes",
+      "desc": "John the Ripper stops with No password hashes loaded (see FAQ). The 8 real causes in order, each with the one command that proves it - fixed in 2026.",
       "url": "/articles/john-the-ripper-no-password-hashes-loaded",
       "kw": "john the ripper no password hashes loaded guide articles"
     },
@@ -325,8 +325,8 @@
     },
     {
       "type": "Guide",
-      "title": "Sherlock vs Maigret: Which Username OSINT Tool Should You Use?",
-      "desc": "Sherlock checks 400+ sites fast; Maigret covers 3000+ sites with full reports. Honest comparison on speed, depth, reports and ease of use — plus when to use…",
+      "title": "Sherlock vs Maigret (2026): Which Username OSINT Tool Wins?",
+      "desc": "Sherlock vs Maigret: speed, accuracy, site coverage and stealth compared - which username OSINT tool to use in 2026, and why running both is often the answer.",
       "url": "/articles/sherlock-vs-maigret-username-osint-comparison",
       "kw": "sherlock vs maigret username osint comparison guide articles"
     },
@@ -388,8 +388,8 @@
     },
     {
       "type": "Guide",
-      "title": "Wireshark Not Capturing Packets? 8 Causes, Fixed in Order",
-      "desc": "Wireshark not capturing? 8 causes in order — Npcap, dumpcap permission denied, capture filter, wrong interface, offload, EDR. One-minute triage + FAQ.",
+      "title": "Wireshark Not Capturing Anything? 8 Causes, Fixed in Order",
+      "desc": "Wireshark not capturing anything? 8 causes in order - Npcap, dumpcap permission denied, capture filter, wrong interface, offload, EDR. One-minute triage + FAQ.",
       "url": "/articles/wireshark-not-capturing-packets",
       "kw": "wireshark not capturing packets guide articles"
     },
