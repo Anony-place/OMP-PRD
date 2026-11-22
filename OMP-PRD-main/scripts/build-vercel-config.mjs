@@ -214,6 +214,35 @@ export const RETIRED_PATHS = [
   { source: '/learning/cyber-security/cyber-security-track/common-crypto-failures', destination: '/articles/common-cryptography-failures', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/privilege-escalation-and-admin-hygiene', destination: '/glossary/privilege-escalation', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/cross-site-scripting-and-output-encoding', destination: '/glossary/xss-cross-site-scripting', statusCode: 301 },
+  /* Second pass (2026-11-22 hidden-pages audit): the 11-19 Search Console
+     export still showed 465 impressions on retired lesson URLs, and batches
+     29-35 had since published articles for many of them. Point each lesson at
+     the article that now answers the same question instead of the generic
+     hub, so the old rankings consolidate onto real pages. Every destination
+     below is a live article confirmed in the database at ship time. */
+  { source: '/learning/cyber-security/cyber-security-track/vulnerability-assessment-vs-penetration-testing', destination: '/articles/vulnerability-assessment-vs-penetration-testing', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/endpoint-protection-av-edr', destination: '/articles/application-control-vs-edr', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/secure-disposal-and-sanitisation', destination: '/articles/on-site-vs-off-site-data-sanitisation', statusCode: 301 },
+  { source: '/learning/web-application-security/foundations/web-application-security-fundamentals', destination: '/articles/web-app-security-basics', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/cia-triad', destination: '/articles/cia-triad-explained', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/malware-delivery-and-initial-access', destination: '/articles/malware-delivery-and-initial-access-vector', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/incident-response-roles-and-communication', destination: '/articles/incident-response-basics', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/containment-eradication-and-lessons-learned', destination: '/articles/incident-response-basics', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/device-security-locking-wiping-and-mobile', destination: '/articles/mobile-device-security', statusCode: 301 },
+  { source: '/learning/web-application-security/foundations/sql-injection-and-parameterized-queries', destination: '/articles/ogsqlinjection', statusCode: 301 },
+  { source: '/learning/web-application-security/track/sql-injection', destination: '/articles/ogsqlinjection', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/broken-access-control-and-idor', destination: '/articles/broken-access-control-vulnerabilities-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/safe-practice-lab-environments-and-tooling-hygiene', destination: '/articles/lab-setup-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/home-lab-and-safe-practice', destination: '/articles/lab-setup-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/pretexting-baiting-and-tailgating', destination: '/articles/social-engineering-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/http-https-request-response', destination: '/articles/ssl-vs-tls-vs-https', statusCode: 301 },
+  { source: '/learning/web-application-security/foundations/security-headers-cors-and-tls-deployment', destination: '/articles/ssl-vs-tls-vs-https', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/session-management-and-account-takeover', destination: '/articles/session-hijacking', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/owasp-top-10-2025-reading-the-list', destination: '/articles/owasp-top-10', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/ransomware-double-extortion-and-recovery', destination: '/articles/ransomware-double-extortion-and-recovery', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/personal-social-footprint-and-osint', destination: '/articles/osint-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/backups-3-2-1-and-tested-restores', destination: '/articles/data-backup-guide', statusCode: 301 },
+  { source: '/learning/cyber-security/cyber-security-track/scanners-benchmarks-and-interpreting-a-report', destination: '/articles/from-finding-to-fixing-writing-a-usable-pentest-report', statusCode: 301 },
   { source: '/learning', destination: '/articles', statusCode: 301 },
   { source: '/learning/:path*', destination: '/articles', statusCode: 301 },
   { source: '/certificate', destination: '/', statusCode: 301 },
