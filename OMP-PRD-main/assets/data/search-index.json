@@ -24,6 +24,13 @@
     },
     {
       "type": "Guide",
+      "title": "App Blocked to Protect Your Device? Windows Fixes (2026)",
+      "desc": "Why Windows says the app was blocked to protect your device, six safe fixes (unblock, MOTW, SmartScreen), when not to bypass, and how to disable it safely.",
+      "url": "/articles/app-blocked-to-protect-your-device-windows-fixes",
+      "kw": "app blocked to protect your device windows fixes guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Application Control vs EDR: Which Stops Ransomware?",
       "desc": "Application control blocks unknown programs before they run; EDR watches what runs and responds. The real difference for ransomware prevention, and when to use…",
       "url": "/articles/application-control-vs-edr",
@@ -196,6 +203,13 @@
       "desc": "How TOTP works, worked by hand with the RFC 6238 test vector: HMAC-SHA1 truncation, clock drift, why the QR code is the credential, and what real-time phishing…",
       "url": "/articles/how-totp-works",
       "kw": "how totp works guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Impacket Guide 2026: Scripts, Attacks & Detection",
+      "desc": "What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…",
+      "url": "/articles/impacket-guide",
+      "kw": "impacket guide guide articles"
     },
     {
       "type": "Guide",

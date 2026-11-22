@@ -569,6 +569,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oopsmypassword.web.app/articles/app-blocked-to-protect-your-device-windows-fixes</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oopsmypassword.web.app/articles/application-control-vs-edr</loc>
     <lastmod>2026-11-20</lastmod>
     <changefreq>monthly</changefreq>
@@ -715,6 +721,12 @@
   <url>
     <loc>https://oopsmypassword.web.app/articles/how-totp-works</loc>
     <lastmod>2026-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oopsmypassword.web.app/articles/impacket-guide</loc>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

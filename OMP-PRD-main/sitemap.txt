@@ -111,6 +111,7 @@ https://oopsmypassword.web.app/articles/password-cracking-time-table
 https://oopsmypassword.web.app/articles/active-directory-lateral-movement
 https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents
 https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do
+https://oopsmypassword.web.app/articles/app-blocked-to-protect-your-device-windows-fixes
 https://oopsmypassword.web.app/articles/application-control-vs-edr
 https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malicious-chatgpt-gpt
 https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners
@@ -136,6 +137,7 @@ https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison
 https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence
 https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account
 https://oopsmypassword.web.app/articles/how-totp-works
+https://oopsmypassword.web.app/articles/impacket-guide
 https://oopsmypassword.web.app/articles/is-sms-2fa-safe-in-2026-what-it-protects-where-it-fails-and-what-to-use-instead
 https://oopsmypassword.web.app/articles/john-the-ripper-no-password-hashes-loaded
 https://oopsmypassword.web.app/articles/k-anonymity-password-check

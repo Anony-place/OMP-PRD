@@ -1,0 +1,191 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Impacket Guide 2026: Scripts, Attacks &amp; Detection</title><meta name="description" content="What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…"><meta name="theme-color" content="#F6F8FC"><meta name="color-scheme" content="light dark"><meta property="og:type" content="article"><meta property="og:site_name" content="OopsMyPassword"><meta property="og:title" content="Impacket Guide 2026: Scripts, Attacks &amp; Detection"><meta property="og:description" content="What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…"><meta property="og:url" content="https://oopsmypassword.web.app/articles/impacket-guide"><meta property="og:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="https://oopsmypassword.web.app/assets/images/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Impacket Guide 2026: Scripts, Attacks &amp; Detection"><meta name="twitter:description" content="What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…"><link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="canonical" href="https://oopsmypassword.web.app/articles/impacket-guide"><link rel="stylesheet" href="/assets/css/styles.css"><script src="/assets/js/theme-init.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Impacket Guide: Scripts, Attacks and Detection (2026)","description":"What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…","mainEntityOfPage":"https://oopsmypassword.web.app/articles/impacket-guide","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"inLanguage":"en","image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"],"datePublished":"2026-11-22T05:56:36.21321+00:00","dateModified":"2026-11-22T05:56:36.21321+00:00"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"Articles","item":"https://oopsmypassword.web.app/articles"},{"@type":"ListItem","position":3,"name":"Impacket Guide: Scripts, Attacks and Detection (2026)","item":"https://oopsmypassword.web.app/articles/impacket-guide"}]}</script><meta property="article:published_time" content="2026-11-22T05:56:36.21321+00:00"><meta property="article:modified_time" content="2026-11-22T05:56:36.21321+00:00">  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="https://oopsmypassword.web.app/rss.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the key takeaway of Impacket Guide: Scripts, Attacks and Detection (2026)?","acceptedAnswer":{"@type":"Answer","text":"What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…"}},{"@type":"Question","name":"How can I test or apply these security practices safely?","acceptedAnswer":{"@type":"Answer","text":"Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity tool, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser."}}]}</script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-nav"><div class="container nav-inner"><a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-h)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a><nav class="nav-links" aria-label="Primary"><a href="/">Home</a><a href="/checker">Checker</a><a href="/tools">Tools</a><a href="/osint">OSINT Hub</a><a href="/pentest">Pentest Hub</a><a href="/articles" aria-current="page">Articles</a><a href="/products">Products</a></nav><div class="nav-actions"><button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="theme-icon-moon"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span class="theme-icon-sun"><svg class="icon-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.9 4.9 6.3 6.3"/><path d="M17.7 17.7 19.1 19.1"/><path d="M2 12h2"/><path d="M20 12h2"/></svg></span></button><a class="btn btn-primary btn-sm btn-get-started" href="/checker">Get Started</a><button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="icon-menu"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span class="icon-close"><svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></button></div></div></header><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile"><a href="/">Home<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/checker">Checker<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/tools">Tools<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/osint">OSINT Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/pentest">Pentest Hub<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/articles" aria-current="page">Articles<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/products">Products<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/generator">Generator<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/breach-check">Breach Check<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/about">About<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/password-health">Password Health<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/security-checklist">Security Checklist<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/faq">FAQ<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/privacy">Privacy Policy<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a href="/contact">Contact<svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a><a class="btn btn-primary btn-lg" href="/checker">Check Your Password</a></nav><main id="main"><section class="article-hero"><div class="container container-article"><p class="back-link-row"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p><nav aria-label="Breadcrumb" class="crumb small muted"><a href="/" style="color:var(--purple)">Home</a> <span class="divider-dot">/</span> <a href="/articles" style="color:var(--purple)">Articles</a></nav><h1 class="h-1 mt-16">Impacket Guide: Scripts, Attacks and Detection (2026)</h1><p class="lead mt-8">What Impacket is (Fortra Python network toolkit), every major script - psexec, secretsdump, GetUserSPNs, ntlmrelayx - the attacks they power, and how defenders…</p><div class="article-meta"><span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg> Article</span><span class="chip">Updated 2026-11-22</span></div></div></section><section class="section-tight"><div class="container container-article"><div class="article-layout"><aside class="toc" aria-label="Table of contents"><div class="subhead-sm">On this page</div><ul><li><a href="#what-impacket-actually-is">What Impacket actually is</a></li><li><a href="#the-scripts-grouped-by-job">The scripts, grouped by job</a></li><li><a href="#remote-command-execution-the-exec-family">Remote command execution (the exec family)</a></li><li><a href="#credential-access">Credential access</a></li><li><a href="#kerberos-and-tickets">Kerberos and tickets</a></li><li><a href="#enumeration-and-reconnaissance">Enumeration and reconnaissance</a></li><li><a href="#relay-and-object-abuse">Relay and object abuse</a></li><li><a href="#files-and-host-interaction">Files and host interaction</a></li><li><a href="#the-attacks-these-scripts-power-mapped-to-mitre-att-ck">The attacks these scripts power, mapped to MITRE ATT&amp;amp;CK</a></li><li><a href="#usage-patterns">Usage patterns</a></li><li><a href="#how-defenders-detect-impacket-activity">How defenders detect Impacket activity</a></li><li><a href="#faq">FAQ</a></li><li><a href="#related-guides">Related guides</a></li></ul></aside><article class="prose" itemscope itemtype="https://schema.org/Article"><p>Impacket is the Python network-protocol toolkit behind many modern Active Directory attacks — and the same scripts blue teams replay in the lab. Here is what it is, every major script, the attacks they power (mapped to MITRE ATT&amp;CK), and how defenders catch them.</p>
+
+<p><strong>Quick answer:</strong> Impacket is a collection of Python classes for working with network protocols — originally created by SecureAuth, now maintained by <strong>Fortra’s Core Security</strong>. Its example scripts (psexec.py, secretsdump.py, GetUserSPNs.py, ntlmrelayx.py and dozens more) are the standard toolkit for Windows/AD security work. Latest stable: <strong>v0.13.1</strong> (May 2026); development is active (v0.14.0-dev, commits as recent as November 2026).</p>
+
+<h2 id="what-impacket-actually-is">What Impacket actually is</h2>
+
+<p>Impacket is not one tool — it is a <strong>library</strong> with example programs. The project README describes its focus: low-level programmatic access to packets, with full protocol implementations for <strong>SMB1-3 and MSRPC</strong>, plus plain, NTLM and Kerberos authentications using passwords, hashes, tickets and keys. Partial implementations cover the MSRPC interfaces that Windows administration and abuse are built on (SAMR, LSAD, LSAT, SCMR, TSCH, DCOM, WMI, RRP and more), plus portions of TDS (MSSQL) and LDAP.</p>
+
+<p>Concretely, the same psexec.py that red teams use to run a command on a host is used by admins and defenders to script the same protocol legitimately. The project’s own disclaimer frames it as being for research and educational purposes.</p>
+
+<p>Facts at a glance (from the <a href="https://github.com/fortra/impacket" rel="noopener noreferrer" target="_blank">project repository</a>, November 2026):</p>
+
+<table tabindex="0">
+<thead><tr><th>Item</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>Maintainer</td><td>Fortra’s Core Security (originally SecureAuth)</td></tr>
+<tr><td>Latest stable</td><td>Impacket v0.13.1 (May 19, 2026)</td></tr>
+<tr><td>Development</td><td>v0.14.0-dev on master; active commits through Nov 2026</td></tr>
+<tr><td>Language / versions</td><td>Python 3.9 – 3.13</td></tr>
+<tr><td>License</td><td>Slightly modified Apache Software License</td></tr>
+<tr><td>Community</td><td>16.3k GitHub stars, 294 contributors</td></tr>
+<tr><td>Install</td><td><code>python3 -m pipx install impacket</code> (the project recommends pipx over pip); Docker image supported</td></tr>
+</tbody>
+</table>
+
+<p>Kali Linux ships Impacket out of the box; on other systems pipx keeps the scripts isolated and on your PATH.</p>
+
+<h2 id="the-scripts-grouped-by-job">The scripts, grouped by job</h2>
+
+<p>Every name below exists in Impacket’s <code>examples/</code> directory as of v0.13.x/0.14-dev. This is the mental map most testers carry.</p>
+
+<h3 id="remote-command-execution-the-exec-family">Remote command execution (the exec family)</h3>
+
+<table tabindex="0">
+<thead><tr><th>Script</th><th>Mechanism</th></tr></thead>
+<tbody>
+<tr><td><code>psexec.py</code></td><td>Runs commands via a service it creates over SMB/DCERPC (PsExec-style)</td></tr>
+<tr><td><code>smbexec.py</code></td><td>Command execution through SMB shares, without the same service-binary footprint</td></tr>
+<tr><td><code>wmiexec.py</code></td><td>Executes via WMI (DCOM), quieter than a service install</td></tr>
+<tr><td><code>dcomexec.py</code></td><td>Executes via DCOM objects (ShellWindows, ShellBrowserWindow, Excel)</td></tr>
+<tr><td><code>atexec.py</code></td><td>Runs a command via the Task Scheduler service</td></tr>
+</tbody>
+</table>
+
+<h3 id="credential-access">Credential access</h3>
+
+<table tabindex="0">
+<thead><tr><th>Script</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>secretsdump.py</code></td><td>The flagship: extracts SAM, LSA secrets and NTDS.dit hashes locally or remotely (with -history for password history)</td></tr>
+<tr><td><code>regsecrets.py</code></td><td>Registry-based secret extraction</td></tr>
+<tr><td><code>GetLAPSPassword.py</code></td><td>Reads LAPS-managed local admin passwords</td></tr>
+<tr><td><code>Get-GPPPassword.py</code></td><td>Recovers Group Policy Preferences passwords</td></tr>
+<tr><td><code>dpapi.py</code> / <code>dpapidump.py</code></td><td>DPAPI credential work</td></tr>
+<tr><td><code>mimikatz.py</code></td><td>Client wrapper for running Mimikatz-style commands over the wire</td></tr>
+</tbody>
+</table>
+
+<h3 id="kerberos-and-tickets">Kerberos and tickets</h3>
+
+<table tabindex="0">
+<thead><tr><th>Script</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>GetUserSPNs.py</code></td><td>Finds SPNs and requests TGS tickets — the Kerberoasting workflow</td></tr>
+<tr><td><code>GetNPUsers.py</code></td><td>AS-REP roasting: accounts with pre-auth disabled</td></tr>
+<tr><td><code>getTGT.py</code></td><td>Requests a TGT (supports modern PKINIT certificate auth)</td></tr>
+<tr><td><code>getST.py</code></td><td>Requests service tickets, including S4U delegation abuse</td></tr>
+<tr><td><code>ticketer.py</code></td><td>Forges golden/silver-style tickets from a known key</td></tr>
+<tr><td><code>ticketConverter.py</code></td><td>Converts tickets between ccache and KRB-CRED formats</td></tr>
+<tr><td><code>describeTicket.py</code></td><td>Parses ticket/PAC contents for analysis</td></tr>
+<tr><td><code>findDelegation.py</code></td><td>Maps unconstrained/constrained/RBCD delegation</td></tr>
+<tr><td><code>keylistattack.py</code></td><td>RODC key-list attack (updated for PAC-hardened DCs in 2026)</td></tr>
+<tr><td><code>badsuccessor.py</code></td><td>Works the dMSA Bad Successor delegation path</td></tr>
+</tbody>
+</table>
+
+<h3 id="enumeration-and-reconnaissance">Enumeration and reconnaissance</h3>
+
+<p><code>GetADUsers.py</code>, <code>GetADComputers.py</code>, <code>lookupsid.py</code>, <code>samrdump.py</code>, <code>netview.py</code>, <code>rpcdump.py</code>, <code>rpcmap.py</code>, <code>wmiquery.py</code>, <code>mssqlclient.py</code>, <code>mssqlinstance.py</code>, <code>checkMSSQLStatus.py</code>, <code>CheckLDAPStatus.py</code> (LDAP signing/channel-binding status — useful for defenders too).</p>
+
+<h3 id="relay-and-object-abuse">Relay and object abuse</h3>
+
+<table tabindex="0">
+<thead><tr><th>Script</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>ntlmrelayx.py</code></td><td>The NTLM relay workhorse — relays captured authentications to SMB, LDAP, HTTP, AD CS and more. 2026 additions: SMB/LDAP signing bypass via cross-user re-authentication, AD CS CES relay</td></tr>
+<tr><td><code>rbcd.py</code> / <code>owneredit.py</code> / <code>dacledit.py</code></td><td>Resource-based constrained delegation and ACL/owner manipulation</td></tr>
+<tr><td><code>addcomputer.py</code> / <code>changepasswd.py</code></td><td>Machine-account creation and password changes</td></tr>
+</tbody>
+</table>
+
+<h3 id="files-and-host-interaction">Files and host interaction</h3>
+
+<p><code>smbclient.py</code> (interactive SMB browsing), <code>smbserver.py</code> (standalone SMB server with NTLM/Kerberos signing support — handy for captures and payload staging in labs), <code>services.py</code>, <code>reg.py</code>, plus packet-level examples (<code>ping.py</code>, <code>sniffer.py</code>, <code>getArch.py</code>).</p>
+
+<h2 id="the-attacks-these-scripts-power-mapped-to-mitre-att-ck">The attacks these scripts power, mapped to MITRE ATT&amp;CK</h2>
+
+<p>Defenders should read Impacket output through the same lens as the ATT&amp;CK technique it serves:</p>
+
+<p><strong>Kerberoasting — T1558.003.</strong> <code>GetUserSPNs.py -request</code> pulls TGS tickets for SPN accounts and the offline crack targets RC4 (etype 23) tickets. Detection centers on Windows 4769 events with unusual encryption types and volume. Full mechanics in our <a href="/articles/active-directory-lateral-movement" rel="noopener noreferrer">Active Directory Lateral Movement</a> guide.</p>
+
+<p><strong>DCSync — T1003.006.</strong> MITRE defines it as abusing a Windows Domain Controller’s API to simulate the replication process from a remote domain controller to pull password data — current and historical hashes of potentially useful accounts such as KRBTGT. secretsdump.py performs this style of directory dump against domain controllers (its -history mode also surfaces password-history hashes, and the SAM/NTDS extraction itself maps to the <a href="https://attack.mitre.org/techniques/T1003/003/" rel="noopener noreferrer" target="_blank">T1003.003 NTDS</a> sub-technique). Groups from LAPSUS$ to Scattered Spider are documented using <a href="https://attack.mitre.org/techniques/T1003/006/" rel="noopener noreferrer" target="_blank">this technique</a>.</p>
+
+<p><strong>Pass the Hash — T1550.002.</strong> Authenticating as a user without having access to the user’s cleartext password, using captured hashes. Every exec-family script accepts <code>-hashes LM:NT</code> style authentication instead of a password. <a href="https://attack.mitre.org/techniques/T1550/002/" rel="noopener noreferrer" target="_blank">MITRE T1550.002</a>.</p>
+
+<p><strong>Pass the Ticket — T1550.003.</strong> Using forged or stolen Kerberos tickets (ticketer.py, getST.py, ticketConverter.py) to move without credentials at all.</p>
+
+<h2 id="usage-patterns">Usage patterns</h2>
+
+<p>Everything follows one identity format, which is why the toolkit feels uniform:</p>
+
+<pre><code># password auth
+psexec.py CORP/admin:Password123@10.10.10.25
+
+# pass-the-hash (LM:NT - leave LM empty if you only have the NT hash)
+wmiexec.py CORP/admin@10.10.10.25 -hashes :32ed87bdb5fdc5e9cba88547376818d4
+
+# Kerberoasting
+GetUserSPNs.py CORP/admin:Password123 -dc-ip 10.10.10.5 -request
+
+# install
+python3 -m pipx install impacket</code></pre>
+
+<p>Common flags shared across scripts: <code>-hashes</code> for pass-the-hash, <code>-dc-ip</code> for the domain controller, <code>-k</code> for Kerberos/ccache auth, <code>-no-pass</code> for certificate-based flows. The -hashes and -dc-ip flags are the ones you will type most.</p>
+
+<h2 id="how-defenders-detect-impacket-activity">How defenders detect Impacket activity</h2>
+
+<p>Impacket is powerful because it speaks <strong>native protocols</strong> — which means its activity lands in the same logs as legitimate administration:</p>
+
+<ul>
+<li><strong>Service creation and execution</strong> (psexec.py, smbexec.py): Service Control Manager service-installation events plus new, oddly named services connecting to admin shares.</li>
+<li><strong>NTLM authentication anomalies</strong> (wmiexec.py, dcomexec.py, remote secretsdump.py): type-3 NTLM logons (4624) from workstations or accounts that do not normally touch the target, especially to ADMIN$/C$.</li>
+<li><strong>Kerberoasting noise</strong> (GetUserSPNs.py): spikes of 4769 requests, particularly RC4 (etype 23) TGS requests across many SPNs in a short window.</li>
+<li><strong>Directory replication abuse</strong> (secretsdump.py DCSync mode): directory-service access/replication requests from non-DC accounts — the tell for T1003.006.</li>
+<li><strong>Relay attempts</strong> (ntlmrelayx.py): the reason to <strong>enforce SMB and LDAP signing</strong> — unsigned sessions are what relays feed on. Impacket’s own 2026 work on signing bypasses shows how much pressure this control is under.</li>
+<li><strong>Application control and EDR</strong>: execution-via-service and script-host behavior is exactly what application-control rules and EDR behavioral detections are for — see <a href="/articles/application-control-vs-edr" rel="noopener noreferrer">Application Control vs EDR</a>.</li>
+</ul>
+
+<p>If you run Impacket in a SOC lab, tune detections against these shapes — they cover the majority of real incidents where the toolkit appears.</p>
+
+<h2 id="faq">FAQ</h2>
+
+<p><strong>Is Impacket legal?</strong><br />Yes, for what it is licensed and documented for: research, education, and authorized testing. The project’s disclaimer states the repository is for research and educational purposes and not meant to be used in production environments and/or as part of commercial products. Running its scripts against systems you do not own or are not authorized to test is not legal — the same rule as every pentest tool.</p>
+
+<p><strong>Is Impacket a virus / why does my antivirus flag the scripts?</strong><br />The toolkit is dual-use: the same psexec.py that helps admins is used in intrusions. AV and EDR products flag the scripts or their behavior because real attackers ship them. In a lab, expect detections — that is the product working.</p>
+
+<p><strong>What is the difference between Impacket and CrackMapExec/NetExec?</strong><br />Impacket is a protocol library plus focused single-purpose scripts. Wrapper frameworks automate larger sweeps across many hosts using similar underlying protocols. Most professionals keep Impacket installed for precise work and pair it with a wrapper for scale.</p>
+
+<p><strong>Do I need Visual Studio or Windows to install it?</strong><br />No. It is pure Python: <code>pipx install impacket</code> works on Linux, macOS and Windows with Python 3.9+.</p>
+
+<p><strong>What replaced the older script names I see in old write-ups?</strong><br />Impacket evolved (Python 2 era scripts, renamed flags like -dcip to -dc-ip). If an old tutorial fails, check the current -help of the script — the v0.13.x/0.14-dev names in this guide are the current ones as of November 2026.</p>
+
+<h2 id="related-guides">Related guides</h2>
+
+<ul>
+<li><a href="/articles/active-directory-lateral-movement" rel="noopener noreferrer">Active Directory Lateral Movement: Techniques and Detection</a> — where these scripts fit in the attack chain.</li>
+<li><a href="/pentest/impacket" rel="noopener noreferrer">Impacket tool page</a> — the quick-reference catalog entry.</li>
+<li><a href="/pentest/category/active-directory-internal-network" rel="noopener noreferrer">Active Directory category</a> — more AD tooling.</li>
+<li><a href="/cheatsheets/active-directory-enumeration-cheatsheet" rel="noopener noreferrer">Active Directory Enumeration Cheat Sheet</a> — the command-level companion.</li>
+</ul><hr class="hr-fade" style="margin-top:48px"></article></div></div></section><section class="section-tight" style="padding-top:0"><div class="container container-article"><p class="back-link-row" style="margin:0"><a class="btn btn-ghost btn-sm" href="/articles">← Back to all articles</a></p></div></section><section class="section-tight"><div class="container container-article"><div class="section-head left"><span class="eyebrow">Keep reading</span><h2 class="h-2">Related articles</h2></div><div class="feed-list" style="margin-top:16px"><article class="feed-row"><div class="feed-row-main"><span class="chip">Deep Dives</span><h3 class="feed-title"><a href="/articles/app-blocked-to-protect-your-device-windows-fixes">App Blocked to Protect Your Device? Windows Fixes for SmartScreen (2026)</a></h3><p class="feed-excerpt">Why Windows says the app was blocked to protect your device, six safe fixes (unblock, MOTW, SmartScreen), when not to bypass, and how to disable it safely.</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">Deep Dives</span><h3 class="feed-title"><a href="/articles/cia-triad-explained">CIA Triad Explained: Confidentiality, Integrity &amp; Availability</a></h3><p class="feed-excerpt">Security programs are built on three words: confidentiality, integrity, availability. What each one means, how real attacks map onto them, and the honest…</p></div></article><article class="feed-row"><div class="feed-row-main"><span class="chip">Deep Dives</span><h3 class="feed-title"><a href="/articles/fido2-vs-passkeys">FIDO2 vs Passkeys: What&#39;s the Difference?</a></h3><p class="feed-excerpt">FIDO2 is the protocol family (WebAuthn + CTAP); a passkey is one kind of FIDO2 credential - usually synced. What that means for security keys, recovery and…</p></div></article></div><p style="margin-top:24px"><a class="btn btn-secondary" href="/articles">Browse all articles</a></p></div></section></main><footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="OopsMyPassword — home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="omp-lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><path d="M15 1.8 26.4 6v8.2c0 6.6-4.4 11.1-11.4 12.9C8 25.3 3.6 20.8 3.6 14.2V6Z" fill="url(#omp-lg-f)"/><circle cx="10.4" cy="14.2" r="1.9" fill="#fff"/><circle cx="15" cy="14.2" r="1.9" fill="#fff"/><circle cx="19.6" cy="14.2" r="1.9" fill="#fff"/></svg><span>Oops<span class="grad-text">MyPassword</span></span></a>
+        <p>Privacy-first tools and practical guides. Password inputs stay in memory, never in a log. No account, no signup. The site collects no email addresses.</p>
+        <div class="tag-list mt-16">
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Client-side</span>
+          <span class="chip"><svg class="icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg> No account</span>
+        </div>
+        <div class="footer-connect mt-16">
+          <div class="footer-col-title">Connect</div>
+          <div class="footer-connect-links">
+            <a href="https://www.instagram.com/oopssecurity/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="mailto:baishyasuraj51@gmail.com">Admin &amp; Founder</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Tools</div><ul><li><a href="/checker">Password Checker</a></li><li><a href="/generator">Password Generator</a></li><li><a href="/breach-check">Breach Check</a></li><li><a href="/dork-builder">OSINT Dork Builder</a></li><li><a href="/hash-inspector">Hash &amp; JWT Inspector</a></li><li><a href="/url-scanner">Phishing URL Scanner</a></li><li><a href="/cvss-calculator">CVSS Calculator</a></li><li><a href="/tools">All Tools</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Resources</div><ul><li><a href="/osint">OSINT Hub</a></li><li><a href="/pentest">Pentest Hub</a></li><li><a href="/products">Products</a></li><li><a href="/security-checklist">Security Checklist</a></li><li><a href="/faq">FAQ</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Learn</div><ul><li><a href="/articles">Articles</a></li><li><a href="/compare">Tool Comparisons</a></li><li><a href="/cheatsheets">CLI Cheat Sheets</a></li><li><a href="/glossary">Security Glossary</a></li></ul></div><div class="footer-col"><div class="footer-col-title">Company</div><ul><li><a href="/about">About</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/contact">Contact</a></li><li><a href="/rss.xml">RSS Feed</a></li><li><a href="/llms.txt">LLMs.txt</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> OopsMyPassword. Educational security tools.</span>
+      <span class="flex gap-16 wrap">
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer><script src="/assets/js/url.js" defer></script><script src="/assets/js/main.js" defer></script></body></html>
