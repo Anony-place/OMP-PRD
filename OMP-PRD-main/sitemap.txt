@@ -158,6 +158,7 @@ https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-compa
 https://oopsmypassword.web.app/articles/siem-alerts-and-noise-reduction
 https://oopsmypassword.web.app/articles/sqlmap-does-not-appear-to-be-dynamic
 https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking-pdf
+https://oopsmypassword.web.app/articles/trufflehog-guide
 https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing
 https://oopsmypassword.web.app/articles/web-application-security-basics
 https://oopsmypassword.web.app/articles/what-is-an-sbom

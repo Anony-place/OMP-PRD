@@ -158,7 +158,7 @@
     {
       "type": "Guide",
       "title": "Pentest Report Template: Structure, Fields, Example",
-      "desc": "A copy-paste pentest report template: the eight fields every finding needs, the section order a client reads, and a worked example.",
+      "desc": "Pentest report template with the fields that matter: structure, severity ratings, a worked finding sample/example, and how to hand the report to your client…",
       "url": "/articles/from-finding-to-fixing-writing-a-usable-pentest-report",
       "kw": "from finding to fixing writing a usable pentest report guide articles"
     },
@@ -332,8 +332,8 @@
     },
     {
       "type": "Guide",
-      "title": "SIEM Alerts and Noise: How to Tune Rules Without Going Blind",
-      "desc": "Most SIEM alerts are noise. How to measure the queue, tune rules in the right order, and keep the detections that catch a real intrusion.",
+      "title": "SIEM Rule Tuning: Cut Alert Noise Without Going Blind",
+      "desc": "SIEM rule tuning that works: threshold tuning, suppression, enrichment and the detection lifecycle - cut alert noise without missing real incidents.",
       "url": "/articles/siem-alerts-and-noise-reduction",
       "kw": "siem alerts and noise reduction guide articles"
     },
@@ -350,6 +350,13 @@
       "desc": "Discover 5 free ethical hacking books and cybersecurity guides for beginners. Access official downloads, learn web security, Linux, penetration testing, and…",
       "url": "/articles/top-5-books-for-learning-ethical-hacking-pdf",
       "kw": "top 5 books for learning ethical hacking pdf guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "TruffleHog Guide 2026: Find, Verify & Analyze Leaked Secrets",
+      "desc": "TruffleHog finds leaked credentials in git history, chats and file shares - and validates which ones are live. Discovery, classification, validation, analysis…",
+      "url": "/articles/trufflehog-guide",
+      "kw": "trufflehog guide guide articles"
     },
     {
       "type": "Guide",
