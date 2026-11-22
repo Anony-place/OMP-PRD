@@ -151,6 +151,7 @@ https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-host-seems-down
 https://oopsmypassword.web.app/articles/nmap-not-recognized
 https://oopsmypassword.web.app/articles/nmap-requires-root-privileges
+https://oopsmypassword.web.app/articles/on-site-vs-off-site-data-sanitisation
 https://oopsmypassword.web.app/articles/php2shell-explained-risks-fixes-how-to-protect-your-site
 https://oopsmypassword.web.app/articles/secure-remote-access
 https://oopsmypassword.web.app/articles/sherlock-vs-maigret-username-osint-comparison
@@ -160,6 +161,7 @@ https://oopsmypassword.web.app/articles/top-5-books-for-learning-ethical-hacking
 https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing
 https://oopsmypassword.web.app/articles/web-application-security-basics
 https://oopsmypassword.web.app/articles/what-is-an-sbom
+https://oopsmypassword.web.app/articles/whatsmyname-username-search-guide
 https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
 https://oopsmypassword.web.app/articles/wireshark-ssl-decryption-not-working

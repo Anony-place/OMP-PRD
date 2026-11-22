@@ -304,6 +304,13 @@
     },
     {
       "type": "Guide",
+      "title": "On-Site vs Off-Site Data Sanitisation (NIST 800-88 Guide)",
+      "desc": "On-site vs off-site data sanitisation with NIST SP 800-88 Rev.2: clear/purge/destroy methods, SSD traps, crypto erase, and the certificate to keep.",
+      "url": "/articles/on-site-vs-off-site-data-sanitisation",
+      "kw": "on site vs off site data sanitisation guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "PHP2Shell Explained: Risks, Fixes & How to Protect Your Site",
       "desc": "PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site Published 1 November 2026 · Reading time about 8 minutes · Category: Web Security In late…",
       "url": "/articles/php2shell-explained-risks-fixes-how-to-protect-your-site",
@@ -364,6 +371,13 @@
       "desc": "SBOM meaning, explained: what a software bill of materials lists, why regulators and CI pipelines now demand one, and how to generate it free.",
       "url": "/articles/what-is-an-sbom",
       "kw": "what is an sbom guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "WhatsMyName: Username Search Tool - 2026 Archive & Alternatives",
+      "desc": "WhatsMyName was the OSINT username search dataset - archived Nov 2026. What survives (691 sites), how to use it, and the Sherlock/Maigret alternatives.",
+      "url": "/articles/whatsmyname-username-search-guide",
+      "kw": "whatsmyname username search guide guide articles"
     },
     {
       "type": "Guide",
