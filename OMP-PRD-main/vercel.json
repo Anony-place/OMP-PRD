@@ -75,92 +75,72 @@
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/malware-delivery-and-initial-access",
-      "destination": "/articles/malware-delivery-and-initial-access-vector",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/incident-response-roles-and-communication",
-      "destination": "/articles/incident-response-basics",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/containment-eradication-and-lessons-learned",
-      "destination": "/articles/incident-response-basics",
+      "destination": "/articles/malware-families-explained",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/device-security-locking-wiping-and-mobile",
-      "destination": "/articles/mobile-device-security",
+      "destination": "/articles/on-site-vs-off-site-data-sanitisation",
       "statusCode": 301
     },
     {
       "source": "/learning/web-application-security/foundations/sql-injection-and-parameterized-queries",
-      "destination": "/articles/ogsqlinjection",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/web-application-security/track/sql-injection",
-      "destination": "/articles/ogsqlinjection",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/broken-access-control-and-idor",
-      "destination": "/articles/broken-access-control-vulnerabilities-guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/safe-practice-lab-environments-and-tooling-hygiene",
-      "destination": "/articles/lab-setup-guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/home-lab-and-safe-practice",
-      "destination": "/articles/lab-setup-guide",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/pretexting-baiting-and-tailgating",
-      "destination": "/articles/social-engineering-guide",
+      "destination": "/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/http-https-request-response",
-      "destination": "/articles/ssl-vs-tls-vs-https",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/web-application-security/foundations/security-headers-cors-and-tls-deployment",
-      "destination": "/articles/ssl-vs-tls-vs-https",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/session-management-and-account-takeover",
-      "destination": "/articles/session-hijacking",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/owasp-top-10-2025-reading-the-list",
-      "destination": "/articles/owasp-top-10",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/ransomware-double-extortion-and-recovery",
-      "destination": "/articles/ransomware-double-extortion-and-recovery",
+      "destination": "/articles/malware-families-explained",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/personal-social-footprint-and-osint",
-      "destination": "/articles/osint-guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/learning/cyber-security/cyber-security-track/backups-3-2-1-and-tested-restores",
-      "destination": "/articles/data-backup-guide",
+      "destination": "/articles/best-free-osint-tools-for-beginners",
       "statusCode": 301
     },
     {
       "source": "/learning/cyber-security/cyber-security-track/scanners-benchmarks-and-interpreting-a-report",
       "destination": "/articles/from-finding-to-fixing-writing-a-usable-pentest-report",
+      "statusCode": 301
+    },
+    {
+      "source": "/learning/cyber-security/cyber-security-track/cybersecurity-vs-information-security",
+      "destination": "/articles/cybersecurity-vs-information-security",
+      "statusCode": 301
+    },
+    {
+      "source": "/learning/cyber-security/cyber-security-track/bug-bounty-and-responsible-disclosure",
+      "destination": "/articles/bug-bounty-and-responsible-disclosure",
       "statusCode": 301
     },
     {
