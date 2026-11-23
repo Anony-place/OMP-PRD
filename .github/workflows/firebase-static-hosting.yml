@@ -117,6 +117,15 @@ jobs:
         working-directory: OMP-PRD-main
         run: node tools/test_sitemap.js
 
+      - name: Vercel config and redirect tests
+        working-directory: OMP-PRD-main
+        # Added 2026-11-23: batch-36 shipped 301s to article slugs that did not
+        # exist (invented from a stale memory list) and nothing in CI ran this
+        # suite, so the soft-404s passed the deploy. This test asserts every
+        # static redirect destination resolves - it is the gate that keeps that
+        # bug class from shipping again.
+        run: node tools/test_vercel_config.mjs
+
       - name: Install jsdom for the tool tests
         working-directory: OMP-PRD-main
         # Only jsdom is needed here - downloading the Playwright browsers would
