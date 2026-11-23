@@ -137,6 +137,7 @@ https://oopsmypassword.web.app/articles/hashcat-no-hashes-loaded
 https://oopsmypassword.web.app/articles/hashcat-token-length-exception
 https://oopsmypassword.web.app/articles/holehe-vs-epieos-email-lookup-comparison
 https://oopsmypassword.web.app/articles/how-does-ai-work-a-beginners-guide-to-artificial-intelligence
+https://oopsmypassword.web.app/articles/how-to-set-up-passkeys
 https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account
 https://oopsmypassword.web.app/articles/how-totp-works
 https://oopsmypassword.web.app/articles/impacket-guide
@@ -149,6 +150,7 @@ https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-stea
 https://oopsmypassword.web.app/articles/malware-families-explained
 https://oopsmypassword.web.app/articles/metasploit-database-not-connected
 https://oopsmypassword.web.app/articles/meterpreter-session-died
+https://oopsmypassword.web.app/articles/microsoft-sms-2fa-retirement-what-to-do
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-host-seems-down
 https://oopsmypassword.web.app/articles/nmap-not-recognized
