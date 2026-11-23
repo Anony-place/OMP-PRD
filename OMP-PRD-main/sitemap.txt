@@ -117,6 +117,7 @@ https://oopsmypassword.web.app/articles/are-custom-gpts-safe-how-to-spot-a-malic
 https://oopsmypassword.web.app/articles/best-free-osint-tools-for-beginners
 https://oopsmypassword.web.app/articles/bitwarden-autofill-not-working
 https://oopsmypassword.web.app/articles/bitwarden-not-syncing
+https://oopsmypassword.web.app/articles/bug-bounty-and-responsible-disclosure
 https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching
 https://oopsmypassword.web.app/articles/burp-suite-certificate-download
 https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
@@ -126,6 +127,7 @@ https://oopsmypassword.web.app/articles/common-cryptography-failures
 https://oopsmypassword.web.app/articles/cvss-score-explained
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
+https://oopsmypassword.web.app/articles/cybersecurity-vs-information-security
 https://oopsmypassword.web.app/articles/data-classification-guide
 https://oopsmypassword.web.app/articles/exiftool-remove-all-metadata
 https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works

@@ -66,6 +66,13 @@
     },
     {
       "type": "Guide",
+      "title": "Bug Bounty vs Responsible Disclosure: Safe, Legal Reporting",
+      "desc": "Bug bounty vs responsible disclosure - scope, safe harbor and the law, what a good report contains, and how programmes like CISA's BOD 20-01 actually work.",
+      "url": "/articles/bug-bounty-and-responsible-disclosure",
+      "kw": "bug bounty and responsible disclosure guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Burp Suite Browser Not Launching: 7 Causes, in Order",
       "desc": "Clicking Open browser does nothing, or the window closes instantly. The seven real causes in order — root on Linux, missing Chromium libraries, quarantine, EDR.",
       "url": "/articles/burp-suite-browser-not-launching",
@@ -126,6 +133,13 @@
       "desc": "What cyber security roles pay in the USA in 2026: analyst to CISO bands, experience levels and city differences, grounded in U.S. Bureau of Labor Statistics…",
       "url": "/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026",
       "kw": "cyber security salary in usa complete guide to cybersecurity salaries in 2026 guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Cybersecurity vs Information Security: The Real Difference",
+      "desc": "Cybersecurity vs information security - NIST and ISO definitions, where each applies, and why the difference is scope, not intent. With examples and FAQ.",
+      "url": "/articles/cybersecurity-vs-information-security",
+      "kw": "cybersecurity vs information security guide articles"
     },
     {
       "type": "Guide",
