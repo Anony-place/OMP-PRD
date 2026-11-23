@@ -223,7 +223,7 @@ export const RETIRED_PATHS = [
   { source: '/learning/cyber-security/cyber-security-track/vulnerability-assessment-vs-penetration-testing', destination: '/articles/vulnerability-assessment-vs-penetration-testing', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/endpoint-protection-av-edr', destination: '/articles/application-control-vs-edr', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/secure-disposal-and-sanitisation', destination: '/articles/on-site-vs-off-site-data-sanitisation', statusCode: 301 },
-  { source: '/learning/web-application-security/foundations/web-application-security-fundamentals', destination: '/articles/web-app-security-basics', statusCode: 301 },
+  { source: '/learning/web-application-security/foundations/web-application-security-fundamentals', destination: '/articles/web-application-security-basics', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/cia-triad', destination: '/articles/cia-triad-explained', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/malware-delivery-and-initial-access', destination: '/articles/malware-families-explained', statusCode: 301 },
   { source: '/learning/cyber-security/cyber-security-track/device-security-locking-wiping-and-mobile', destination: '/articles/on-site-vs-off-site-data-sanitisation', statusCode: 301 },
