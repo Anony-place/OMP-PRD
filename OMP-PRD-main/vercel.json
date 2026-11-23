@@ -65,7 +65,7 @@
     },
     {
       "source": "/learning/web-application-security/foundations/web-application-security-fundamentals",
-      "destination": "/articles/web-app-security-basics",
+      "destination": "/articles/web-application-security-basics",
       "statusCode": 301
     },
     {
