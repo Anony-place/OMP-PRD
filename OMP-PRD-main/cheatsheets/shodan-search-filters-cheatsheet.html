@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="/assets/js/theme-init.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Shodan Filters Cheat Sheet: Copy-Paste Queries for Recon","description":"Complete reference of Shodan query filters (org, asn, ssl.cert, http.favicon.hash, vuln, product) for external attack-surface monitoring.","datePublished":"2026-09-18","dateModified":"2026-10-29","mainEntityOfPage":"https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet","author":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app/"},"publisher":{"@type":"Organization","name":"OopsMyPassword","url":"https://oopsmypassword.web.app"},"image":["https://oopsmypassword.web.app/assets/images/og-image.jpg"]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does ssl.cert.subject.cn help find servers hidden behind Cloudflare?","acceptedAnswer":{"@type":"Answer","text":"When a web server is configured with an SSL certificate for example.com and its firewall fails to restrict port 443 to Cloudflare IP ranges only, Shodan indexes that certificate on the server public IP."}},{"@type":"Question","name":"What is http.favicon.hash used for in Shodan?","acceptedAnswer":{"@type":"Answer","text":"Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does ssl.cert.subject.cn help find servers hidden behind Cloudflare?","acceptedAnswer":{"@type":"Answer","text":"When a web server is configured with an SSL certificate for example.com and its firewall fails to restrict port 443 to Cloudflare IP ranges only, Shodan indexes that certificate on the server public IP."}},{"@type":"Question","name":"What is http.favicon.hash used for in Shodan?","acceptedAnswer":{"@type":"Answer","text":"Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized."}},{"@type":"Question","name":"Is it legal to search Shodan for my own organization?","acceptedAnswer":{"@type":"Answer","text":"Yes — Shodan indexes publicly visible banners, and reviewing your own external footprint is standard attack-surface monitoring. Only query infrastructure you own or are explicitly authorized to assess, and treat results as findings to fix rather than as targets."}},{"@type":"Question","name":"Why does a filter like vuln: return nothing on my account?","acceptedAnswer":{"@type":"Answer","text":"Some filters are plan-dependent: vulnerability data (vuln:) requires a Shodan plan that includes it, and has_screenshot availability also varies by plan. The filter syntax is fixed, and the API endpoint /shodan/host/search/filters lists what your account currently supports."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oopsmypassword.web.app/"},{"@type":"ListItem","position":2,"name":"CLI Cheat Sheets","item":"https://oopsmypassword.web.app/cheatsheets"},{"@type":"ListItem","position":3,"name":"Shodan Search Filters","item":"https://oopsmypassword.web.app/cheatsheets/shodan-search-filters-cheatsheet"}]}</script>
 </head>
 <body>
@@ -134,10 +134,52 @@
         <p class="muted small mt-8">Summarize the most common open ports across a domain.</p>
         <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="shodan stats --facets port,product hostname:&quot;{DOMAIN}&quot;" data-cs-idx="7">shodan stats --facets port,product hostname:&quot;example.com&quot;</code></pre>
       </div>
+      <div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">9. Find the Same Web App by Favicon Hash</h3>
+          <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="8">Copy Command</button>
+        </div>
+        <p class="muted small mt-8">MurmurHash3 of the /favicon.ico file identifies the same web framework even when login titles are customized.</p>
+        <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="http.favicon.hash:116323821" data-cs-idx="8">http.favicon.hash:116323821</code></pre>
+      </div>
+      <div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">10. Filter by Known Vulnerability (CVE)</h3>
+          <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="9">Copy Command</button>
+        </div>
+        <p class="muted small mt-8">List hosts Shodan associates with a specific CVE. Vulnerability data depends on your Shodan plan.</p>
+        <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="product:apache vuln:CVE-2021-44228" data-cs-idx="9">product:apache vuln:CVE-2021-44228</code></pre>
+      </div>
+      <div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">11. Pin Product, Version and OS</h3>
+          <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="10">Copy Command</button>
+        </div>
+        <p class="muted small mt-8">Narrow banners to an exact software build — the fastest way to count a specific version estate across your scope.</p>
+        <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="product:&quot;OpenSSH&quot; version:&quot;8.2&quot; os:&quot;Linux&quot;" data-cs-idx="10">product:&quot;OpenSSH&quot; version:&quot;8.2&quot; os:&quot;Linux&quot;</code></pre>
+      </div>
+      <div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">12. Scan-Date Window (Freshness Check)</h3>
+          <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="11">Copy Command</button>
+        </div>
+        <p class="muted small mt-8">Filter by when Shodan last indexed the service (dates are dd/mm/yyyy) to compare what changed between rescans.</p>
+        <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="hostname:&quot;{DOMAIN}&quot; after:01/06/2026" data-cs-idx="11">hostname:&quot;example.com&quot; after:01/06/2026</code></pre>
+      </div>
+      <div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h3 class="h-3" style="font-size:1.03rem;margin:0">13. Expired TLS Certificates on 443</h3>
+          <button type="button" class="btn btn-secondary btn-sm" data-cs-copy="12">Copy Command</button>
+        </div>
+        <p class="muted small mt-8">Spot services presenting expired certificates — a quick hygiene finding in an authorized external review.</p>
+        <pre class="mono mt-8" style="margin-bottom:0"><code data-cs-template="ssl.cert.expired:true port:443 net:{TARGET}/24" data-cs-idx="12">ssl.cert.expired:true port:443 net:192.0.2.10/24</code></pre>
+      </div>
 
       <h2 class="mt-32">Frequently Asked Questions</h2>
       <h3>How does ssl.cert.subject.cn help find servers hidden behind Cloudflare?</h3><p>When a web server is configured with an SSL certificate for example.com and its firewall fails to restrict port 443 to Cloudflare IP ranges only, Shodan indexes that certificate on the server public IP.</p>
 <h3>What is http.favicon.hash used for in Shodan?</h3><p>Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized.</p>
+<h3>Is it legal to search Shodan for my own organization?</h3><p>Yes — Shodan indexes publicly visible banners, and reviewing your own external footprint is standard attack-surface monitoring. Only query infrastructure you own or are explicitly authorized to assess, and treat results as findings to fix rather than as targets.</p>
+<h3>Why does a filter like vuln: return nothing on my account?</h3><p>Some filters are plan-dependent: vulnerability data (vuln:) requires a Shodan plan that includes it, and has_screenshot availability also varies by plan. The filter syntax is fixed, and the API endpoint /shodan/host/search/filters lists what your account currently supports.</p>
 
       <hr class="hr-fade" style="margin-top:40px">
       <h2>Related Guides, Tools &amp; Cheat Sheets</h2>
