@@ -45,9 +45,11 @@ Ruled out: technical outage (site serves), manual-style full ban (pages still in
 - Export current **Page Indexing URL lists** (Pages tab → export, both "Indexed" and "Not indexed") like the previous sheets → I target the next surgical step (which 128 survive = our quality core).
 
 **Phase 3 — quality signals (no new pages):**
-- ✅ E-E-A-T batch (2026-11-27, this PR): article byline "By OopsMyPassword Editorial" → /about#research + per-article trust footer ("verified through the editorial process… Report a correction") + new **"How we research and write"** editorial-policy section on /about (primary sources, dated updates, no pay-to-rank, dated corrections).
+- ✅ E-E-A-T batch (2026-11-27, PR #162): article byline "By OopsMyPassword Editorial" → /about#research + per-article trust footer ("verified through the editorial process… Report a correction") + new **"How we research and write"** editorial-policy section on /about (primary sources, dated updates, no pay-to-rank, dated corrections).
+- ✅ **Structured-data honesty batch (2026-11-27, PR #163):** article/guide FAQPage schema used to fabricate two invisible questions ("What is the key takeaway of …?" + a tools promo) never shown on the page — the same bug already fixed on tool pages ("markup must match the visible page"). Now: stale FAQPage stripped + rebuilt from the **visible FAQ h3/p pairs** (≥2 pairs required, else no block). Verified: john-the-ripper schema now mirrors its real FAQ; fabricated strings = 0 across articles.
+- ✅ **First recovery sign (user's Valid-chart export 2026-11-27):** indexed count **plateaued at 128** for Nov 17–23 — the deindex bleed has stopped. Next watch: "Discovered-not-indexed" count falling, then impressions returning.
 - Consolidation: keep the 63+ articles (incl. passkey wave) as the recovery asset; refresh winners (john-the-ripper pos 5.3 pre-crash).
-- Stability: no redirect churn, no bulk rewrites, one deliberate template pass only.
+- Stability: no redirect churn, no bulk rewrites, deliberate template passes only.
 
 **Phase 4 — patience + measurement**: re-evaluation typically takes 2–8 weeks. Watch GSC weekly (impressions first, then indexed count). Recovery signs = "discovered-not-indexed" count falling + impressions returning.
 

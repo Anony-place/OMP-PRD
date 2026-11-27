@@ -2943,33 +2943,37 @@ function enhanceExistingPagesWithMeshAndSchema() {
       html = html.replace('</head>', `  <link rel="alternate" type="application/rss+xml" title="OopsMyPassword Security Feed" href="${SITE}/rss.xml">\n</head>`);
     }
 
-    // 3. For /articles/*.html and /guides/*.html: inject FAQPage JSON-LD if not present + Related Tools mesh
-    if ((rel.startsWith('articles/') || rel.startsWith('guides/')) && !html.includes('"@type":"FAQPage"') && !html.includes('"@type": "FAQPage"')) {
-      const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-      const descMatch = html.match(/<meta name="description" content="([^"]+)"/i);
-      const h1Text = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : 'this cybersecurity topic';
-      const descText = descMatch ? descMatch[1].trim() : '';
-      if (h1Text && descText) {
+    // 3. For /articles/*.html and /guides/*.html: build FAQPage JSON-LD from
+    // the VISIBLE FAQ section, exactly like the tool pages below. The old
+    // version of this step invented two questions ("What is the key takeaway
+    // of ...?" and a tools promo) that no visitor could see on the page.
+    // Markup that does not match the visible page is the fastest way to lose
+    // rich results and a trust hit on a recovering host, so: drop any FAQPage
+    // an older build left behind, re-render only from real rendered Q&A
+    // pairs, and a page with fewer than two visible pairs gets no FAQPage
+    // block rather than a fabricated one.
+    if (rel.startsWith('articles/') || rel.startsWith('guides/')) {
+      html = html.replace(/<script type="application\/ld\+json"[^>]*>(?:(?!<\/script>)[\s\S])*?"@type"\s*:\s*"FAQPage"[\s\S]*?<\/script>/g, '');
+      const faqSection = html.match(/<h2[^>]*>\s*(?:FAQ|Frequently asked)[^<]*<\/h2>([\s\S]*?)(?=<h2 |<\/article>)/i);
+      const pairs = faqSection
+        ? [...faqSection[1].matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)]
+            .map((m) => ({
+              q: m[1].replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').trim(),
+              a: m[2].replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim(),
+            }))
+            .filter((p) => p.q && p.a)
+        : [];
+      if (pairs.length >= 2) {
         const faqObj = {
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: `What is the key takeaway of ${h1Text}?`,
-              acceptedAnswer: { '@type': 'Answer', text: descText }
-            },
-            {
-              '@type': 'Question',
-              name: 'How can I test or apply these security practices safely?',
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Use client-side verification tools on OopsMyPassword—including the Password Checker, Breach Check k-anonymity tool, Phishing URL Scanner, and Hash/JWT Inspector—where inputs never leave your browser.'
-              }
-            }
-          ]
+          mainEntity: pairs.map((p) => ({
+            '@type': 'Question',
+            name: p.q,
+            acceptedAnswer: { '@type': 'Answer', text: p.a },
+          })),
         };
-        html = html.replace('</head>', `<script type="application/ld+json">${escJson(faqObj)}</script></head>`);
+        html = html.replace('</head>', `<script type="application/ld+json" id="omp-article-faq">${escJson(faqObj)}</script></head>`);
       }
     }
 
