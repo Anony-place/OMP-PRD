@@ -1323,11 +1323,18 @@ export const CHEATSHEETS = [
       { title: 'Remote Desktop & Management Services', desc: 'Find internet-facing RDP, VNC, SMB, or IPMI management interfaces.', cmd: 'net:{TARGET}/24 (port:3389 OR port:5900 OR port:445 OR port:623)' },
       { title: 'HTTP Status 200 Open Directory Listings', desc: 'Spot web servers returning open directory indexes.', cmd: 'hostname:"{DOMAIN}" http.title:"Index of /" http.status:200' },
       { title: 'Shodan CLI Host Summary Lookup', desc: 'Inspect open ports, banners, and TLS certificates for a single IP via terminal.', cmd: 'shodan host {TARGET}' },
-      { title: 'Shodan CLI Facet Statistics by Port', desc: 'Summarize the most common open ports across a domain.', cmd: 'shodan stats --facets port,product hostname:"{DOMAIN}"' }
+      { title: 'Shodan CLI Facet Statistics by Port', desc: 'Summarize the most common open ports across a domain.', cmd: 'shodan stats --facets port,product hostname:"{DOMAIN}"' },
+      { title: 'Find the Same Web App by Favicon Hash', desc: 'MurmurHash3 of the /favicon.ico file identifies the same web framework even when login titles are customized.', cmd: 'http.favicon.hash:116323821' },
+      { title: 'Filter by Known Vulnerability (CVE)', desc: 'List hosts Shodan associates with a specific CVE. Vulnerability data depends on your Shodan plan.', cmd: 'product:apache vuln:CVE-2021-44228' },
+      { title: 'Pin Product, Version and OS', desc: 'Narrow banners to an exact software build — the fastest way to count a specific version estate across your scope.', cmd: 'product:"OpenSSH" version:"8.2" os:"Linux"' },
+      { title: 'Scan-Date Window (Freshness Check)', desc: 'Filter by when Shodan last indexed the service (dates are dd/mm/yyyy) to compare what changed between rescans.', cmd: 'hostname:"{DOMAIN}" after:01/06/2026' },
+      { title: 'Expired TLS Certificates on 443', desc: 'Spot services presenting expired certificates — a quick hygiene finding in an authorized external review.', cmd: 'ssl.cert.expired:true port:443 net:{TARGET}/24' }
     ],
     faqs: [
       { q: 'How does ssl.cert.subject.cn help find servers hidden behind Cloudflare?', a: 'When a web server is configured with an SSL certificate for example.com and its firewall fails to restrict port 443 to Cloudflare IP ranges only, Shodan indexes that certificate on the server public IP.' },
-      { q: 'What is http.favicon.hash used for in Shodan?', a: 'Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized.' }
+      { q: 'What is http.favicon.hash used for in Shodan?', a: 'Every web framework or custom app has a distinct MurmurHash3 value for its /favicon.ico file. Searching by http.favicon.hash finds servers running the exact same web application even when login titles are customized.' },
+      { q: 'Is it legal to search Shodan for my own organization?', a: 'Yes — Shodan indexes publicly visible banners, and reviewing your own external footprint is standard attack-surface monitoring. Only query infrastructure you own or are explicitly authorized to assess, and treat results as findings to fix rather than as targets.' },
+      { q: 'Why does a filter like vuln: return nothing on my account?', a: 'Some filters are plan-dependent: vulnerability data (vuln:) requires a Shodan plan that includes it, and has_screenshot availability also varies by plan. The filter syntax is fixed, and the API endpoint /shodan/host/search/filters lists what your account currently supports.' }
     ],
     relatedLinks: [
       { label: 'Shodan OSINT Guide', url: '/osint/shodan' },
