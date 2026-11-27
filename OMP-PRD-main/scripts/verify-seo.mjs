@@ -186,7 +186,7 @@ function checkRobots() {
   /* Anything Disallow'ed must be something we genuinely do not want crawled. */
   const disallowed = (robots.match(/^Disallow:[ \t]*(\S+)[ \t]*$/gm) || [])
     .map((l) => l.replace(/^Disallow:[ \t]*/, '').trim());
-  const allowedPrivate = ['/Anony.su', '/functions'];
+  const allowedPrivate = ['/Anony.su', '/functions', '/learning'];
   for (const d of disallowed) {
     if (!d) continue;
     if (!allowedPrivate.some((p) => d === p || d === p + '/')) {

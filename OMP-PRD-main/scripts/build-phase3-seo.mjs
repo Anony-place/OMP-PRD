@@ -3420,18 +3420,28 @@ ${feedItems.map((it) => `    <item>
   for (const p of dbProducts) {
     addEntry(p.url, extractLastmodFromFile(p.file, snapshotMap, p.url), 'monthly', '0.7');
   }
-  for (const o of dbOsint) {
-    addEntry(o.url, extractLastmodFromFile(o.file, snapshotMap, o.url), 'monthly', '0.7');
-  }
-  for (const t of dbPentest) {
-    // A pentest listing that canonicalises to its OSINT twin must not appear in
-    // the sitemap: the sitemap would then submit two URLs for one tool and put
-    // the canonical signal against the submit signal.
-    if (CROSS_CANONICAL[t.url]) continue;
-    addEntry(t.url, extractLastmodFromFile(t.file, snapshotMap, t.url), 'monthly', '0.7');
-  }
-  for (const c of dbPentestCats) {
-    addEntry(c.url, extractLastmodFromFile(c.file, snapshotMap, c.url), 'monthly', '0.7');
+  // Recovery trim (2026-11-27): the tool-directory families (/osint/*, /pentest/*,
+  // /pentest/category/*) are ~72 programmatic pages that made up 30% of the sitemap
+  // on a 3-week-old domain while Google's quality evaluation refused 65% of the URL
+  // set ("Discovered - currently not indexed"; host impressions suppressed
+  // 2026-11-12..17). The pages stay live and internally linked through the /osint
+  // and /pentest hubs - we only stop submitting them as must-index until the host
+  // recovers. Flip the flag to re-include them.
+  const INCLUDE_TOOL_DIR_PAGES_IN_SITEMAP = false;
+  if (INCLUDE_TOOL_DIR_PAGES_IN_SITEMAP) {
+    for (const o of dbOsint) {
+      addEntry(o.url, extractLastmodFromFile(o.file, snapshotMap, o.url), 'monthly', '0.7');
+    }
+    for (const t of dbPentest) {
+      // A pentest listing that canonicalises to its OSINT twin must not appear in
+      // the sitemap: the sitemap would then submit two URLs for one tool and put
+      // the canonical signal against the submit signal.
+      if (CROSS_CANONICAL[t.url]) continue;
+      addEntry(t.url, extractLastmodFromFile(t.file, snapshotMap, t.url), 'monthly', '0.7');
+    }
+    for (const c of dbPentestCats) {
+      addEntry(c.url, extractLastmodFromFile(c.file, snapshotMap, c.url), 'monthly', '0.7');
+    }
   }
 
   const xmlLines = [
