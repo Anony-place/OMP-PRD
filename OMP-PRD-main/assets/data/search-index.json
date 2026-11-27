@@ -3,10 +3,24 @@
   "items": [
     {
       "type": "Guide",
+      "title": "1Password Incident (Nov 2026): What Leaked & What to Do",
+      "desc": "How an attacker compromised a 1Password corporate GitHub account in Nov 2026, what metadata leaked, why encrypted vaults stayed safe, and phishing steps.",
+      "url": "/articles/1password-november-2026-security-incident-explained",
+      "kw": "1password november 2026 security incident explained guide articles"
+    },
+    {
+      "type": "Guide",
       "title": "Active Directory Lateral Movement: 6 Techniques & Detection",
       "desc": "How attackers spread through Active Directory after one foothold: pass-the-hash, remote-service abuse, Kerberoasting, and the Event IDs that detect each.",
       "url": "/articles/active-directory-lateral-movement",
       "kw": "active directory lateral movement guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Agentic AI Attacks (Nov 2026): Bell, Check Point & Defense",
+      "desc": "Autonomous AI threat actors hit Bell Canada and Check Point management servers in Nov 2026. How agentic exploit chains compress dwell time and how to defend.",
+      "url": "/articles/agentic-ai-cyberattacks-november-2026-bell-checkpoint-defense",
+      "kw": "agentic ai cyberattacks november 2026 bell checkpoint defense guide articles"
     },
     {
       "type": "Guide",
@@ -112,6 +126,13 @@
       "desc": "Encryption that looks fine and protects nothing: ECB mode, reused IVs, hardcoded keys, MD5 for passwords and hand-rolled crypto.",
       "url": "/articles/common-cryptography-failures",
       "kw": "common cryptography failures guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Nov 2026 Critical CVEs: vCenter, Cisco & Java4Shell",
+      "desc": "Breakdown of Nov 2026 critical flaws: VMware vCenter CVE-2026-123890, Cisco Expressway CVE-2026-76466, and OpenJDK Java4Shell CVE-2026-114938 with patches.",
+      "url": "/articles/critical-november-2026-cves-vcenter-cisco-expressway-java4shell",
+      "kw": "critical november 2026 cves vcenter cisco expressway java4shell guide articles"
     },
     {
       "type": "Guide",
@@ -294,6 +315,13 @@
       "desc": "\"Meterpreter session closed. Reason: Died\" or \"session is not valid and will be closed\" — the session opened, then vanished. Six causes in order, from payload…",
       "url": "/articles/meterpreter-session-died",
       "kw": "meterpreter session died guide articles"
+    },
+    {
+      "type": "Guide",
+      "title": "Outlook Zero-Day CVE-2026-124194: Nov 2026 Patch Guide",
+      "desc": "Microsoft fixed actively exploited Outlook zero-day CVE-2026-124194 (CVSS 6.5) and over 1,000 bugs in Nov 2026. How NTLMv2 leak works and what to patch.",
+      "url": "/articles/microsoft-november-2026-patch-tuesday-outlook-cve-2026-124194",
+      "kw": "microsoft november 2026 patch tuesday outlook cve 2026 124194 guide articles"
     },
     {
       "type": "Guide",

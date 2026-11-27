@@ -108,7 +108,9 @@ https://oopsmypassword.web.app/articles/check-if-password-was-leaked
 https://oopsmypassword.web.app/articles/phishing-attacks
 https://oopsmypassword.web.app/articles/password-entropy
 https://oopsmypassword.web.app/articles/password-cracking-time-table
+https://oopsmypassword.web.app/articles/1password-november-2026-security-incident-explained
 https://oopsmypassword.web.app/articles/active-directory-lateral-movement
+https://oopsmypassword.web.app/articles/agentic-ai-cyberattacks-november-2026-bell-checkpoint-defense
 https://oopsmypassword.web.app/articles/ai-agents-can-hack-other-ai-agents
 https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do
 https://oopsmypassword.web.app/articles/app-blocked-to-protect-your-device-windows-fixes
@@ -124,6 +126,7 @@ https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do
 https://oopsmypassword.web.app/articles/cia-triad-explained
 https://oopsmypassword.web.app/articles/cloudflare-verification-asking-you-to-press-winr-its-a-scam
 https://oopsmypassword.web.app/articles/common-cryptography-failures
+https://oopsmypassword.web.app/articles/critical-november-2026-cves-vcenter-cisco-expressway-java4shell
 https://oopsmypassword.web.app/articles/cvss-score-explained
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-india-2026
 https://oopsmypassword.web.app/articles/cyber-security-salary-in-usa-complete-guide-to-cybersecurity-salaries-in-2026
@@ -150,6 +153,7 @@ https://oopsmypassword.web.app/articles/langflow-cve-2026-0768-exploited-to-stea
 https://oopsmypassword.web.app/articles/malware-families-explained
 https://oopsmypassword.web.app/articles/metasploit-database-not-connected
 https://oopsmypassword.web.app/articles/meterpreter-session-died
+https://oopsmypassword.web.app/articles/microsoft-november-2026-patch-tuesday-outlook-cve-2026-124194
 https://oopsmypassword.web.app/articles/microsoft-sms-2fa-retirement-what-to-do
 https://oopsmypassword.web.app/articles/nist-password-guidelines-2026
 https://oopsmypassword.web.app/articles/nmap-host-seems-down
@@ -171,5 +175,4 @@ https://oopsmypassword.web.app/articles/wireshark-no-interfaces-found
 https://oopsmypassword.web.app/articles/wireshark-not-capturing-packets
 https://oopsmypassword.web.app/articles/wireshark-ssl-decryption-not-working
 https://oopsmypassword.web.app/articles/zero-day-vulnerability-explained-meaning-examples-and-how-to-protect-against-it
-https://oopsmypassword.web.app/products/master-in-ai-prompt
 https://oopsmypassword.web.app/products/why-we-suddenly-forget-why-we-entered-the-room
