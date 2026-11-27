@@ -2,9 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /Anony.su/
 Disallow: /functions/
-# Hidden learning platform (feature-gated, never meant for search): migrated
-# lesson URLs 301 to their articles; the rest must not be crawled. Recovery
-# hygiene 2026-11-27.
 Disallow: /learning/
 
 # Four independent discovery endpoints over the same URL set. Search Console
