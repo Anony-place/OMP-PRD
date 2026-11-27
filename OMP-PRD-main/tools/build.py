@@ -499,6 +499,8 @@ def main():
     # Only genuinely private paths are blocked.
     #   /Anony.su/ - the noindex publishing panel
     #   /functions/- Cloud Function sources (not deployed, blocked in depth)
+    #   /learning/ - the feature-gated hidden learning platform (recovery
+    #                hygiene 2026-11-27; migrated lessons 301 to articles)
     # /tools/ was previously listed here. That was a no-op AND a hazard:
     # trailingSlash:false means the public toolbox is /tools (no slash), so
     # the rule matched nothing real while making it look as though a primary,
@@ -508,6 +510,7 @@ def main():
 Allow: /
 Disallow: /Anony.su/
 Disallow: /functions/
+Disallow: /learning/
 
 # Four independent discovery endpoints over the same URL set. Search Console
 # keeps failing the XML fetch on shared *.web.app hostnames, so the plain-text
