@@ -650,6 +650,14 @@ const routes = [...new Set(
     // sitemap entry in direct conflict with its own canonical tag, so it is
     // exempt from "every indexable page must be in the sitemap".
     .filter((r) => !r.canonical || r.canonical === SITE + r.url || r.canonical === SITE + r.url + '/')
+    // Recovery policy (2026-11-27): while the host recovers from a quality
+    // demotion, the tool-directory families (/osint/*, /pentest/* including
+    // /pentest/category/*) stay live and internally linked but are
+    // intentionally NOT submitted in any sitemap — see the
+    // INCLUDE_TOOL_DIR_PAGES_IN_SITEMAP flag in scripts/build-phase3-seo.mjs.
+    // The hubs /osint and /pentest themselves remain submitted. Remove this
+    // filter and flip the build flag together.
+    .filter((r) => !(r.url.startsWith('/osint/') || r.url.startsWith('/pentest/')))
     .map((r) => r.url)
 )];
 

@@ -5,7 +5,7 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Nov 2026 07:30:25 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 10:26:17 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
@@ -29,6 +29,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/android-app-blocked-to-protect-your-device-what-to-do</guid>
       <category>Security Research</category>
       <description>Android App Blocked to Protect Your Device? What to Do</description>
+    </item>
+    <item>
+      <title>App Blocked to Protect Your Device? Windows Fixes for SmartScreen (2026)</title>
+      <link>https://oopsmypassword.web.app/articles/app-blocked-to-protect-your-device-windows-fixes</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/app-blocked-to-protect-your-device-windows-fixes</guid>
+      <category>Security Research</category>
+      <description>App Blocked to Protect Your Device? Windows Fixes for SmartScreen (2026)</description>
     </item>
     <item>
       <title>Application Control vs EDR: Which Stops Ransomware?</title>
@@ -66,6 +73,13 @@
       <description>Bitwarden Not Syncing: 9 Causes, in the Order to Fix Them</description>
     </item>
     <item>
+      <title>Bug Bounty vs Responsible Disclosure: How to Report Bugs Legally</title>
+      <link>https://oopsmypassword.web.app/articles/bug-bounty-and-responsible-disclosure</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/bug-bounty-and-responsible-disclosure</guid>
+      <category>Security Research</category>
+      <description>Bug Bounty vs Responsible Disclosure: How to Report Bugs Legally</description>
+    </item>
+    <item>
       <title>Burp Suite Browser Not Launching: 7 Causes, in Order</title>
       <link>https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/burp-suite-browser-not-launching</guid>
@@ -85,6 +99,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/chainalysis-chainstack-breach-what-to-do</guid>
       <category>Security Research</category>
       <description>Chainalysis &amp; Chainstack Breach: What to Do If Your Password Leaked</description>
+    </item>
+    <item>
+      <title>CIA Triad Explained: Confidentiality, Integrity &amp; Availability</title>
+      <link>https://oopsmypassword.web.app/articles/cia-triad-explained</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cia-triad-explained</guid>
+      <category>Security Research</category>
+      <description>CIA Triad Explained: Confidentiality, Integrity &amp; Availability</description>
     </item>
     <item>
       <title>Cloudflare Verification Asking You to Press Win+R? It’s a Scam</title>
@@ -122,6 +143,13 @@
       <description>Cyber Security Salary in the USA in 2026: Full Guide</description>
     </item>
     <item>
+      <title>Cybersecurity vs Information Security: What&#39;s the Difference?</title>
+      <link>https://oopsmypassword.web.app/articles/cybersecurity-vs-information-security</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/cybersecurity-vs-information-security</guid>
+      <category>Security Research</category>
+      <description>Cybersecurity vs Information Security: What&#39;s the Difference?</description>
+    </item>
+    <item>
       <title>Data Classification: A Practical Guide from Public to Restricted</title>
       <link>https://oopsmypassword.web.app/articles/data-classification-guide</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/data-classification-guide</guid>
@@ -141,6 +169,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/fake-login-popup-showing-a-real-url-how-browser-in-the-browser-phishing-works</guid>
       <category>Security Research</category>
       <description>Fake Login Popup Showing a Real URL? How Browser-in-the-Browser Phishing Works</description>
+    </item>
+    <item>
+      <title>FIDO2 vs Passkeys: What&#39;s the Difference?</title>
+      <link>https://oopsmypassword.web.app/articles/fido2-vs-passkeys</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/fido2-vs-passkeys</guid>
+      <category>Security Research</category>
+      <description>FIDO2 vs Passkeys: What&#39;s the Difference?</description>
     </item>
     <item>
       <title>Pentest Report Template: Structure, Fields, Example</title>
@@ -178,6 +213,13 @@
       <description>How Does AI Work? A Beginner&#39;s Guide to Artificial Intelligence</description>
     </item>
     <item>
+      <title>How to Set Up Passkeys: The Complete 2026 Guide</title>
+      <link>https://oopsmypassword.web.app/articles/how-to-set-up-passkeys</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-to-set-up-passkeys</guid>
+      <category>Security Research</category>
+      <description>How to Set Up Passkeys: The Complete 2026 Guide</description>
+    </item>
+    <item>
       <title>How to Spot Fake Passkey Setup Scams Before They Steal Your Account</title>
       <link>https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-to-spot-fake-passkey-setup-scams-before-they-steal-your-account</guid>
@@ -190,6 +232,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/how-totp-works</guid>
       <category>Security Research</category>
       <description>How TOTP Works: The 30-Second Authenticator Code Explained</description>
+    </item>
+    <item>
+      <title>Impacket Guide: Scripts, Attacks and Detection (2026)</title>
+      <link>https://oopsmypassword.web.app/articles/impacket-guide</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/impacket-guide</guid>
+      <category>Security Research</category>
+      <description>Impacket Guide: Scripts, Attacks and Detection (2026)</description>
     </item>
     <item>
       <title>Is SMS 2FA Safe in 2026? What It Protects, Where It Fails, and What to Use Instead</title>
@@ -255,6 +304,13 @@
       <description>Meterpreter Session Died / &quot;Is Not Valid&quot;: 6 Causes, in Order</description>
     </item>
     <item>
+      <title>Microsoft SMS 2FA Retirement: What to Do Before February 2027</title>
+      <link>https://oopsmypassword.web.app/articles/microsoft-sms-2fa-retirement-what-to-do</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/microsoft-sms-2fa-retirement-what-to-do</guid>
+      <category>Security Research</category>
+      <description>Microsoft SMS 2FA Retirement: What to Do Before February 2027</description>
+    </item>
+    <item>
       <title>NIST Password Guidelines 2026: What SP 800-63B-4 Actually Requires</title>
       <link>https://oopsmypassword.web.app/articles/nist-password-guidelines-2026</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nist-password-guidelines-2026</guid>
@@ -281,6 +337,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/nmap-requires-root-privileges</guid>
       <category>Security Research</category>
       <description>Nmap Requires Root Privileges: Why, and What Works Without</description>
+    </item>
+    <item>
+      <title>On-Site vs Off-Site Data Sanitisation: NIST SP 800-88 Guide (2026)</title>
+      <link>https://oopsmypassword.web.app/articles/on-site-vs-off-site-data-sanitisation</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/on-site-vs-off-site-data-sanitisation</guid>
+      <category>Security Research</category>
+      <description>On-Site vs Off-Site Data Sanitisation: NIST SP 800-88 Guide (2026)</description>
     </item>
     <item>
       <title>PHP2Shell Explained: Risks, Fixes &amp; How to Protect Your Site</title>
@@ -325,6 +388,13 @@
       <description>Top 5 Books for Learning Ethical Hacking PDF</description>
     </item>
     <item>
+      <title>TruffleHog: Find, Verify and Analyze Leaked Credentials (2026 Guide)</title>
+      <link>https://oopsmypassword.web.app/articles/trufflehog-guide</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/trufflehog-guide</guid>
+      <category>Security Research</category>
+      <description>TruffleHog: Find, Verify and Analyze Leaked Credentials (2026 Guide)</description>
+    </item>
+    <item>
       <title>Vulnerability Assessment vs Penetration Testing: What&#39;s the Difference?</title>
       <link>https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/vulnerability-assessment-vs-penetration-testing</guid>
@@ -344,6 +414,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/what-is-an-sbom</guid>
       <category>Security Research</category>
       <description>What Is an SBOM? Software Bill of Materials Explained</description>
+    </item>
+    <item>
+      <title>WhatsMyName: Username Search Explained - the 2026 Archive and What to Use Now</title>
+      <link>https://oopsmypassword.web.app/articles/whatsmyname-username-search-guide</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/whatsmyname-username-search-guide</guid>
+      <category>Security Research</category>
+      <description>WhatsMyName: Username Search Explained - the 2026 Archive and What to Use Now</description>
     </item>
     <item>
       <title>Wireshark &quot;No Interfaces Found&quot;: Fixes for Windows, Linux, macOS</title>
