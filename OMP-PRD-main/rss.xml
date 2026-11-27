@@ -5,16 +5,30 @@
     <link>https://oopsmypassword.web.app/</link>
     <description>Privacy-first password security tools, OSINT &amp; Pentest guides, CLI cheat sheets, and plain-language security articles.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Nov 2026 10:26:17 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 10:42:49 GMT</lastBuildDate>
     <ttl>60</ttl>
     <generator>OopsMyPassword static build</generator>
     <atom:link href="https://oopsmypassword.web.app/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>1Password November 2026 Incident: What Leaked and What Zero-Knowledge Protected</title>
+      <link>https://oopsmypassword.web.app/articles/1password-november-2026-security-incident-explained</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/1password-november-2026-security-incident-explained</guid>
+      <category>Security Research</category>
+      <description>1Password November 2026 Incident: What Leaked and What Zero-Knowledge Protected</description>
+    </item>
     <item>
       <title>Active Directory Lateral Movement: Techniques and Detection</title>
       <link>https://oopsmypassword.web.app/articles/active-directory-lateral-movement</link>
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/active-directory-lateral-movement</guid>
       <category>Security Research</category>
       <description>Active Directory Lateral Movement: Techniques and Detection</description>
+    </item>
+    <item>
+      <title>Agentic AI Cyberattacks in Late 2026: Lessons from Bell Canada &amp; GreyNoise Threat 13</title>
+      <link>https://oopsmypassword.web.app/articles/agentic-ai-cyberattacks-november-2026-bell-checkpoint-defense</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/agentic-ai-cyberattacks-november-2026-bell-checkpoint-defense</guid>
+      <category>Security Research</category>
+      <description>Agentic AI Cyberattacks in Late 2026: Lessons from Bell Canada &amp; GreyNoise Threat 13</description>
     </item>
     <item>
       <title>AI Agents Can Hack Other AI Agents: A New Security Threat</title>
@@ -120,6 +134,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/common-cryptography-failures</guid>
       <category>Security Research</category>
       <description>Common Cryptography Failures and How to Spot Them in Code</description>
+    </item>
+    <item>
+      <title>Critical November 2026 CVEs: VMware vCenter (CVE-2026-123890), Cisco Expressway &amp; Java4Shell</title>
+      <link>https://oopsmypassword.web.app/articles/critical-november-2026-cves-vcenter-cisco-expressway-java4shell</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/critical-november-2026-cves-vcenter-cisco-expressway-java4shell</guid>
+      <category>Security Research</category>
+      <description>Critical November 2026 CVEs: VMware vCenter (CVE-2026-123890), Cisco Expressway &amp; Java4Shell</description>
     </item>
     <item>
       <title>CVSS Score Explained: Metrics, Severity Bands &amp; v4.0 Changes</title>
@@ -302,6 +323,13 @@
       <guid isPermaLink="true">https://oopsmypassword.web.app/articles/meterpreter-session-died</guid>
       <category>Security Research</category>
       <description>Meterpreter Session Died / &quot;Is Not Valid&quot;: 6 Causes, in Order</description>
+    </item>
+    <item>
+      <title>Microsoft November 2026 Patch Tuesday: Outlook NTLMv2 Zero-Day CVE-2026-124194 &amp; KB5135557</title>
+      <link>https://oopsmypassword.web.app/articles/microsoft-november-2026-patch-tuesday-outlook-cve-2026-124194</link>
+      <guid isPermaLink="true">https://oopsmypassword.web.app/articles/microsoft-november-2026-patch-tuesday-outlook-cve-2026-124194</guid>
+      <category>Security Research</category>
+      <description>Microsoft November 2026 Patch Tuesday: Outlook NTLMv2 Zero-Day CVE-2026-124194 &amp; KB5135557</description>
     </item>
     <item>
       <title>Microsoft SMS 2FA Retirement: What to Do Before February 2027</title>

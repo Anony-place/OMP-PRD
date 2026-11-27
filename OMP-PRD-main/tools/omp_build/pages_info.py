@@ -54,6 +54,19 @@ def about_body():
     </div>
   </div>
 </section>
+<section class="section-tight">
+  <div class="container container-narrow prose">
+    <h2 id="research">How we research and write</h2>
+    <p>The guides, comparisons and fix articles on OMP follow one editorial rule: <strong>every claim must be checkable against a primary source</strong>.</p>
+    <ul>
+      <li><strong>Primary sources for facts.</strong> Vendor documentation, RFCs and standards bodies, official project repositories and advisories. If a number, date or behavior matters, it is verified at the source before it is published.</li>
+      <li><strong>Links point at the source.</strong> External references go to the original documentation, not to articles about the documentation.</li>
+      <li><strong>Updates are dated.</strong> Articles show when they were last verified. When a tool changes behavior, the article is corrected openly rather than quietly rewritten.</li>
+      <li><strong>No pay-to-rank.</strong> Rankings and recommendations are never sold, sponsored or affiliate-linked. Where a comparison has no clear winner, the article says so.</li>
+      <li><strong>Corrections are welcome.</strong> Found something wrong? <a href="/contact">Send a correction</a> — the fix is published, dated, and credited to the report.</li>
+    </ul>
+  </div>
+</section>
 """
 
 

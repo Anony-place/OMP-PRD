@@ -41,13 +41,13 @@ Ruled out: technical outage (site serves), manual-style full ban (pages still in
 3. **robots.txt `Disallow: /learning/`** (hidden platform; build.py template + test/verify allowlists updated).
 
 **Phase 2 — user actions (2 min each):**
-- GSC → **Security & Manual Actions → Manual Actions**: if "No issues" = algorithmic (expected, we're on the right path); if any manual action = tell me the exact policy name, we address exactly it.
+- GSC → **Security & Manual Actions → Manual Actions**: ✅ **DONE — "No issues" (user-confirmed 2026-11-27).** Verdict = 100% algorithmic demotion; no manual action to appeal. The plan below is the only path.
 - Export current **Page Indexing URL lists** (Pages tab → export, both "Indexed" and "Not indexed") like the previous sheets → I target the next surgical step (which 128 survive = our quality core).
 
-**Phase 3 — quality signals (next batches, no new pages):**
-- E-E-A-T: author byline + about-page trust block + references on top articles.
-- Consolidation: keep the 63 articles (incl. passkey wave) as the recovery asset; refresh winners (john-the-ripper pos 5.3 pre-crash).
-- Stability: no redirect churn, no template changes, no bulk edits.
+**Phase 3 — quality signals (no new pages):**
+- ✅ E-E-A-T batch (2026-11-27, this PR): article byline "By OopsMyPassword Editorial" → /about#research + per-article trust footer ("verified through the editorial process… Report a correction") + new **"How we research and write"** editorial-policy section on /about (primary sources, dated updates, no pay-to-rank, dated corrections).
+- Consolidation: keep the 63+ articles (incl. passkey wave) as the recovery asset; refresh winners (john-the-ripper pos 5.3 pre-crash).
+- Stability: no redirect churn, no bulk rewrites, one deliberate template pass only.
 
 **Phase 4 — patience + measurement**: re-evaluation typically takes 2–8 weeks. Watch GSC weekly (impressions first, then indexed count). Recovery signs = "discovered-not-indexed" count falling + impressions returning.
 
